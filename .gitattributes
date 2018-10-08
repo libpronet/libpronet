@@ -1,0 +1,28 @@
+*                 text=auto
+.gitattributes    text eol=lf
+.gitignore        text eol=lf
+
+*.dsw             text eol=crlf
+*.dsp             text eol=crlf
+*.sln             text eol=crlf
+*.vcxproj         text eol=crlf
+*.vcxproj.filters text eol=crlf
+mbedtls.pro       text eol=crlf
+pro_util.pro      text eol=crlf
+*.def             text eol=crlf
+*.rc              text eol=crlf
+manifest.bin      text eol=crlf
+configure.ac      text eol=lf
+configure.in      text eol=lf
+configure         text eol=lf
+Makefile.am       text eol=lf
+Makefile.in       text eol=lf
+Makefile          text eol=lf
+Application.mk    text eol=lf
+Android.mk        text eol=lf
+
+*.bat             text eol=crlf
+*.sh              text eol=lf
+*.sh.txt          text eol=lf
+*.cfg             text eol=lf
+*.db              -text
