@@ -1,0 +1,82 @@
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number: 3 (0x3)
+    Signature Algorithm: sha256WithRSAEncryption
+        Issuer: C=CN, ST=Beijing, L=Beijing, O=P.R.O, OU=IT, CN=ca.libpro.org
+        Validity
+            Not Before: May 20 00:00:00 2018 GMT
+            Not After : May 20 00:00:00 2028 GMT
+        Subject: C=CN, ST=Beijing, L=Beijing, O=P.R.O, OU=IT, CN=server.libpro.org
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (2048 bit)
+                Modulus:
+                    00:ef:c0:35:29:26:52:4d:7a:b5:38:ad:19:da:50:
+                    e1:d0:b9:d1:a9:f2:93:ba:7d:a4:e0:64:25:6f:b1:
+                    19:dd:21:22:6c:c0:00:1c:e4:3a:4c:26:26:99:84:
+                    5c:fd:ed:be:3b:2b:c9:e1:63:e1:8b:3c:6e:4f:c9:
+                    8c:b9:21:89:69:61:0b:a4:e6:eb:33:70:59:55:08:
+                    b0:df:ad:ea:d0:28:e5:57:2f:14:26:5e:5e:6c:0c:
+                    ee:58:77:50:aa:5b:a6:67:3c:d6:56:6d:57:a6:33:
+                    c7:c2:06:dc:d1:66:5c:d3:7c:c4:18:63:b7:0e:ce:
+                    91:3b:97:61:9a:e6:05:a3:92:42:31:aa:e1:ed:b1:
+                    f2:bc:ed:ea:e2:7d:5a:26:af:22:00:8e:65:45:a5:
+                    e5:13:96:30:c6:09:bd:32:47:91:8b:7a:95:63:6d:
+                    d7:a7:ba:1c:c3:77:2e:32:51:26:d4:07:e1:c5:ca:
+                    c8:ad:f4:ec:eb:d7:eb:0f:da:56:e1:b4:03:b6:87:
+                    ee:52:31:ea:d5:2d:51:dd:bf:78:15:10:ab:e8:57:
+                    28:0c:72:3a:91:d8:d1:a9:b2:bc:e8:07:2c:65:ba:
+                    90:81:a3:60:13:47:97:53:d6:2a:8c:f7:a0:96:8e:
+                    55:9a:d9:4f:73:21:8f:71:ee:b7:b0:a9:f1:cd:37:
+                    ed:b7
+                Exponent: 65537 (0x10001)
+        X509v3 extensions:
+            X509v3 Basic Constraints: 
+                CA:FALSE
+            X509v3 Subject Key Identifier: 
+                84:79:78:D5:EE:E2:49:D3:4E:52:C1:40:21:E5:C0:8A:86:BC:D0:48
+            X509v3 Authority Key Identifier: 
+                keyid:25:51:37:BC:FE:58:4F:27:CE:7B:35:AC:D1:99:D1:8F:2A:4B:AF:B6
+
+            X509v3 Subject Alternative Name: 
+                DNS:libpro.org, DNS:www.libpro.org, DNS:*.libpro.org
+    Signature Algorithm: sha256WithRSAEncryption
+         ab:d3:be:e6:f7:ef:2b:e5:94:fe:67:f7:02:85:6d:ba:97:b8:
+         79:a2:28:73:87:10:68:9c:fa:fd:6c:54:6c:25:e4:41:e9:53:
+         fc:f2:bb:f5:c3:02:c8:98:ad:d9:98:ab:21:76:65:5d:35:b4:
+         4f:e9:63:cc:67:f2:77:3a:b1:1c:bc:3a:07:3f:aa:18:32:c4:
+         ca:f9:0e:ba:0a:bf:f3:ec:7b:a5:b7:1f:a9:86:d2:25:f5:56:
+         68:e1:95:4b:01:c4:7b:87:7e:49:1a:f4:46:35:ae:2e:24:e1:
+         fe:0a:79:ae:d7:28:4b:46:49:f1:9d:45:b9:b1:8e:7e:1d:94:
+         54:ce:26:77:55:b8:28:90:b5:09:67:be:de:a0:af:e1:0e:cb:
+         30:24:a7:28:6c:a0:d0:c6:c9:e3:bb:19:85:b4:51:35:c2:eb:
+         cd:6a:25:55:3a:22:a2:7f:6f:17:3c:1e:9f:a7:54:79:1c:93:
+         35:87:a5:5c:6c:ae:49:fe:cb:bb:45:38:37:eb:13:44:86:c0:
+         d9:3b:10:92:7b:93:22:69:0e:e4:48:50:b7:16:f6:66:c5:f1:
+         f8:c0:bd:46:8f:57:2d:c3:e9:da:a4:a4:5a:34:fb:76:88:05:
+         da:3f:eb:4f:2b:9b:3e:8f:82:de:63:0c:fa:81:ff:ad:e7:6d:
+         34:ea:a8:4d
+-----BEGIN CERTIFICATE-----
+MIIDzzCCAregAwIBAgIBAzANBgkqhkiG9w0BAQsFADBmMQswCQYDVQQGEwJDTjEQ
+MA4GA1UECAwHQmVpamluZzEQMA4GA1UEBwwHQmVpamluZzEOMAwGA1UECgwFUC5S
+Lk8xCzAJBgNVBAsMAklUMRYwFAYDVQQDDA1jYS5saWJwcm8ub3JnMB4XDTE4MDUy
+MDAwMDAwMFoXDTI4MDUyMDAwMDAwMFowajELMAkGA1UEBhMCQ04xEDAOBgNVBAgM
+B0JlaWppbmcxEDAOBgNVBAcMB0JlaWppbmcxDjAMBgNVBAoMBVAuUi5PMQswCQYD
+VQQLDAJJVDEaMBgGA1UEAwwRc2VydmVyLmxpYnByby5vcmcwggEiMA0GCSqGSIb3
+DQEBAQUAA4IBDwAwggEKAoIBAQDvwDUpJlJNerU4rRnaUOHQudGp8pO6faTgZCVv
+sRndISJswAAc5DpMJiaZhFz97b47K8nhY+GLPG5PyYy5IYlpYQuk5uszcFlVCLDf
+rerQKOVXLxQmXl5sDO5Yd1CqW6ZnPNZWbVemM8fCBtzRZlzTfMQYY7cOzpE7l2Ga
+5gWjkkIxquHtsfK87erifVomryIAjmVFpeUTljDGCb0yR5GLepVjbdenuhzDdy4y
+USbUB+HFysit9Ozr1+sP2lbhtAO2h+5SMerVLVHdv3gVEKvoVygMcjqR2NGpsrzo
+ByxlupCBo2ATR5dT1iqM96CWjlWa2U9zIY9x7rewqfHNN+23AgMBAAGjgYMwgYAw
+CQYDVR0TBAIwADAdBgNVHQ4EFgQUhHl41e7iSdNOUsFAIeXAioa80EgwHwYDVR0j
+BBgwFoAUJVE3vP5YTyfOezWs0ZnRjypLr7YwMwYDVR0RBCwwKoIKbGlicHJvLm9y
+Z4IOd3d3LmxpYnByby5vcmeCDCoubGlicHJvLm9yZzANBgkqhkiG9w0BAQsFAAOC
+AQEAq9O+5vfvK+WU/mf3AoVtupe4eaIoc4cQaJz6/WxUbCXkQelT/PK79cMCyJit
+2ZirIXZlXTW0T+ljzGfydzqxHLw6Bz+qGDLEyvkOugq/8+x7pbcfqYbSJfVWaOGV
+SwHEe4d+SRr0RjWuLiTh/gp5rtcoS0ZJ8Z1FubGOfh2UVM4md1W4KJC1CWe+3qCv
+4Q7LMCSnKGyg0MbJ47sZhbRRNcLrzWolVToion9vFzwen6dUeRyTNYelXGyuSf7L
+u0U4N+sTRIbA2TsQknuTImkO5EhQtxb2ZsXx+MC9Ro9XLcPp2qSkWjT7dogF2j/r
+TyubPo+C3mMM+oH/redtNOqoTQ==
+-----END CERTIFICATE-----

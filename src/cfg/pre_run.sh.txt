@@ -1,0 +1,28 @@
+#!/bin/sh
+
+#echo "fs.file-max = 2100000" >> /etc/sysctl.conf
+#sysctl -p
+cat /proc/sys/fs/file-nr
+
+#
+# for new-kernel
+#
+#echo 2100000 > /proc/sys/fs/nr_open
+cat /proc/sys/fs/nr_open
+
+#echo "* soft nofile 2100000" >> /etc/security/limits.conf
+#echo "* hard nofile 2100000" >> /etc/security/limits.conf
+#ulimit -n 2100000
+ulimit -Sn
+ulimit -Hn
+
+#echo "net.ipv4.ip_local_port_range = 1024 65535" >> /etc/sysctl.conf
+#sysctl -p
+
+THIS_DIR=`pwd`
+LD_LIBRARY_PATH="${THIS_DIR}:${LD_LIBRARY_PATH}"
+export LD_LIBRARY_PATH
+
+#screen -S for_test_tcp_server
+#./test_tcp_server
+#Ctrl-A, D

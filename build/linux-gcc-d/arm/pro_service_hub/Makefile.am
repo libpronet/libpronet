@@ -1,0 +1,27 @@
+probindir = ${prefix}/libpronet/bin
+prolibdir = ${prefix}/libpronet/lib
+
+#############################################################################
+
+probin_PROGRAMS = pro_service_hub
+
+pro_service_hub_SOURCES = ../../../../src/pro/pro_service_hub/main.cpp
+
+pro_service_hub_CPPFLAGS =
+
+pro_service_hub_CFLAGS   = -fno-strict-aliasing
+pro_service_hub_CXXFLAGS = -fno-strict-aliasing
+
+pro_service_hub_LDFLAGS = -Wl,-rpath,.:../lib:${prolibdir} -Wl,--no-undefined
+pro_service_hub_LDADD   =
+
+LIBS = ../pro_net/libpro_net.so       \
+       ../pro_util/libpro_util.a      \
+       ../pro_shared/libpro_shared.so \
+       ../mbedtls/libmbedtls.a        \
+       -lstdc++                       \
+       -lrt                           \
+       -lpthread                      \
+       -lm                            \
+       -lgcc                          \
+       -lc

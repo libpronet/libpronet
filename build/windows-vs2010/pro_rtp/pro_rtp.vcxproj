@@ -1,0 +1,240 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{07FCC4A3-889B-4767-9AE3-CA7066061E88}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>pro_rtp</RootNamespace>
+    <ProjectName>05_pro_rtp</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)_debug\</OutDir>
+    <GenerateManifest>false</GenerateManifest>
+    <TargetName>pro_rtp</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)_debug64x\</OutDir>
+    <GenerateManifest>false</GenerateManifest>
+    <TargetName>pro_rtp</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)_release\</OutDir>
+    <GenerateManifest>false</GenerateManifest>
+    <TargetName>pro_rtp</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)_release64x\</OutDir>
+    <GenerateManifest>false</GenerateManifest>
+    <TargetName>pro_rtp</TargetName>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;PRO_RTP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BrowseInformation>true</BrowseInformation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>../../../src/pro/pro_rtp/pro_rtp.def</ModuleDefinitionFile>
+      <GenerateMapFile>true</GenerateMapFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;PRO_RTP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <BrowseInformation>true</BrowseInformation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ModuleDefinitionFile>../../../src/pro/pro_rtp/pro_rtp.def</ModuleDefinitionFile>
+      <GenerateMapFile>true</GenerateMapFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;PRO_RTP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BrowseInformation>true</BrowseInformation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <ModuleDefinitionFile>../../../src/pro/pro_rtp/pro_rtp.def</ModuleDefinitionFile>
+      <GenerateMapFile>true</GenerateMapFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;PRO_RTP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <BrowseInformation>true</BrowseInformation>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <ModuleDefinitionFile>../../../src/pro/pro_rtp/pro_rtp.def</ModuleDefinitionFile>
+      <GenerateMapFile>true</GenerateMapFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="..\..\..\src\pro\pro_rtp\manifest.bin" />
+    <None Include="..\..\..\src\pro\pro_rtp\pro_rtp.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\resource.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_bucket.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_flow_stat.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_foundation.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_framework.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_msg_c2s.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_msg_client.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_msg_command.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_msg_server.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_packet.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_port_allocator.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_service.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_base.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_mcast.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_mcast_ex.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_sslclient_ex.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_sslserver_ex.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_tcpclient.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_tcpclient_ex.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_tcpserver.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_tcpserver_ex.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_udpclient.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_udpclient_ex.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_udpserver.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_udpserver_ex.h" />
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_wrapper.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\..\src\pro\pro_rtp\pro_rtp.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_bucket.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_flow_stat.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_foundation.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_framework.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_msg_c2s.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_msg_client.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_msg_server.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_packet.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_port_allocator.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_service.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_base.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_mcast.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_mcast_ex.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_sslclient_ex.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_sslserver_ex.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_tcpclient.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_tcpclient_ex.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_tcpserver.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_tcpserver_ex.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_udpclient.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_udpclient_ex.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_udpserver.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_udpserver_ex.cpp" />
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_wrapper.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\mbedtls\mbedtls.vcxproj">
+      <Project>{a9acda62-8f78-42d2-a408-8671249ccc21}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\pro_net\pro_net.vcxproj">
+      <Project>{efd2c1e4-7454-49df-840b-5acdb0de2405}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\pro_shared\pro_shared.vcxproj">
+      <Project>{4f8bac59-c5d5-4fbe-b436-5c0096fb929e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\pro_util\pro_util.vcxproj">
+      <Project>{95667892-d4a4-41d9-985d-d5346eedeb3b}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

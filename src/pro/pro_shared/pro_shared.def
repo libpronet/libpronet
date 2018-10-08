@@ -1,0 +1,15 @@
+LIBRARY    pro_shared
+
+EXPORTS
+    ProSharedVersion
+    ProSrand
+    ProRand_0_1
+    ProGetTickCount64_s
+    ProSleep_s
+    ProMakeTimerId
+    ProMakeMmTimerId
+    ProAllocateSgiPoolBuffer
+    ProReallocateSgiPoolBuffer
+    ProDeallocateSgiPoolBuffer
+    ProGetSgiSmallPoolInfo
+    ProGetSgiBigPoolInfo

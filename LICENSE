@@ -1,0 +1,53 @@
+LibProNet is licensed for use as follows:
+====
+Copyright (C) P.R.O <libpronet@gmail.com>
+
+Apache 2.0 license.
+====
+
+
+mbedtls is licensed for use as follows:
+====
+Copyright (C) Arm Limited (or its affiliates)
+
+Unless specifically indicated otherwise in a file, files are licensed
+under the Apache 2.0 license, as can be found in: apache-2.0.txt
+====
+
+
+stl-v3.3 is licensed for use as follows:
+====
+Copyright (C) Silicon Graphics Computer Systems, Inc.
+
+Permission to use, copy, modify, distribute and sell this software
+and its documentation for any purpose is hereby granted without fee,
+provided that the above copyright notice appear in all copies and
+that both that copyright notice and this permission notice appear
+in supporting documentation.  Silicon Graphics makes no
+representations about the suitability of this software for any
+purpose.  It is provided "as is" without express or implied warranty.
+
+Copyright (C) Hewlett-Packard Company
+
+Permission to use, copy, modify, distribute and sell this software
+and its documentation for any purpose is hereby granted without fee,
+provided that the above copyright notice appear in all copies and
+that both that copyright notice and this permission notice appear
+in supporting documentation.  Hewlett-Packard Company makes no
+representations about the suitability of this software for any
+purpose.  It is provided "as is" without express or implied warranty.
+====
+
+
+sqlite-amalgamation is licensed for use as follows:
+====
+The author disclaims copyright to this source code.
+====
+
+
+msinttypes is licensed for use as follows:
+====
+Copyright (C) Alexander Chemeris
+
+Three clause BSD license.
+====
