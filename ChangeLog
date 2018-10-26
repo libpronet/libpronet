@@ -1,0 +1,16 @@
+LibProNet-0.9.0, tag-release-0.9.0, 2018-10-08
+====
+
+This is the first release.
+
+[Features]
+
+  pro_util : thread/lock-wrapper, async task, timer factory, time-util,
+             stat/shaper-util, config stream, memory pool
+
+  pro_net  : epoll/select-reactor, tcp/udp/mcast/ssl-transport, acceptor,
+             connector, handshaker, ipc-sharing-socket, ssl/tls-wrapper
+
+  pro_rtp  : rtp session, msg system core
+
+  others   : msg system servers, demos, testers
