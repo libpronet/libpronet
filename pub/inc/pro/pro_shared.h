@@ -266,7 +266,7 @@ ProMakeMmTimerId();
  *
  * 返回值: 分配的内存地址或NULL
  *
- * 说明: 每组内存池由一大一小两个子池构成,每个子池有自己的访问锁
+ * 说明: 每组内存池有自己的访问锁
  */
 PRO_SHARED_API
 void*
@@ -284,7 +284,7 @@ ProAllocateSgiPoolBuffer(size_t        size,
  *
  * 返回值: 重新分配的内存地址或NULL
  *
- * 说明: 每组内存池由一大一小两个子池构成,每个子池有自己的访问锁
+ * 说明: 每组内存池有自己的访问锁
  */
 PRO_SHARED_API
 void*
@@ -311,7 +311,7 @@ ProDeallocateSgiPoolBuffer(void*         buf,
                            unsigned long poolIndex); /* 0 ~ 9 */
 
 /*
- * 功能: 获取小对象(sizeof(obj)<=4096)的SGI子池信息
+ * 功能: 获取SGI内存池信息
  *
  * 参数:
  * freeList  : 用于接收信息
@@ -326,31 +326,10 @@ ProDeallocateSgiPoolBuffer(void*         buf,
 PRO_SHARED_API
 void
 PRO_CALLTYPE
-ProGetSgiSmallPoolInfo(void*         freeList[60],
-                       size_t        objSize[60],
-                       size_t*       heapSize,   /* = NULL */
-                       unsigned long poolIndex); /* 0 ~ 9 */
-
-/*
- * 功能: 获取大对象(sizeof(obj)>4096)的SGI子池信息
- *
- * 参数:
- * freeList  : 用于接收信息
- * objSize   : 用于接收信息
- * heapSize  : 用于接收信息
- * poolIndex : 内存池索引号. [0 ~ 9],一共10组内存池
- *
- * 返回值: 无
- *
- * 说明: 该函数用于调试或状态监控
- */
-PRO_SHARED_API
-void
-PRO_CALLTYPE
-ProGetSgiBigPoolInfo(void*         freeList[60],
-                     size_t        objSize[60],
-                     size_t*       heapSize,     /* = NULL */
-                     unsigned long poolIndex);   /* 0 ~ 9 */
+ProGetSgiPoolInfo(void*         freeList[64],
+                  size_t        objSize[64],
+                  size_t*       heapSize,   /* = NULL */
+                  unsigned long poolIndex); /* 0 ~ 9 */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
