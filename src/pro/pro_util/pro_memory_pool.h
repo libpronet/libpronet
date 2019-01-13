@@ -47,7 +47,7 @@ public:                                                                         
     static void* operator new(size_t size)        { return (ProAllocateSgiPoolBuffer(size, (a))); } \
     static void  operator delete(void* p)         { ProDeallocateSgiPoolBuffer(p, (a)); }           \
     static void* operator new(size_t, void* p0)   { return (p0); }                                  \
-    static void  operator delete(void*, void* p0) { }                                               \
+    static void  operator delete(void*, void* p0) { (void)p0; }                                     \
 protected:
 #else
 #define DECLARE_SGI_POOL(a)
@@ -136,12 +136,14 @@ public:
     }
 
     pro_allocator(const pro_allocator<____Ty, ____poolIndex>&)
+        : allocator<____Ty>()
     {
     }
 
 #if !defined(_MSC_VER) || (_MSC_VER > 1200) /* 1200 is 6.0 */
     template<class ____Other>
         pro_allocator(const pro_allocator<____Other, ____poolIndex>&)
+        : allocator<____Ty>()
     {
     }
 
