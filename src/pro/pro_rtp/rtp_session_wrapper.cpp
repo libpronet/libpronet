@@ -1664,8 +1664,8 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         "\t CRtpSessionWrapper(M) - ... ... \n"
                         "\t CRtpSessionWrapper(M) - sendDuration(timer) : %u (ms) \n"
                         "\t CRtpSessionWrapper(M) - pushPackets (timer) : %u (packets) \n"
-                        "\t CRtpSessionWrapper(M) - pushTick    (timer) : %I64d \n"
-                        "\t CRtpSessionWrapper(M) - tick        (timer) : %I64d \n"
+                        "\t CRtpSessionWrapper(M) - pushTick    (timer) : "PRO_PRT64D" \n"
+                        "\t CRtpSessionWrapper(M) - tick        (timer) : "PRO_PRT64D" \n"
                         ,
                         (unsigned int)::GetCurrentProcessId(),
                         (unsigned int)::GetCurrentProcessId(),
@@ -1703,8 +1703,8 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         "\t CRtpSessionWrapper(A) - ... ... \n"
                         "\t CRtpSessionWrapper(A) - sendDuration(timer) : %u (ms) \n"
                         "\t CRtpSessionWrapper(A) - pushPackets (timer) : %u (packets) \n"
-                        "\t CRtpSessionWrapper(A) - pushTick    (timer) : %I64d \n"
-                        "\t CRtpSessionWrapper(A) - tick        (timer) : %I64d \n"
+                        "\t CRtpSessionWrapper(A) - pushTick    (timer) : "PRO_PRT64D" \n"
+                        "\t CRtpSessionWrapper(A) - tick        (timer) : "PRO_PRT64D" \n"
                         ,
                         (unsigned int)::GetCurrentProcessId(),
                         (unsigned int)::GetCurrentProcessId(),
@@ -1742,8 +1742,8 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         "\t CRtpSessionWrapper(V) - ... ... \n"
                         "\t CRtpSessionWrapper(V) - sendDuration(timer) : %u (ms) \n"
                         "\t CRtpSessionWrapper(V) - pushPackets (timer) : %u (packets) \n"
-                        "\t CRtpSessionWrapper(V) - pushTick    (timer) : %I64d \n"
-                        "\t CRtpSessionWrapper(V) - tick        (timer) : %I64d \n"
+                        "\t CRtpSessionWrapper(V) - pushTick    (timer) : "PRO_PRT64D" \n"
+                        "\t CRtpSessionWrapper(V) - tick        (timer) : "PRO_PRT64D" \n"
                         ,
                         (unsigned int)::GetCurrentProcessId(),
                         (unsigned int)::GetCurrentProcessId(),

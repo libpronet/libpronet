@@ -369,11 +369,7 @@ CTest::OnOkMsg(IRtpMsgClient*      msgClient,
     {{{
         printf(
             "\n"
-#if defined(WIN32)
-            " CTest::OnOkMsg(id : %u-%I64u-%u, publicIp : %s, server : %s:%u) \n"
-#else
-            " CTest::OnOkMsg(id : %u-%llu-%u, publicIp : %s, server : %s:%u) \n"
-#endif
+            " CTest::OnOkMsg(id : %u-"PRO_PRT64U"-%u, publicIp : %s, server : %s:%u) \n"
             ,
             (unsigned int)myUser->classId,
             myUser->UserId(),
@@ -427,11 +423,7 @@ CTest::OnRecvMsg(IRtpMsgClient*      msgClient,
 
         printf(
             "\n"
-#if defined(WIN32)
-            " CTest::OnRecvMsg(from : %u-%I64u-%u, me : %u-%I64u-%u) \n"
-#else
-            " CTest::OnRecvMsg(from : %u-%llu-%u, me : %u-%llu-%u) \n"
-#endif
+            " CTest::OnRecvMsg(from : %u-"PRO_PRT64U"-%u, me : %u-"PRO_PRT64U"-%u) \n"
             "\t %s \n"
             ,
             (unsigned int)srcUser->classId,
@@ -478,11 +470,7 @@ CTest::OnCloseMsg(IRtpMsgClient* msgClient,
 
         printf(
             "\n"
-#if defined(WIN32)
-            " CTest::OnCloseMsg(id : %u-%I64u-%u,"
-#else
-            " CTest::OnCloseMsg(id : %u-%llu-%u,"
-#endif
+            " CTest::OnCloseMsg(id : %u-"PRO_PRT64U"-%u,"
             " errorCode : [%d, %d], tcpConnected : %d, server : %s:%u) \n"
             ,
             (unsigned int)user.classId,

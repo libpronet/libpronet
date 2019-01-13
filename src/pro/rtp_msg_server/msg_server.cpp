@@ -465,11 +465,7 @@ EXIT:
             snprintf_pro(
                 traceInfo,
                 sizeof(traceInfo),
-#if defined(WIN32)
-                " CMsgServer::OnCheckUser(id : %u-%I64u-%u,"
-#else
-                " CMsgServer::OnCheckUser(id : %u-%llu-%u,"
-#endif
+                " CMsgServer::OnCheckUser(id : %u-"PRO_PRT64U"-%u,"
                 " fromIp : %s, fromC2s : %s) ok! \n\n"
                 ,
                 (unsigned int)user->classId,
@@ -484,11 +480,7 @@ EXIT:
             snprintf_pro(
                 traceInfo,
                 sizeof(traceInfo),
-#if defined(WIN32)
-                " CMsgServer::OnCheckUser(id : %u-%I64u-%u,"
-#else
-                " CMsgServer::OnCheckUser(id : %u-%llu-%u,"
-#endif
+                " CMsgServer::OnCheckUser(id : %u-"PRO_PRT64U"-%u,"
                 " fromIp : %s, fromC2s : %s) failed! [%s] \n\n"
                 ,
                 (unsigned int)user->classId,
@@ -564,11 +556,7 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-#if defined(WIN32)
-            " CMsgServer::OnOkUser(id : %u-%I64u-%u,"
-#else
-            " CMsgServer::OnOkUser(id : %u-%llu-%u,"
-#endif
+            " CMsgServer::OnOkUser(id : %u-"PRO_PRT64U"-%u,"
             " fromIp : %s, fromC2s : %s, users : %u+%u) \n\n"
             ,
             (unsigned int)user->classId,
@@ -643,11 +631,7 @@ CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-#if defined(WIN32)
-            " CMsgServer::OnCloseUser(id : %u-%I64u-%u,"
-#else
-            " CMsgServer::OnCloseUser(id : %u-%llu-%u,"
-#endif
+            " CMsgServer::OnCloseUser(id : %u-"PRO_PRT64U"-%u,"
             " errorCode : [%d, %d], users : %u+%u) \n\n"
             ,
             (unsigned int)user->classId,

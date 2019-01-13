@@ -106,7 +106,8 @@ CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs) const
         {
             bom = true;
 
-            if (p + 2 <= q && p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF)
+            if (p + 2 <= q &&
+                p[0] == (char)0xEF && p[1] == (char)0xBB && p[2] == (char)0xBF)
             {
                 p += 3;
             }
