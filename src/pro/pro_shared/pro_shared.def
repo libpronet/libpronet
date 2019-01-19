@@ -11,5 +11,4 @@ EXPORTS
     ProAllocateSgiPoolBuffer
     ProReallocateSgiPoolBuffer
     ProDeallocateSgiPoolBuffer
-    ProGetSgiSmallPoolInfo
-    ProGetSgiBigPoolInfo
+    ProGetSgiPoolInfo

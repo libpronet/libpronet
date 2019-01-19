@@ -266,11 +266,7 @@ RtpMsgUser2String(const RTP_MSG_USER* user,
 
     sprintf(
         idString,
-#if defined(WIN32) || defined(_WIN32_WCE)
-        "%u-%I64u-%u",
-#else
-        "%u-%llu-%u" ,
-#endif
+        "%u-"PRO_PRT64U"-%u",
         (unsigned int)user->classId,
         user->UserId(),
         (unsigned int)user->instId
@@ -339,13 +335,9 @@ EXIT:
     PRO_UINT64   uid = 0;
     unsigned int iid = 0;
 
-    sscanf(cidString.c_str(), "%u"   , &cid);
-#if defined(WIN32) || defined(_WIN32_WCE)
-    sscanf(uidString.c_str(), "%I64u", &uid);
-#else
-    sscanf(uidString.c_str(), "%llu" , &uid);
-#endif
-    sscanf(iidString.c_str(), "%u"   , &iid);
+    sscanf(cidString.c_str(), "%u"      , &cid);
+    sscanf(uidString.c_str(), PRO_PRT64U, &uid);
+    sscanf(iidString.c_str(), "%u"      , &iid);
 
     const unsigned char maxCid = 0xFF;
     const PRO_UINT64    maxUid = ((PRO_UINT64)0xFF << 32) | 0xFFFFFFFF;

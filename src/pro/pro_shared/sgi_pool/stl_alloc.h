@@ -40,7 +40,7 @@ ____STD_BEGIN
 // DISAPPEAR in the future.  Clients should just use alloc for now.
 //
 // Important implementation properties:
-// 1. If the client request an object of size > _MAX_BYTES, the resulting
+// 1. If the client request an object of size > _MAX_OBJ_BYTES, the resulting
 //    object will be obtained directly from malloc.
 // 2. In all other cases, we allocate an object of size exactly
 //    _S_round_up(requested_size).  Thus the client has enough size
@@ -56,9 +56,14 @@ ____STD_BEGIN
 // Node that containers built on different allocator instances have
 // different types, limiting the utility of this approach.
 
-enum { _MAX_BYTES  = 1024 * 128 };      /* sizeof(obj) <= 128K */
-enum { _NFREELISTS = 60 };              /* 60 levels */
-enum { _CHUNK_SIZE = 1024 * 1024 * 2 }; /* sizeof(chunk) is 2M, >= glibc::M_MMAP_THRESHOLD */
+/*
+ * buf_obj = hdr + app_level_obj = 8 + app_level_obj,
+ * please refer to "../pro_shared.cpp"
+ */
+enum { _MAX_OBJ_BYTES = 8 + 1024 * 128  }; /* sizeof(app_level_obj) <= 128K                   */
+enum { _BIG_OBJ_BYTES = 8 + 4096        }; /* sizeof(app_level_big_obj) >= 4096               */
+enum { _CHUNK_SIZE    = 1024 * 1024 * 4 }; /* sizeof(chunk) is 4M, >= glibc::M_MMAP_THRESHOLD */
+enum { _NFREELISTS    = 49              }; /* 49 levels                                       */
 
 union _Obj
 {
@@ -133,7 +138,7 @@ private:
 
 public:
 
-    /* __n must be > 0      */
+    /* __n must be > 0 */
     static void* allocate(size_t __n)
     {
         if (__n == 0)
@@ -143,7 +148,7 @@ public:
 
         void* __ret = 0;
 
-        if (__n > (size_t)_MAX_BYTES)
+        if (__n > (size_t)_MAX_OBJ_BYTES)
         {
             __ret = malloc(__n);
         }
@@ -174,7 +179,7 @@ public:
             return;
         }
 
-        if (__n > (size_t)_MAX_BYTES)
+        if (__n > (size_t)_MAX_OBJ_BYTES)
         {
             free(__p);
         }
@@ -202,7 +207,7 @@ public:
             return (0);
         }
 
-        if (__old_sz > (size_t)_MAX_BYTES && __new_sz > (size_t)_MAX_BYTES)
+        if (__old_sz > (size_t)_MAX_OBJ_BYTES && __new_sz > (size_t)_MAX_OBJ_BYTES)
         {
             return (realloc(__p, __new_sz));
         }
@@ -226,17 +231,20 @@ public:
     static void get_info(
         void*   __free_list[_NFREELISTS],
         size_t  __obj_size[_NFREELISTS],
-        size_t& __heap_size
+        size_t* __heap_size
         )
     {
         memcpy(__free_list, (void*)_S_free_list, sizeof(_S_free_list));
         memcpy(__obj_size, (void*)_S_obj_size, sizeof(_S_obj_size));
-        __heap_size = _S_heap_size;
+        if (__heap_size != 0)
+        {
+            *__heap_size = _S_heap_size;
+        }
     }
 };
 
-/* Returns an object of size __n, and optionally adds to size __n free list.*/
-/* We assume that __n is properly aligned.                                  */
+/* Returns an object of size __n, and optionally adds to size __n free list. */
+/* We assume that __n is properly aligned.                                   */
 template<int __inst>
 void*
 __default_alloc_template<__inst>::_S_refill(size_t __n)
@@ -278,21 +286,21 @@ __default_alloc_template<__inst>::_S_refill(size_t __n)
     return (__result);
 }
 
-/* We allocate memory in large chunks in order to avoid fragmenting     */
-/* the malloc heap too much.                                            */
-/* We assume that __size is properly aligned.                           */
+/* We allocate memory in large chunks in order to avoid fragmenting */
+/* the malloc heap too much.                                        */
+/* We assume that __size is properly aligned.                       */
 template<int __inst>
 char*
 __default_alloc_template<__inst>::_S_chunk_alloc(size_t __size,
                                                  int&   __nobjs)
 {
-    if (__size >= (size_t)4096)
+    if (__size >= (size_t)_BIG_OBJ_BYTES)
     {
         __nobjs = 1;
     }
-    else if (__size * __nobjs >= (size_t)4096)
+    else if (__size * __nobjs >= (size_t)_BIG_OBJ_BYTES)
     {
-        __nobjs = (int)(4096 / __size);
+        __nobjs = (int)(_BIG_OBJ_BYTES / __size);
     }
     else
     {
@@ -393,26 +401,30 @@ size_t __default_alloc_template<__inst>::_S_heap_size = 0;
 template<int __inst>
 _Obj* volatile
 __default_alloc_template<__inst>::_S_free_list[_NFREELISTS] =
-{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0 };
 
 /*
- * reference to the "jemalloc/tcmalloc"
+ * refer to the "jemalloc/tcmalloc"
  */
 template<int __inst>
 size_t
 __default_alloc_template<__inst>::_S_obj_size[_NFREELISTS] =
-{    8,
-    16,   32,   48,   64, 80, 96, 112, 128,
-   160,  192,  224,  256,
-   320,  384,  448,  512,
-   640,  768,  896, 1024,
-  1280, 1536, 1792, 2048,
-  2560, 3072, 3584,
-  4096 *  1, 4096 *  2, 4096 *  3, 4096 *  4, 4096 *  5, 4096 *  6, 4096 *  7, 4096 *  8, 4096 *  9, 4096 * 10,
-  4096 * 11, 4096 * 12, 4096 * 13, 4096 * 14, 4096 * 15, 4096 * 16, 4096 * 17, 4096 * 18, 4096 * 19, 4096 * 20,
-  4096 * 21, 4096 * 22, 4096 * 23, 4096 * 24, 4096 * 25, 4096 * 26, 4096 * 27, 4096 * 28, 4096 * 29, 4096 * 30,
-  4096 * 31, 4096 * 32 };
+{ 8 +    8, 8 +   16,                                               /*   8 */
+  8 +   32, 8 +   48, 8 +   64, 8 +   80, 8 + 96, 8 + 112, 8 + 128, /*  16 */
+  8 +  160, 8 +  192, 8 +  224, 8 +  256,                           /*  32 */
+  8 +  320, 8 +  384, 8 +  448, 8 +  512,                           /*  64 */
+  8 +  640, 8 +  768, 8 +  896, 8 + 1024,                           /* 128 */
+  8 + 1280, 8 + 1536, 8 + 1792, 8 + 2048,                           /* 256 */
+  8 + 2560, 8 + 3072, 8 + 3584, 8 + 4096                            /* 512 */
+  ,
+  8 + 1024 *  5, 8 + 1024 *  6, 8 + 1024 *   7, 8 + 1024 *   8,     /*  1K */
+  8 + 1024 * 10, 8 + 1024 * 12, 8 + 1024 *  14, 8 + 1024 *  16,     /*  2K */
+  8 + 1024 * 20, 8 + 1024 * 24, 8 + 1024 *  28, 8 + 1024 *  32,     /*  4K */
+  8 + 1024 * 40, 8 + 1024 * 48, 8 + 1024 *  56, 8 + 1024 *  64,     /*  8K */
+  8 + 1024 * 80, 8 + 1024 * 96, 8 + 1024 * 112, 8 + 1024 * 128 };   /* 16K */
 
 ____STD_END
 

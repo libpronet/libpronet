@@ -81,7 +81,8 @@ CProConfigStream::BufToConfigs(const void*                     buf,
         {
             bom = true;
 
-            if (p + 2 <= q && p[0] == 0xEF && p[1] == 0xBB && p[2] == 0xBF)
+            if (p + 2 <= q &&
+                p[0] == (char)0xEF && p[1] == (char)0xBB && p[2] == (char)0xBF)
             {
                 p += 3;
             }
@@ -354,11 +355,7 @@ CProConfigStream::AddInt64(const CProStlString& configName,
                            PRO_INT64            configValue)
 {
     char configValue2[64] = "";
-#if defined(WIN32) || defined(_WIN32_WCE)
-    sprintf(configValue2, "%I64d", configValue);
-#else
-    sprintf(configValue2, "%lld" , configValue);
-#endif
+    sprintf(configValue2, PRO_PRT64D, configValue);
 
     Add(configName, configValue2);
 }
@@ -381,11 +378,7 @@ CProConfigStream::AddUint64(const CProStlString& configName,
                             PRO_UINT64           configValue)
 {
     char configValue2[64] = "";
-#if defined(WIN32) || defined(_WIN32_WCE)
-    sprintf(configValue2, "%I64u", configValue);
-#else
-    sprintf(configValue2, "%llu" , configValue);
-#endif
+    sprintf(configValue2, PRO_PRT64U, configValue);
 
     Add(configName, configValue2);
 }
@@ -575,11 +568,7 @@ CProConfigStream::GetInt64(const CProStlString& configName,
 
     if (!configValue2.empty())
     {
-#if defined(WIN32) || defined(_WIN32_WCE)
-        sscanf(configValue2.c_str(), "%I64d", &configValue);
-#else
-        sscanf(configValue2.c_str(), "%lld" , &configValue);
-#endif
+        sscanf(configValue2.c_str(), PRO_PRT64D, &configValue);
     }
 }
 
@@ -602,11 +591,7 @@ CProConfigStream::GetInt64(const CProStlString&      configName,
         const PRO_CONFIG_ITEM& config = configs[i];
         if (!config.configValue.empty())
         {
-#if defined(WIN32) || defined(_WIN32_WCE)
-            sscanf(config.configValue.c_str(), "%I64d", &configValue);
-#else
-            sscanf(config.configValue.c_str(), "%lld" , &configValue);
-#endif
+            sscanf(config.configValue.c_str(), PRO_PRT64D, &configValue);
         }
 
         configValues.push_back(configValue);
@@ -624,11 +609,7 @@ CProConfigStream::GetUint64(const CProStlString& configName,
 
     if (!configValue2.empty())
     {
-#if defined(WIN32) || defined(_WIN32_WCE)
-        sscanf(configValue2.c_str(), "%I64u", &configValue);
-#else
-        sscanf(configValue2.c_str(), "%llu" , &configValue);
-#endif
+        sscanf(configValue2.c_str(), PRO_PRT64U, &configValue);
     }
 }
 
@@ -651,11 +632,7 @@ CProConfigStream::GetUint64(const CProStlString&       configName,
         const PRO_CONFIG_ITEM& config = configs[i];
         if (!config.configValue.empty())
         {
-#if defined(WIN32) || defined(_WIN32_WCE)
-            sscanf(config.configValue.c_str(), "%I64u", &configValue);
-#else
-            sscanf(config.configValue.c_str(), "%llu" , &configValue);
-#endif
+            sscanf(config.configValue.c_str(), PRO_PRT64U, &configValue);
         }
 
         configValues.push_back(configValue);

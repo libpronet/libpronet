@@ -623,13 +623,13 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     "\t CRtpSessionBase(M) - localAddr        : %s:%u \n"
                     "\t CRtpSessionBase(M) - remoteAddr       : %s:%u \n"
                     "\t CRtpSessionBase(M) - remoteAddrConfig : %s:%u \n"
-                    "\t CRtpSessionBase(M) - actionId         : %I64u \n"
-                    "\t CRtpSessionBase(M) - initTick         : %I64d \n"
-                    "\t CRtpSessionBase(M) - sendingTick      : %I64d \n"
-                    "\t CRtpSessionBase(M) - sendTick         : %I64d (for tcp, tcp_ex, ssl_ex) \n"
-                    "\t CRtpSessionBase(M) - onSendTick       : %I64d (for tcp, tcp_ex, ssl_ex) \n"
-                    "\t CRtpSessionBase(M) - peerAliveTick    : %I64d \n"
-                    "\t CRtpSessionBase(M) - tick             : %I64d \n"
+                    "\t CRtpSessionBase(M) - actionId         : "PRO_PRT64U" \n"
+                    "\t CRtpSessionBase(M) - initTick         : "PRO_PRT64D" \n"
+                    "\t CRtpSessionBase(M) - sendingTick      : "PRO_PRT64D" \n"
+                    "\t CRtpSessionBase(M) - sendTick         : "PRO_PRT64D" (for tcp, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(M) - onSendTick       : "PRO_PRT64D" (for tcp, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(M) - peerAliveTick    : "PRO_PRT64D" \n"
+                    "\t CRtpSessionBase(M) - tick             : "PRO_PRT64D" \n"
                     "\t CRtpSessionBase(M) - tcpConnected     : %d (for tcp, tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(M) - onOkCalled       : %d \n"
                     "\t CRtpSessionBase(M) - canUpcall        : %d \n"
@@ -681,13 +681,13 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     "\t CRtpSessionBase(A) - localAddr        : %s:%u \n"
                     "\t CRtpSessionBase(A) - remoteAddr       : %s:%u \n"
                     "\t CRtpSessionBase(A) - remoteAddrConfig : %s:%u \n"
-                    "\t CRtpSessionBase(A) - actionId         : %I64u \n"
-                    "\t CRtpSessionBase(A) - initTick         : %I64d \n"
-                    "\t CRtpSessionBase(A) - sendingTick      : %I64d \n"
-                    "\t CRtpSessionBase(A) - sendTick         : %I64d (for tcp, tcp_ex, ssl_ex) \n"
-                    "\t CRtpSessionBase(A) - onSendTick       : %I64d (for tcp, tcp_ex, ssl_ex) \n"
-                    "\t CRtpSessionBase(A) - peerAliveTick    : %I64d \n"
-                    "\t CRtpSessionBase(A) - tick             : %I64d \n"
+                    "\t CRtpSessionBase(A) - actionId         : "PRO_PRT64U" \n"
+                    "\t CRtpSessionBase(A) - initTick         : "PRO_PRT64D" \n"
+                    "\t CRtpSessionBase(A) - sendingTick      : "PRO_PRT64D" \n"
+                    "\t CRtpSessionBase(A) - sendTick         : "PRO_PRT64D" (for tcp, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(A) - onSendTick       : "PRO_PRT64D" (for tcp, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(A) - peerAliveTick    : "PRO_PRT64D" \n"
+                    "\t CRtpSessionBase(A) - tick             : "PRO_PRT64D" \n"
                     "\t CRtpSessionBase(A) - tcpConnected     : %d (for tcp, tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(A) - onOkCalled       : %d \n"
                     "\t CRtpSessionBase(A) - canUpcall        : %d \n"
@@ -739,13 +739,13 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     "\t CRtpSessionBase(V) - localAddr        : %s:%u \n"
                     "\t CRtpSessionBase(V) - remoteAddr       : %s:%u \n"
                     "\t CRtpSessionBase(V) - remoteAddrConfig : %s:%u \n"
-                    "\t CRtpSessionBase(V) - actionId         : %I64u \n"
-                    "\t CRtpSessionBase(V) - initTick         : %I64d \n"
-                    "\t CRtpSessionBase(V) - sendingTick      : %I64d \n"
-                    "\t CRtpSessionBase(V) - sendTick         : %I64d (for tcp, tcp_ex, ssl_ex) \n"
-                    "\t CRtpSessionBase(V) - onSendTick       : %I64d (for tcp, tcp_ex, ssl_ex) \n"
-                    "\t CRtpSessionBase(V) - peerAliveTick    : %I64d \n"
-                    "\t CRtpSessionBase(V) - tick             : %I64d \n"
+                    "\t CRtpSessionBase(V) - actionId         : "PRO_PRT64U" \n"
+                    "\t CRtpSessionBase(V) - initTick         : "PRO_PRT64D" \n"
+                    "\t CRtpSessionBase(V) - sendingTick      : "PRO_PRT64D" \n"
+                    "\t CRtpSessionBase(V) - sendTick         : "PRO_PRT64D" (for tcp, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(V) - onSendTick       : "PRO_PRT64D" (for tcp, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(V) - peerAliveTick    : "PRO_PRT64D" \n"
+                    "\t CRtpSessionBase(V) - tick             : "PRO_PRT64D" \n"
                     "\t CRtpSessionBase(V) - tcpConnected     : %d (for tcp, tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(V) - onOkCalled       : %d \n"
                     "\t CRtpSessionBase(V) - canUpcall        : %d \n"
@@ -784,78 +784,82 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
             {
             }
 
-            void*  freeList[60];
-            size_t objSize[60];
+            void*  freeList[64];
+            size_t objSize[64];
             size_t heapSize;
 
             {
-                ProGetSgiSmallPoolInfo(freeList, objSize, &heapSize, 0);
+                ProGetSgiPoolInfo(freeList, objSize, &heapSize, 0);
                 snprintf_pro(
                     buffer,
                     size,
                     "\n"
-                    " CRtpSessionBase(POOL0a) --- [pid : %u/0x%X, this : 0x%p] \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[0]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[1]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[2]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[3]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[4]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[5]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[6]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[7]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[8]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[9]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[10] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[11] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[12] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[13] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[14] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[15] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[16] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[17] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[18] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[19] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[20] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[21] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[22] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[23] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[24] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[25] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[26] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[27] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[28] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[29] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[30] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[31] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[32] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[33] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[34] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[35] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[36] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[37] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[38] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[39] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[40] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[41] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[42] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[43] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[44] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[45] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[46] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[47] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[48] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[49] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[50] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[51] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[52] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[53] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[54] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[55] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[56] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[57] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[58] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - freeList[59] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0a) - heapSize     : %u \n"
+                    " CRtpSessionBase(POOL-0) --- [pid : %u/0x%X, this : 0x%p] \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[0]  : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[1]  : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[2]  : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[3]  : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[4]  : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[5]  : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[6]  : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[7]  : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[8]  : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[9]  : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[10] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[11] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[12] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[13] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[14] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[15] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[16] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[17] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[18] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[19] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[20] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[21] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[22] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[23] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[24] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[25] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[26] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[27] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[28] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[29] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[30] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[31] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[32] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[33] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[34] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[35] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[36] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[37] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[38] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[39] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[40] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[41] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[42] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[43] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[44] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[45] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[46] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[47] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[48] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[49] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[50] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[51] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[52] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[53] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[54] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[55] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[56] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[57] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[58] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[59] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[60] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[61] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[62] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - freeList[63] : 0x%p \n"
+                    "\t CRtpSessionBase(POOL-0) - heapSize     : %u \n"
                     ,
                     (unsigned int)::GetCurrentProcessId(),
                     (unsigned int)::GetCurrentProcessId(),
@@ -920,143 +924,10 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     freeList[57],
                     freeList[58],
                     freeList[59],
-                    (unsigned int)heapSize
-                    );
-                ::OutputDebugString(buffer);
-            }
-
-            {
-                ProGetSgiBigPoolInfo(freeList, objSize, &heapSize, 0);
-                snprintf_pro(
-                    buffer,
-                    size,
-                    "\n"
-                    " CRtpSessionBase(POOL0b) --- [pid : %u/0x%X, this : 0x%p] \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[0]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[1]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[2]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[3]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[4]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[5]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[6]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[7]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[8]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[9]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[10] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[11] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[12] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[13] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[14] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[15] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[16] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[17] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[18] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[19] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[20] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[21] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[22] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[23] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[24] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[25] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[26] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[27] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[28] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[29] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[30] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[31] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[32] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[33] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[34] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[35] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[36] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[37] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[38] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[39] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[40] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[41] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[42] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[43] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[44] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[45] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[46] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[47] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[48] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[49] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[50] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[51] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[52] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[53] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[54] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[55] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[56] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[57] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[58] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - freeList[59] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL0b) - heapSize     : %u \n"
-                    ,
-                    (unsigned int)::GetCurrentProcessId(),
-                    (unsigned int)::GetCurrentProcessId(),
-                    this,
-                    freeList[0],
-                    freeList[1],
-                    freeList[2],
-                    freeList[3],
-                    freeList[4],
-                    freeList[5],
-                    freeList[6],
-                    freeList[7],
-                    freeList[8],
-                    freeList[9],
-                    freeList[10],
-                    freeList[11],
-                    freeList[12],
-                    freeList[13],
-                    freeList[14],
-                    freeList[15],
-                    freeList[16],
-                    freeList[17],
-                    freeList[18],
-                    freeList[19],
-                    freeList[20],
-                    freeList[21],
-                    freeList[22],
-                    freeList[23],
-                    freeList[24],
-                    freeList[25],
-                    freeList[26],
-                    freeList[27],
-                    freeList[28],
-                    freeList[29],
-                    freeList[30],
-                    freeList[31],
-                    freeList[32],
-                    freeList[33],
-                    freeList[34],
-                    freeList[35],
-                    freeList[36],
-                    freeList[37],
-                    freeList[38],
-                    freeList[39],
-                    freeList[40],
-                    freeList[41],
-                    freeList[42],
-                    freeList[43],
-                    freeList[44],
-                    freeList[45],
-                    freeList[46],
-                    freeList[47],
-                    freeList[48],
-                    freeList[49],
-                    freeList[50],
-                    freeList[51],
-                    freeList[52],
-                    freeList[53],
-                    freeList[54],
-                    freeList[55],
-                    freeList[56],
-                    freeList[57],
-                    freeList[58],
-                    freeList[59],
+                    freeList[60],
+                    freeList[61],
+                    freeList[62],
+                    freeList[63],
                     (unsigned int)heapSize
                     );
                 ::OutputDebugString(buffer);

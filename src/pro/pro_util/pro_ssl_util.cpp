@@ -765,11 +765,7 @@ ProCalcPasswordHash(PRO_UINT64  nonce,
                     char        passwordHash[32])
 {
     char nonceString[64] = "";
-#if defined(WIN32) || defined(_WIN32_WCE)
-    sprintf(nonceString, "%I64u", nonce);
-#else
-    sprintf(nonceString, "%llu" , nonce);
-#endif
+    sprintf(nonceString, PRO_PRT64U, nonce);
 
     CProStlString passwordString = nonceString;
     passwordString += password != NULL ? password : "";
