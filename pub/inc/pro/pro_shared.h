@@ -280,11 +280,11 @@ ProMakeMmTimerId();
  *
  * 参数:
  * size      : 分配的字节数
- * poolIndex : 内存池索引号. [0 ~ 9],一共10组内存池
+ * poolIndex : 内存池索引号. [0 ~ 9],一共10个内存池
  *
  * 返回值: 分配的内存地址或NULL
  *
- * 说明: 每组内存池有自己的访问锁
+ * 说明: 每个内存池有自己的访问锁
  */
 PRO_SHARED_API
 void*
@@ -298,11 +298,11 @@ ProAllocateSgiPoolBuffer(size_t        size,
  * 参数:
  * buf       : 原来分配的内存地址
  * newSize   : 重新分配的字节数
- * poolIndex : 内存池索引号. [0 ~ 9],一共10组内存池
+ * poolIndex : 内存池索引号. [0 ~ 9],一共10个内存池
  *
  * 返回值: 重新分配的内存地址或NULL
  *
- * 说明: 每组内存池有自己的访问锁
+ * 说明: 每个内存池有自己的访问锁
  */
 PRO_SHARED_API
 void*
@@ -316,7 +316,7 @@ ProReallocateSgiPoolBuffer(void*         buf,
  *
  * 参数:
  * buf       : 内存地址
- * poolIndex : 内存池索引号. [0 ~ 9],一共10组内存池
+ * poolIndex : 内存池索引号. [0 ~ 9],一共10个内存池
  *
  * 返回值: 无
  *
@@ -335,7 +335,7 @@ ProDeallocateSgiPoolBuffer(void*         buf,
  * freeList  : 用于接收信息
  * objSize   : 用于接收信息
  * heapSize  : 用于接收信息
- * poolIndex : 内存池索引号. [0 ~ 9],一共10组内存池
+ * poolIndex : 内存池索引号. [0 ~ 9],一共10个内存池
  *
  * 返回值: 无
  *

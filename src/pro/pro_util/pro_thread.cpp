@@ -50,7 +50,6 @@
 CProThreadBase::CProThreadBase()
 {
     m_threadCount = 0;
-    m_realtime    = false;
 }
 
 bool
@@ -99,7 +98,20 @@ CProThreadBase::Spawn(bool realtime)
 
         pthread_attr_t attr;
         pthread_attr_init(&attr);
+
+        if (realtime)
+        {
+            struct sched_param sp;
+            memset(&sp, 0, sizeof(struct sched_param));
+            sp.sched_priority = sched_get_priority_max(SCHED_RR);
+
+            pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+            pthread_attr_setschedpolicy(&attr, SCHED_RR);
+            pthread_attr_setschedparam(&attr, &sp);
+        }
+
         pthread_attr_setstacksize(&attr, PRO_THREAD_STACK_SIZE);
+        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
 
         pthread_t threadId = 0;
         const int retc = pthread_create(&threadId, &attr, &CProThreadBase::SvcRun, this);
@@ -114,7 +126,6 @@ CProThreadBase::Spawn(bool realtime)
 #endif
 
         ++m_threadCount;
-        m_realtime = realtime;
     }
 
     return (true);
@@ -146,6 +157,12 @@ void*
 CProThreadBase::SvcRun(void* arg)
 #endif
 {
+    CProThreadBase* const thread = (CProThreadBase*)arg;
+
+    {
+        CProThreadMutexGuard mon(thread->m_lock);
+    }
+
 #if !defined(WIN32) && !defined(_WIN32_WCE)
     sigset_t mask;
     sigemptyset(&mask);
@@ -163,24 +180,7 @@ CProThreadBase::SvcRun(void* arg)
     pthread_sigmask(SIG_BLOCK, &mask, NULL);
 #endif
 
-    CProThreadBase* const thread = (CProThreadBase*)arg;
-
-    {
-        CProThreadMutexGuard mon(thread->m_lock);
-    }
-
     ProSrand(); /* TLS */
-
-#if !defined(WIN32) && !defined(_WIN32_WCE)
-    const pthread_t threadId = pthread_self();
-    if (thread->m_realtime)
-    {
-        struct sched_param param;
-        memset(&param, 0, sizeof(struct sched_param));
-        param.sched_priority = sched_get_priority_max(SCHED_RR);
-        pthread_setschedparam(threadId, SCHED_RR, &param);
-    }
-#endif
 
     thread->Svc();
 
@@ -190,10 +190,6 @@ CProThreadBase::SvcRun(void* arg)
         --thread->m_threadCount;
         thread->m_cond.Signal();
     }
-
-#if !defined(WIN32) && !defined(_WIN32_WCE)
-    pthread_detach(threadId);
-#endif
 
     return (0);
 }

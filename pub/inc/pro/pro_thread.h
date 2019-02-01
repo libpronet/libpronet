@@ -58,7 +58,6 @@ private:
 private:
 
     unsigned long            m_threadCount;
-    bool                     m_realtime;
     CProThreadMutexCondition m_cond;
     CProThreadMutex          m_lock;
 
