@@ -28,4 +28,4 @@ CPPFLAGS="-D_DEBUG                           \
           -DPRO_HAS_EPOLL"                   \
 CFLAGS="  -g -O0 -Wall -march=pentium4 -m32" \
 CXXFLAGS="-g -O0 -Wall -march=pentium4 -m32" \
-LDFLAGS=""
+LDFLAGS="" $@

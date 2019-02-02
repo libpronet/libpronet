@@ -34,4 +34,4 @@ CPPFLAGS="-DNDEBUG            \
           -D_REENTRANT"       \
 CFLAGS="  -O2 -Wall"          \
 CXXFLAGS="-O2 -Wall"          \
-LDFLAGS=""
+LDFLAGS="" $@

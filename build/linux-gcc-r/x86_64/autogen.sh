@@ -28,4 +28,4 @@ CPPFLAGS="-DNDEBUG                      \
           -DPRO_HAS_EPOLL"              \
 CFLAGS="  -O2 -Wall -march=nocona -m64" \
 CXXFLAGS="-O2 -Wall -march=nocona -m64" \
-LDFLAGS=""
+LDFLAGS="" $@
