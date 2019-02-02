@@ -42,7 +42,7 @@ GetMsgUserRow(CDbConnection&      db,
         sql,
         sizeof(sql),
         " SELECT _cid_, _uid_, _maxiids_, _isc2s_, _passwd_, _bindedip_ "
-        " FROM tbl_msg01_user WHERE _cid_=%u AND _uid_="PRO_PRT64U,
+        " FROM tbl_msg01_user WHERE _cid_=%u AND _uid_=" PRO_PRT64U,
         (unsigned int)user.classId,
         user.UserId()
         );
@@ -143,7 +143,7 @@ AddMsgOnlineRow(CDbConnection&      db,
         sql,
         sizeof(sql),
         " SELECT _cid_ FROM tbl_msg03_online "
-        " WHERE _cid_=%u AND _uid_="PRO_PRT64U" AND _iid_=%u ",
+        " WHERE _cid_=%u AND _uid_=" PRO_PRT64U " AND _iid_=%u ",
         (unsigned int)user.classId,
         user.UserId(),
         (unsigned int)user.instId
@@ -159,7 +159,7 @@ AddMsgOnlineRow(CDbConnection&      db,
             sizeof(sql),
             " UPDATE tbl_msg03_online "
             " SET _fromip_='%s', _fromc2s_='%s', _logontime_='%s' "
-            " WHERE _cid_=%u AND _uid_="PRO_PRT64U" AND _iid_=%u ",
+            " WHERE _cid_=%u AND _uid_=" PRO_PRT64U " AND _iid_=%u ",
             userPublicIp.c_str(),
             c2sIdString.c_str(),
             timeString.c_str(),
@@ -175,7 +175,7 @@ AddMsgOnlineRow(CDbConnection&      db,
             sizeof(sql),
             " INSERT INTO tbl_msg03_online "
             " (_cid_, _uid_, _iid_, _fromip_, _fromc2s_, _logontime_) "
-            " VALUES (%u, "PRO_PRT64U", %u, '%s', '%s', '%s') ",
+            " VALUES (%u, " PRO_PRT64U ", %u, '%s', '%s', '%s') ",
             (unsigned int)user.classId,
             user.UserId(),
             (unsigned int)user.instId,
@@ -199,7 +199,7 @@ RemoveMsgOnlineRow(CDbConnection&      db,
         sql,
         sizeof(sql),
         " DELETE FROM tbl_msg03_online "
-        " WHERE _cid_=%u AND _uid_="PRO_PRT64U" AND _iid_=%u ",
+        " WHERE _cid_=%u AND _uid_=" PRO_PRT64U " AND _iid_=%u ",
         (unsigned int)user.classId,
         user.UserId(),
         (unsigned int)user.instId
