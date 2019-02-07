@@ -46,6 +46,55 @@ under the directory of "pub/inc/pro" for more.
         |______________________________|_______________________|
                      Fig.1 module hierarchy diagram
 
+         ________________   ________________   ________________
+        |    Acceptor    | |   Connector    | |   Handshaker   |
+        | (EventHandler) | | (EventHandler) | | (EventHandler) |
+        |________________| |________________| |________________|
+                 A                  A                  A
+                 |       ...        |       ...        |
+         ________|__________________|__________________|_______
+        |                       Reactor                        |
+        |   ____________     _____________     _____________   |
+        |  A            |   A             |   A             |  |
+        |  |     Acc    |   |   General   |   |     MM      |  |
+        |  |   NetTask  |   |  TimerTask  |   |  TimerTask  |  |
+        |  |____________V   |_____________V   |_____________V  |
+        |                                                      |
+        |   ____________     _____________     _____________   |
+        |  A            |   A             |   A             |  |
+        |  |    I/O     |   |     I/O     |   |     I/O     |  |
+        |  |   NetTask  |   |   NetTask   |   |   NetTask   |  |
+        |  |____________V   |_____________V   |_____________V  |
+        |                                                      |
+        |       ...               ...               ...        |
+        |______________________________________________________|
+                 |                  |                  |
+                 |       ...        |       ...        |
+         ________V_______   ________V_______   ________V_______
+        |   ServiceHub   | |  ServiceHost   | |   Transport    |
+        | (EventHandler) | | (EventHandler) | | (EventHandler) |
+        |________________| |________________| |________________|
+                   Fig.2 structure diagram of Reactor
+
+        __________________                   ___________________
+       |    ServiceHub    |<--------------->|    RtpService     |
+       |   ____________   |   ServicePipe   |  (Msg-Acceptor)   | Process2
+       |  |            |  |                 |   _____________   |
+       |  |  Acceptor  |  |       ...       |  |             |  |
+       |  |____________|  |                 |  | ServiceHost |  |
+       |                  |   ServicePipe   |  |_____________|  |
+       |__________________|<--------\       |___________________|
+             Process1               |
+                                    |        ___________________
+                                    \------>|    RtpService     |
+                                            |  (A/V-Acceptor)   | Process3
+                                            |   _____________   |
+                                            |  |             |  |
+                                            |  | ServiceHost |  |
+                                            |  |_____________|  |
+                                            |___________________|
+                  Fig.3 structure diagram of RtpService
+
          ______________________________________________________
         |                                                      |
         |                      msg server                      |
@@ -62,7 +111,7 @@ under the directory of "pub/inc/pro" for more.
         |  msg  ||  msg  | |  msg  ||  msg  | |  msg  ||  msg  |
         | client|| client| | client|| client| | client|| client|
         |_______||_______| |_______||_______| |_______||_______|
-                 Fig.2 structure diagram of msg system
+                 Fig.4 structure diagram of msg system
 
 
 How to compile LibProNet?
@@ -76,9 +125,7 @@ the file "build/DEFINE.txt" for more.
    To build the libraries you will need to have autoconf-2.65+
    and automake-1.11+ installed appropriately in your system.
 
-   > cd build/linux-gcc-r/x86 (or "cd build/linux-gcc-r/x86_64")
-
-   > chmod 777 ./autogen.sh
+   > cd build/linux-gcc-r/x86_64 (or "cd build/linux-gcc-r/x86")
 
    > ./autogen.sh
 
@@ -111,40 +158,99 @@ the file "build/DEFINE.txt" for more.
    You will need to create project files manually.
 
 
-How to run the messaging system?
+How to run the messaging system on Linux?
 ====
 
-1) Run the script "pub/lib-r/_get-linux-x86.sh", and
-   run the script "run_box/_get-linux-x86-r.sh"
+By default, the installation location is "/usr/local/libpronet",
+which we call "${install}".
 
-2) Adjust the config file "run_box/pro_service_hub.cfg", and
-   start a "run_box/pro_service_hub" process
+1) See the file "${install}/pre_run.sh.txt", and do something
 
-3) Adjust the config file "run_box/rtp_msg_server.cfg", and
-   start a "run_box/rtp_msg_server" process
+2) Adjust the config file "${install}/pro_service_hub.cfg", and
+   start a "${install}/pro_service_hub" process
 
-4) Adjust the config file "run_box/rtp_msg_client.cfg", and
-   start some "run_box/rtp_msg_client" processes
+   > cd ${install}
+
+   > ./pro_service_hub
+
+3) Adjust the config file "${install}/rtp_msg_server.cfg", and
+   start a "${install}/rtp_msg_server" process
+
+   > ./rtp_msg_server
+
+4) Adjust the config file "${install}/rtp_msg_client.cfg", and
+   start some "${install}/rtp_msg_client" processes
+
+   > ./rtp_msg_client
 
 
-How to run the tests?
+How to run the tests on Linux?
 ====
 
-1) Run the script "pub/lib-r/_get-linux-x86.sh", and
-   run the script "run_box/_get-linux-x86-r.sh"
+By default, the installation location is "/usr/local/libpronet",
+which we call "${install}".
 
-2) See the file "run_box/pre_run.sh.txt", and do something
+1) See the file "${install}/pre_run.sh.txt", and do something
 
-3) Adjust the config file "run_box/test_tcp_server.cfg", and
-   start a test_tcp_server process
+2) Adjust the config file "${install}/test_tcp_server.cfg", and
+   start a "${install}/test_tcp_server" process
 
-   > cd run_box
+   > cd ${install}
 
    > ./test_tcp_server
 
-4) Adjust the config file "run_box/test_tcp_client.cfg", and
-   start some "run_box/test_tcp_client" processes
+3) Adjust the config file "${install}/test_tcp_client.cfg", and
+   start some "${install}/test_tcp_client" processes
 
-   > cd run_box
+   > ./test_tcp_client
+   or
+   > ./test_tcp_client <server_ip> <server_port>
+   or
+   > ./test_tcp_client <server_ip> <server_port> <local_ip>
 
-   > ./test_tcp_client [<server_ip> <server_port> <local_ip>]
+
+How to run the messaging system on Windows(64bit)?
+====
+
+1) Run the script "pub\lib-r\_get-win-vs2010.bat",
+   and run the script "pub_run\_get-vs2010-x86_64-r.bat"
+
+2) Adjust the config file "pub_run\vs2010-x86_64-r\pro_service_hub.cfg",
+   and start a "pub_run\vs2010-x86_64-r\pro_service_hub.exe" process
+
+   > cd pub_run\vs2010-x86_64-r
+
+   > pro_service_hub
+
+3) Adjust the config file "pub_run\vs2010-x86_64-r\rtp_msg_server.cfg",
+   and start a "pub_run\vs2010-x86_64-r\rtp_msg_server.exe" process
+
+   > rtp_msg_server
+
+4) Adjust the config file "pub_run\vs2010-x86_64-r\rtp_msg_client.cfg",
+   and start some "pub_run\vs2010-x86_64-r\rtp_msg_client.exe" processes
+
+   > rtp_msg_client
+
+
+How to run the tests on Windows(64bit)?
+====
+
+1) Run the script "pub\lib-r\_get-win-vs2010.bat",
+   and run the script "pub_run\_get-vs2010-x86_64-r.bat"
+
+2) Adjust the config file "pub_run\vs2010-x86_64-r\test_tcp_server.cfg",
+   and start a "pub_run\vs2010-x86_64-r\test_tcp_server.exe" process
+
+   > cd pub_run\vs2010-x86_64-r
+
+   > test_tcp_server
+
+3) Adjust the config file "pub_run\vs2010-x86_64-r\test_tcp_client.cfg",
+   and start some "pub_run\vs2010-x86_64-r\test_tcp_client.exe" processes
+
+   > test_tcp_client
+   or
+   > test_tcp_client <server_ip> <server_port>
+   or
+   > test_tcp_client <server_ip> <server_port> <local_ip>

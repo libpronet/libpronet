@@ -45,24 +45,18 @@ int main(int argc, char* argv[])
     int         server_port = 0;
     const char* local_ip    = NULL;
 
-    if (argc >= 4)
+    if (argc >= 3)
     {
         server_ip   = argv[1];
         server_port = atoi(argv[2]);
+    }
+    if (argc >= 4)
+    {
         local_ip    = argv[3];
-
-        if (server_ip[0] == '\0')
-        {
-            server_ip   = NULL;
-        }
-        if (server_port < 0 || server_port > 65535)
-        {
-            server_port = 0;
-        }
-        if (local_ip[0] == '\0')
-        {
-            local_ip    = NULL;
-        }
+    }
+    if (server_port < 0 || server_port > 65535)
+    {
+        server_port = 0;
     }
 
     IProReactor*           reactor        = NULL;
