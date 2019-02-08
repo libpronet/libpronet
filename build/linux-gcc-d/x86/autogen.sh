@@ -25,7 +25,8 @@ CPPFLAGS="-D_DEBUG                           \
           -D_REENTRANT                       \
           -DPRO_HAS_ATOMOP                   \
           -DPRO_HAS_ACCEPT4                  \
-          -DPRO_HAS_EPOLL"                   \
+          -DPRO_HAS_EPOLL                    \
+          -DPRO_HAS_PTHREAD_EXPLICIT_SCHED"  \
 CFLAGS="  -g -O0 -Wall -march=pentium4 -m32" \
 CXXFLAGS="-g -O0 -Wall -march=pentium4 -m32" \
 LDFLAGS="" $@

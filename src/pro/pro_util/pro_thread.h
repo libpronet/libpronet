@@ -21,6 +21,7 @@
 
 #include "pro_a.h"
 #include "pro_memory_pool.h"
+#include "pro_stl.h"
 #include "pro_thread_mutex.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -57,9 +58,12 @@ private:
 
 private:
 
-    unsigned long            m_threadCount;
-    CProThreadMutexCondition m_cond;
-    CProThreadMutex          m_lock;
+    unsigned long                m_threadCount;
+#if !defined(WIN32) && !defined(_WIN32_WCE)
+    CProStlMap<PRO_UINT64, bool> m_threadId2Realtime;
+#endif
+    CProThreadMutexCondition     m_cond;
+    CProThreadMutex              m_lock;
 
     DECLARE_SGI_POOL(0);
 };

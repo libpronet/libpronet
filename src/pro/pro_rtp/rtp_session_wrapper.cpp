@@ -43,7 +43,7 @@
 #define DEFAULT_REORDER_PACKET_COUNT 1
 #define AUDIO_REORDER_PACKET_COUNT   2
 #define VIDEO_REORDER_PACKET_COUNT   5
-#define TRACE_INTERVAL               20
+#define TRACE_INTERVAL               25
 #define HEARTBEAT_INTERVAL           1
 
 #if defined(__cplusplus)

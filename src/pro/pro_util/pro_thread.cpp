@@ -19,6 +19,7 @@
 #include "pro_a.h"
 #include "pro_thread.h"
 #include "pro_memory_pool.h"
+#include "pro_stl.h"
 #include "pro_thread_mutex.h"
 #include "pro_time_util.h"
 #include "pro_z.h"
@@ -98,7 +99,9 @@ CProThreadBase::Spawn(bool realtime)
 
         pthread_attr_t attr;
         pthread_attr_init(&attr);
+        pthread_attr_setstacksize(&attr, PRO_THREAD_STACK_SIZE);
 
+#if defined(PRO_HAS_PTHREAD_EXPLICIT_SCHED)
         if (realtime)
         {
             struct sched_param sp;
@@ -109,9 +112,7 @@ CProThreadBase::Spawn(bool realtime)
             pthread_attr_setschedpolicy(&attr, SCHED_RR);
             pthread_attr_setschedparam(&attr, &sp);
         }
-
-        pthread_attr_setstacksize(&attr, PRO_THREAD_STACK_SIZE);
-        pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+#endif
 
         pthread_t threadId = 0;
         const int retc = pthread_create(&threadId, &attr, &CProThreadBase::SvcRun, this);
@@ -122,6 +123,8 @@ CProThreadBase::Spawn(bool realtime)
         {
             return (false);
         }
+
+        m_threadId2Realtime[threadId] = realtime;
 
 #endif
 
@@ -157,13 +160,16 @@ void*
 CProThreadBase::SvcRun(void* arg)
 #endif
 {
-    CProThreadBase* const thread = (CProThreadBase*)arg;
+    CProThreadBase* const threadObj = (CProThreadBase*)arg;
 
     {
-        CProThreadMutexGuard mon(thread->m_lock);
+        CProThreadMutexGuard mon(threadObj->m_lock);
     }
 
+    ProSrand(); /* TLS */
+
 #if !defined(WIN32) && !defined(_WIN32_WCE)
+
     sigset_t mask;
     sigemptyset(&mask);
     sigaddset(&mask, SIGPIPE);
@@ -178,18 +184,38 @@ CProThreadBase::SvcRun(void* arg)
     sigaddset(&mask, SIGUSR1);
     sigaddset(&mask, SIGUSR2);
     pthread_sigmask(SIG_BLOCK, &mask, NULL);
-#endif
 
-    ProSrand(); /* TLS */
-
-    thread->Svc();
+    const PRO_UINT64 threadId = ProGetThreadId();
 
     {
-        CProThreadMutexGuard mon(thread->m_lock);
+        CProThreadMutexGuard mon(threadObj->m_lock);
 
-        --thread->m_threadCount;
-        thread->m_cond.Signal();
+        if (threadObj->m_threadId2Realtime[threadId])
+        {
+            struct sched_param sp;
+            memset(&sp, 0, sizeof(struct sched_param));
+            sp.sched_priority = sched_get_priority_max(SCHED_RR);
+
+            pthread_setschedparam((pthread_t)threadId, SCHED_RR, &sp);
+        }
+
+        threadObj->m_threadId2Realtime.erase(threadId);
     }
+
+#endif /* WIN32, _WIN32_WCE */
+
+    threadObj->Svc();
+
+    {
+        CProThreadMutexGuard mon(threadObj->m_lock);
+
+        --threadObj->m_threadCount;
+        threadObj->m_cond.Signal();
+    }
+
+#if !defined(WIN32) && !defined(_WIN32_WCE)
+    pthread_detach(threadId);
+#endif
 
     return (0);
 }
