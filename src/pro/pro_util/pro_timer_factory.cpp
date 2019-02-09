@@ -46,7 +46,7 @@
 ////
 
 #if !defined(PRO_TIMER_UPCALL_COUNT)
-#define PRO_TIMER_UPCALL_COUNT     300
+#define PRO_TIMER_UPCALL_COUNT     1000
 #endif
 
 #define DEFAULT_HEARTBEAT_INTERVAL 25
@@ -560,7 +560,7 @@ CProTimerFactory::WorkerRun(PRO_INT64* args)
             node.onTimer->Release();
 
             ++j;
-            if (j == PRO_TIMER_UPCALL_COUNT || i == c - 1)
+            if (j == PRO_TIMER_UPCALL_COUNT)
             {
                 j = 0;
                 ProSleep(1); /* 1ms */
