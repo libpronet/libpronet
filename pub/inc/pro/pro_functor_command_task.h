@@ -44,7 +44,10 @@ public:
 
     virtual ~CProFunctorCommandTask();
 
-    bool Start(bool realtime = false);
+    bool Start(
+        bool          realtime    = false,
+        unsigned long threadCount = 1
+        );
 
     void Stop();
 
@@ -52,24 +55,26 @@ public:
 
     unsigned long GetSize() const;
 
-    PRO_UINT64 GetThreadId() const;
-
     void SetUserData(const void* userData);
 
     const void* GetUserData() const;
 
 private:
 
+    void StopMe();
+
     virtual void Svc();
 
 private:
 
     const void*                       m_userData;
-    PRO_UINT64                        m_threadId;
+    unsigned long                     m_threadCount;
+    unsigned long                     m_curThreadCount;
     bool                              m_wantExit;
+    CProStlSet<PRO_UINT64>            m_threadIds;
     CProStlDeque<IProFunctorCommand*> m_commands;
-    CProThreadMutexCondition          m_initCond;
     CProThreadMutexCondition          m_commandCond;
+    CProThreadMutexCondition          m_initCond;
     mutable CProThreadMutex           m_lock;
     CProThreadMutex                   m_lockAtom;
 };

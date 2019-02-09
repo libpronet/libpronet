@@ -48,7 +48,7 @@ public:
 
     bool Start(
         unsigned long ioThreadCount,
-        long          ioThreadPriority /* = 0 */
+        long          ioThreadPriority /* = 0, 1, 2 */
         );
 
     void Stop();

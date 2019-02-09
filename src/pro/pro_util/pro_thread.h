@@ -32,6 +32,10 @@
  */
 class CProThreadBase
 {
+public:
+
+    unsigned long GetThreadCount() const;
+
 protected:
 
     CProThreadBase();
@@ -42,7 +46,9 @@ protected:
 
     bool Spawn(bool realtime);
 
-    void Wait();
+    void Wait1();
+
+    void WaitAll();
 
     virtual void Svc() = 0;
 
@@ -63,7 +69,7 @@ private:
     CProStlMap<PRO_UINT64, bool> m_threadId2Realtime;
 #endif
     CProThreadMutexCondition     m_cond;
-    CProThreadMutex              m_lock;
+    mutable CProThreadMutex      m_lock;
 
     DECLARE_SGI_POOL(0);
 };
