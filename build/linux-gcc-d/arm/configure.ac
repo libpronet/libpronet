@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.65])
-AC_INIT([libpronet], [0.9.0])
+AC_INIT([libpronet], [0.9.1])
 AM_INIT_AUTOMAKE([foreign])
 
 # Checks for programs.
