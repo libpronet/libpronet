@@ -266,7 +266,7 @@ RtpMsgUser2String(const RTP_MSG_USER* user,
 
     sprintf(
         idString,
-        "%u-"PRO_PRT64U"-%u",
+        "%u-" PRO_PRT64U "-%u",
         (unsigned int)user->classId,
         user->UserId(),
         (unsigned int)user->instId

@@ -390,7 +390,7 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-            " CC2sServer::OnOkC2s(id : %u-"PRO_PRT64U"-%u, publicIp : %s, server : %s:%u) \n"
+            " CC2sServer::OnOkC2s(id : %u-" PRO_PRT64U "-%u, publicIp : %s, server : %s:%u) \n"
             ,
             (unsigned int)c2sUser->classId,
             c2sUser->UserId(),
@@ -447,7 +447,7 @@ CC2sServer::OnCloseC2s(IRtpMsgC2s* msgC2s,
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-            " CC2sServer::OnCloseC2s(id : %u-"PRO_PRT64U"-%u,"
+            " CC2sServer::OnCloseC2s(id : %u-" PRO_PRT64U "-%u,"
             " errorCode : [%d, %d], tcpConnected : %d, server : %s:%u) \n"
             ,
             (unsigned int)c2sUser.classId,
@@ -510,7 +510,7 @@ CC2sServer::OnOkUser(IRtpMsgC2s*         msgC2s,
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-            " CC2sServer::OnOkUser(id : %u-"PRO_PRT64U"-%u, fromIp : %s, users : %u) \n\n"
+            " CC2sServer::OnOkUser(id : %u-" PRO_PRT64U "-%u, fromIp : %s, users : %u) \n\n"
             ,
             (unsigned int)user->classId,
             user->UserId(),
@@ -565,7 +565,7 @@ CC2sServer::OnCloseUser(IRtpMsgC2s*         msgC2s,
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-            " CC2sServer::OnCloseUser(id : %u-"PRO_PRT64U"-%u,"
+            " CC2sServer::OnCloseUser(id : %u-" PRO_PRT64U "-%u,"
             " errorCode : [%d, %d], users : %u) \n\n"
             ,
             (unsigned int)user->classId,

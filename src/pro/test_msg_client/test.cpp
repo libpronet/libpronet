@@ -369,7 +369,7 @@ CTest::OnOkMsg(IRtpMsgClient*      msgClient,
     {{{
         printf(
             "\n"
-            " CTest::OnOkMsg(id : %u-"PRO_PRT64U"-%u, publicIp : %s, server : %s:%u) \n"
+            " CTest::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s, server : %s:%u) \n"
             ,
             (unsigned int)myUser->classId,
             myUser->UserId(),
@@ -423,7 +423,7 @@ CTest::OnRecvMsg(IRtpMsgClient*      msgClient,
 
         printf(
             "\n"
-            " CTest::OnRecvMsg(from : %u-"PRO_PRT64U"-%u, me : %u-"PRO_PRT64U"-%u) \n"
+            " CTest::OnRecvMsg(from : %u-" PRO_PRT64U "-%u, me : %u-" PRO_PRT64U "-%u) \n"
             "\t %s \n"
             ,
             (unsigned int)srcUser->classId,
@@ -470,7 +470,7 @@ CTest::OnCloseMsg(IRtpMsgClient* msgClient,
 
         printf(
             "\n"
-            " CTest::OnCloseMsg(id : %u-"PRO_PRT64U"-%u,"
+            " CTest::OnCloseMsg(id : %u-" PRO_PRT64U "-%u,"
             " errorCode : [%d, %d], tcpConnected : %d, server : %s:%u) \n"
             ,
             (unsigned int)user.classId,

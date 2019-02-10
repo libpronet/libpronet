@@ -19,6 +19,7 @@
 #include "pro_a.h"
 #include "pro_thread.h"
 #include "pro_memory_pool.h"
+#include "pro_stl.h"
 #include "pro_thread_mutex.h"
 #include "pro_time_util.h"
 #include "pro_z.h"
@@ -50,7 +51,6 @@
 CProThreadBase::CProThreadBase()
 {
     m_threadCount = 0;
-    m_realtime    = false;
 }
 
 bool
@@ -101,6 +101,19 @@ CProThreadBase::Spawn(bool realtime)
         pthread_attr_init(&attr);
         pthread_attr_setstacksize(&attr, PRO_THREAD_STACK_SIZE);
 
+#if defined(PRO_HAS_PTHREAD_EXPLICIT_SCHED)
+        if (realtime)
+        {
+            struct sched_param sp;
+            memset(&sp, 0, sizeof(struct sched_param));
+            sp.sched_priority = sched_get_priority_max(SCHED_RR);
+
+            pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+            pthread_attr_setschedpolicy(&attr, SCHED_RR);
+            pthread_attr_setschedparam(&attr, &sp);
+        }
+#endif
+
         pthread_t threadId = 0;
         const int retc = pthread_create(&threadId, &attr, &CProThreadBase::SvcRun, this);
 
@@ -111,10 +124,11 @@ CProThreadBase::Spawn(bool realtime)
             return (false);
         }
 
+        m_threadId2Realtime[threadId] = realtime;
+
 #endif
 
         ++m_threadCount;
-        m_realtime = realtime;
     }
 
     return (true);
@@ -146,7 +160,16 @@ void*
 CProThreadBase::SvcRun(void* arg)
 #endif
 {
+    CProThreadBase* const threadObj = (CProThreadBase*)arg;
+
+    {
+        CProThreadMutexGuard mon(threadObj->m_lock);
+    }
+
+    ProSrand(); /* TLS */
+
 #if !defined(WIN32) && !defined(_WIN32_WCE)
+
     sigset_t mask;
     sigemptyset(&mask);
     sigaddset(&mask, SIGPIPE);
@@ -161,34 +184,33 @@ CProThreadBase::SvcRun(void* arg)
     sigaddset(&mask, SIGUSR1);
     sigaddset(&mask, SIGUSR2);
     pthread_sigmask(SIG_BLOCK, &mask, NULL);
-#endif
 
-    CProThreadBase* const thread = (CProThreadBase*)arg;
+    const PRO_UINT64 threadId = ProGetThreadId();
 
     {
-        CProThreadMutexGuard mon(thread->m_lock);
+        CProThreadMutexGuard mon(threadObj->m_lock);
+
+        if (threadObj->m_threadId2Realtime[threadId])
+        {
+            struct sched_param sp;
+            memset(&sp, 0, sizeof(struct sched_param));
+            sp.sched_priority = sched_get_priority_max(SCHED_RR);
+
+            pthread_setschedparam((pthread_t)threadId, SCHED_RR, &sp);
+        }
+
+        threadObj->m_threadId2Realtime.erase(threadId);
     }
 
-    ProSrand(); /* TLS */
+#endif /* WIN32, _WIN32_WCE */
 
-#if !defined(WIN32) && !defined(_WIN32_WCE)
-    const pthread_t threadId = pthread_self();
-    if (thread->m_realtime)
-    {
-        struct sched_param param;
-        memset(&param, 0, sizeof(struct sched_param));
-        param.sched_priority = sched_get_priority_max(SCHED_RR);
-        pthread_setschedparam(threadId, SCHED_RR, &param);
-    }
-#endif
-
-    thread->Svc();
+    threadObj->Svc();
 
     {
-        CProThreadMutexGuard mon(thread->m_lock);
+        CProThreadMutexGuard mon(threadObj->m_lock);
 
-        --thread->m_threadCount;
-        thread->m_cond.Signal();
+        --threadObj->m_threadCount;
+        threadObj->m_cond.Signal();
     }
 
 #if !defined(WIN32) && !defined(_WIN32_WCE)
