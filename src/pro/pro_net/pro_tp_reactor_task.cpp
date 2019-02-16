@@ -63,7 +63,7 @@ CProTpReactorTask::~CProTpReactorTask()
 
 bool
 CProTpReactorTask::Start(unsigned long ioThreadCount,
-                         long          ioThreadPriority) /* = 0 */
+                         long          ioThreadPriority) /* = 0, 1, 2 */
 {{
     CProThreadMutexGuard mon(m_lockAtom);
 
@@ -86,7 +86,7 @@ CProTpReactorTask::Start(unsigned long ioThreadCount,
         }
 
         m_acceptThreadCount = 1;
-        m_ioThreadCount     = ioThreadCount; /* for Stop(...) */
+        m_ioThreadCount     = ioThreadCount; /* for StopMe(...) */
         m_ioThreadPriority  = ioThreadPriority;
 
         /*
@@ -199,7 +199,7 @@ CProTpReactorTask::StopMe()
         }
     }
 
-    Wait();
+    WaitAll();
     m_timerFactory.Stop();
     m_mmTimerFactory.Stop();
 

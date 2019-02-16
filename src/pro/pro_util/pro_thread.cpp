@@ -134,8 +134,35 @@ CProThreadBase::Spawn(bool realtime)
     return (true);
 }
 
+unsigned long
+CProThreadBase::GetThreadCount() const
+{
+    unsigned long count = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        count = m_threadCount;
+    }
+
+    return (count);
+}
+
 void
-CProThreadBase::Wait()
+CProThreadBase::Wait1()
+{
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_threadCount > 0)
+        {
+            m_cond.Wait(&m_lock);
+        }
+    }
+}
+
+void
+CProThreadBase::WaitAll()
 {
     {
         CProThreadMutexGuard mon(m_lock);

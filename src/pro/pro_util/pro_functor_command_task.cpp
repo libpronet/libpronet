@@ -30,9 +30,10 @@
 
 CProFunctorCommandTask::CProFunctorCommandTask()
 {
-    m_userData = NULL;
-    m_threadId = 0;
-    m_wantExit = false;
+    m_userData       = NULL;
+    m_threadCount    = 0;
+    m_curThreadCount = 0;
+    m_wantExit       = false;
 }
 
 CProFunctorCommandTask::~CProFunctorCommandTask()
@@ -41,31 +42,62 @@ CProFunctorCommandTask::~CProFunctorCommandTask()
 }
 
 bool
-CProFunctorCommandTask::Start(bool realtime) /* = false */
+CProFunctorCommandTask::Start(bool          realtime,    /* = false */
+                              unsigned long threadCount) /* = 1 */
 {{
     CProThreadMutexGuard mon(m_lockAtom);
+
+    assert(threadCount > 0);
+    if (threadCount == 0)
+    {
+        return (false);
+    }
 
     {
         CProThreadMutexGuard mon(m_lock);
 
-        assert(m_threadId == 0);
-        if (m_threadId != 0)
+        assert(m_threadCount == 0);
+        if (m_threadCount != 0)
         {
             return (false);
         }
 
-        if (!Spawn(realtime))
+        m_threadCount = threadCount; /* for StopMe(...) */
+
+        /*
+         * threads
+         */
         {
-            return (false);
+            int i;
+
+            for (i = 0; i < (int)m_threadCount; ++i)
+            {
+                if (!Spawn(realtime))
+                {
+                    break;
+                }
+            }
+
+            assert(i == (int)m_threadCount);
+            if (i != (int)m_threadCount)
+            {
+                goto EXIT;
+            }
         }
 
-        while (m_threadId == 0)
+        while (m_curThreadCount < m_threadCount)
         {
             m_initCond.Wait(&m_lock);
         }
     }
 
     return (true);
+
+EXIT:
+
+    StopMe();
+
+    return (false);
 }}
 
 void
@@ -73,28 +105,37 @@ CProFunctorCommandTask::Stop()
 {{
     CProThreadMutexGuard mon(m_lockAtom);
 
+    StopMe();
+}}
+
+void
+CProFunctorCommandTask::StopMe()
+{{
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_threadId == 0)
+        if (m_threadCount == 0)
         {
             return;
         }
 
-        assert(ProGetThreadId() != m_threadId); /* deadlock */
+        assert(m_threadIds.find(ProGetThreadId()) == m_threadIds.end()); /* deadlock */
 
         m_wantExit = true;
-        m_commandCond.Signal();
-    }
 
-    Wait();
+        while (GetThreadCount() > 0)
+        {
+            m_commandCond.Signal();
 
-    {
-        CProThreadMutexGuard mon(m_lock);
+            m_lock.Unlock();
+            Wait1();
+            m_lock.Lock();
+        }
 
-        m_userData = NULL;
-        m_threadId = 0;
-        m_wantExit = false;
+        m_userData       = NULL;
+        m_threadCount    = 0;
+        m_curThreadCount = 0;
+        m_wantExit       = false;
     }
 }}
 
@@ -113,7 +154,7 @@ CProFunctorCommandTask::Put(IProFunctorCommand* command,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_threadId == 0 || m_wantExit)
+        if (m_threadCount == 0 || m_curThreadCount == 0 || m_wantExit)
         {
             return (false);
         }
@@ -153,20 +194,6 @@ CProFunctorCommandTask::GetSize() const
     return (size);
 }
 
-PRO_UINT64
-CProFunctorCommandTask::GetThreadId() const
-{
-    PRO_UINT64 threadId = 0;
-
-    {
-        CProThreadMutexGuard mon(m_lock);
-
-        threadId = m_threadId;
-    }
-
-    return (threadId);
-}
-
 void
 CProFunctorCommandTask::SetUserData(const void* userData)
 {
@@ -194,10 +221,13 @@ CProFunctorCommandTask::GetUserData() const
 void
 CProFunctorCommandTask::Svc()
 {
+    const PRO_UINT64 threadId = ProGetThreadId();
+
     {
         CProThreadMutexGuard mon(m_lock);
 
-        m_threadId = ProGetThreadId();
+        ++m_curThreadCount;
+        m_threadIds.insert(threadId);
         m_initCond.Signal();
     }
 
@@ -257,5 +287,11 @@ CProFunctorCommandTask::Svc()
         }
 
         command->Destroy();
+    }
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        m_threadIds.erase(threadId);
     }
 }
