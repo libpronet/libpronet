@@ -543,7 +543,10 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
         MSG_USER_CTX& ctx = m_uid2Ctx[user->classId][user->UserId()];
         ctx.iids.insert(user->instId);
 
-        AddMsgOnlineRow(m_db, *user, userPublicIp, c2sIdString);
+        if (!m_configInfo.msgs_db_readonly)
+        {
+            AddMsgOnlineRow(m_db, *user, userPublicIp, c2sIdString);
+        }
     }
 
     {{{
@@ -618,7 +621,10 @@ CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
             m_uid2Ctx[user->classId].erase(itr);
         }
 
-        RemoveMsgOnlineRow(m_db, *user);
+        if (!m_configInfo.msgs_db_readonly)
+        {
+            RemoveMsgOnlineRow(m_db, *user);
+        }
     }
 
     {{{
