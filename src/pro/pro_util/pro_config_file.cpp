@@ -57,7 +57,8 @@ CProConfigFile::Init(const char* fileName)
 
 bool
 CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs,
-                     char                            aroundChar) const /* = '"' */
+                     char                            aroundCharL,       /* = '"' */
+                     char                            aroundCharR) const /* = '"' */
 {
     configs.clear();
 
@@ -167,7 +168,7 @@ CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs,
             /*
              * open-quote
              */
-            if (*p != aroundChar)
+            if (*p != aroundCharL)
             {
                 ret = false;
                 break;
@@ -185,7 +186,7 @@ CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs,
              */
             for (r = p; r <= q; ++r)
             {
-                if (*r == aroundChar)
+                if (*r == aroundCharR)
                 {
                     break;
                 }
@@ -265,7 +266,8 @@ CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs,
 
 bool
 CProConfigFile::Write(const CProStlVector<PRO_CONFIG_ITEM>& configs,
-                      char                                  aroundChar) /* = '"' */
+                      char                                  aroundCharL, /* = '"' */
+                      char                                  aroundCharR) /* = '"' */
 {
     if (m_fileName.empty())
     {
@@ -279,7 +281,7 @@ CProConfigFile::Write(const CProStlVector<PRO_CONFIG_ITEM>& configs,
     }
 
     if (fprintf(file, "//#; %cconfig_name%c    %cconfig_value%c\n\n",
-        aroundChar, aroundChar, aroundChar, aroundChar) < 0)
+        aroundCharL, aroundCharR, aroundCharL, aroundCharR) < 0)
     {
         fclose(file);
 
@@ -296,8 +298,8 @@ CProConfigFile::Write(const CProStlVector<PRO_CONFIG_ITEM>& configs,
         const PRO_CONFIG_ITEM& config = configs[i];
 
         if (fprintf(file, "%c%s%c    %c%s%c\n",
-            aroundChar, config.configName.c_str() , aroundChar,
-            aroundChar, config.configValue.c_str(), aroundChar) < 0)
+            aroundCharL, config.configName.c_str() , aroundCharR,
+            aroundCharL, config.configValue.c_str(), aroundCharR) < 0)
         {
             ret = false;
             break;

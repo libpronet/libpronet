@@ -43,19 +43,22 @@ public:
         const void*                     buf,
         size_t                          size,
         CProStlVector<PRO_CONFIG_ITEM>& configs,
-        char                            aroundChar = '"'
+        char                            aroundCharL = '"',
+        char                            aroundCharR = '"'
         );
 
     static bool StringToConfigs(
         const CProStlString&            str,
         CProStlVector<PRO_CONFIG_ITEM>& configs,
-        char                            aroundChar = '"'
+        char                            aroundCharL = '"',
+        char                            aroundCharR = '"'
         );
 
     static void ConfigsToString(
         const CProStlVector<PRO_CONFIG_ITEM>& configs,
         CProStlString&                        str,
-        char                                  aroundChar = '"'
+        char                                  aroundCharL = '"',
+        char                                  aroundCharR = '"'
         );
 
     CProConfigStream();
@@ -172,7 +175,8 @@ public:
 
     void ToString(
         CProStlString& str,
-        char           aroundChar = '"'
+        char           aroundCharL = '"',
+        char           aroundCharR = '"'
         ) const;
 
 private:

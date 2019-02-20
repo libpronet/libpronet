@@ -61,12 +61,14 @@ public:
 
     bool Read(
         CProStlVector<PRO_CONFIG_ITEM>& configs,
-        char                            aroundChar = '"'
+        char                            aroundCharL = '"',
+        char                            aroundCharR = '"'
         ) const;
 
     bool Write(
         const CProStlVector<PRO_CONFIG_ITEM>& configs,
-        char                                  aroundChar = '"'
+        char                                  aroundCharL = '"',
+        char                                  aroundCharR = '"'
         );
 
 private:
