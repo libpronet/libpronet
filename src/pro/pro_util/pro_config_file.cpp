@@ -56,7 +56,9 @@ CProConfigFile::Init(const char* fileName)
 }
 
 bool
-CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs) const
+CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs,
+                     char                            aroundCharL,       /* = '"' */
+                     char                            aroundCharR) const /* = '"' */
 {
     configs.clear();
 
@@ -166,7 +168,7 @@ CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs) const
             /*
              * open-quote
              */
-            if (*p != '\"')
+            if (*p != aroundCharL)
             {
                 ret = false;
                 break;
@@ -184,7 +186,7 @@ CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs) const
              */
             for (r = p; r <= q; ++r)
             {
-                if (*r == '\"')
+                if (*r == aroundCharR)
                 {
                     break;
                 }
@@ -263,7 +265,9 @@ CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs) const
 }
 
 bool
-CProConfigFile::Write(const CProStlVector<PRO_CONFIG_ITEM>& configs)
+CProConfigFile::Write(const CProStlVector<PRO_CONFIG_ITEM>& configs,
+                      char                                  aroundCharL, /* = '"' */
+                      char                                  aroundCharR) /* = '"' */
 {
     if (m_fileName.empty())
     {
@@ -276,7 +280,8 @@ CProConfigFile::Write(const CProStlVector<PRO_CONFIG_ITEM>& configs)
         return (false);
     }
 
-    if (fprintf(file, "//#; \"config_name\"    \"config_value\"\n\n") < 0)
+    if (fprintf(file, "//#; %cconfig_name%c    %cconfig_value%c\n\n",
+        aroundCharL, aroundCharR, aroundCharL, aroundCharR) < 0)
     {
         fclose(file);
 
@@ -292,8 +297,9 @@ CProConfigFile::Write(const CProStlVector<PRO_CONFIG_ITEM>& configs)
     {
         const PRO_CONFIG_ITEM& config = configs[i];
 
-        if (fprintf(file, "\"%s\"    \"%s\"\n",
-            config.configName.c_str(), config.configValue.c_str()) < 0)
+        if (fprintf(file, "%c%s%c    %c%s%c\n",
+            aroundCharL, config.configName.c_str() , aroundCharR,
+            aroundCharL, config.configValue.c_str(), aroundCharR) < 0)
         {
             ret = false;
             break;

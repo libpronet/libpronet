@@ -59,9 +59,17 @@ public:
 
     void Init(const char* fileName);
 
-    bool Read(CProStlVector<PRO_CONFIG_ITEM>& configs) const;
+    bool Read(
+        CProStlVector<PRO_CONFIG_ITEM>& configs,
+        char                            aroundCharL = '"',
+        char                            aroundCharR = '"'
+        ) const;
 
-    bool Write(const CProStlVector<PRO_CONFIG_ITEM>& configs);
+    bool Write(
+        const CProStlVector<PRO_CONFIG_ITEM>& configs,
+        char                                  aroundCharL = '"',
+        char                                  aroundCharR = '"'
+        );
 
 private:
 

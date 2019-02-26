@@ -53,7 +53,7 @@ struct C2S_SERVER_CONFIG_INFO
         c2ss_ssl_local_forced    = false;
         c2ss_ssl_local_keyfile   = "./server.key";
 
-        c2ss_log_loop_bytes      = 10 * 1000 * 1000;
+        c2ss_log_loop_bytes      = 20 * 1000 * 1000;
         c2ss_log_level_green     = 0;
         c2ss_log_level_status    = 0;
         c2ss_log_level_userin    = 0;

@@ -1,3 +1,24 @@
+LibProNet-0.9.1, tag-release-0.9.1, 2019-02-20
+====
+
+Features
+  * CProFunctorCommandTask supports multi-worker
+  * CProConfigFile and CProConfigStream support the around-char
+    other than '\"'
+  * Add msgs_db_readonly option for rtp_msg_server.cfg file
+  * autogen.sh accepts command-line options such as --prefix=/usr
+
+Bugfix
+  * Add executable permission to *.sh
+
+Changes
+  * Improve memory pool in pro_shared
+  * Improve CProThreadBase class in pro_util
+  * Change PRO_TIMER_UPCALL_COUNT value from 300 to 1000
+  * Change folder structure for run_box, and rename run_box to pub_run
+  * Add platform folder for pub-qt
+
+
 LibProNet-0.9.0, tag-release-0.9.0, 2018-10-08
 ====
 

@@ -158,6 +158,10 @@ int main(int argc, char* argv[])
                     configInfo.msgs_handshake_timeout = value;
                 }
             }
+            else if (stricmp(configName.c_str(), "msgs_db_readonly") == 0)
+            {
+                configInfo.msgs_db_readonly = atoi(configValue.c_str()) != 0;
+            }
             else if (stricmp(configName.c_str(), "msgs_enable_ssl") == 0)
             {
                 configInfo.msgs_enable_ssl = atoi(configValue.c_str()) != 0;
@@ -244,7 +248,7 @@ int main(int argc, char* argv[])
 
         goto EXIT;
     }
-    else
+    if (!configInfo.msgs_db_readonly)
     {
         CleanMsgKickoutRows(*db);
         CleanMsgOnlineRows(*db);
@@ -348,7 +352,10 @@ int main(int argc, char* argv[])
         {
             CProStlVector<TBL_MSG_KICKOUT_ROW> rows;
             GetMsgKickoutRows(*db, rows);
-            CleanMsgKickoutRows(*db);
+            if (!configInfo.msgs_db_readonly)
+            {
+                CleanMsgKickoutRows(*db);
+            }
 
             CProStlSet<RTP_MSG_USER> users;
 

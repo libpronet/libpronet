@@ -41,13 +41,14 @@ struct MSG_SERVER_CONFIG_INFO
         msgs_thread_count        = 40;
         msgs_hub_port            = 3000;
         msgs_handshake_timeout   = 20;
+        msgs_db_readonly         = false;
 
         msgs_enable_ssl          = true;
         msgs_ssl_forced          = false;
         msgs_ssl_enable_sha1cert = true;
         msgs_ssl_keyfile         = "./server.key";
 
-        msgs_log_loop_bytes      = 10 * 1000 * 1000;
+        msgs_log_loop_bytes      = 20 * 1000 * 1000;
         msgs_log_level_green     = 0;
         msgs_log_level_userchk   = -1;
         msgs_log_level_userin    = 0;
@@ -68,6 +69,7 @@ struct MSG_SERVER_CONFIG_INFO
         configStream.AddUint("msgs_thread_count"       , msgs_thread_count);
         configStream.AddUint("msgs_hub_port"           , msgs_hub_port);
         configStream.AddUint("msgs_handshake_timeout"  , msgs_handshake_timeout);
+        configStream.AddInt ("msgs_db_readonly"        , msgs_db_readonly);
 
         configStream.AddInt ("msgs_enable_ssl"         , msgs_enable_ssl);
         configStream.AddInt ("msgs_ssl_forced"         , msgs_ssl_forced);
@@ -89,6 +91,7 @@ struct MSG_SERVER_CONFIG_INFO
     unsigned int                 msgs_thread_count; /* 1 ~ 100 */
     unsigned short               msgs_hub_port;
     unsigned int                 msgs_handshake_timeout;
+    bool                         msgs_db_readonly;
 
     bool                         msgs_enable_ssl;
     bool                         msgs_ssl_forced;
