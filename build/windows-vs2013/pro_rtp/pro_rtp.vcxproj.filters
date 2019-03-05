@@ -1,0 +1,180 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="rtp_framework">
+      <UniqueIdentifier>{546c9b5d-1fe0-47a5-b984-1a1abb0d383c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="rtp_foundation">
+      <UniqueIdentifier>{7c348c98-d2fb-4d06-8c06-8f6e15e7353f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\src\pro\pro_rtp\manifest.bin">
+      <Filter>Resource Files</Filter>
+    </None>
+    <None Include="..\..\..\src\pro\pro_rtp\pro_rtp.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\resource.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_framework.h">
+      <Filter>rtp_framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_udpserver_ex.h">
+      <Filter>rtp_framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_packet.h">
+      <Filter>rtp_framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_port_allocator.h">
+      <Filter>rtp_framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_service.h">
+      <Filter>rtp_framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_base.h">
+      <Filter>rtp_framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_mcast.h">
+      <Filter>rtp_framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_mcast_ex.h">
+      <Filter>rtp_framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_sslclient_ex.h">
+      <Filter>rtp_framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_sslserver_ex.h">
+      <Filter>rtp_framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_tcpclient.h">
+      <Filter>rtp_framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_tcpclient_ex.h">
+      <Filter>rtp_framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_tcpserver.h">
+      <Filter>rtp_framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_tcpserver_ex.h">
+      <Filter>rtp_framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_udpclient.h">
+      <Filter>rtp_framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_udpclient_ex.h">
+      <Filter>rtp_framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_udpserver.h">
+      <Filter>rtp_framework</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_session_wrapper.h">
+      <Filter>rtp_foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_bucket.h">
+      <Filter>rtp_foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_flow_stat.h">
+      <Filter>rtp_foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_foundation.h">
+      <Filter>rtp_foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_msg_c2s.h">
+      <Filter>rtp_foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_msg_client.h">
+      <Filter>rtp_foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_msg_command.h">
+      <Filter>rtp_foundation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pro\pro_rtp\rtp_msg_server.h">
+      <Filter>rtp_foundation</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\..\..\src\pro\pro_rtp\pro_rtp.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_udpserver_ex.cpp">
+      <Filter>rtp_framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_framework.cpp">
+      <Filter>rtp_framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_packet.cpp">
+      <Filter>rtp_framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_port_allocator.cpp">
+      <Filter>rtp_framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_service.cpp">
+      <Filter>rtp_framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_base.cpp">
+      <Filter>rtp_framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_mcast.cpp">
+      <Filter>rtp_framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_mcast_ex.cpp">
+      <Filter>rtp_framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_sslclient_ex.cpp">
+      <Filter>rtp_framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_sslserver_ex.cpp">
+      <Filter>rtp_framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_tcpclient.cpp">
+      <Filter>rtp_framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_tcpclient_ex.cpp">
+      <Filter>rtp_framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_tcpserver.cpp">
+      <Filter>rtp_framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_tcpserver_ex.cpp">
+      <Filter>rtp_framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_udpclient.cpp">
+      <Filter>rtp_framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_udpclient_ex.cpp">
+      <Filter>rtp_framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_udpserver.cpp">
+      <Filter>rtp_framework</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_bucket.cpp">
+      <Filter>rtp_foundation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_flow_stat.cpp">
+      <Filter>rtp_foundation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_foundation.cpp">
+      <Filter>rtp_foundation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_msg_c2s.cpp">
+      <Filter>rtp_foundation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_msg_client.cpp">
+      <Filter>rtp_foundation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_msg_server.cpp">
+      <Filter>rtp_foundation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pro\pro_rtp\rtp_session_wrapper.cpp">
+      <Filter>rtp_foundation</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
