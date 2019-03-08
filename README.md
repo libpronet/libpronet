@@ -145,9 +145,9 @@ the file "build/DEFINE.txt" for more.
 
 4. Qt Creator on Windows
 
-   Open the project file "build/windows-qt4.8.7/mbedtls/mbedtls.pro"
+   Open the project file "build/windows-qt487-gcc482/mbedtls/mbedtls.pro"
 
-   Open the project file "build/windows-qt4.8.7/pro_util/pro_util.pro"
+   Open the project file "build/windows-qt487-gcc482/pro_util/pro_util.pro"
 
 5. Android NDK on Windows
 
@@ -213,22 +213,22 @@ How to run the messaging system on Windows(64bit)?
 ====
 
 1) Run the script "pub\lib-r\_get-win-vs2010.bat",
-   and run the script "pub_run\_get-vs2010-x86_64-r.bat"
+   and run the script "pub_test\_get-vs2010-x86_64-r.bat"
 
-2) Adjust the config file "pub_run\vs2010-x86_64-r\pro_service_hub.cfg",
-   and start a "pub_run\vs2010-x86_64-r\pro_service_hub.exe" process
+2) Adjust the config file "pub_test\vs2010-x86_64-r\pro_service_hub.cfg",
+   and start a "pub_test\vs2010-x86_64-r\pro_service_hub.exe" process
 
-   > cd pub_run\vs2010-x86_64-r
+   > cd pub_test\vs2010-x86_64-r
 
    > pro_service_hub
 
-3) Adjust the config file "pub_run\vs2010-x86_64-r\rtp_msg_server.cfg",
-   and start a "pub_run\vs2010-x86_64-r\rtp_msg_server.exe" process
+3) Adjust the config file "pub_test\vs2010-x86_64-r\rtp_msg_server.cfg",
+   and start a "pub_test\vs2010-x86_64-r\rtp_msg_server.exe" process
 
    > rtp_msg_server
 
-4) Adjust the config file "pub_run\vs2010-x86_64-r\rtp_msg_client.cfg",
-   and start some "pub_run\vs2010-x86_64-r\rtp_msg_client.exe" processes
+4) Adjust the config file "pub_test\vs2010-x86_64-r\rtp_msg_client.cfg",
+   and start some "pub_test\vs2010-x86_64-r\rtp_msg_client.exe" processes
 
    > rtp_msg_client
 
@@ -237,17 +237,17 @@ How to run the tests on Windows(64bit)?
 ====
 
 1) Run the script "pub\lib-r\_get-win-vs2010.bat",
-   and run the script "pub_run\_get-vs2010-x86_64-r.bat"
+   and run the script "pub_test\_get-vs2010-x86_64-r.bat"
 
-2) Adjust the config file "pub_run\vs2010-x86_64-r\test_tcp_server.cfg",
-   and start a "pub_run\vs2010-x86_64-r\test_tcp_server.exe" process
+2) Adjust the config file "pub_test\vs2010-x86_64-r\test_tcp_server.cfg",
+   and start a "pub_test\vs2010-x86_64-r\test_tcp_server.exe" process
 
-   > cd pub_run\vs2010-x86_64-r
+   > cd pub_test\vs2010-x86_64-r
 
    > test_tcp_server
 
-3) Adjust the config file "pub_run\vs2010-x86_64-r\test_tcp_client.cfg",
-   and start some "pub_run\vs2010-x86_64-r\test_tcp_client.exe" processes
+3) Adjust the config file "pub_test\vs2010-x86_64-r\test_tcp_client.cfg",
+   and start some "pub_test\vs2010-x86_64-r\test_tcp_client.exe" processes
 
    > test_tcp_client
    or

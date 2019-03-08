@@ -4,7 +4,7 @@
 
 # TARGTYPE "Win32 (x86) Static Library" 0x0104
 
-CFG=01_mbedtls - Win32 Debug
+CFG=01_mbedtls - Win32 Debug_MD
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
 !MESSAGE 
@@ -13,12 +13,14 @@ CFG=01_mbedtls - Win32 Debug
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
 !MESSAGE 
-!MESSAGE NMAKE /f "mbedtls.mak" CFG="01_mbedtls - Win32 Debug"
+!MESSAGE NMAKE /f "mbedtls.mak" CFG="01_mbedtls - Win32 Debug_MD"
 !MESSAGE 
 !MESSAGE Possible choices for configuration are:
 !MESSAGE 
 !MESSAGE "01_mbedtls - Win32 Release" (based on "Win32 (x86) Static Library")
 !MESSAGE "01_mbedtls - Win32 Debug" (based on "Win32 (x86) Static Library")
+!MESSAGE "01_mbedtls - Win32 Release_MD" (based on "Win32 (x86) Static Library")
+!MESSAGE "01_mbedtls - Win32 Debug_MD" (based on "Win32 (x86) Static Library")
 !MESSAGE 
 
 # Begin Project
@@ -40,10 +42,10 @@ RSC=rc.exe
 # PROP Output_Dir "../_release"
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
-MTL=midl.exe
 LINK32=link.exe -lib
+MTL=midl.exe
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "../../../src/mbedtls/include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_release/mbedtls_s.pdb" /FD /c
+# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "../../../src/mbedtls/include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_release/mbedtls_s-mt.pdb" /FD /c
 # ADD BASE RSC /l 0x804 /d "NDEBUG"
 # ADD RSC /l 0x804 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -51,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"../_release/mbedtls_s.lib"
+# ADD LIB32 /nologo /out:"../_release/mbedtls_s-mt.lib"
 
 !ELSEIF  "$(CFG)" == "01_mbedtls - Win32 Debug"
 
@@ -65,10 +67,10 @@ LIB32=link.exe -lib
 # PROP Output_Dir "../_debug"
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
-MTL=midl.exe
 LINK32=link.exe -lib
+MTL=midl.exe
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "../../../src/mbedtls/include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_debug/mbedtls_s.pdb" /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "../../../src/mbedtls/include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_debug/mbedtls_s-mt.pdb" /FD /GZ /c
 # ADD BASE RSC /l 0x804 /d "_DEBUG"
 # ADD RSC /l 0x804 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -76,7 +78,57 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"../_debug/mbedtls_s.lib"
+# ADD LIB32 /nologo /out:"../_debug/mbedtls_s-mt.lib"
+
+!ELSEIF  "$(CFG)" == "01_mbedtls - Win32 Release_MD"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 0
+# PROP BASE Output_Dir "01_mbedtls___Win32_Release_MD"
+# PROP BASE Intermediate_Dir "01_mbedtls___Win32_Release_MD"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 0
+# PROP Output_Dir "../_release-md"
+# PROP Intermediate_Dir "Release_MD"
+# PROP Target_Dir ""
+LINK32=link.exe -lib
+MTL=midl.exe
+# ADD BASE CPP /nologo /MT /W3 /GX /Zi /O2 /I "../../../src/mbedtls/include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_release/mbedtls_s.pdb" /FD /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "../../../src/mbedtls/include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_release-md/mbedtls_s-md.pdb" /FD /c
+# ADD BASE RSC /l 0x804 /d "NDEBUG"
+# ADD RSC /l 0x804 /d "NDEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LIB32=link.exe -lib
+# ADD BASE LIB32 /nologo /out:"../_release/mbedtls_s-mt.lib"
+# ADD LIB32 /nologo /out:"../_release-md/mbedtls_s-md.lib"
+
+!ELSEIF  "$(CFG)" == "01_mbedtls - Win32 Debug_MD"
+
+# PROP BASE Use_MFC 0
+# PROP BASE Use_Debug_Libraries 1
+# PROP BASE Output_Dir "01_mbedtls___Win32_Debug_MD"
+# PROP BASE Intermediate_Dir "01_mbedtls___Win32_Debug_MD"
+# PROP BASE Target_Dir ""
+# PROP Use_MFC 0
+# PROP Use_Debug_Libraries 1
+# PROP Output_Dir "../_debug-md"
+# PROP Intermediate_Dir "Debug_MD"
+# PROP Target_Dir ""
+LINK32=link.exe -lib
+MTL=midl.exe
+# ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "../../../src/mbedtls/include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_debug/mbedtls_s.pdb" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../src/mbedtls/include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_debug-md/mbedtls_s-md.pdb" /FD /GZ /c
+# ADD BASE RSC /l 0x804 /d "_DEBUG"
+# ADD RSC /l 0x804 /d "_DEBUG"
+BSC32=bscmake.exe
+# ADD BASE BSC32 /nologo
+# ADD BSC32 /nologo
+LIB32=link.exe -lib
+# ADD BASE LIB32 /nologo /out:"../_debug/mbedtls_s-mt.lib"
+# ADD LIB32 /nologo /out:"../_debug-md/mbedtls_s-md.lib"
 
 !ENDIF 
 
@@ -84,6 +136,8 @@ LIB32=link.exe -lib
 
 # Name "01_mbedtls - Win32 Release"
 # Name "01_mbedtls - Win32 Debug"
+# Name "01_mbedtls - Win32 Release_MD"
+# Name "01_mbedtls - Win32 Debug_MD"
 # Begin Group "Source Files"
 
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
