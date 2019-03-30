@@ -19,6 +19,7 @@
 #include "pro_a.h"
 #include "pro_thread_mutex.h"
 #include "pro_memory_pool.h"
+#include "pro_thread.h"
 #include "pro_z.h"
 
 #if defined(WIN32) || defined(_WIN32_WCE)
@@ -321,7 +322,7 @@ CProRecursiveThreadMutex::~CProRecursiveThreadMutex()
 void
 CProRecursiveThreadMutex::Lock()
 {
-    const PRO_UINT64 threadId = (PRO_UINT64)pthread_self();
+    const PRO_UINT64 threadId = ProGetThreadId();
 
     m_mutex->Lock();   /* [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[ */
 
@@ -341,7 +342,7 @@ CProRecursiveThreadMutex::Lock()
 void
 CProRecursiveThreadMutex::Unlock()
 {
-    const PRO_UINT64 threadId = (PRO_UINT64)pthread_self();
+    const PRO_UINT64 threadId = ProGetThreadId();
 
     m_mutex->Lock();   /* [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[ */
 

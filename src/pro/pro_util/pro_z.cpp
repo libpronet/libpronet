@@ -18,6 +18,11 @@
 
 #include "pro_a.h"
 #include "pro_z.h"
+#include "pro_bsd_wrapper.h" /* for <unistd.h> */
+
+#if defined(WIN32) || defined(_WIN32_WCE)
+#include <windows.h>
+#endif
 
 #if defined(__cplusplus)
 extern "C" {
@@ -145,6 +150,80 @@ snprintf_pro(char*       dest,
 
     return (ret);
 }
+
+#if !defined(_WIN32_WCE)
+
+void
+PRO_CALLTYPE
+ProGetExeDir_(char buf[1024])
+{
+    const long size = 1024;
+
+    buf[0]        = '\0';
+    buf[size - 1] = '\0';
+
+#if defined(WIN32)
+    ::GetModuleFileName(NULL, buf, size - 1);
+    ::GetLongPathName(buf, buf, size - 1);
+    char* const slash = strrchr(buf, '\\');
+    if (slash != NULL)
+    {
+        *slash = '\0';
+    }
+    else
+    {
+        strcpy(buf, ".");
+    }
+    strncat(buf, "\\", size - 1);
+#else
+    const long bytes = readlink("/proc/self/exe", buf, size - 1);
+    if (bytes > 0 && bytes < size)
+    {
+        buf[bytes] = '\0';
+    }
+    else
+    {
+        strcpy(buf, "./a.out");
+    }
+    char* const slash = strrchr(buf, '/');
+    if (slash != NULL)
+    {
+        *slash = '\0';
+    }
+    else
+    {
+        strcpy(buf, "/usr/local/bin");
+    }
+    strncat(buf, "/", size - 1);
+#endif
+}
+
+void
+PRO_CALLTYPE
+ProGetExePath(char buf[1024])
+{
+    const long size = 1024;
+
+    buf[0]        = '\0';
+    buf[size - 1] = '\0';
+
+#if defined(WIN32)
+    ::GetModuleFileName(NULL, buf, size - 1);
+    ::GetLongPathName(buf, buf, size - 1);
+#else
+    const long bytes = readlink("/proc/self/exe", buf, size - 1);
+    if (bytes > 0 && bytes < size)
+    {
+        buf[bytes] = '\0';
+    }
+    else
+    {
+        buf[0]     = '\0';
+    }
+#endif
+}
+
+#endif /* _WIN32_WCE */
 
 /////////////////////////////////////////////////////////////////////////////
 ////

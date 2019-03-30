@@ -1078,14 +1078,18 @@ void
 PRO_CALLTYPE
 ProGetSgiPoolInfo(void*         freeList[64],
                   size_t        objSize[64],
-                  size_t*       heapSize,  /* = NULL */
+                  size_t        busyObjNum[64],
+                  size_t        totalObjNum[64],
+                  size_t*       heapBytes, /* = NULL */
                   unsigned long poolIndex) /* 0 ~ 9 */
 {
-    memset(freeList, 0, sizeof(void*)  * 64);
-    memset(objSize , 0, sizeof(size_t) * 64);
-    if (heapSize != NULL)
+    memset(freeList   , 0, sizeof(void*)  * 64);
+    memset(objSize    , 0, sizeof(size_t) * 64);
+    memset(busyObjNum , 0, sizeof(size_t) * 64);
+    memset(totalObjNum, 0, sizeof(size_t) * 64);
+    if (heapBytes != NULL)
     {
-        *heapSize = 0;
+        *heapBytes = 0;
     }
 
     assert(poolIndex <= 9);
@@ -1099,70 +1103,70 @@ ProGetSgiPoolInfo(void*         freeList[64],
     case 0:
         {
             g_s_lock0.Lock();
-            g_s_allocator0.get_info(freeList, objSize, heapSize);
+            g_s_allocator0.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock0.Unlock();
             break;
         }
     case 1:
         {
             g_s_lock1.Lock();
-            g_s_allocator1.get_info(freeList, objSize, heapSize);
+            g_s_allocator1.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock1.Unlock();
             break;
         }
     case 2:
         {
             g_s_lock2.Lock();
-            g_s_allocator2.get_info(freeList, objSize, heapSize);
+            g_s_allocator2.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock2.Unlock();
             break;
         }
     case 3:
         {
             g_s_lock3.Lock();
-            g_s_allocator3.get_info(freeList, objSize, heapSize);
+            g_s_allocator3.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock3.Unlock();
             break;
         }
     case 4:
         {
             g_s_lock4.Lock();
-            g_s_allocator4.get_info(freeList, objSize, heapSize);
+            g_s_allocator4.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock4.Unlock();
             break;
         }
     case 5:
         {
             g_s_lock5.Lock();
-            g_s_allocator5.get_info(freeList, objSize, heapSize);
+            g_s_allocator5.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock5.Unlock();
             break;
         }
     case 6:
         {
             g_s_lock6.Lock();
-            g_s_allocator6.get_info(freeList, objSize, heapSize);
+            g_s_allocator6.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock6.Unlock();
             break;
         }
     case 7:
         {
             g_s_lock7.Lock();
-            g_s_allocator7.get_info(freeList, objSize, heapSize);
+            g_s_allocator7.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock7.Unlock();
             break;
         }
     case 8:
         {
             g_s_lock8.Lock();
-            g_s_allocator8.get_info(freeList, objSize, heapSize);
+            g_s_allocator8.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock8.Unlock();
             break;
         }
     case 9:
         {
             g_s_lock9.Lock();
-            g_s_allocator9.get_info(freeList, objSize, heapSize);
+            g_s_allocator9.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock9.Unlock();
             break;
         }

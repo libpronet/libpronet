@@ -35,7 +35,7 @@ libpro_rtp_so_SOURCES = ../../../../src/pro/pro_rtp/rtp_framework.cpp           
                         ../../../../src/pro/pro_rtp/rtp_session_wrapper.cpp
 
 libpro_rtp_so_CPPFLAGS = -DPRO_RTP_EXPORTS \
-                         -I../../../src/pro/pro_net
+                         -I../../../../src/pro/pro_net
 
 libpro_rtp_so_CFLAGS   = -fno-strict-aliasing -fPIC -fvisibility=hidden
 libpro_rtp_so_CXXFLAGS = -fno-strict-aliasing -fPIC -fvisibility=hidden

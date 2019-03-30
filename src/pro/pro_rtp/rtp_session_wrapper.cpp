@@ -26,6 +26,7 @@
 #include "../pro_util/pro_reorder.h"
 #include "../pro_util/pro_stat.h"
 #include "../pro_util/pro_stl.h"
+#include "../pro_util/pro_thread.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_timer_factory.h"
@@ -50,7 +51,7 @@
 extern "C" {
 #endif
 
-#if defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE)
 extern CProFileMonitor g_fileMonitor;
 #endif
 
@@ -604,7 +605,7 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
         m_observer = initArgs2.comm.observer;
         m_reactor  = initArgs2.comm.reactor;
 
-#if defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE)
         bool enableTrace = false;
         if (m_info.mmType >= RTP_MMT_MSG_MIN   && m_info.mmType <= RTP_MMT_MSG_MAX   ||
             m_info.mmType >= RTP_MMT_AUDIO_MIN && m_info.mmType <= RTP_MMT_AUDIO_MAX ||
@@ -1652,7 +1653,7 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
 
         if (timerId == m_timerId)
         {
-#if defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE)
             do
             {
                 if (tick - m_traceTick < TRACE_INTERVAL * 1000)
@@ -1673,9 +1674,9 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         traceInfo,
                         sizeof(traceInfo),
                         "\n"
-                        " CRtpSessionWrapper(M) --- [pid : %u/0x%X, this : 0x%p, session : 0x%p, mmType : %u] \n"
-                        "\t CRtpSessionWrapper(M) - redlineBytes        : %u (bytes) \n"
-                        "\t CRtpSessionWrapper(M) - bucketBytes         : %u (bytes) \n"
+                        " CRtpSessionWrapper(M) --- [pid : %u/0x%X, this : %p, session : %p, mmType : %u] \n"
+                        "\t CRtpSessionWrapper(M) - redlineBytes        : %u \n"
+                        "\t CRtpSessionWrapper(M) - bucketBytes         : %u \n"
                         "\t CRtpSessionWrapper(M) - pushToBucketRet1    : %d \n"
                         "\t CRtpSessionWrapper(M) - pushToBucketRet2    : %d \n"
                         "\t CRtpSessionWrapper(M) - packetErased        : %d \n"
@@ -1688,8 +1689,8 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         "\t CRtpSessionWrapper(M) - pushTick    (timer) : " PRO_PRT64D " \n"
                         "\t CRtpSessionWrapper(M) - tick        (timer) : " PRO_PRT64D " \n"
                         ,
-                        (unsigned int)::GetCurrentProcessId(),
-                        (unsigned int)::GetCurrentProcessId(),
+                        (unsigned int)ProGetProcessId(),
+                        (unsigned int)ProGetProcessId(),
                         this,
                         m_session,
                         (unsigned int)m_info.mmType,
@@ -1706,7 +1707,11 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         m_pushTick,
                         tick
                         );
+#if defined(WIN32)
                     ::OutputDebugString(traceInfo);
+#else
+                    printf("%s", traceInfo);
+#endif
                 }
                 else if (m_info.mmType >= RTP_MMT_AUDIO_MIN && m_info.mmType <= RTP_MMT_AUDIO_MAX)
                 {
@@ -1714,9 +1719,9 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         traceInfo,
                         sizeof(traceInfo),
                         "\n"
-                        " CRtpSessionWrapper(A) --- [pid : %u/0x%X, this : 0x%p, session : 0x%p, mmType : %u] \n"
-                        "\t CRtpSessionWrapper(A) - redlineBytes        : %u (bytes) \n"
-                        "\t CRtpSessionWrapper(A) - bucketBytes         : %u (bytes) \n"
+                        " CRtpSessionWrapper(A) --- [pid : %u/0x%X, this : %p, session : %p, mmType : %u] \n"
+                        "\t CRtpSessionWrapper(A) - redlineBytes        : %u \n"
+                        "\t CRtpSessionWrapper(A) - bucketBytes         : %u \n"
                         "\t CRtpSessionWrapper(A) - pushToBucketRet1    : %d \n"
                         "\t CRtpSessionWrapper(A) - pushToBucketRet2    : %d \n"
                         "\t CRtpSessionWrapper(A) - packetErased        : %d \n"
@@ -1729,8 +1734,8 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         "\t CRtpSessionWrapper(A) - pushTick    (timer) : " PRO_PRT64D " \n"
                         "\t CRtpSessionWrapper(A) - tick        (timer) : " PRO_PRT64D " \n"
                         ,
-                        (unsigned int)::GetCurrentProcessId(),
-                        (unsigned int)::GetCurrentProcessId(),
+                        (unsigned int)ProGetProcessId(),
+                        (unsigned int)ProGetProcessId(),
                         this,
                         m_session,
                         (unsigned int)m_info.mmType,
@@ -1747,7 +1752,11 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         m_pushTick,
                         tick
                         );
+#if defined(WIN32)
                     ::OutputDebugString(traceInfo);
+#else
+                    printf("%s", traceInfo);
+#endif
                 }
                 else if (m_info.mmType >= RTP_MMT_VIDEO_MIN && m_info.mmType <= RTP_MMT_VIDEO_MAX)
                 {
@@ -1755,9 +1764,9 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         traceInfo,
                         sizeof(traceInfo),
                         "\n"
-                        " CRtpSessionWrapper(V) --- [pid : %u/0x%X, this : 0x%p, session : 0x%p, mmType : %u] \n"
-                        "\t CRtpSessionWrapper(V) - redlineBytes        : %u (bytes) \n"
-                        "\t CRtpSessionWrapper(V) - bucketBytes         : %u (bytes) \n"
+                        " CRtpSessionWrapper(V) --- [pid : %u/0x%X, this : %p, session : %p, mmType : %u] \n"
+                        "\t CRtpSessionWrapper(V) - redlineBytes        : %u \n"
+                        "\t CRtpSessionWrapper(V) - bucketBytes         : %u \n"
                         "\t CRtpSessionWrapper(V) - pushToBucketRet1    : %d \n"
                         "\t CRtpSessionWrapper(V) - pushToBucketRet2    : %d \n"
                         "\t CRtpSessionWrapper(V) - packetErased        : %d \n"
@@ -1770,8 +1779,8 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         "\t CRtpSessionWrapper(V) - pushTick    (timer) : " PRO_PRT64D " \n"
                         "\t CRtpSessionWrapper(V) - tick        (timer) : " PRO_PRT64D " \n"
                         ,
-                        (unsigned int)::GetCurrentProcessId(),
-                        (unsigned int)::GetCurrentProcessId(),
+                        (unsigned int)ProGetProcessId(),
+                        (unsigned int)ProGetProcessId(),
                         this,
                         m_session,
                         (unsigned int)m_info.mmType,
@@ -1788,14 +1797,18 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         m_pushTick,
                         tick
                         );
+#if defined(WIN32)
                     ::OutputDebugString(traceInfo);
+#else
+                    printf("%s", traceInfo);
+#endif
                 }
                 else
                 {
                 }
             }
             while (0);
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32_WCE */
         }
         else if (timerId == m_sendTimerId)
         {

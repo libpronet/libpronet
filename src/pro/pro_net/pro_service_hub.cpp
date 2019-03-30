@@ -22,6 +22,7 @@
 #include "../pro_util/pro_bsd_wrapper.h"
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_stl.h"
+#include "../pro_util/pro_thread.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_timer_factory.h"
@@ -351,8 +352,8 @@ CProServiceHub::OnRecv(CProServicePipe*          pipe,
             }
 
 #if defined(_WIN32_WCE)
-            assert(packet.c2s.processId == ::GetCurrentProcessId());
-            if (packet.c2s.processId != ::GetCurrentProcessId())
+            assert(packet.c2s.processId == ProGetProcessId());
+            if (packet.c2s.processId != ProGetProcessId())
             {
                 return;
             }

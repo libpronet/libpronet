@@ -55,7 +55,7 @@ extern "C" {
 
 #define TRACE_EXT_NAME ".pro_rtp.trace"
 
-#if defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE)
 CProFileMonitor               g_fileMonitor;
 #endif
 
@@ -102,12 +102,10 @@ ProRtpInit()
         g_s_tcpRecvPoolSize[i]    = 1024 * 65;
     }
 
-#if defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE)
     char exeRoot[1024] = "";
-    exeRoot[sizeof(exeRoot) - 1] = '\0';
-    ::GetModuleFileName(NULL, exeRoot, sizeof(exeRoot) - 1);
-    ::GetLongPathName(exeRoot, exeRoot, sizeof(exeRoot) - 1);
-    strcat(exeRoot, TRACE_EXT_NAME);
+    ProGetExePath(exeRoot);
+    strncat(exeRoot, TRACE_EXT_NAME, sizeof(exeRoot) - 1);
     g_fileMonitor.Init(exeRoot);
     g_fileMonitor.UpdateFileExist();
 #endif

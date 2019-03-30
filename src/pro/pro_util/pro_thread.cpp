@@ -18,6 +18,7 @@
 
 #include "pro_a.h"
 #include "pro_thread.h"
+#include "pro_bsd_wrapper.h" /* for <unistd.h> */
 #include "pro_memory_pool.h"
 #include "pro_stl.h"
 #include "pro_thread_mutex.h"
@@ -255,10 +256,23 @@ PRO_CALLTYPE
 ProGetThreadId()
 {
 #if defined(WIN32) || defined(_WIN32_WCE)
-    const PRO_UINT64 threadId = (PRO_UINT64)::GetCurrentThreadId();
+    const PRO_UINT64 tid = (PRO_UINT64)::GetCurrentThreadId();
 #else
-    const PRO_UINT64 threadId = (PRO_UINT64)pthread_self();
+    const PRO_UINT64 tid = (PRO_UINT64)pthread_self();
 #endif
 
-    return (threadId);
+    return (tid);
+}
+
+PRO_UINT64
+PRO_CALLTYPE
+ProGetProcessId()
+{
+#if defined(WIN32) || defined(_WIN32_WCE)
+    const PRO_UINT64 pid = (PRO_UINT64)::GetCurrentProcessId();
+#else
+    const PRO_UINT64 pid = (PRO_UINT64)getpid();
+#endif
+
+    return (pid);
 }

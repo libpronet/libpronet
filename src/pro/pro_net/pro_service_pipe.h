@@ -78,7 +78,7 @@ struct PRO_SERVICE_PACKET_C2S
     }
 
     unsigned char    serviceId;
-    unsigned long    processId;
+    PRO_UINT64       processId;
     PRO_SERVICE_SOCK oldSock;
 
     DECLARE_SGI_POOL(0);
@@ -157,7 +157,7 @@ struct PRO_SERVICE_PIPE
     bool             pending;
     PRO_INT64        expireTick;
     unsigned char    serviceId;
-    unsigned long    processId;
+    PRO_UINT64       processId;
 
     DECLARE_SGI_POOL(0);
 };

@@ -22,6 +22,7 @@
 #include "../pro_net/pro_net.h"
 #include "../pro_util/pro_bsd_wrapper.h"
 #include "../pro_util/pro_ref_count.h"
+#include "../pro_util/pro_thread.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_timer_factory.h"
@@ -228,9 +229,7 @@ CProServiceHost::OnConnectOk(IProConnector* connector,
              */
             PRO_SERVICE_PACKET c2sPacket;
             c2sPacket.c2s.serviceId = m_serviceId;
-#if defined(WIN32) || defined(_WIN32_WCE)
-            c2sPacket.c2s.processId = ::GetCurrentProcessId();
-#endif
+            c2sPacket.c2s.processId = ProGetProcessId();
             m_pipe->SendData(c2sPacket);
         }
 
@@ -379,9 +378,7 @@ CProServiceHost::OnRecv(CProServicePipe*          pipe,
      */
     PRO_SERVICE_PACKET c2sPacket;
     c2sPacket.c2s.serviceId = s2cPacket.s2c.serviceId;
-#if defined(WIN32) || defined(_WIN32_WCE)
-    c2sPacket.c2s.processId = ::GetCurrentProcessId();
-#endif
+    c2sPacket.c2s.processId = ProGetProcessId();
     c2sPacket.c2s.oldSock   = s2cPacket.s2c.oldSock;
     pipe->SendData(c2sPacket);
 
@@ -470,6 +467,7 @@ CProServiceHost::OnRecvFd(CProServicePipe*          pipe,
      */
     PRO_SERVICE_PACKET c2sPacket;
     c2sPacket.c2s.serviceId = s2cPacket.s2c.serviceId;
+    c2sPacket.c2s.processId = ProGetProcessId();
     c2sPacket.c2s.oldSock   = s2cPacket.s2c.oldSock;
     pipe->SendData(c2sPacket);
 
@@ -576,9 +574,7 @@ CProServiceHost::OnTimer(unsigned long timerId,
              */
             PRO_SERVICE_PACKET c2sPacket;
             c2sPacket.c2s.serviceId = m_serviceId;
-#if defined(WIN32) || defined(_WIN32_WCE)
-            c2sPacket.c2s.processId = ::GetCurrentProcessId();
-#endif
+            c2sPacket.c2s.processId = ProGetProcessId();
             m_pipe->SendData(c2sPacket);
         }
         else

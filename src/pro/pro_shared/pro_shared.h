@@ -332,10 +332,12 @@ ProDeallocateSgiPoolBuffer(void*         buf,
  * 功能: 获取SGI内存池信息
  *
  * 参数:
- * freeList  : 返回的链表信息
- * objSize   : 返回的对象尺寸信息
- * heapSize  : 返回的堆容量信息
- * poolIndex : 内存池索引号. [0 ~ 9],一共10个内存池
+ * freeList    : 返回的链表序列
+ * objSize     : 返回的对象尺寸序列
+ * busyObjNum  : 返回的忙对象数目序列
+ * totalObjNum : 返回的总对象数目序列
+ * heapBytes   : 返回的堆总容量
+ * poolIndex   : 内存池索引号. [0 ~ 9],一共10个内存池
  *
  * 返回值: 无
  *
@@ -346,7 +348,9 @@ void
 PRO_CALLTYPE
 ProGetSgiPoolInfo(void*         freeList[64],
                   size_t        objSize[64],
-                  size_t*       heapSize,   /* = NULL */
+                  size_t        busyObjNum[64],
+                  size_t        totalObjNum[64],
+                  size_t*       heapBytes,  /* = NULL */
                   unsigned long poolIndex); /* 0 ~ 9 */
 
 /////////////////////////////////////////////////////////////////////////////

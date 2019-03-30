@@ -17,7 +17,6 @@
  */
 
 #include "../pro_net/pro_net.h"
-#include "../pro_util/pro_bsd_wrapper.h" /* for <unistd.h> */
 #include "../pro_util/pro_config_file.h"
 #include "../pro_util/pro_config_stream.h"
 #include "../pro_util/pro_memory_pool.h"
@@ -75,41 +74,7 @@ int main(int argc, char* argv[])
 
     {
         char exeRoot[1024] = "";
-        exeRoot[sizeof(exeRoot) - 1] = '\0';
-#if defined(WIN32)
-        ::GetModuleFileName(NULL, exeRoot, sizeof(exeRoot) - 1);
-        ::GetLongPathName(exeRoot, exeRoot, sizeof(exeRoot) - 1);
-        char* const exeSlash = strrchr(exeRoot, '\\');
-        if (exeSlash != NULL)
-        {
-            *exeSlash = '\0';
-        }
-        else
-        {
-            strcpy(exeRoot, ".");
-        }
-        strcat(exeRoot, "\\");
-#else
-        const int bytes = readlink("/proc/self/exe", exeRoot, sizeof(exeRoot) - 1);
-        if (bytes > 0)
-        {
-            exeRoot[bytes] = '\0';
-        }
-        else
-        {
-            strncpy_pro(exeRoot, sizeof(exeRoot), argv[0]);
-        }
-        char* const exeSlash = strrchr(exeRoot, '/');
-        if (exeSlash != NULL)
-        {
-            *exeSlash = '\0';
-        }
-        else
-        {
-            strcpy(exeRoot, "/usr/local/bin");
-        }
-        strcat(exeRoot, "/");
-#endif
+        ProGetExeDir_(exeRoot);
 
         configFileName =  exeRoot;
         configFileName += CONFIG_FILE_NAME;

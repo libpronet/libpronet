@@ -99,6 +99,18 @@ snprintf_pro(char*       dest,
              const char* format,
              ...);
 
+#if !defined(_WIN32_WCE)
+
+void
+PRO_CALLTYPE
+ProGetExeDir_(char buf[1024]);
+
+void
+PRO_CALLTYPE
+ProGetExePath(char buf[1024]);
+
+#endif /* _WIN32_WCE */
+
 /////////////////////////////////////////////////////////////////////////////
 ////
 

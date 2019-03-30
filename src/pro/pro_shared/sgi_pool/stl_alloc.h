@@ -77,11 +77,15 @@ class __default_alloc_template
 private:
 
 #if defined(__SUNPRO_CC) || defined(__GNUC__) || defined(__HP_aCC)
-    static _Obj* volatile _S_free_list[];
-    static size_t         _S_obj_size[];
+    static _Obj*  _S_free_list[];
+    static size_t _S_obj_size[];
+    static size_t _S_busy_obj_num[];
+    static size_t _S_total_obj_num[];
 #else
-    static _Obj* volatile _S_free_list[_NFREELISTS];
-    static size_t         _S_obj_size[_NFREELISTS];
+    static _Obj*  _S_free_list[_NFREELISTS];
+    static size_t _S_obj_size[_NFREELISTS];
+    static size_t _S_busy_obj_num[_NFREELISTS];
+    static size_t _S_total_obj_num[_NFREELISTS];
 #endif
 
     static int _S_freelist_index(size_t __bytes)
@@ -154,7 +158,8 @@ public:
         }
         else
         {
-            _Obj* volatile* __my_free_list = _S_free_list + _S_freelist_index(__n);
+            int __index = _S_freelist_index(__n);
+            _Obj** __my_free_list = _S_free_list + __index;
             _Obj* __result = *__my_free_list;
 
             if (__result == 0)
@@ -165,6 +170,11 @@ public:
             {
                 *__my_free_list = __result->_M_free_list_link;
                 __ret = __result;
+            }
+
+            if (__ret != 0)
+            {
+                ++_S_busy_obj_num[__index];
             }
         }
 
@@ -185,11 +195,14 @@ public:
         }
         else
         {
-            _Obj* volatile* __my_free_list = _S_free_list + _S_freelist_index(__n);
+            int __index = _S_freelist_index(__n);
+            _Obj** __my_free_list = _S_free_list + __index;
             _Obj* __q = (_Obj*)__p;
 
             __q->_M_free_list_link = *__my_free_list;
             *__my_free_list = __q;
+
+            --_S_busy_obj_num[__index];
         }
     }
 
@@ -231,11 +244,15 @@ public:
     static void get_info(
         void*   __free_list[_NFREELISTS],
         size_t  __obj_size[_NFREELISTS],
+        size_t  __busy_obj_num[_NFREELISTS],
+        size_t  __total_obj_num[_NFREELISTS],
         size_t* __heap_size
         )
     {
-        memcpy(__free_list, (void*)_S_free_list, sizeof(_S_free_list));
-        memcpy(__obj_size, (void*)_S_obj_size, sizeof(_S_obj_size));
+        memcpy(__free_list    , (void*)_S_free_list    , sizeof(_S_free_list)    );
+        memcpy(__obj_size     , (void*)_S_obj_size     , sizeof(_S_obj_size)     );
+        memcpy(__busy_obj_num , (void*)_S_busy_obj_num , sizeof(_S_busy_obj_num) );
+        memcpy(__total_obj_num, (void*)_S_total_obj_num, sizeof(_S_total_obj_num));
         if (__heap_size != 0)
         {
             *__heap_size = _S_heap_size;
@@ -249,19 +266,27 @@ template<int __inst>
 void*
 __default_alloc_template<__inst>::_S_refill(size_t __n)
 {
-    int             __nobjs        = 20;
-    char*           __chunk        = _S_chunk_alloc(__n, __nobjs);
-    _Obj* volatile* __my_free_list = 0;
-    _Obj*           __result       = 0;
-    _Obj*           __current_obj  = 0;
-    _Obj*           __next_obj     = 0;
+    int    __nobjs        = 20;
+    char*  __chunk        = _S_chunk_alloc(__n, __nobjs); /* (__n * __nobjs) */
+    _Obj** __my_free_list = 0;
+    _Obj*  __result       = 0;
+    _Obj*  __current_obj  = 0;
+    _Obj*  __next_obj     = 0;
+    int    __index        = _S_freelist_index(__n);
 
-    if (__chunk == 0 || __nobjs == 1)
+    if (__chunk == 0)
     {
+        return (0);
+    }
+
+    if (__nobjs == 1)
+    {
+        ++_S_total_obj_num[__index];
+
         return (__chunk);
     }
 
-    __my_free_list = _S_free_list + _S_freelist_index(__n);
+    __my_free_list = _S_free_list + __index;
 
     /* Build free list in chunk */
     __result = (_Obj*)__chunk;
@@ -282,6 +307,8 @@ __default_alloc_template<__inst>::_S_refill(size_t __n)
             __current_obj->_M_free_list_link = __next_obj;
         }
     }
+
+    _S_total_obj_num[__index] += __nobjs;
 
     return (__result);
 }
@@ -336,8 +363,8 @@ __default_alloc_template<__inst>::_S_chunk_alloc(size_t __size,
                 break;
             }
 
-            size_t          __obj_size     = _S_obj_size[__i];
-            _Obj* volatile* __my_free_list = _S_free_list + __i;
+            size_t __obj_size     = _S_obj_size[__i];
+            _Obj** __my_free_list = _S_free_list + __i;
 
             while (__bytes_left >= __obj_size)
             {
@@ -346,6 +373,8 @@ __default_alloc_template<__inst>::_S_chunk_alloc(size_t __size,
 
                 _S_start_free += __obj_size;
                 __bytes_left  -= __obj_size;
+
+                ++_S_total_obj_num[__i];
             }
         }
 
@@ -372,7 +401,7 @@ __default_alloc_template<__inst>::_S_chunk_alloc(size_t __size,
         // to result in disaster on multi-process machines.
         for (int __j = _S_freelist_index(__size); __j < _NFREELISTS; ++__j)
         {
-            _Obj* volatile* __my_free_list = _S_free_list + __j;
+            _Obj** __my_free_list = _S_free_list + __j;
             if (*__my_free_list != 0)
             {
                 _Obj* __p = *__my_free_list;
@@ -380,6 +409,8 @@ __default_alloc_template<__inst>::_S_chunk_alloc(size_t __size,
 
                 _S_start_free = (char*)__p;
                 _S_end_free   = _S_start_free + _S_obj_size[__j];
+
+                --_S_total_obj_num[__j];
 
                 return (_S_chunk_alloc(__size, __nobjs));
             }
@@ -399,7 +430,7 @@ template<int __inst>
 size_t __default_alloc_template<__inst>::_S_heap_size = 0;
 
 template<int __inst>
-_Obj* volatile
+_Obj*
 __default_alloc_template<__inst>::_S_free_list[_NFREELISTS] =
 { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -425,6 +456,22 @@ __default_alloc_template<__inst>::_S_obj_size[_NFREELISTS] =
   8 + 1024 * 20, 8 + 1024 * 24, 8 + 1024 *  28, 8 + 1024 *  32,     /*  4K */
   8 + 1024 * 40, 8 + 1024 * 48, 8 + 1024 *  56, 8 + 1024 *  64,     /*  8K */
   8 + 1024 * 80, 8 + 1024 * 96, 8 + 1024 * 112, 8 + 1024 * 128 };   /* 16K */
+
+template<int __inst>
+size_t
+__default_alloc_template<__inst>::_S_busy_obj_num[_NFREELISTS] =
+{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0 };
+
+template<int __inst>
+size_t
+__default_alloc_template<__inst>::_S_total_obj_num[_NFREELISTS] =
+{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+  0 };
 
 ____STD_END
 

@@ -81,6 +81,10 @@ PRO_UINT64
 PRO_CALLTYPE
 ProGetThreadId();
 
+PRO_UINT64
+PRO_CALLTYPE
+ProGetProcessId();
+
 /////////////////////////////////////////////////////////////////////////////
 ////
 

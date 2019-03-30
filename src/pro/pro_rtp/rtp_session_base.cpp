@@ -25,6 +25,7 @@
 #include "../pro_util/pro_file_monitor.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
+#include "../pro_util/pro_thread.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_timer_factory.h"
@@ -43,7 +44,7 @@
 extern "C" {
 #endif
 
-#if defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE)
 extern CProFileMonitor g_fileMonitor;
 #endif
 
@@ -587,7 +588,7 @@ void
 PRO_CALLTYPE
 CRtpSessionBase::OnHeartbeat(IProTransport* trans)
 {{
-#if defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE)
     bool enableTrace = false;
     if (m_info.mmType >= RTP_MMT_MSG_MIN   && m_info.mmType <= RTP_MMT_MSG_MAX   ||
         m_info.mmType >= RTP_MMT_AUDIO_MIN && m_info.mmType <= RTP_MMT_AUDIO_MAX ||
@@ -625,7 +626,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
 
         const PRO_INT64 tick = ProGetTickCount64();
 
-#if defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32_WCE)
         do
         {
             if (!enableTrace)
@@ -658,7 +659,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     buffer,
                     size,
                     "\n"
-                    " CRtpSessionBase(M) --- [pid : %u/0x%X, this : 0x%p, mmType : %u] \n"
+                    " CRtpSessionBase(M) --- [pid : %u/0x%X, this : %p, mmType : %u] \n"
                     "\t CRtpSessionBase(M) - localVersion     : %u (for tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(M) - remoteVersion    : %u (for tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(M) - sessionType      : %u \n"
@@ -683,8 +684,8 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     "\t CRtpSessionBase(M) - onOkCalled       : %d \n"
                     "\t CRtpSessionBase(M) - canUpcall        : %d \n"
                     ,
-                    (unsigned int)::GetCurrentProcessId(),
-                    (unsigned int)::GetCurrentProcessId(),
+                    (unsigned int)ProGetProcessId(),
+                    (unsigned int)ProGetProcessId(),
                     this,
                     (unsigned int)m_info.mmType,
                     (unsigned int)m_info.localVersion,
@@ -714,7 +715,11 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (int)(m_onOkCalled   ? 1 : 0),
                     (int)(m_canUpcall    ? 1 : 0)
                     );
+#if defined(WIN32)
                 ::OutputDebugString(buffer);
+#else
+                printf("%s", buffer);
+#endif
             }
             else if (m_info.mmType >= RTP_MMT_AUDIO_MIN && m_info.mmType <= RTP_MMT_AUDIO_MAX)
             {
@@ -722,7 +727,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     buffer,
                     size,
                     "\n"
-                    " CRtpSessionBase(A) --- [pid : %u/0x%X, this : 0x%p, mmType : %u] \n"
+                    " CRtpSessionBase(A) --- [pid : %u/0x%X, this : %p, mmType : %u] \n"
                     "\t CRtpSessionBase(A) - localVersion     : %u (for tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(A) - remoteVersion    : %u (for tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(A) - sessionType      : %u \n"
@@ -747,8 +752,8 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     "\t CRtpSessionBase(A) - onOkCalled       : %d \n"
                     "\t CRtpSessionBase(A) - canUpcall        : %d \n"
                     ,
-                    (unsigned int)::GetCurrentProcessId(),
-                    (unsigned int)::GetCurrentProcessId(),
+                    (unsigned int)ProGetProcessId(),
+                    (unsigned int)ProGetProcessId(),
                     this,
                     (unsigned int)m_info.mmType,
                     (unsigned int)m_info.localVersion,
@@ -778,7 +783,11 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (int)(m_onOkCalled   ? 1 : 0),
                     (int)(m_canUpcall    ? 1 : 0)
                     );
+#if defined(WIN32)
                 ::OutputDebugString(buffer);
+#else
+                printf("%s", buffer);
+#endif
             }
             else if (m_info.mmType >= RTP_MMT_VIDEO_MIN && m_info.mmType <= RTP_MMT_VIDEO_MAX)
             {
@@ -786,7 +795,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     buffer,
                     size,
                     "\n"
-                    " CRtpSessionBase(V) --- [pid : %u/0x%X, this : 0x%p, mmType : %u] \n"
+                    " CRtpSessionBase(V) --- [pid : %u/0x%X, this : %p, mmType : %u] \n"
                     "\t CRtpSessionBase(V) - localVersion     : %u (for tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(V) - remoteVersion    : %u (for tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(V) - sessionType      : %u \n"
@@ -811,8 +820,8 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     "\t CRtpSessionBase(V) - onOkCalled       : %d \n"
                     "\t CRtpSessionBase(V) - canUpcall        : %d \n"
                     ,
-                    (unsigned int)::GetCurrentProcessId(),
-                    (unsigned int)::GetCurrentProcessId(),
+                    (unsigned int)ProGetProcessId(),
+                    (unsigned int)ProGetProcessId(),
                     this,
                     (unsigned int)m_info.mmType,
                     (unsigned int)m_info.localVersion,
@@ -842,7 +851,11 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (int)(m_onOkCalled   ? 1 : 0),
                     (int)(m_canUpcall    ? 1 : 0)
                     );
+#if defined(WIN32)
                 ::OutputDebugString(buffer);
+#else
+                printf("%s", buffer);
+#endif
             }
             else
             {
@@ -850,157 +863,163 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
 
             void*  freeList[64];
             size_t objSize[64];
-            size_t heapSize;
+            size_t busyObjNum[64];
+            size_t totalObjNum[64];
+            size_t heapBytes;
 
             {
-                ProGetSgiPoolInfo(freeList, objSize, &heapSize, 0);
+                ProGetSgiPoolInfo(freeList, objSize, busyObjNum, totalObjNum, &heapBytes, 0);
                 snprintf_pro(
                     buffer,
                     size,
                     "\n"
-                    " CRtpSessionBase(POOL-0) --- [pid : %u/0x%X, this : 0x%p] \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[0]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[1]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[2]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[3]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[4]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[5]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[6]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[7]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[8]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[9]  : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[10] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[11] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[12] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[13] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[14] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[15] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[16] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[17] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[18] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[19] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[20] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[21] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[22] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[23] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[24] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[25] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[26] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[27] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[28] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[29] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[30] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[31] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[32] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[33] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[34] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[35] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[36] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[37] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[38] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[39] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[40] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[41] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[42] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[43] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[44] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[45] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[46] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[47] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[48] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[49] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[50] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[51] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[52] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[53] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[54] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[55] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[56] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[57] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[58] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[59] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[60] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[61] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[62] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - freeList[63] : 0x%p \n"
-                    "\t CRtpSessionBase(POOL-0) - heapSize     : %u \n"
+                    " CRtpSessionBase(POOL-0) --- [pid : %u/0x%X, this : %p] \n"
+                    "\t CRtpSessionBase(POOL-0) - [00] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [01] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [02] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [03] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [04] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [05] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [06] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [07] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [08] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [09] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [10] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [11] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [12] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [13] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [14] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [15] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [16] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [17] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [18] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [19] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [20] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [21] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [22] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [23] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [24] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [25] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [26] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [27] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [28] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [29] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [30] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [31] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [32] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [33] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [34] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [35] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [36] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [37] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [38] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [39] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [40] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [41] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [42] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [43] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [44] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [45] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [46] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [47] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [48] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [49] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [50] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [51] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [52] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [53] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [54] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [55] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [56] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [57] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [58] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [59] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [60] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [61] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [62] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - [63] : %p, [%u], *%u/%u \n"
+                    "\t CRtpSessionBase(POOL-0) - size : %u \n"
                     ,
-                    (unsigned int)::GetCurrentProcessId(),
-                    (unsigned int)::GetCurrentProcessId(),
+                    (unsigned int)ProGetProcessId(),
+                    (unsigned int)ProGetProcessId(),
                     this,
-                    freeList[0],
-                    freeList[1],
-                    freeList[2],
-                    freeList[3],
-                    freeList[4],
-                    freeList[5],
-                    freeList[6],
-                    freeList[7],
-                    freeList[8],
-                    freeList[9],
-                    freeList[10],
-                    freeList[11],
-                    freeList[12],
-                    freeList[13],
-                    freeList[14],
-                    freeList[15],
-                    freeList[16],
-                    freeList[17],
-                    freeList[18],
-                    freeList[19],
-                    freeList[20],
-                    freeList[21],
-                    freeList[22],
-                    freeList[23],
-                    freeList[24],
-                    freeList[25],
-                    freeList[26],
-                    freeList[27],
-                    freeList[28],
-                    freeList[29],
-                    freeList[30],
-                    freeList[31],
-                    freeList[32],
-                    freeList[33],
-                    freeList[34],
-                    freeList[35],
-                    freeList[36],
-                    freeList[37],
-                    freeList[38],
-                    freeList[39],
-                    freeList[40],
-                    freeList[41],
-                    freeList[42],
-                    freeList[43],
-                    freeList[44],
-                    freeList[45],
-                    freeList[46],
-                    freeList[47],
-                    freeList[48],
-                    freeList[49],
-                    freeList[50],
-                    freeList[51],
-                    freeList[52],
-                    freeList[53],
-                    freeList[54],
-                    freeList[55],
-                    freeList[56],
-                    freeList[57],
-                    freeList[58],
-                    freeList[59],
-                    freeList[60],
-                    freeList[61],
-                    freeList[62],
-                    freeList[63],
-                    (unsigned int)heapSize
+                    freeList[0] , (unsigned int)objSize[0] , (unsigned int)busyObjNum[0] , (unsigned int)totalObjNum[0] ,
+                    freeList[1] , (unsigned int)objSize[1] , (unsigned int)busyObjNum[1] , (unsigned int)totalObjNum[1] ,
+                    freeList[2] , (unsigned int)objSize[2] , (unsigned int)busyObjNum[2] , (unsigned int)totalObjNum[2] ,
+                    freeList[3] , (unsigned int)objSize[3] , (unsigned int)busyObjNum[3] , (unsigned int)totalObjNum[3] ,
+                    freeList[4] , (unsigned int)objSize[4] , (unsigned int)busyObjNum[4] , (unsigned int)totalObjNum[4] ,
+                    freeList[5] , (unsigned int)objSize[5] , (unsigned int)busyObjNum[5] , (unsigned int)totalObjNum[5] ,
+                    freeList[6] , (unsigned int)objSize[6] , (unsigned int)busyObjNum[6] , (unsigned int)totalObjNum[6] ,
+                    freeList[7] , (unsigned int)objSize[7] , (unsigned int)busyObjNum[7] , (unsigned int)totalObjNum[7] ,
+                    freeList[8] , (unsigned int)objSize[8] , (unsigned int)busyObjNum[8] , (unsigned int)totalObjNum[8] ,
+                    freeList[9] , (unsigned int)objSize[9] , (unsigned int)busyObjNum[9] , (unsigned int)totalObjNum[9] ,
+                    freeList[10], (unsigned int)objSize[10], (unsigned int)busyObjNum[10], (unsigned int)totalObjNum[10],
+                    freeList[11], (unsigned int)objSize[11], (unsigned int)busyObjNum[11], (unsigned int)totalObjNum[11],
+                    freeList[12], (unsigned int)objSize[12], (unsigned int)busyObjNum[12], (unsigned int)totalObjNum[12],
+                    freeList[13], (unsigned int)objSize[13], (unsigned int)busyObjNum[13], (unsigned int)totalObjNum[13],
+                    freeList[14], (unsigned int)objSize[14], (unsigned int)busyObjNum[14], (unsigned int)totalObjNum[14],
+                    freeList[15], (unsigned int)objSize[15], (unsigned int)busyObjNum[15], (unsigned int)totalObjNum[15],
+                    freeList[16], (unsigned int)objSize[16], (unsigned int)busyObjNum[16], (unsigned int)totalObjNum[16],
+                    freeList[17], (unsigned int)objSize[17], (unsigned int)busyObjNum[17], (unsigned int)totalObjNum[17],
+                    freeList[18], (unsigned int)objSize[18], (unsigned int)busyObjNum[18], (unsigned int)totalObjNum[18],
+                    freeList[19], (unsigned int)objSize[19], (unsigned int)busyObjNum[19], (unsigned int)totalObjNum[19],
+                    freeList[20], (unsigned int)objSize[20], (unsigned int)busyObjNum[20], (unsigned int)totalObjNum[20],
+                    freeList[21], (unsigned int)objSize[21], (unsigned int)busyObjNum[21], (unsigned int)totalObjNum[21],
+                    freeList[22], (unsigned int)objSize[22], (unsigned int)busyObjNum[22], (unsigned int)totalObjNum[22],
+                    freeList[23], (unsigned int)objSize[23], (unsigned int)busyObjNum[23], (unsigned int)totalObjNum[23],
+                    freeList[24], (unsigned int)objSize[24], (unsigned int)busyObjNum[24], (unsigned int)totalObjNum[24],
+                    freeList[25], (unsigned int)objSize[25], (unsigned int)busyObjNum[25], (unsigned int)totalObjNum[25],
+                    freeList[26], (unsigned int)objSize[26], (unsigned int)busyObjNum[26], (unsigned int)totalObjNum[26],
+                    freeList[27], (unsigned int)objSize[27], (unsigned int)busyObjNum[27], (unsigned int)totalObjNum[27],
+                    freeList[28], (unsigned int)objSize[28], (unsigned int)busyObjNum[28], (unsigned int)totalObjNum[28],
+                    freeList[29], (unsigned int)objSize[29], (unsigned int)busyObjNum[29], (unsigned int)totalObjNum[29],
+                    freeList[30], (unsigned int)objSize[30], (unsigned int)busyObjNum[30], (unsigned int)totalObjNum[30],
+                    freeList[31], (unsigned int)objSize[31], (unsigned int)busyObjNum[31], (unsigned int)totalObjNum[31],
+                    freeList[32], (unsigned int)objSize[32], (unsigned int)busyObjNum[32], (unsigned int)totalObjNum[32],
+                    freeList[33], (unsigned int)objSize[33], (unsigned int)busyObjNum[33], (unsigned int)totalObjNum[33],
+                    freeList[34], (unsigned int)objSize[34], (unsigned int)busyObjNum[34], (unsigned int)totalObjNum[34],
+                    freeList[35], (unsigned int)objSize[35], (unsigned int)busyObjNum[35], (unsigned int)totalObjNum[35],
+                    freeList[36], (unsigned int)objSize[36], (unsigned int)busyObjNum[36], (unsigned int)totalObjNum[36],
+                    freeList[37], (unsigned int)objSize[37], (unsigned int)busyObjNum[37], (unsigned int)totalObjNum[37],
+                    freeList[38], (unsigned int)objSize[38], (unsigned int)busyObjNum[38], (unsigned int)totalObjNum[38],
+                    freeList[39], (unsigned int)objSize[39], (unsigned int)busyObjNum[39], (unsigned int)totalObjNum[39],
+                    freeList[40], (unsigned int)objSize[40], (unsigned int)busyObjNum[40], (unsigned int)totalObjNum[40],
+                    freeList[41], (unsigned int)objSize[41], (unsigned int)busyObjNum[41], (unsigned int)totalObjNum[41],
+                    freeList[42], (unsigned int)objSize[42], (unsigned int)busyObjNum[42], (unsigned int)totalObjNum[42],
+                    freeList[43], (unsigned int)objSize[43], (unsigned int)busyObjNum[43], (unsigned int)totalObjNum[43],
+                    freeList[44], (unsigned int)objSize[44], (unsigned int)busyObjNum[44], (unsigned int)totalObjNum[44],
+                    freeList[45], (unsigned int)objSize[45], (unsigned int)busyObjNum[45], (unsigned int)totalObjNum[45],
+                    freeList[46], (unsigned int)objSize[46], (unsigned int)busyObjNum[46], (unsigned int)totalObjNum[46],
+                    freeList[47], (unsigned int)objSize[47], (unsigned int)busyObjNum[47], (unsigned int)totalObjNum[47],
+                    freeList[48], (unsigned int)objSize[48], (unsigned int)busyObjNum[48], (unsigned int)totalObjNum[48],
+                    freeList[49], (unsigned int)objSize[49], (unsigned int)busyObjNum[49], (unsigned int)totalObjNum[49],
+                    freeList[50], (unsigned int)objSize[50], (unsigned int)busyObjNum[50], (unsigned int)totalObjNum[50],
+                    freeList[51], (unsigned int)objSize[51], (unsigned int)busyObjNum[51], (unsigned int)totalObjNum[51],
+                    freeList[52], (unsigned int)objSize[52], (unsigned int)busyObjNum[52], (unsigned int)totalObjNum[52],
+                    freeList[53], (unsigned int)objSize[53], (unsigned int)busyObjNum[53], (unsigned int)totalObjNum[53],
+                    freeList[54], (unsigned int)objSize[54], (unsigned int)busyObjNum[54], (unsigned int)totalObjNum[54],
+                    freeList[55], (unsigned int)objSize[55], (unsigned int)busyObjNum[55], (unsigned int)totalObjNum[55],
+                    freeList[56], (unsigned int)objSize[56], (unsigned int)busyObjNum[56], (unsigned int)totalObjNum[56],
+                    freeList[57], (unsigned int)objSize[57], (unsigned int)busyObjNum[57], (unsigned int)totalObjNum[57],
+                    freeList[58], (unsigned int)objSize[58], (unsigned int)busyObjNum[58], (unsigned int)totalObjNum[58],
+                    freeList[59], (unsigned int)objSize[59], (unsigned int)busyObjNum[59], (unsigned int)totalObjNum[59],
+                    freeList[60], (unsigned int)objSize[60], (unsigned int)busyObjNum[60], (unsigned int)totalObjNum[60],
+                    freeList[61], (unsigned int)objSize[61], (unsigned int)busyObjNum[61], (unsigned int)totalObjNum[61],
+                    freeList[62], (unsigned int)objSize[62], (unsigned int)busyObjNum[62], (unsigned int)totalObjNum[62],
+                    freeList[63], (unsigned int)objSize[63], (unsigned int)busyObjNum[63], (unsigned int)totalObjNum[63],
+                    (unsigned int)heapBytes
                     );
-                ::OutputDebugString(buffer);
+#if defined(WIN32)
+                    ::OutputDebugString(buffer);
+#else
+                    printf("%s", buffer);
+#endif
             }
 
             ProFree(buffer);
         }
         while (0);
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32_WCE */
 
         if (!m_onOkCalled)
         {
