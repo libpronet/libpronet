@@ -34,6 +34,11 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+#define RTP_SESSION_PROTOCOL_VERSION 1
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
 class CRtpSessionBase
 :
 public IRtpSession,
@@ -78,23 +83,19 @@ protected:
 
     virtual bool PRO_CALLTYPE IsReady() const;
 
-    virtual bool PRO_CALLTYPE SendPacket(
-        IRtpPacket* packet,
-        bool        handshaking       /* = false */
-        );
+    virtual bool PRO_CALLTYPE SendPacket(IRtpPacket* packet);
 
     virtual bool PRO_CALLTYPE SendPacketByTimer(
         IRtpPacket*   packet,
-        unsigned long sendDurationMs, /* = 0 */
-        bool          handshaking     /* = false */
+        unsigned long sendDurationMs /* = 0 */
         )
     {
         return (false);
     }
 
     virtual void PRO_CALLTYPE GetSendOnSendTick(
-        PRO_INT64* sendTick,          /* = NULL */
-        PRO_INT64* onSendTick         /* = NULL */
+        PRO_INT64* sendTick,         /* = NULL */
+        PRO_INT64* onSendTick        /* = NULL */
         ) const;
 
     virtual void PRO_CALLTYPE RequestOnSend();
@@ -203,9 +204,8 @@ protected:
     IProTransport*          m_trans;
     pbsd_sockaddr_in        m_localAddr;
     pbsd_sockaddr_in        m_remoteAddr;
-    pbsd_sockaddr_in        m_remoteAddrConfig; /* for RTP_ST_UDPCLIENT, RTP_ST_UDPSERVER */
+    pbsd_sockaddr_in        m_remoteAddrConfig; /* for udp */
     PRO_INT64               m_dummySockId;
-    bool                    m_tcpConnected;     /* for tcp, tcp_ex, ssl_ex */
     PRO_UINT64              m_actionId;
     PRO_INT64               m_initTick;
     PRO_INT64               m_sendingTick;
@@ -214,6 +214,7 @@ protected:
     PRO_INT64               m_peerAliveTick;
     unsigned long           m_timeoutTimerId;
     unsigned long           m_onOkTimerId;
+    bool                    m_tcpConnected;     /* for tcp, tcp_ex, ssl_ex */
     bool                    m_handshakeOk;      /* for udp_ex, tcp_ex, ssl_ex */
     bool                    m_onOkCalled;
     mutable CProThreadMutex m_lock;
@@ -221,13 +222,6 @@ protected:
     bool                    m_canUpcall;
     CProThreadMutex         m_lockUpcall;
 };
-
-/////////////////////////////////////////////////////////////////////////////
-////
-
-PRO_UINT16
-PRO_CALLTYPE
-GetRtpSessionVersion();
 
 /////////////////////////////////////////////////////////////////////////////
 ////

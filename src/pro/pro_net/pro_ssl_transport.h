@@ -49,6 +49,8 @@ public:
 
     virtual PRO_TRANS_TYPE PRO_CALLTYPE GetType() const;
 
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(char suiteName[64]) const;
+
 private:
 
     CProSslTransport(size_t recvPoolSize); /* = 0 */
@@ -65,7 +67,9 @@ private:
 
 private:
 
-    PRO_SSL_CTX* m_ctx;
+    PRO_SSL_CTX*     m_ctx;
+    PRO_SSL_SUITE_ID m_suiteId;
+    char             m_suiteName[64];
 };
 
 /////////////////////////////////////////////////////////////////////////////

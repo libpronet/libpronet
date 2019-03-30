@@ -233,13 +233,13 @@ static const RTP_MM_TYPE RTP_MMT_CTRL_MAX  = 50;
  */
 
 /*
- * [[[[ 扩展打包类型
+ * [[[[ 扩展打包模式
  */
-typedef unsigned char RTP_EXT_PACK_TYPE;
+typedef unsigned char RTP_EXT_PACK_MODE;
 
-static const RTP_EXT_PACK_TYPE RTP_EPT_DEF  = 0; /* ext8 + rfc12 + payload */
-static const RTP_EXT_PACK_TYPE RTP_EPT_TCP2 = 2; /* len2 + payload */
-static const RTP_EXT_PACK_TYPE RTP_EPT_TCP4 = 4; /* len4 + payload */
+static const RTP_EXT_PACK_MODE RTP_EPM_DEFAULT = 0; /* ext8 + rfc12 + payload */
+static const RTP_EXT_PACK_MODE RTP_EPM_TCP2    = 2; /* len2 + payload */
+static const RTP_EXT_PACK_MODE RTP_EPM_TCP4    = 4; /* len4 + payload */
 /*
  * ]]]]
  */
@@ -274,7 +274,7 @@ struct RTP_SESSION_INFO
     PRO_UINT16        remoteVersion;    /* 远端版本号===[c自动,s设置], for tcp_ex, ssl_ex */
     RTP_SESSION_TYPE  sessionType;      /* 会话类型=====[c自动,s自动] */
     RTP_MM_TYPE       mmType;           /* 媒体类型=====[c设置,s设置] */
-    RTP_EXT_PACK_TYPE packType;         /* 打包类型=====[c设置,s设置], for tcp_ex, ssl_ex */
+    RTP_EXT_PACK_MODE packMode;         /* 打包模式=====[c设置,s设置], for tcp_ex, ssl_ex */
     char              reserved1;
     char              passwordHash[32]; /* 口令hash值===[c自动,s设置], for tcp_ex, ssl_ex */
     char              reserved2[40];
@@ -345,11 +345,15 @@ public:
 
     virtual void* PRO_CALLTYPE GetPayloadBuffer() = 0;
 
-    virtual PRO_UINT16 PRO_CALLTYPE GetPayloadSize() const = 0;
+    virtual unsigned long PRO_CALLTYPE GetPayloadSize() const = 0;
 
-    virtual void PRO_CALLTYPE SetTick_i(PRO_INT64 tick) = 0;
+    virtual PRO_UINT16 PRO_CALLTYPE GetPayloadSize16() const = 0;
 
-    virtual PRO_INT64 PRO_CALLTYPE GetTick_i() const = 0;
+    virtual RTP_EXT_PACK_MODE PRO_CALLTYPE GetPackMode() const = 0;
+
+    virtual void PRO_CALLTYPE SetTick(PRO_INT64 tick) = 0;
+
+    virtual PRO_INT64 PRO_CALLTYPE GetTick() const = 0;
 };
 #endif /* ____IRtpPacket____ */
 
@@ -475,10 +479,7 @@ public:
      * 如果返回false,表示发送池已满,上层应该缓冲数据以待
      * OnSendSession(...)回调拉取
      */
-    virtual bool PRO_CALLTYPE SendPacket(
-        IRtpPacket* packet,
-        bool        handshaking = false
-        ) = 0;
+    virtual bool PRO_CALLTYPE SendPacket(IRtpPacket* packet) = 0;
 
     /*
      * 通过定时器平滑发送rtp包(for CRtpSessionWrapper only)
@@ -487,8 +488,7 @@ public:
      */
     virtual bool PRO_CALLTYPE SendPacketByTimer(
         IRtpPacket*   packet,
-        unsigned long sendDurationMs = 0,
-        bool          handshaking    = false
+        unsigned long sendDurationMs = 0
         ) = 0;
 
     /*
@@ -676,34 +676,44 @@ ProRtpVersion(unsigned char* major,  /* = NULL */
  *
  * 参数:
  * payloadBuffer : 媒体数据指针
- * payloadSize   : 媒体数据长度.最多(1024 * 60)字节
+ * payloadSize   : 媒体数据长度
+ * packMode      : 打包模式
  *
  * 返回值: rtp包对象或NULL
  *
  * 说明: 调用者应该继续初始化rtp包的头部字段
+ *
+ *       如果packMode为RTP_EPM_DEFAULT或RTP_EPM_TCP2,那么payloadSize最多
+ *       (1024 * 63)字节
  */
 PRO_RTP_API
 IRtpPacket*
 PRO_CALLTYPE
-CreateRtpPacket(const void*   payloadBuffer,
-                unsigned long payloadSize);
+CreateRtpPacket(const void*       payloadBuffer,
+                unsigned long     payloadSize,
+                RTP_EXT_PACK_MODE packMode = RTP_EPM_DEFAULT);
 
 /*
  * 功能: 创建一个rtp包
  *
  * 参数:
- * payloadSize : 媒体数据长度.最多(1024 * 60)字节
+ * payloadSize : 媒体数据长度
+ * packMode    : 打包模式
  *
  * 返回值: rtp包对象或NULL
  *
  * 说明: 该版本主要用于减少内存拷贝次数.
  *       例如,视频编码器可以通过IRtpPacket::GetPayloadBuffer(...)得到媒体
  *       数据指针,然后直接进行媒体数据的初始化等操作
+ *
+ *       如果packMode为RTP_EPM_DEFAULT或RTP_EPM_TCP2,那么payloadSize最多
+ *       (1024 * 63)字节
  */
 PRO_RTP_API
 IRtpPacket*
 PRO_CALLTYPE
-CreateRtpPacketSpace(unsigned long payloadSize);
+CreateRtpPacketSpace(unsigned long     payloadSize,
+                     RTP_EXT_PACK_MODE packMode = RTP_EPM_DEFAULT);
 
 /*
  * 功能: 克隆一个rtp包
@@ -758,10 +768,10 @@ FindRtpStreamFromPacket(const IRtpPacket* packet,
  * 功能: 设置rtp端口号的分配范围
  *
  * 参数:
- * minUdpPort : 最小的udp端口号
- * maxUdpPort : 最大的udp端口号
- * minTcpPort : 最小的tcp端口号
- * maxTcpPort : 最大的tcp端口号
+ * minUdpPort : 最小udp端口号
+ * maxUdpPort : 最大udp端口号
+ * minTcpPort : 最小tcp端口号
+ * maxTcpPort : 最大tcp端口号
  *
  * 返回值: 无
  *
@@ -779,10 +789,10 @@ SetRtpPortRange(unsigned short minUdpPort,
  * 功能: 获取rtp端口号的分配范围
  *
  * 参数:
- * minUdpPort : 用于接收最小的udp端口号
- * maxUdpPort : 用于接收最大的udp端口号
- * minTcpPort : 用于接收最小的tcp端口号
- * maxTcpPort : 用于接收最大的tcp端口号
+ * minUdpPort : 返回的最小udp端口号
+ * maxUdpPort : 返回的最大udp端口号
+ * minTcpPort : 返回的最小tcp端口号
+ * maxTcpPort : 返回的最大tcp端口号
  *
  * 返回值: 无
  *
@@ -912,13 +922,13 @@ PRO_CALLTYPE
 GetRtpStatTimeSpan();
 
 /*
- * 功能: 设置底层的udp套接字系统参数
+ * 功能: 设置底层udp套接字的系统参数
  *
  * 参数:
  * mmType          : 媒体类型
- * sockBufSizeRecv : 套接字的系统接收缓冲区字节数.默认(1024 * 56)
- * sockBufSizeSend : 套接字的系统发送缓冲区字节数.默认(1024 * 56)
- * recvPoolSize    : 接收池的字节数.默认(1024 * 65)
+ * sockBufSizeRecv : 底层套接字的系统接收缓冲区字节数.默认(1024 * 56)
+ * sockBufSizeSend : 底层套接字的系统发送缓冲区字节数.默认(1024 * 56)
+ * recvPoolSize    : 底层接收池的字节数.默认(1024 * 65)
  *
  * 返回值: 无
  *
@@ -933,13 +943,13 @@ SetRtpUdpSocketParams(RTP_MM_TYPE mmType,
                       size_t      recvPoolSize);   /* = 0 */
 
 /*
- * 功能: 获取底层的udp套接字系统参数
+ * 功能: 获取底层udp套接字的系统参数
  *
  * 参数:
  * mmType          : 媒体类型
- * sockBufSizeRecv : 用于接收底层套接字的系统接收缓冲区字节数.默认(1024 * 56)
- * sockBufSizeSend : 用于接收底层套接字的系统发送缓冲区字节数.默认(1024 * 56)
- * recvPoolSize    : 用于接收底层接收池的字节数.默认(1024 * 65)
+ * sockBufSizeRecv : 返回的底层套接字的系统接收缓冲区字节数.默认(1024 * 56)
+ * sockBufSizeSend : 返回的底层套接字的系统发送缓冲区字节数.默认(1024 * 56)
+ * recvPoolSize    : 返回的底层接收池的字节数.默认(1024 * 65)
  *
  * 返回值: 无
  *
@@ -954,13 +964,13 @@ GetRtpUdpSocketParams(RTP_MM_TYPE    mmType,
                       unsigned long* recvPoolSize);   /* = NULL */
 
 /*
- * 功能: 设置底层的tcp套接字系统参数
+ * 功能: 设置底层tcp套接字的系统参数
  *
  * 参数:
  * mmType          : 媒体类型
- * sockBufSizeRecv : 套接字的系统接收缓冲区字节数.默认(1024 * 56)
- * sockBufSizeSend : 套接字的系统发送缓冲区字节数.默认(1024 * 8)
- * recvPoolSize    : 接收池的字节数.默认(1024 * 65)
+ * sockBufSizeRecv : 底层套接字的系统接收缓冲区字节数.默认(1024 * 56)
+ * sockBufSizeSend : 底层套接字的系统发送缓冲区字节数.默认(1024 * 8)
+ * recvPoolSize    : 底层接收池的字节数.默认(1024 * 65)
  *
  * 返回值: 无
  *
@@ -975,13 +985,13 @@ SetRtpTcpSocketParams(RTP_MM_TYPE mmType,
                       size_t      recvPoolSize);   /* = 0 */
 
 /*
- * 功能: 获取底层的tcp套接字系统参数
+ * 功能: 获取底层tcp套接字的系统参数
  *
  * 参数:
  * mmType          : 媒体类型
- * sockBufSizeRecv : 用于接收底层套接字的系统接收缓冲区字节数.默认(1024 * 56)
- * sockBufSizeSend : 用于接收底层套接字的系统发送缓冲区字节数.默认(1024 * 8)
- * recvPoolSize    : 用于接收底层接收池的字节数.默认(1024 * 65)
+ * sockBufSizeRecv : 返回的底层套接字的系统接收缓冲区字节数.默认(1024 * 56)
+ * sockBufSizeSend : 返回的底层套接字的系统发送缓冲区字节数.默认(1024 * 8)
+ * recvPoolSize    : 返回的底层接收池的字节数.默认(1024 * 65)
  *
  * 返回值: 无
  *
@@ -1039,9 +1049,9 @@ DeleteRtpService(IRtpService* service);
  * 功能: 校验rtp服务收到的口令hash值
  *
  * 参数:
- * nonce        : 服务端的会话随机数
- * password     : 服务端留存的会话口令
- * passwordHash : 客户端发来的口令hash值
+ * serviceNonce       : 服务端的会话随机数
+ * servicePassword    : 服务端留存的会话口令
+ * clientPasswordHash : 客户端发来的口令hash值
  *
  * 返回值: true成功, false失败
  *
@@ -1050,9 +1060,9 @@ DeleteRtpService(IRtpService* service);
 PRO_RTP_API
 bool
 PRO_CALLTYPE
-CheckRtpServiceData(PRO_UINT64  nonce,
-                    const char* password,
-                    const char  passwordHash[32]);
+CheckRtpServiceData(PRO_UINT64  serviceNonce,
+                    const char* servicePassword,
+                    const char  clientPasswordHash[32]);
 
 /*
  * 功能: 创建一个RTP_ST_UDPCLIENT类型的会话

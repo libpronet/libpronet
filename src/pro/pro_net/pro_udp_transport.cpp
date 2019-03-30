@@ -234,6 +234,15 @@ CProUdpTransport::GetType() const
     return (PRO_TRANS_UDP);
 }
 
+PRO_SSL_SUITE_ID
+PRO_CALLTYPE
+CProUdpTransport::GetSslSuite(char suiteName[64]) const
+{
+    strcpy(suiteName, "NONE");
+
+    return (PRO_SSL_SUITE_NONE);
+}
+
 PRO_INT64
 PRO_CALLTYPE
 CProUdpTransport::GetSockId() const

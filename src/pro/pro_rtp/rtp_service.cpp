@@ -385,15 +385,29 @@ CRtpService::OnHandshakeOk(IProTcpHandshaker* handshaker,
         remoteInfo.inSrcMmId     = pbsd_ntoh32(remoteInfo.inSrcMmId);
         remoteInfo.outSrcMmId    = pbsd_ntoh32(remoteInfo.outSrcMmId);
 
-        observer->OnAcceptSession(
-            (IRtpService*)this,
-            sockId,
-            unixSocket,
-            remoteIp,
-            remotePort,
-            &remoteInfo,
-            nonce
+        assert(
+            remoteInfo.packMode == RTP_EPM_DEFAULT ||
+            remoteInfo.packMode == RTP_EPM_TCP2    ||
+            remoteInfo.packMode == RTP_EPM_TCP4
             );
+        if (remoteInfo.packMode != RTP_EPM_DEFAULT &&
+            remoteInfo.packMode != RTP_EPM_TCP2    &&
+            remoteInfo.packMode != RTP_EPM_TCP4)
+        {
+            ProCloseSockId(sockId);
+        }
+        else
+        {
+            observer->OnAcceptSession(
+                (IRtpService*)this,
+                sockId,
+                unixSocket,
+                remoteIp,
+                remotePort,
+                &remoteInfo,
+                nonce
+                );
+        }
     }
 
     observer->Release();
@@ -536,16 +550,31 @@ CRtpService::OnHandshakeOk(IProSslHandshaker* handshaker,
         remoteInfo.inSrcMmId     = pbsd_ntoh32(remoteInfo.inSrcMmId);
         remoteInfo.outSrcMmId    = pbsd_ntoh32(remoteInfo.outSrcMmId);
 
-        observer->OnAcceptSession(
-            (IRtpService*)this,
-            ctx,
-            sockId,
-            unixSocket,
-            remoteIp,
-            remotePort,
-            &remoteInfo,
-            nonce
+        assert(
+            remoteInfo.packMode == RTP_EPM_DEFAULT ||
+            remoteInfo.packMode == RTP_EPM_TCP2    ||
+            remoteInfo.packMode == RTP_EPM_TCP4
             );
+        if (remoteInfo.packMode != RTP_EPM_DEFAULT &&
+            remoteInfo.packMode != RTP_EPM_TCP2    &&
+            remoteInfo.packMode != RTP_EPM_TCP4)
+        {
+            ProSslCtx_Delete(ctx);
+            ProCloseSockId(sockId);
+        }
+        else
+        {
+            observer->OnAcceptSession(
+                (IRtpService*)this,
+                ctx,
+                sockId,
+                unixSocket,
+                remoteIp,
+                remotePort,
+                &remoteInfo,
+                nonce
+                );
+        }
     }
 
     observer->Release();

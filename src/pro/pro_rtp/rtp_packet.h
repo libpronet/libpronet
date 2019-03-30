@@ -53,26 +53,35 @@ struct RTP_EXT
 struct RTP_HEADER
 {
 #if defined(PRO_WORDS_BIGENDIAN)
-    unsigned char v  : 2;
-    unsigned char p  : 1;
-    unsigned char x  : 1;
-    unsigned char cc : 4;
+    unsigned char      v  : 2;
+    unsigned char      p  : 1;
+    unsigned char      x  : 1;
+    unsigned char      cc : 4;
 
-    unsigned char m  : 1;
-    unsigned char pt : 7;
+    unsigned char      m  : 1;
+    unsigned char      pt : 7;
 #else
-    unsigned char cc : 4;
-    unsigned char x  : 1;
-    unsigned char p  : 1;
-    unsigned char v  : 2;
+    unsigned char      cc : 4;
+    unsigned char      x  : 1;
+    unsigned char      p  : 1;
+    unsigned char      v  : 2;
 
-    unsigned char pt : 7;
-    unsigned char m  : 1;
+    unsigned char      pt : 7;
+    unsigned char      m  : 1;
 #endif
 
-    PRO_UINT16    seq   ;
-    PRO_UINT32    ts    ;
-    PRO_UINT32    ssrc  ;
+    PRO_UINT16         seq   ;
+    PRO_UINT32         ts    ;
+    union
+    {
+        PRO_UINT32     ssrc  ;
+        struct
+        {
+            PRO_UINT16 dummy ;
+            PRO_UINT16 len2  ;
+        };
+        PRO_UINT32     len4  ;
+    };
 
     DECLARE_SGI_POOL(0);
 };
@@ -94,13 +103,17 @@ class CRtpPacket : public IRtpPacket, public CProRefCount
 public:
 
     static CRtpPacket* CreateInstance(
-        const void*   payloadBuffer,
-        unsigned long payloadSize
+        const void*       payloadBuffer,
+        unsigned long     payloadSize,
+        RTP_EXT_PACK_MODE packMode
         );
 
     static CRtpPacket* CreateInstance(
-        unsigned long payloadSize
+        unsigned long     payloadSize,
+        RTP_EXT_PACK_MODE packMode
         );
+
+    static CRtpPacket* Clone(const IRtpPacket* packet);
 
     static bool ParseRtpBuffer(
         const char*  buffer,
@@ -159,11 +172,15 @@ public:
 
     virtual void* PRO_CALLTYPE GetPayloadBuffer();
 
-    virtual PRO_UINT16 PRO_CALLTYPE GetPayloadSize() const;
+    virtual unsigned long PRO_CALLTYPE GetPayloadSize() const;
 
-    virtual void PRO_CALLTYPE SetTick_i(PRO_INT64 tick);
+    virtual PRO_UINT16 PRO_CALLTYPE GetPayloadSize16() const;
 
-    virtual PRO_INT64 PRO_CALLTYPE GetTick_i() const;
+    virtual RTP_EXT_PACK_MODE PRO_CALLTYPE GetPackMode() const;
+
+    virtual void PRO_CALLTYPE SetTick(PRO_INT64 tick);
+
+    virtual PRO_INT64 PRO_CALLTYPE GetTick() const;
 
     /*
      * Don't use this method unless you know why and how to use it.
@@ -177,19 +194,21 @@ public:
 
 private:
 
-    CRtpPacket();
+    CRtpPacket(RTP_EXT_PACK_MODE packMode);
 
     virtual ~CRtpPacket();
 
     void Init(
-        const void* payloadBuffer,
-        PRO_UINT16  payloadSize
+        const void*   payloadBuffer,
+        unsigned long payloadSize
         );
 
 private:
 
-    RTP_PACKET* m_packet;
-    PRO_INT64   m_tick;
+    const RTP_EXT_PACK_MODE m_packMode;
+    PRO_UINT32              m_ssrc;
+    PRO_INT64               m_tick;
+    RTP_PACKET*             m_packet;
 };
 
 /////////////////////////////////////////////////////////////////////////////

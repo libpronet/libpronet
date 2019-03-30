@@ -33,7 +33,8 @@
 ////
 
 #if !defined(____RTP_FRAMEWORK_H____)
-#define RTP_MM_TYPE unsigned char
+#define RTP_MM_TYPE       unsigned char
+#define RTP_EXT_PACK_MODE unsigned char
 #endif
 
 /*
@@ -91,16 +92,21 @@ public:
 
     virtual void* PRO_CALLTYPE GetPayloadBuffer() = 0;
 
-    virtual PRO_UINT16 PRO_CALLTYPE GetPayloadSize() const = 0;
+    virtual unsigned long PRO_CALLTYPE GetPayloadSize() const = 0;
 
-    virtual void PRO_CALLTYPE SetTick_i(PRO_INT64 tick) = 0;
+    virtual PRO_UINT16 PRO_CALLTYPE GetPayloadSize16() const = 0;
 
-    virtual PRO_INT64 PRO_CALLTYPE GetTick_i() const = 0;
+    virtual RTP_EXT_PACK_MODE PRO_CALLTYPE GetPackMode() const = 0;
+
+    virtual void PRO_CALLTYPE SetTick(PRO_INT64 tick) = 0;
+
+    virtual PRO_INT64 PRO_CALLTYPE GetTick() const = 0;
 };
 #endif /* ____IRtpPacket____ */
 
 #if !defined(____RTP_FRAMEWORK_H____)
 #undef RTP_MM_TYPE
+#undef RTP_EXT_PACK_MODE
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
@@ -187,7 +193,7 @@ CProReorder::PushBack(IRtpPacket* packet)
 
         m_seq64ToPacket.clear();
 
-        packet->SetTick_i(tick);
+        packet->SetTick(tick);
         packet->AddRef();
         m_seq64ToPacket[seq16] = packet;
 
@@ -263,7 +269,7 @@ CProReorder::PushBack(IRtpPacket* packet)
 
         m_seq64ToPacket.clear();
 
-        packet->SetTick_i(tick);
+        packet->SetTick(tick);
         packet->AddRef();
         m_seq64ToPacket[seq16] = packet;
 
@@ -274,7 +280,7 @@ CProReorder::PushBack(IRtpPacket* packet)
     {
         if (m_seq64ToPacket.find(seq64) == m_seq64ToPacket.end())
         {
-            packet->SetTick_i(tick);
+            packet->SetTick(tick);
             packet->AddRef();
             m_seq64ToPacket[seq64] = packet;
 
@@ -302,7 +308,7 @@ CProReorder::PopFront()
 
     if (seq64 == m_minSeq64                        ||
         m_seq64ToPacket.size() >= m_maxPacketCount ||
-        tick - packet->GetTick_i() >= m_maxWaitingDuration * 1000)
+        tick - packet->GetTick() >= m_maxWaitingDuration * 1000)
     {
         m_seq64ToPacket.erase(itr);
         m_minSeq64 = seq64 + 1; /* set value */

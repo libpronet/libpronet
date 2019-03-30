@@ -184,7 +184,7 @@ private:
     virtual void PRO_CALLTYPE OnRecvMsg(
         IRtpMsgServer*      msgServer,
         const void*         buf,
-        PRO_UINT16          size,
+        unsigned long       size,
         PRO_UINT16          charset,
         const RTP_MSG_USER* srcUser
         )

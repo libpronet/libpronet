@@ -137,10 +137,12 @@ ProRtpVersion(unsigned char* major, /* = NULL */
 PRO_RTP_API
 IRtpPacket*
 PRO_CALLTYPE
-CreateRtpPacket(const void*   payloadBuffer,
-                unsigned long payloadSize)
+CreateRtpPacket(const void*       payloadBuffer,
+                unsigned long     payloadSize,
+                RTP_EXT_PACK_MODE packMode)      /* = RTP_EPM_DEFAULT */
 {
-    CRtpPacket* const packet = CRtpPacket::CreateInstance(payloadBuffer, payloadSize);
+    CRtpPacket* const packet =
+        CRtpPacket::CreateInstance(payloadBuffer, payloadSize, packMode);
 
     return (packet);
 }
@@ -148,9 +150,10 @@ CreateRtpPacket(const void*   payloadBuffer,
 PRO_RTP_API
 IRtpPacket*
 PRO_CALLTYPE
-CreateRtpPacketSpace(unsigned long payloadSize)
+CreateRtpPacketSpace(unsigned long     payloadSize,
+                     RTP_EXT_PACK_MODE packMode) /* = RTP_EPM_DEFAULT */
 {
-    CRtpPacket* const packet = CRtpPacket::CreateInstance(payloadSize);
+    CRtpPacket* const packet = CRtpPacket::CreateInstance(payloadSize, packMode);
 
     return (packet);
 }
@@ -160,26 +163,7 @@ IRtpPacket*
 PRO_CALLTYPE
 CloneRtpPacket(const IRtpPacket* packet)
 {
-    assert(packet != NULL);
-    if (packet == NULL)
-    {
-        return (NULL);
-    }
-
-    const char* const payloadBuffer = (char*)packet->GetPayloadBuffer();
-    const PRO_UINT16  payloadSize   = packet->GetPayloadSize();
-
-    CRtpPacket* const newPacket = CRtpPacket::CreateInstance(payloadSize);
-    if (newPacket == NULL)
-    {
-        return (NULL);
-    }
-
-    memcpy(
-        (char*)newPacket->GetPayloadBuffer() - sizeof(RTP_HEADER) - sizeof(RTP_EXT),
-        payloadBuffer - sizeof(RTP_HEADER) - sizeof(RTP_EXT),
-        payloadSize + sizeof(RTP_HEADER) + sizeof(RTP_EXT)
-        );
+    CRtpPacket* const newPacket = CRtpPacket::Clone(packet);
 
     return (newPacket);
 }
@@ -190,13 +174,6 @@ PRO_CALLTYPE
 ParseRtpStreamToPacket(const void* streamBuffer,
                        PRO_UINT16  streamSize)
 {
-    assert(streamBuffer != NULL);
-    assert(streamSize > 0);
-    if (streamBuffer == NULL || streamSize == 0)
-    {
-        return (NULL);
-    }
-
     RTP_HEADER  hdr;
     const char* payloadBuffer = NULL;
     PRO_UINT16  payloadSize   = 0;
@@ -218,7 +195,8 @@ ParseRtpStreamToPacket(const void* streamBuffer,
     hdr.x  = 0;
     hdr.cc = 0;
 
-    IRtpPacket* const packet = CRtpPacket::CreateInstance(payloadBuffer, payloadSize);
+    IRtpPacket* const packet =
+        CRtpPacket::CreateInstance(payloadBuffer, payloadSize, RTP_EPM_DEFAULT);
     if (packet == NULL)
     {
         return (NULL);
@@ -244,8 +222,13 @@ FindRtpStreamFromPacket(const IRtpPacket* packet,
         return (NULL);
     }
 
+    if (packet->GetPackMode() != RTP_EPM_DEFAULT)
+    {
+        return (NULL);
+    }
+
     const char* const payloadBuffer = (char*)packet->GetPayloadBuffer();
-    const PRO_UINT16  payloadSize   = packet->GetPayloadSize();
+    const PRO_UINT16  payloadSize   = packet->GetPayloadSize16();
 
     *streamSize = payloadSize + sizeof(RTP_HEADER);
 
@@ -523,14 +506,14 @@ DeleteRtpService(IRtpService* service)
 PRO_RTP_API
 bool
 PRO_CALLTYPE
-CheckRtpServiceData(PRO_UINT64  nonce,
-                    const char* password,
-                    const char  passwordHash[32])
+CheckRtpServiceData(PRO_UINT64  serviceNonce,
+                    const char* servicePassword,
+                    const char  clientPasswordHash[32])
 {
-    char hash[32];
-    ProCalcPasswordHash(nonce, password, hash);
+    char servicePasswordHash[32];
+    ProCalcPasswordHash(serviceNonce, servicePassword, servicePasswordHash);
 
-    return (memcmp(hash, passwordHash, 32) == 0);
+    return (memcmp(clientPasswordHash, servicePasswordHash, 32) == 0);
 }
 
 PRO_RTP_API

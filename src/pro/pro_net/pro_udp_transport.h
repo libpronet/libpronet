@@ -58,6 +58,8 @@ public:
 
     virtual PRO_TRANS_TYPE PRO_CALLTYPE GetType() const;
 
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(char suiteName[64]) const;
+
     virtual PRO_INT64 PRO_CALLTYPE GetSockId() const;
 
     virtual const char* PRO_CALLTYPE GetLocalIp(char localIp[64]) const;

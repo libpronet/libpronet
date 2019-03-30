@@ -255,7 +255,7 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
                 break;
             }
 
-            packet = CRtpPacket::CreateInstance(dataSize);
+            packet = CRtpPacket::CreateInstance(dataSize, RTP_EPM_DEFAULT);
             if (packet == NULL)
             {
                 error = true;
@@ -270,7 +270,7 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
 
                 const bool ret = CRtpPacket::ParseRtpBuffer(
                     (char*)packet->GetPayloadBuffer(),
-                    packet->GetPayloadSize(),
+                    packet->GetPayloadSize16(),
                     hdr,
                     payloadBuffer,
                     payloadSize

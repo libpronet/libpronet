@@ -37,6 +37,18 @@ CRtpSessionSslclientEx::CreateInstance(const RTP_SESSION_INFO*      localInfo,
         return (NULL);
     }
 
+    assert(
+        localInfo->packMode == RTP_EPM_DEFAULT ||
+        localInfo->packMode == RTP_EPM_TCP2    ||
+        localInfo->packMode == RTP_EPM_TCP4
+        );
+    if (localInfo->packMode != RTP_EPM_DEFAULT &&
+        localInfo->packMode != RTP_EPM_TCP2    &&
+        localInfo->packMode != RTP_EPM_TCP4)
+    {
+        return (NULL);
+    }
+
     CRtpSessionSslclientEx* const session =
         new CRtpSessionSslclientEx(*localInfo, sslConfig, sslServiceName);
 

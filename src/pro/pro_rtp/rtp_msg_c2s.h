@@ -153,7 +153,7 @@ private:
     virtual void PRO_CALLTYPE OnRecvMsg(
         IRtpMsgClient*      msgClient,
         const void*         buf,
-        PRO_UINT16          size,
+        unsigned long       size,
         PRO_UINT16          charset,
         const RTP_MSG_USER* srcUser
         );
@@ -161,7 +161,7 @@ private:
     virtual void PRO_CALLTYPE OnTransferMsg(
         IRtpMsgClient*      msgClient,
         const void*         buf,
-        PRO_UINT16          size,
+        unsigned long       size,
         PRO_UINT16          charset,
         const RTP_MSG_USER* srcUser,
         const RTP_MSG_USER* dstUsers,
@@ -201,7 +201,7 @@ private:
         IRtpSession**       sessions,
         unsigned char       sessionCount,
         const void*         buf,
-        PRO_UINT16          size,
+        unsigned long       size,
         PRO_UINT16          charset,
         const RTP_MSG_USER* srcUser
         );

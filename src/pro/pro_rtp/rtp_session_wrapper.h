@@ -84,20 +84,16 @@ private:
 
     virtual bool PRO_CALLTYPE IsReady() const;
 
-    virtual bool PRO_CALLTYPE SendPacket(
-        IRtpPacket* packet,
-        bool        handshaking       /* = false */
-        );
+    virtual bool PRO_CALLTYPE SendPacket(IRtpPacket* packet);
 
     virtual bool PRO_CALLTYPE SendPacketByTimer(
         IRtpPacket*   packet,
-        unsigned long sendDurationMs, /* = 0 */
-        bool          handshaking     /* = false */
+        unsigned long sendDurationMs /* = 0 */
         );
 
     virtual void PRO_CALLTYPE GetSendOnSendTick(
-        PRO_INT64* sendTick,          /* = NULL */
-        PRO_INT64* onSendTick         /* = NULL */
+        PRO_INT64* sendTick,         /* = NULL */
+        PRO_INT64* onSendTick        /* = NULL */
         ) const;
 
     virtual void PRO_CALLTYPE RequestOnSend();

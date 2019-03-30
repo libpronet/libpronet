@@ -22,26 +22,45 @@
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_z.h"
+#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define MAX_PAYLOAD_SIZE (1024 * 63) /* 60 + 3 */
+#define MAX_PAYLOAD_SIZE (1024 * 63)
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
 CRtpPacket*
-CRtpPacket::CreateInstance(const void*   payloadBuffer,
-                           unsigned long payloadSize)
+CRtpPacket::CreateInstance(const void*       payloadBuffer,
+                           unsigned long     payloadSize,
+                           RTP_EXT_PACK_MODE packMode)
 {
-    if (payloadBuffer == NULL || payloadSize == 0 || payloadSize > MAX_PAYLOAD_SIZE)
+    assert(payloadBuffer != NULL);
+    assert(payloadSize > 0);
+    if (payloadBuffer == NULL || payloadSize == 0)
     {
         return (NULL);
     }
 
-    CRtpPacket* packet = new CRtpPacket;
-    packet->Init(payloadBuffer, (PRO_UINT16)payloadSize);
+    assert(packMode == RTP_EPM_DEFAULT || packMode == RTP_EPM_TCP2 || packMode == RTP_EPM_TCP4);
+    if (packMode != RTP_EPM_DEFAULT && packMode != RTP_EPM_TCP2 && packMode != RTP_EPM_TCP4)
+    {
+        return (NULL);
+    }
+
+    if (packMode == RTP_EPM_DEFAULT || packMode == RTP_EPM_TCP2)
+    {
+        assert(payloadSize <= MAX_PAYLOAD_SIZE);
+        if (payloadSize > MAX_PAYLOAD_SIZE)
+        {
+            return (NULL);
+        }
+    }
+
+    CRtpPacket* packet = new CRtpPacket(packMode);
+    packet->Init(payloadBuffer, payloadSize);
     if (packet->m_packet == NULL)
     {
         delete packet;
@@ -52,15 +71,32 @@ CRtpPacket::CreateInstance(const void*   payloadBuffer,
 }
 
 CRtpPacket*
-CRtpPacket::CreateInstance(unsigned long payloadSize)
+CRtpPacket::CreateInstance(unsigned long     payloadSize,
+                           RTP_EXT_PACK_MODE packMode)
 {
-    if (payloadSize == 0 || payloadSize > MAX_PAYLOAD_SIZE)
+    assert(payloadSize > 0);
+    if (payloadSize == 0)
     {
         return (NULL);
     }
 
-    CRtpPacket* packet = new CRtpPacket;
-    packet->Init(NULL, (PRO_UINT16)payloadSize);
+    assert(packMode == RTP_EPM_DEFAULT || packMode == RTP_EPM_TCP2 || packMode == RTP_EPM_TCP4);
+    if (packMode != RTP_EPM_DEFAULT && packMode != RTP_EPM_TCP2 && packMode != RTP_EPM_TCP4)
+    {
+        return (NULL);
+    }
+
+    if (packMode == RTP_EPM_DEFAULT || packMode == RTP_EPM_TCP2)
+    {
+        assert(payloadSize <= MAX_PAYLOAD_SIZE);
+        if (payloadSize > MAX_PAYLOAD_SIZE)
+        {
+            return (NULL);
+        }
+    }
+
+    CRtpPacket* packet = new CRtpPacket(packMode);
+    packet->Init(NULL, payloadSize);
     if (packet->m_packet == NULL)
     {
         delete packet;
@@ -68,6 +104,35 @@ CRtpPacket::CreateInstance(unsigned long payloadSize)
     }
 
     return (packet);
+}
+
+CRtpPacket*
+CRtpPacket::Clone(const IRtpPacket* packet)
+{
+    assert(packet != NULL);
+    if (packet == NULL)
+    {
+        return (NULL);
+    }
+
+    CRtpPacket* const packet2 = (CRtpPacket*)packet;
+
+    CRtpPacket* newPacket = new CRtpPacket(packet2->m_packMode);
+    newPacket->Init(packet2->GetPayloadBuffer(), packet2->GetPayloadSize());
+    if (newPacket->m_packet == NULL)
+    {
+        delete newPacket;
+        newPacket = NULL;
+    }
+    else
+    {
+        newPacket->m_ssrc         = packet2->m_ssrc;
+        newPacket->m_tick         = packet2->m_tick;
+        *newPacket->m_packet->ext = *packet2->m_packet->ext;
+        *newPacket->m_packet->hdr = *packet2->m_packet->hdr;
+    }
+
+    return (newPacket);
 }
 
 bool
@@ -80,6 +145,8 @@ CRtpPacket::ParseRtpBuffer(const char*  buffer,
     payloadBuffer = NULL;
     payloadSize   = 0;
 
+    assert(buffer != NULL);
+    assert(size > 0);
     if (buffer == NULL || size == 0)
     {
         return (false);
@@ -182,7 +249,9 @@ bool
 CRtpPacket::ParseExtBuffer(const char* buffer,
                            PRO_UINT16  size)
 {
-    if (buffer == NULL || size < sizeof(RTP_EXT) + sizeof(RTP_HEADER) + 1)
+    assert(buffer != NULL);
+    assert(size > sizeof(RTP_EXT) + sizeof(RTP_HEADER));
+    if (buffer == NULL || size <= sizeof(RTP_EXT) + sizeof(RTP_HEADER))
     {
         return (false);
     }
@@ -204,10 +273,12 @@ CRtpPacket::ParseExtBuffer(const char* buffer,
     return (true);
 }
 
-CRtpPacket::CRtpPacket()
+CRtpPacket::CRtpPacket(RTP_EXT_PACK_MODE packMode)
+: m_packMode(packMode)
 {
-    m_packet = NULL;
+    m_ssrc   = 0;
     m_tick   = 0;
+    m_packet = NULL;
 }
 
 CRtpPacket::~CRtpPacket()
@@ -217,8 +288,8 @@ CRtpPacket::~CRtpPacket()
 }
 
 void
-CRtpPacket::Init(const void* payloadBuffer,
-                 PRO_UINT16  payloadSize)
+CRtpPacket::Init(const void*   payloadBuffer,
+                 unsigned long payloadSize)
 {
     m_packet = (RTP_PACKET*)ProMalloc(sizeof(RTP_PACKET) + payloadSize + 16); /* (n + 16) bytes, for ssl */
     if (m_packet == NULL)
@@ -230,8 +301,22 @@ CRtpPacket::Init(const void* payloadBuffer,
     m_packet->ext = (RTP_EXT*)m_packet->dummyBuffer;
     m_packet->hdr = (RTP_HEADER*)(m_packet->ext + 1);
 
-    m_packet->ext->hdrAndPayloadSize = pbsd_hton16(sizeof(RTP_HEADER) + payloadSize);
-    m_packet->hdr->v                 = 2;
+    const PRO_UINT16 payloadSize16 = (PRO_UINT16)payloadSize;
+    const PRO_UINT32 payloadSize32 = (PRO_UINT32)payloadSize;
+
+    m_packet->hdr->v                     = 2;
+    if (m_packMode == RTP_EPM_DEFAULT)
+    {
+        m_packet->ext->hdrAndPayloadSize = pbsd_hton16(sizeof(RTP_HEADER) + payloadSize16);
+    }
+    else if (m_packMode == RTP_EPM_TCP2)
+    {
+        m_packet->hdr->len2              = pbsd_hton16(payloadSize16);
+    }
+    else
+    {
+        m_packet->hdr->len4              = pbsd_hton32(payloadSize32);
+    }
 
     if (payloadBuffer != NULL)
     {
@@ -317,14 +402,32 @@ void
 PRO_CALLTYPE
 CRtpPacket::SetSsrc(PRO_UINT32 ssrc)
 {
-    m_packet->hdr->ssrc = pbsd_hton32(ssrc);
+    if (m_packMode == RTP_EPM_DEFAULT)
+    {
+        m_packet->hdr->ssrc = pbsd_hton32(ssrc);
+    }
+    else
+    {
+        m_ssrc              = ssrc;
+    }
 }
 
 PRO_UINT32
 PRO_CALLTYPE
 CRtpPacket::GetSsrc() const
 {
-    return (pbsd_ntoh32(m_packet->hdr->ssrc));
+    PRO_UINT32 ssrc = 0;
+
+    if (m_packMode == RTP_EPM_DEFAULT)
+    {
+        ssrc = pbsd_ntoh32(m_packet->hdr->ssrc);
+    }
+    else
+    {
+        ssrc = m_ssrc;
+    }
+
+    return (ssrc);
 }
 
 void
@@ -397,25 +500,70 @@ CRtpPacket::GetPayloadBuffer()
     return (m_packet->hdr + 1);
 }
 
-PRO_UINT16
+unsigned long
 PRO_CALLTYPE
 CRtpPacket::GetPayloadSize() const
 {
-    const PRO_UINT16 hdrAndPayloadSize = pbsd_ntoh16(m_packet->ext->hdrAndPayloadSize);
+    unsigned long size = 0;
 
-    return (hdrAndPayloadSize - sizeof(RTP_HEADER));
+    if (m_packMode == RTP_EPM_DEFAULT)
+    {
+        size =  pbsd_ntoh16(m_packet->ext->hdrAndPayloadSize);
+        size -= sizeof(RTP_HEADER);
+    }
+    else if (m_packMode == RTP_EPM_TCP2)
+    {
+        size =  pbsd_ntoh16(m_packet->hdr->len2);
+    }
+    else
+    {
+        size =  pbsd_ntoh32(m_packet->hdr->len4);
+    }
+
+    return (size);
+}
+
+PRO_UINT16
+PRO_CALLTYPE
+CRtpPacket::GetPayloadSize16() const
+{
+    unsigned long size = 0;
+
+    if (m_packMode == RTP_EPM_DEFAULT)
+    {
+        size =  pbsd_ntoh16(m_packet->ext->hdrAndPayloadSize);
+        size -= sizeof(RTP_HEADER);
+    }
+    else if (m_packMode == RTP_EPM_TCP2)
+    {
+        size =  pbsd_ntoh16(m_packet->hdr->len2);
+    }
+    else
+    {
+        size =  pbsd_ntoh32(m_packet->hdr->len4);
+        size =  size <= MAX_PAYLOAD_SIZE ? size : 0;
+    }
+
+    return ((PRO_UINT16)size);
+}
+
+RTP_EXT_PACK_MODE
+PRO_CALLTYPE
+CRtpPacket::GetPackMode() const
+{
+    return (m_packMode);
 }
 
 void
 PRO_CALLTYPE
-CRtpPacket::SetTick_i(PRO_INT64 tick)
+CRtpPacket::SetTick(PRO_INT64 tick)
 {
     m_tick = tick;
 }
 
 PRO_INT64
 PRO_CALLTYPE
-CRtpPacket::GetTick_i() const
+CRtpPacket::GetTick() const
 {
     return (m_tick);
 }

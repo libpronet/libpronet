@@ -332,9 +332,9 @@ ProDeallocateSgiPoolBuffer(void*         buf,
  * 功能: 获取SGI内存池信息
  *
  * 参数:
- * freeList  : 用于接收信息
- * objSize   : 用于接收信息
- * heapSize  : 用于接收信息
+ * freeList  : 返回的链表信息
+ * objSize   : 返回的对象尺寸信息
+ * heapSize  : 返回的堆容量信息
  * poolIndex : 内存池索引号. [0 ~ 9],一共10个内存池
  *
  * 返回值: 无

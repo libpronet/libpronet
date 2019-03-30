@@ -276,7 +276,8 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
 
                 m_peerAliveTick = ProGetTickCount64();
 
-                packet = CRtpPacket::CreateInstance(sizeof(RTP_EXT) + ext.hdrAndPayloadSize);
+                packet = CRtpPacket::CreateInstance(
+                    sizeof(RTP_EXT) + ext.hdrAndPayloadSize, RTP_EPM_DEFAULT);
                 if (packet == NULL)
                 {
                     error = true;
@@ -287,7 +288,7 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                         packet->GetPayloadBuffer(), sizeof(RTP_EXT) + ext.hdrAndPayloadSize);
 
                     if (!CRtpPacket::ParseExtBuffer(
-                        (char*)packet->GetPayloadBuffer(), packet->GetPayloadSize()))
+                        (char*)packet->GetPayloadBuffer(), packet->GetPayloadSize16()))
                     {
                         packet->Release();
                         packet = NULL;

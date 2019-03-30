@@ -31,13 +31,14 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define RTP_MSG_PROTOCOL_VERSION 0
+#define RTP_MSG_PROTOCOL_VERSION 1
+#define RTP_MSG_PACK_MODE        RTP_EPM_TCP4
 
 class CProFunctorCommandTask;
 
 struct RTP_MSG_HEADER0
 {
-    PRO_UINT16     version;      /* the current protocol version is 0 */
+    PRO_UINT16     version;      /* the current protocol version is 1 */
     RTP_MSG_USER   user;
     union
     {
@@ -154,7 +155,7 @@ public:
 
     virtual bool PRO_CALLTYPE SendMsg(
         const void*         buf,
-        PRO_UINT16          size,
+        unsigned long       size,
         PRO_UINT16          charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount
@@ -246,7 +247,7 @@ private:
         IRtpSession**       sessions,
         unsigned char       sessionCount,
         const void*         buf,
-        PRO_UINT16          size,
+        unsigned long       size,
         PRO_UINT16          charset,
         const RTP_MSG_USER* srcUser,
         const RTP_MSG_USER* dstUsers,    /* = NULL */

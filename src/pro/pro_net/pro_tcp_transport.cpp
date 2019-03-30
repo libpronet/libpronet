@@ -260,6 +260,15 @@ CProTcpTransport::GetType() const
     return (PRO_TRANS_TCP);
 }
 
+PRO_SSL_SUITE_ID
+PRO_CALLTYPE
+CProTcpTransport::GetSslSuite(char suiteName[64]) const
+{
+    strcpy(suiteName, "NONE");
+
+    return (PRO_SSL_SUITE_NONE);
+}
+
 PRO_INT64
 PRO_CALLTYPE
 CProTcpTransport::GetSockId() const

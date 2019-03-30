@@ -1863,21 +1863,27 @@ ProSslCtx_Delete(PRO_SSL_CTX* ctx)
 PRO_NET_API
 PRO_SSL_SUITE_ID
 PRO_CALLTYPE
-ProSslCtx_GetSuite(PRO_SSL_CTX* ctx)
+ProSslCtx_GetSuite(PRO_SSL_CTX* ctx,
+                   char         suiteName[64])
 {
+    suiteName[0]  = '\0';
+    suiteName[63] = '\0';
+
     assert(ctx != NULL);
     if (ctx == NULL)
     {
-        return (0);
+        return (PRO_SSL_SUITE_NONE);
     }
 
-    const char* const suiteName = mbedtls_ssl_get_ciphersuite(ctx);
-    if (suiteName == NULL || suiteName[0] == '\0')
+    const char* const name = mbedtls_ssl_get_ciphersuite(ctx);
+    if (name == NULL || name[0] == '\0')
     {
-        return (0);
+        return (PRO_SSL_SUITE_NONE);
     }
 
-    return ((PRO_SSL_SUITE_ID)mbedtls_ssl_get_ciphersuite_id(suiteName));
+    strncpy_pro(suiteName, 64, name);
+
+    return ((PRO_SSL_SUITE_ID)mbedtls_ssl_get_ciphersuite_id(name));
 }
 
 PRO_NET_API

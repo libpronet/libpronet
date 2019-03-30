@@ -290,7 +290,7 @@ CTest::SendMsg(const char* msg)
             dstUsers.push_back(*itr);
         }
 
-        m_msgClient->SendMsg(msg, (PRO_UINT16)strlen(msg),
+        m_msgClient->SendMsg(msg, strlen(msg),
             0, &dstUsers[0], (unsigned char)dstUsers.size());
     }
 }
@@ -333,7 +333,7 @@ CTest::SendMsg(const char*         msg,
             return;
         }
 
-        m_msgClient->SendMsg(msg, (PRO_UINT16)strlen(msg), 0, dstUser, 1);
+        m_msgClient->SendMsg(msg, strlen(msg), 0, dstUser, 1);
     }
 }
 
@@ -385,7 +385,7 @@ void
 PRO_CALLTYPE
 CTest::OnRecvMsg(IRtpMsgClient*      msgClient,
                  const void*         buf,
-                 PRO_UINT16          size,
+                 unsigned long       size,
                  PRO_UINT16          charset,
                  const RTP_MSG_USER* srcUser)
 {

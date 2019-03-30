@@ -36,7 +36,7 @@ public:
     virtual void PRO_CALLTYPE OnTransferMsg(
         IRtpMsgClient*      msgClient,
         const void*         buf,
-        PRO_UINT16          size,
+        unsigned long       size,
         PRO_UINT16          charset,
         const RTP_MSG_USER* srcUser,
         const RTP_MSG_USER* dstUsers,
@@ -84,7 +84,7 @@ public:
 
     virtual bool PRO_CALLTYPE SendMsg(
         const void*         buf,
-        PRO_UINT16          size,
+        unsigned long       size,
         PRO_UINT16          charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount
@@ -92,7 +92,7 @@ public:
 
     bool TransferMsg(
         const void*         buf,
-        PRO_UINT16          size,
+        unsigned long       size,
         PRO_UINT16          charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount,
@@ -140,7 +140,7 @@ private:
 
     bool PushData(
         const void*         buf,
-        PRO_UINT16          size,
+        unsigned long       size,
         PRO_UINT16          charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount,

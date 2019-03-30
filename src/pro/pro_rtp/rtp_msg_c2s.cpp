@@ -525,7 +525,9 @@ CRtpMsgC2s::OnAcceptSession(IRtpService*            service,
 
     assert(remoteInfo->sessionType == RTP_ST_TCPCLIENT_EX);
     assert(remoteInfo->mmType == m_mmType);
-    if (remoteInfo->sessionType != RTP_ST_TCPCLIENT_EX || remoteInfo->mmType != m_mmType)
+    assert(remoteInfo->packMode == RTP_MSG_PACK_MODE);
+    if (remoteInfo->sessionType != RTP_ST_TCPCLIENT_EX || remoteInfo->mmType != m_mmType ||
+        remoteInfo->packMode != RTP_MSG_PACK_MODE)
     {
         ProCloseSockId(sockId);
 
@@ -560,7 +562,9 @@ CRtpMsgC2s::OnAcceptSession(IRtpService*            service,
 
     assert(remoteInfo->sessionType == RTP_ST_SSLCLIENT_EX);
     assert(remoteInfo->mmType == m_mmType);
-    if (remoteInfo->sessionType != RTP_ST_SSLCLIENT_EX || remoteInfo->mmType != m_mmType)
+    assert(remoteInfo->packMode == RTP_MSG_PACK_MODE);
+    if (remoteInfo->sessionType != RTP_ST_SSLCLIENT_EX || remoteInfo->mmType != m_mmType ||
+        remoteInfo->packMode != RTP_MSG_PACK_MODE)
     {
         ProSslCtx_Delete(sslCtx);
         ProCloseSockId(sockId);
@@ -591,6 +595,7 @@ CRtpMsgC2s::AcceptSession(IRtpService*            service,
         remoteInfo->sessionType == RTP_ST_SSLCLIENT_EX
         );
     assert(remoteInfo->mmType == m_mmType);
+    assert(remoteInfo->packMode == RTP_MSG_PACK_MODE);
 
     RTP_MSG_HEADER0 msgHeader;
     RTP_MSG_USER    user;
@@ -691,8 +696,7 @@ CRtpMsgC2s::AcceptSession(IRtpService*            service,
         CProStlString theString = "";
         msgStream.ToString(theString);
 
-        if (!m_msgClient->SendMsg(
-            theString.c_str(), (PRO_UINT16)theString.length(), 0, &ROOT_ID_C2S, 1))
+        if (!m_msgClient->SendMsg(theString.c_str(), theString.length(), 0, &ROOT_ID_C2S, 1))
         {
             m_reactor->CancelTimer(timerId);
 
@@ -802,13 +806,13 @@ CRtpMsgC2s::OnRecvSession(IRtpSession* session,
 
         if (sessionCount > 0)
         {
-            SendMsgToDownlink(sessions, sessionCount, msgBodyPtr, (PRO_UINT16)msgBodySize,
+            SendMsgToDownlink(sessions, sessionCount, msgBodyPtr, msgBodySize,
                 charset, &srcUser);
         }
 
         if (uplinkUserCount > 0 && m_msgClient != NULL)
         {
-            m_msgClient->TransferMsg(msgBodyPtr, (PRO_UINT16)msgBodySize,
+            m_msgClient->TransferMsg(msgBodyPtr, msgBodySize,
                 charset, uplinkUsers, uplinkUserCount, &srcUser);
         }
     }
@@ -916,7 +920,7 @@ void
 PRO_CALLTYPE
 CRtpMsgC2s::OnRecvMsg(IRtpMsgClient*      msgClient,
                       const void*         buf,
-                      PRO_UINT16          size,
+                      unsigned long       size,
                       PRO_UINT16          charset,
                       const RTP_MSG_USER* srcUser)
 {{
@@ -1032,6 +1036,7 @@ CRtpMsgC2s::ProcessMsg_client_login_ok(IRtpMsgClient*          msgClient,
             memset(&localInfo, 0, sizeof(RTP_SESSION_INFO));
             localInfo.remoteVersion = info.remoteInfo.localVersion;
             localInfo.mmType        = m_mmType;
+            localInfo.packMode      = info.remoteInfo.packMode;
 
             RTP_INIT_ARGS initArgs;
             memset(&initArgs, 0, sizeof(RTP_INIT_ARGS));
@@ -1212,7 +1217,7 @@ void
 PRO_CALLTYPE
 CRtpMsgC2s::OnTransferMsg(IRtpMsgClient*      msgClient,
                           const void*         buf,
-                          PRO_UINT16          size,
+                          unsigned long       size,
                           PRO_UINT16          charset,
                           const RTP_MSG_USER* srcUser,
                           const RTP_MSG_USER* dstUsers,
@@ -1423,7 +1428,7 @@ CRtpMsgC2s::SendAckToDownlink(IRtpSession*        session,
 
     const unsigned long msgHeaderSize = sizeof(RTP_MSG_HEADER0);
 
-    IRtpPacket* const packet = CreateRtpPacketSpace(msgHeaderSize);
+    IRtpPacket* const packet = CreateRtpPacketSpace(msgHeaderSize, RTP_MSG_PACK_MODE);
     if (packet == NULL)
     {
         return (false);
@@ -1448,7 +1453,7 @@ bool
 CRtpMsgC2s::SendMsgToDownlink(IRtpSession**       sessions,
                               unsigned char       sessionCount,
                               const void*         buf,
-                              PRO_UINT16          size,
+                              unsigned long       size,
                               PRO_UINT16          charset,
                               const RTP_MSG_USER* srcUser)
 {
@@ -1467,7 +1472,7 @@ CRtpMsgC2s::SendMsgToDownlink(IRtpSession**       sessions,
 
     const unsigned long msgHeaderSize = sizeof(RTP_MSG_HEADER);
 
-    IRtpPacket* const packet = CreateRtpPacketSpace(msgHeaderSize + size);
+    IRtpPacket* const packet = CreateRtpPacketSpace(msgHeaderSize + size, RTP_MSG_PACK_MODE);
     if (packet == NULL)
     {
         return (false);
@@ -1522,5 +1527,5 @@ CRtpMsgC2s::ReportLogout(IRtpMsgClient*      msgClient,
     CProStlString theString = "";
     msgStream.ToString(theString);
 
-    msgClient->SendMsg(theString.c_str(), (PRO_UINT16)theString.length(), 0, &ROOT_ID_C2S, 1);
+    msgClient->SendMsg(theString.c_str(), theString.length(), 0, &ROOT_ID_C2S, 1);
 }

@@ -47,7 +47,10 @@ CProSslTransport::CreateInstance(size_t recvPoolSize)   /* = 0 */
 CProSslTransport::CProSslTransport(size_t recvPoolSize) /* = 0 */
 : CProTcpTransport(false, recvPoolSize)
 {
-    m_ctx = NULL;
+    m_ctx     = NULL;
+    m_suiteId = PRO_SSL_SUITE_NONE;
+
+    strcpy(m_suiteName, "NONE");
 }
 
 CProSslTransport::~CProSslTransport()
@@ -182,6 +185,7 @@ CProSslTransport::Init(IProTransportObserver* observer,
         m_observer    = observer;
         m_reactorTask = reactorTask;
         m_ctx         = ctx;
+        m_suiteId     = ProSslCtx_GetSuite(ctx, m_suiteName);
         m_sockId      = sockId;
         m_onWr        = true;
     }
@@ -225,6 +229,22 @@ PRO_CALLTYPE
 CProSslTransport::GetType() const
 {
     return (PRO_TRANS_SSL);
+}
+
+PRO_SSL_SUITE_ID
+PRO_CALLTYPE
+CProSslTransport::GetSslSuite(char suiteName[64]) const
+{
+    PRO_SSL_SUITE_ID suiteId = PRO_SSL_SUITE_NONE;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        suiteId = m_suiteId;
+        strncpy_pro(suiteName, 64, m_suiteName);
+    }
+
+    return (suiteId);
 }
 
 void

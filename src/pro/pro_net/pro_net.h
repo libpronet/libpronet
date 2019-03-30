@@ -496,6 +496,8 @@ public:
      * 使用者负责(ctx, sockId)的资源维护.
      * 握手完成后,上层应该把(ctx, sockId)包装成IProTransport,
      * 或释放(ctx, sockId)对应的资源
+     *
+     * 调用ProSslCtx_GetSuite(...)可以获知当前使用的加密套件
      */
     virtual void PRO_CALLTYPE OnHandshakeOk(
         IProSslHandshaker* handshaker,
@@ -566,6 +568,13 @@ public:
      * 获取传输器类型
      */
     virtual PRO_TRANS_TYPE PRO_CALLTYPE GetType() const = 0;
+
+    /*
+     * 获取加密套件
+     *
+     * 仅用于PRO_TRANS_SSL类型的传输器
+     */
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(char suiteName[64]) const = 0;
 
     /*
      * 获取底层的套接字id
@@ -992,7 +1001,7 @@ ProDeleteTcpHandshaker(IProTcpHandshaker* handshaker);
  * 参数:
  * observer         : 回调目标
  * reactor          : 反应器
- * ctx              : ssl上下文
+ * ctx              : ssl上下文.通过ProSslCtx_Creates(...)或ProSslCtx_Createc(...)创建
  * sockId           : 套接字id.来源于OnAccept(...)或OnConnectOk(...)
  * unixSocket       : 是否unix套接字
  * sendData         : 希望发送的数据
@@ -1133,7 +1142,7 @@ ProCreateMcastTransport(IProTransportObserver* observer,
  * 参数:
  * observer        : 回调目标
  * reactor         : 反应器
- * ctx             : ssl上下文
+ * ctx             : ssl上下文.来自于IProSslHandshaker的握手结果回调
  * sockId          : 套接字id.来源于OnAccept(...)或OnConnectOk(...)
  * unixSocket      : 是否unix套接字
  * sockBufSizeRecv : 套接字的系统接收缓冲区字节数.默认(1024 * 56)

@@ -47,9 +47,12 @@ static const PRO_SSL_AUTH_LEVEL PRO_SSL_AUTHLV_REQUIRED = (PRO_SSL_AUTH_LEVEL)2;
  *
  * 这里都是基于证书的AEAD加密套件,并且,我们只推荐前向安全(PFS)的加密套件.如果
  * 需要预主密钥(PSK)机制或更加丰富的加密套件,使用者可以直接引用mbedtls库的定义
+ *
+ * please refer to "mbedtls/ssl_ciphersuites.h"
  */
 typedef unsigned short PRO_SSL_SUITE_ID;
 
+static const PRO_SSL_SUITE_ID PRO_SSL_SUITE_NONE                                = (PRO_SSL_SUITE_ID)0x0000;
 static const PRO_SSL_SUITE_ID PRO_SSL_DHE_RSA_WITH_AES_128_GCM_SHA256           = (PRO_SSL_SUITE_ID)0x009E; /* TLS 1.2 */
 static const PRO_SSL_SUITE_ID PRO_SSL_DHE_RSA_WITH_AES_256_GCM_SHA384           = (PRO_SSL_SUITE_ID)0x009F; /* TLS 1.2 */
 static const PRO_SSL_SUITE_ID PRO_SSL_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256       = (PRO_SSL_SUITE_ID)0xC02B; /* TLS 1.2 */
@@ -555,7 +558,8 @@ ProSslCtx_Delete(PRO_SSL_CTX* ctx);
  * 功能: 获取c/s协商的会话加密套件
  *
  * 参数:
- * ctx : SSL上下文对象
+ * ctx       : SSL上下文对象
+ * suiteName : 返回的加密套件名
  *
  * 返回值: 加密套件id
  *
@@ -564,7 +568,8 @@ ProSslCtx_Delete(PRO_SSL_CTX* ctx);
 PRO_NET_API
 PRO_SSL_SUITE_ID
 PRO_CALLTYPE
-ProSslCtx_GetSuite(PRO_SSL_CTX* ctx);
+ProSslCtx_GetSuite(PRO_SSL_CTX* ctx,
+                   char         suiteName[64]);
 
 /*
  * 功能: 获取c/s协商的ALPN协议名

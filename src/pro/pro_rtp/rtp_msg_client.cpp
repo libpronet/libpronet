@@ -146,7 +146,8 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
 
         RTP_SESSION_INFO localInfo;
         memset(&localInfo, 0, sizeof(RTP_SESSION_INFO));
-        localInfo.mmType = m_mmType;
+        localInfo.mmType   = m_mmType;
+        localInfo.packMode = RTP_MSG_PACK_MODE;
         memcpy(localInfo.userData, &msgHeader, sizeof(RTP_MSG_HEADER0));
 
         RTP_INIT_ARGS initArgs;
@@ -304,7 +305,7 @@ CRtpMsgClient::GetUser(RTP_MSG_USER* user) const
 bool
 PRO_CALLTYPE
 CRtpMsgClient::SendMsg(const void*         buf,
-                       PRO_UINT16          size,
+                       unsigned long       size,
                        PRO_UINT16          charset,
                        const RTP_MSG_USER* dstUsers,
                        unsigned char       dstUserCount)
@@ -325,7 +326,7 @@ CRtpMsgClient::SendMsg(const void*         buf,
 
 bool
 CRtpMsgClient::TransferMsg(const void*         buf,
-                           PRO_UINT16          size,
+                           unsigned long       size,
                            PRO_UINT16          charset,
                            const RTP_MSG_USER* dstUsers,
                            unsigned char       dstUserCount,
@@ -351,7 +352,7 @@ CRtpMsgClient::TransferMsg(const void*         buf,
 
 bool
 CRtpMsgClient::PushData(const void*         buf,
-                        PRO_UINT16          size,
+                        unsigned long       size,
                         PRO_UINT16          charset,
                         const RTP_MSG_USER* dstUsers,
                         unsigned char       dstUserCount,
@@ -385,7 +386,7 @@ CRtpMsgClient::PushData(const void*         buf,
             return (false);
         }
 
-        IRtpPacket* const packet = CreateRtpPacketSpace(msgHeaderSize + size);
+        IRtpPacket* const packet = CreateRtpPacketSpace(msgHeaderSize + size, RTP_MSG_PACK_MODE);
         if (packet == NULL)
         {
             return (false);
@@ -659,21 +660,19 @@ CRtpMsgClient::RecvData(IRtpSession* session,
     {
         if (!m_enableTransfer) /* for client */
         {
-            observer->OnRecvMsg(
-                this, msgBodyPtr, (PRO_UINT16)msgBodySize, charset, &srcUser);
+            observer->OnRecvMsg(this, msgBodyPtr, msgBodySize, charset, &srcUser);
         }
         else                   /* for c2s */
         {
             if (dstUserCount != msgHeaderPtr->dstUserCount)
             {
-                observer->OnRecvMsg(
-                    this, msgBodyPtr, (PRO_UINT16)msgBodySize, charset, &srcUser);
+                observer->OnRecvMsg(this, msgBodyPtr, msgBodySize, charset, &srcUser);
             }
 
             if (dstUserCount > 0)
             {
                 ((IRtpMsgClientObserverEx*)observer)->OnTransferMsg(this, msgBodyPtr,
-                    (PRO_UINT16)msgBodySize, charset, &srcUser, dstUsers, dstUserCount);
+                    msgBodySize, charset, &srcUser, dstUsers, dstUserCount);
             }
         }
     }

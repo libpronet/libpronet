@@ -600,7 +600,7 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
         m_statLossRateOutput.SetTimeSpan(statInSeconds);
 
         initArgs2.comm.observer->AddRef();
-        m_session->GetInfo(&m_info);
+        m_session->GetInfo(&m_info); /* retrieve the real info */
         m_observer = initArgs2.comm.observer;
         m_reactor  = initArgs2.comm.reactor;
 
@@ -848,8 +848,7 @@ CRtpSessionWrapper::IsReady() const
 
 bool
 PRO_CALLTYPE
-CRtpSessionWrapper::SendPacket(IRtpPacket* packet,
-                               bool        handshaking) /* = false */
+CRtpSessionWrapper::SendPacket(IRtpPacket* packet)
 {
     assert(packet != NULL);
     if (packet == NULL)
@@ -867,7 +866,7 @@ CRtpSessionWrapper::SendPacket(IRtpPacket* packet,
             return (false);
         }
 
-        if (!handshaking && !m_enableOutput)
+        if (!m_enableOutput)
         {
             return (false);
         }
@@ -881,8 +880,7 @@ CRtpSessionWrapper::SendPacket(IRtpPacket* packet,
 bool
 PRO_CALLTYPE
 CRtpSessionWrapper::SendPacketByTimer(IRtpPacket*   packet,
-                                      unsigned long sendDurationMs, /* = 0 */
-                                      bool          handshaking)    /* = false */
+                                      unsigned long sendDurationMs) /* = 0 */
 {
     assert(packet != NULL);
     if (packet == NULL)
@@ -898,7 +896,7 @@ CRtpSessionWrapper::SendPacketByTimer(IRtpPacket*   packet,
             return (false);
         }
 
-        if (!handshaking && !m_enableOutput)
+        if (!m_enableOutput)
         {
             return (false);
         }
