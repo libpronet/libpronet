@@ -616,9 +616,6 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
         return;
     }
 
-    char suiteName[64] = "";
-    trans->GetSslSuite(suiteName);
-
     IRtpSessionObserver* observer = NULL;
 
     {
