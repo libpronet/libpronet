@@ -16,6 +16,14 @@
  * This file is part of LibProNet (http://www.libpro.org)
  */
 
+/*
+ * 1) client -----> rtp(RTP_SESSION_INFO with RTP_MSG_HEADER0) -----> server
+ * 2) client <-----            rtp(RTP_SESSION_ACK)            <----- server
+ * 3) client <-----            tcp4(RTP_MSG_HEADER0)           <----- server
+ * 4) client <<====                  tcp4(msg)                 ====>> server
+ *                   msg system handshake protocol flow chart
+ */
+
 #if !defined(RTP_MSG_C2S_H)
 #define RTP_MSG_C2S_H
 

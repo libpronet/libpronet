@@ -35,8 +35,8 @@
 
 #define DEFAULT_TIMEOUT 20
 
-static const PRO_UINT64 NODE_UID_MIN = 1;                                     /* 1 ~ 0xEFFFFFFFFF */
-static const PRO_UINT64 NODE_UID_MAX = ((PRO_UINT64)0xEF << 32) | 0xFFFFFFFF; /* 1 ~ 0xEFFFFFFFFF */
+static const PRO_UINT64 NODE_UID_MIN  = 1;                                     /* 1 ~ 0xFFFFFFFFFF */
+static const PRO_UINT64 NODE_UID_MAXX = ((PRO_UINT64)0xFF << 32) | 0xFFFFFFFF; /* 1 ~ 0xFFFFFFFFFF */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -103,7 +103,7 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
     assert(user->classId > 0);
     assert(
         user->UserId() == 0 ||
-        user->UserId() >= NODE_UID_MIN && user->UserId() <= NODE_UID_MAX
+        user->UserId() >= NODE_UID_MIN && user->UserId() <= NODE_UID_MAXX
         );
     assert(!user->IsRoot());
     if (observer == NULL || reactor == NULL ||
@@ -111,7 +111,7 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
         user == NULL || user->classId == 0
         ||
         user->UserId() != 0 &&
-        (user->UserId() < NODE_UID_MIN || user->UserId() > NODE_UID_MAX)
+        (user->UserId() < NODE_UID_MIN || user->UserId() > NODE_UID_MAXX)
         ||
         user->IsRoot())
     {

@@ -24,7 +24,7 @@
  * 5) client::[password hash]
  * 6) client ----->          rtp(RTP_SESSION_INFO)          -----> server
  * 7)                                             [password hash]::server
- * 8) client <-----               rtp(version)              <----- server
+ * 8) client <-----          rtp(RTP_SESSION_ACK)           <----- server
  *                   TCP_EX handshake protocol flow chart
  */
 

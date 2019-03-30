@@ -51,6 +51,18 @@
  *                 Fig.2 structure diagram of msg system
  */
 
+/*
+ * 1) client -----> rtp(RTP_SESSION_INFO with RTP_MSG_HEADER0) -----> server
+ * 2) client <-----            rtp(RTP_SESSION_ACK)            <----- server
+ * 3) client <-----            tcp4(RTP_MSG_HEADER0)           <----- server
+ * 4) client <<====                  tcp4(msg)                 ====>> server
+ *                Fig.3 msg system handshake protocol flow chart
+ */
+
+/*
+ * PMP-v1.0 (PRO Messaging Protocol version 1.0)
+ */
+
 #if !defined(____RTP_FOUNDATION_H____)
 #define ____RTP_FOUNDATION_H____
 

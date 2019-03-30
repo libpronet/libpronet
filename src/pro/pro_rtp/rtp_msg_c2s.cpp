@@ -47,10 +47,10 @@
 #define RECONNECT_INTERVAL           10
 #define DEFAULT_TIMEOUT              20
 
-static const RTP_MSG_USER  ROOT_ID_C2S(1, 1, 65535);                             /* 1-1-65535 */
-static const unsigned char SERVER_CID   = 1;                                     /* 1-... */
-static const PRO_UINT64    NODE_UID_MIN = 1;                                     /* 1 ~ 0xEFFFFFFFFF */
-static const PRO_UINT64    NODE_UID_MAX = ((PRO_UINT64)0xEF << 32) | 0xFFFFFFFF; /* 1 ~ 0xEFFFFFFFFF */
+static const RTP_MSG_USER  ROOT_ID_C2S(1, 1, 65535);                              /* 1-1-65535 */
+static const unsigned char SERVER_CID    = 1;                                     /* 1-... */
+static const PRO_UINT64    NODE_UID_MIN  = 1;                                     /* 1 ~ 0xFFFFFFFFFF */
+static const PRO_UINT64    NODE_UID_MAXX = ((PRO_UINT64)0xFF << 32) | 0xFFFFFFFF; /* 1 ~ 0xFFFFFFFFFF */
 
 typedef void (CRtpMsgC2s::* ACTION)(PRO_INT64*);
 
@@ -131,7 +131,7 @@ CRtpMsgC2s::Init(IRtpMsgC2sObserver* observer,
     assert(uplinkUser->classId == SERVER_CID);
     assert(
         uplinkUser->UserId() == 0 ||
-        uplinkUser->UserId() >= NODE_UID_MIN && uplinkUser->UserId() <= NODE_UID_MAX
+        uplinkUser->UserId() >= NODE_UID_MIN && uplinkUser->UserId() <= NODE_UID_MAXX
         );
     assert(!uplinkUser->IsRoot());
     assert(localServiceHubPort > 0);
@@ -140,7 +140,7 @@ CRtpMsgC2s::Init(IRtpMsgC2sObserver* observer,
         uplinkUser == NULL || uplinkUser->classId != SERVER_CID
         ||
         uplinkUser->UserId() != 0 &&
-        (uplinkUser->UserId() < NODE_UID_MIN || uplinkUser->UserId() > NODE_UID_MAX)
+        (uplinkUser->UserId() < NODE_UID_MIN || uplinkUser->UserId() > NODE_UID_MAXX)
         ||
         uplinkUser->IsRoot() || localServiceHubPort == 0)
     {
@@ -682,13 +682,13 @@ CRtpMsgC2s::AcceptSession(IRtpService*            service,
     assert(user.classId > 0);
     assert(
         user.UserId() == 0 ||
-        user.UserId() >= NODE_UID_MIN && user.UserId() <= NODE_UID_MAX
+        user.UserId() >= NODE_UID_MIN && user.UserId() <= NODE_UID_MAXX
         );
     assert(!user.IsRoot());
     if (user.classId == 0
         ||
         user.UserId() != 0 &&
-        (user.UserId() < NODE_UID_MIN || user.UserId() > NODE_UID_MAX)
+        (user.UserId() < NODE_UID_MIN || user.UserId() > NODE_UID_MAXX)
         ||
         user.IsRoot())
     {

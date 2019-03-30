@@ -21,11 +21,11 @@
  * 2) client <-----                 accept()                <----- server
  * 3) client <-----                  nonce                  <----- server
  * 4) client ----->  serviceId + serviceOpt + (r) + (r+1)   -----> server
- * 5) client <-----              ssl handshake              -----> server
+ * 5) client <<====              ssl handshake              ====>> server
  * 6) client::[password hash]
  * 7) client ----->          rtp(RTP_SESSION_INFO)          -----> server
  * 8)                                             [password hash]::server
- * 9) client <-----               rtp(version)              <----- server
+ * 9) client <-----          rtp(RTP_SESSION_ACK)           <----- server
  *                   SSL_EX handshake protocol flow chart
  */
 

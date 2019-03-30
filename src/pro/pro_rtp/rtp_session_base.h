@@ -27,6 +27,7 @@
 #include "rtp_packet.h"
 #include "../pro_net/pro_net.h"
 #include "../pro_util/pro_bsd_wrapper.h"
+#include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_timer_factory.h"
@@ -35,6 +36,14 @@
 ////
 
 #define RTP_SESSION_PROTOCOL_VERSION 1
+
+struct RTP_SESSION_ACK
+{
+    PRO_UINT16 version;      /* the current protocol version is 1 */
+    char       reserved[30]; /* zero value */
+
+    DECLARE_SGI_POOL(0);
+};
 
 /////////////////////////////////////////////////////////////////////////////
 ////

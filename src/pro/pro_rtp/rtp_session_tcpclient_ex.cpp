@@ -381,9 +381,9 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProTcpHandshaker* handshaker,
         assert(m_trans == NULL);
 
         assert(buf != NULL);
-        assert(size == sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(PRO_UINT16)); /* version */
+        assert(size == sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_SESSION_ACK));
         if (buf == NULL ||
-            size != sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(PRO_UINT16))
+            size != sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_SESSION_ACK))
         {
             ProCloseSockId(sockId);
             sockId = -1;
@@ -397,12 +397,15 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProTcpHandshaker* handshaker,
             }
             else
             {
+                RTP_SESSION_ACK ack;
                 memcpy(
-                    &m_info.remoteVersion,
+                    &ack,
                     (char*)buf + sizeof(RTP_EXT) + sizeof(RTP_HEADER),
-                    sizeof(PRO_UINT16)
+                    sizeof(RTP_SESSION_ACK)
                     );
-                m_info.remoteVersion = pbsd_ntoh16(m_info.remoteVersion);
+                ack.version = pbsd_ntoh16(ack.version);
+
+                m_info.remoteVersion = ack.version;
 
                 m_trans = ProCreateTcpTransport(this, m_reactor, sockId, unixSocket,
                     sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
@@ -556,9 +559,9 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProSslHandshaker* handshaker,
 
         assert(ctx != NULL);
         assert(buf != NULL);
-        assert(size == sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(PRO_UINT16)); /* version */
+        assert(size == sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_SESSION_ACK));
         if (ctx == NULL || buf == NULL ||
-            size != sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(PRO_UINT16))
+            size != sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_SESSION_ACK))
         {
             ProSslCtx_Delete(ctx);
             ProCloseSockId(sockId);
@@ -576,12 +579,15 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProSslHandshaker* handshaker,
             }
             else
             {
+                RTP_SESSION_ACK ack;
                 memcpy(
-                    &m_info.remoteVersion,
+                    &ack,
                     (char*)buf + sizeof(RTP_EXT) + sizeof(RTP_HEADER),
-                    sizeof(PRO_UINT16)
+                    sizeof(RTP_SESSION_ACK)
                     );
-                m_info.remoteVersion = pbsd_ntoh16(m_info.remoteVersion);
+                ack.version = pbsd_ntoh16(ack.version);
+
+                m_info.remoteVersion = ack.version;
 
                 m_trans = ProCreateSslTransport(this, m_reactor, ctx, sockId, unixSocket,
                     sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
@@ -1016,7 +1022,7 @@ CRtpSessionTcpclientEx::DoHandshake(PRO_INT64  sockId,
                 unixSocket,
                 (char*)packet->GetPayloadBuffer() - sizeof(RTP_HEADER) - sizeof(RTP_EXT), /* sendData */
                 packet->GetPayloadSize() + sizeof(RTP_HEADER) + sizeof(RTP_EXT),          /* sendDataSize */
-                sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(PRO_UINT16),                /* recvDataSize = version */
+                sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_SESSION_ACK),           /* recvDataSize */
                 false,                                                                    /* recvFirst is false */
                 m_timeoutInSeconds
                 );
@@ -1035,7 +1041,7 @@ CRtpSessionTcpclientEx::DoHandshake(PRO_INT64  sockId,
             unixSocket,
             (char*)packet->GetPayloadBuffer() - sizeof(RTP_HEADER) - sizeof(RTP_EXT), /* sendData */
             packet->GetPayloadSize() + sizeof(RTP_HEADER) + sizeof(RTP_EXT),          /* sendDataSize */
-            sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(PRO_UINT16),                /* recvDataSize = version */
+            sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_SESSION_ACK),           /* recvDataSize */
             false,                                                                    /* recvFirst is false */
             m_timeoutInSeconds
             );

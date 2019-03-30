@@ -493,9 +493,11 @@ CRtpSessionTcpserverEx::DoHandshake()
         return (false);
     }
 
-    const PRO_UINT16 version = pbsd_hton16(m_info.localVersion);
+    RTP_SESSION_ACK ack;
+    memset(&ack, 0, sizeof(RTP_SESSION_ACK));
+    ack.version = pbsd_hton16(m_info.localVersion);
 
-    IRtpPacket* const packet = CreateRtpPacket(&version, sizeof(PRO_UINT16));
+    IRtpPacket* const packet = CreateRtpPacket(&ack, sizeof(RTP_SESSION_ACK));
     if (packet == NULL)
     {
         return (false);

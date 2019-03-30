@@ -52,7 +52,7 @@
  * 5) client::[password hash]
  * 6) client ----->          rtp(RTP_SESSION_INFO)          -----> server
  * 7)                                             [password hash]::server
- * 8) client <-----               rtp(version)              <----- server
+ * 8) client <-----          rtp(RTP_SESSION_ACK)           <----- server
  *                 Fig.3 TCP_EX handshake protocol flow chart
  */
 
@@ -61,16 +61,18 @@
  * 2) client <-----                 accept()                <----- server
  * 3) client <-----                  nonce                  <----- server
  * 4) client ----->  serviceId + serviceOpt + (r) + (r+1)   -----> server
- * 5) client <-----              ssl handshake              -----> server
+ * 5) client <<====              ssl handshake              ====>> server
  * 6) client::[password hash]
  * 7) client ----->          rtp(RTP_SESSION_INFO)          -----> server
  * 8)                                             [password hash]::server
- * 9) client <-----               rtp(version)              <----- server
+ * 9) client <-----          rtp(RTP_SESSION_ACK)           <----- server
  *                 Fig.4 SSL_EX handshake protocol flow chart
  */
 
 /*
  * RFC-1889/1890, RFC-3550/3551, RFC-4571
+ *
+ * PSP-v1.0 (PRO Session Protocol version 1.0)
  */
 
 #if !defined(____RTP_FRAMEWORK_H____)

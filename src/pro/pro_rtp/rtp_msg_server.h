@@ -16,6 +16,14 @@
  * This file is part of LibProNet (http://www.libpro.org)
  */
 
+/*
+ * 1) client -----> rtp(RTP_SESSION_INFO with RTP_MSG_HEADER0) -----> server
+ * 2) client <-----            rtp(RTP_SESSION_ACK)            <----- server
+ * 3) client <-----            tcp4(RTP_MSG_HEADER0)           <----- server
+ * 4) client <<====                  tcp4(msg)                 ====>> server
+ *                   msg system handshake protocol flow chart
+ */
+
 #if !defined(RTP_MSG_SERVER_H)
 #define RTP_MSG_SERVER_H
 
@@ -42,7 +50,7 @@ struct RTP_MSG_HEADER0
     RTP_MSG_USER   user;
     union
     {
-        char       reserved[10];
+        char       reserved[22];
         PRO_UINT32 publicIp;
     };
 
