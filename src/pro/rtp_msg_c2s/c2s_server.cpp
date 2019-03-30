@@ -328,7 +328,6 @@ CC2sServer::Reconfig(const C2S_SERVER_CONFIG_INFO& configInfo)
 
     {{{
         char traceInfo[1024] = "";
-        traceInfo[sizeof(traceInfo) - 1] = '\0';
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
@@ -389,7 +388,6 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
         msgC2s->GetC2sSslSuite(suiteName);
 
         char traceInfo[1024] = "";
-        traceInfo[sizeof(traceInfo) - 1] = '\0';
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
@@ -448,7 +446,6 @@ CC2sServer::OnCloseC2s(IRtpMsgC2s* msgC2s,
         msgC2s->GetC2sUser(&c2sUser);
 
         char traceInfo[1024] = "";
-        traceInfo[sizeof(traceInfo) - 1] = '\0';
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
@@ -511,7 +508,6 @@ CC2sServer::OnOkUser(IRtpMsgC2s*         msgC2s,
         msgC2s->GetUserCount(NULL, &userCount);
 
         char traceInfo[1024] = "";
-        traceInfo[sizeof(traceInfo) - 1] = '\0';
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
@@ -566,7 +562,6 @@ CC2sServer::OnCloseUser(IRtpMsgC2s*         msgC2s,
         msgC2s->GetUserCount(NULL, &userCount);
 
         char traceInfo[1024] = "";
-        traceInfo[sizeof(traceInfo) - 1] = '\0';
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),

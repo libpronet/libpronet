@@ -531,6 +531,18 @@ public:
         unsigned char       dstUserCount /* 最多255个目标 */
         ) = 0;
 
+    /*
+     * 设置链路发送红线.默认(1024 * 1024)字节
+     *
+     * 如果redlineBytes的值为0,则直接返回,什么都不做
+     */
+    virtual void PRO_CALLTYPE SetOutputRedline(unsigned long redlineBytes) = 0;
+
+    /*
+     * 获取链路发送红线.默认(1024 * 1024)字节
+     */
+    virtual unsigned long PRO_CALLTYPE GetOutputRedline() const = 0;
+
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 
     virtual unsigned long PRO_CALLTYPE Release() = 0;
@@ -619,13 +631,27 @@ public:
 
     /*
      * 设置server->c2s链路发送红线.默认(1024 * 1024 * 8)字节
+     *
+     * 如果redlineBytes的值为0,则直接返回,什么都不做
      */
-    virtual void PRO_CALLTYPE SetOutputRedline(unsigned long redlineBytes) = 0;
+    virtual void PRO_CALLTYPE SetOutputRedlineToC2s(unsigned long redlineBytes) = 0;
 
     /*
      * 获取server->c2s链路发送红线.默认(1024 * 1024 * 8)字节
      */
-    virtual unsigned long PRO_CALLTYPE GetOutputRedline() const = 0;
+    virtual unsigned long PRO_CALLTYPE GetOutputRedlineToC2s() const = 0;
+
+    /*
+     * 设置server->user链路发送红线.默认(1024 * 1024)字节
+     *
+     * 如果redlineBytes的值为0,则直接返回,什么都不做
+     */
+    virtual void PRO_CALLTYPE SetOutputRedlineToUser(unsigned long redlineBytes) = 0;
+
+    /*
+     * 获取server->user链路发送红线.默认(1024 * 1024)字节
+     */
+    virtual unsigned long PRO_CALLTYPE GetOutputRedlineToUser() const = 0;
 
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 
@@ -737,13 +763,27 @@ public:
 
     /*
      * 设置c2s->server链路发送红线.默认(1024 * 1024 * 8)字节
+     *
+     * 如果redlineBytes的值为0,则直接返回,什么都不做
      */
-    virtual void PRO_CALLTYPE SetOutputRedline(unsigned long redlineBytes) = 0;
+    virtual void PRO_CALLTYPE SetOutputRedlineToServer(unsigned long redlineBytes) = 0;
 
     /*
      * 获取c2s->server链路发送红线.默认(1024 * 1024 * 8)字节
      */
-    virtual unsigned long PRO_CALLTYPE GetOutputRedline() const = 0;
+    virtual unsigned long PRO_CALLTYPE GetOutputRedlineToServer() const = 0;
+
+    /*
+     * 设置c2s->user链路发送红线.默认(1024 * 1024)字节
+     *
+     * 如果redlineBytes的值为0,则直接返回,什么都不做
+     */
+    virtual void PRO_CALLTYPE SetOutputRedlineToUser(unsigned long redlineBytes) = 0;
+
+    /*
+     * 获取c2s->user链路发送红线.默认(1024 * 1024)字节
+     */
+    virtual unsigned long PRO_CALLTYPE GetOutputRedlineToUser() const = 0;
 
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 

@@ -161,9 +161,13 @@ public:
         unsigned char       dstUserCount
         );
 
-    virtual void PRO_CALLTYPE SetOutputRedline(unsigned long redlineBytes);
+    virtual void PRO_CALLTYPE SetOutputRedlineToC2s(unsigned long redlineBytes);
 
-    virtual unsigned long PRO_CALLTYPE GetOutputRedline() const;
+    virtual unsigned long PRO_CALLTYPE GetOutputRedlineToC2s() const;
+
+    virtual void PRO_CALLTYPE SetOutputRedlineToUser(unsigned long redlineBytes);
+
+    virtual unsigned long PRO_CALLTYPE GetOutputRedlineToUser() const;
 
 private:
 
@@ -291,7 +295,8 @@ private:
     IRtpService*                                m_service;
     CProFunctorCommandTask*                     m_task;
     unsigned long                               m_timeoutInSeconds;
-    unsigned long                               m_redlineBytes;
+    unsigned long                               m_redlineBytesC2s;
+    unsigned long                               m_redlineBytesUser;
 
     CProStlMap<IRtpSession*, RTP_MSG_LINK_CTX*> m_session2Ctx;
     CProStlMap<RTP_MSG_USER, RTP_MSG_LINK_CTX*> m_user2Ctx;

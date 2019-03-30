@@ -1662,8 +1662,10 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
 
                 m_traceTick = tick;
 
+                unsigned long redlineBytes = 0;
+                m_bucket->GetRedline(&redlineBytes, NULL);
+
                 char traceInfo[2048] = "";
-                traceInfo[sizeof(traceInfo) - 1] = '\0';
 
                 if (m_info.mmType >= RTP_MMT_MSG_MIN && m_info.mmType <= RTP_MMT_MSG_MAX)
                 {
@@ -1672,6 +1674,7 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         sizeof(traceInfo),
                         "\n"
                         " CRtpSessionWrapper(M) --- [pid : %u/0x%X, this : 0x%p, session : 0x%p, mmType : %u] \n"
+                        "\t CRtpSessionWrapper(M) - redlineBytes        : %u (bytes) \n"
                         "\t CRtpSessionWrapper(M) - bucketBytes         : %u (bytes) \n"
                         "\t CRtpSessionWrapper(M) - pushToBucketRet1    : %d \n"
                         "\t CRtpSessionWrapper(M) - pushToBucketRet2    : %d \n"
@@ -1690,6 +1693,7 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         this,
                         m_session,
                         (unsigned int)m_info.mmType,
+                        (unsigned int)redlineBytes,
                         (unsigned int)m_bucket->GetTotalBytes(),
                         (int)(m_pushToBucketRet1 ? 1 : 0),
                         (int)(m_pushToBucketRet2 ? 1 : 0),
@@ -1711,6 +1715,7 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         sizeof(traceInfo),
                         "\n"
                         " CRtpSessionWrapper(A) --- [pid : %u/0x%X, this : 0x%p, session : 0x%p, mmType : %u] \n"
+                        "\t CRtpSessionWrapper(A) - redlineBytes        : %u (bytes) \n"
                         "\t CRtpSessionWrapper(A) - bucketBytes         : %u (bytes) \n"
                         "\t CRtpSessionWrapper(A) - pushToBucketRet1    : %d \n"
                         "\t CRtpSessionWrapper(A) - pushToBucketRet2    : %d \n"
@@ -1729,6 +1734,7 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         this,
                         m_session,
                         (unsigned int)m_info.mmType,
+                        (unsigned int)redlineBytes,
                         (unsigned int)m_bucket->GetTotalBytes(),
                         (int)(m_pushToBucketRet1 ? 1 : 0),
                         (int)(m_pushToBucketRet2 ? 1 : 0),
@@ -1750,6 +1756,7 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         sizeof(traceInfo),
                         "\n"
                         " CRtpSessionWrapper(V) --- [pid : %u/0x%X, this : 0x%p, session : 0x%p, mmType : %u] \n"
+                        "\t CRtpSessionWrapper(V) - redlineBytes        : %u (bytes) \n"
                         "\t CRtpSessionWrapper(V) - bucketBytes         : %u (bytes) \n"
                         "\t CRtpSessionWrapper(V) - pushToBucketRet1    : %d \n"
                         "\t CRtpSessionWrapper(V) - pushToBucketRet2    : %d \n"
@@ -1768,6 +1775,7 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         this,
                         m_session,
                         (unsigned int)m_info.mmType,
+                        (unsigned int)redlineBytes,
                         (unsigned int)m_bucket->GetTotalBytes(),
                         (int)(m_pushToBucketRet1 ? 1 : 0),
                         (int)(m_pushToBucketRet2 ? 1 : 0),

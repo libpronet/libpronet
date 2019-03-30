@@ -92,6 +92,10 @@ public:
         unsigned char       dstUserCount
         );
 
+    virtual void PRO_CALLTYPE SetOutputRedline(unsigned long redlineBytes);
+
+    virtual unsigned long PRO_CALLTYPE GetOutputRedline() const;
+
     bool TransferMsg(
         const void*         buf,
         unsigned long       size,
@@ -100,8 +104,6 @@ public:
         unsigned char       dstUserCount,
         const RTP_MSG_USER* srcUser
         );
-
-    void SetOutputRedline(unsigned long redlineBytes);
 
 private:
 

@@ -37,7 +37,6 @@ GetMsgUserRow(CDbConnection&      db,
               TBL_MSG_USER_ROW&   row)
 {
     char sql[1024] = "";
-    sql[sizeof(sql) - 1] = '\0';
     snprintf_pro(
         sql,
         sizeof(sql),
@@ -138,7 +137,6 @@ AddMsgOnlineRow(CDbConnection&      db,
     ProGetLocalTimeString(timeString);
 
     char sql[1024] = "";
-    sql[sizeof(sql) - 1] = '\0';
     snprintf_pro(
         sql,
         sizeof(sql),
@@ -194,7 +192,6 @@ RemoveMsgOnlineRow(CDbConnection&      db,
                    const RTP_MSG_USER& user)
 {
     char sql[1024] = "";
-    sql[sizeof(sql) - 1] = '\0';
     snprintf_pro(
         sql,
         sizeof(sql),

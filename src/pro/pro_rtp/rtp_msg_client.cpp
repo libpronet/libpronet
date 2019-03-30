@@ -490,9 +490,9 @@ CRtpMsgClient::SendData(bool onOkCalled)
 }
 
 void
+PRO_CALLTYPE
 CRtpMsgClient::SetOutputRedline(unsigned long redlineBytes)
 {
-    assert(redlineBytes > 0);
     if (redlineBytes == 0)
     {
         return;
@@ -509,6 +509,24 @@ CRtpMsgClient::SetOutputRedline(unsigned long redlineBytes)
         m_session->SetOutputRedline(redlineBytes, 0);
         m_bucket->SetRedline(redlineBytes, 0);
     }
+}
+
+unsigned long
+PRO_CALLTYPE
+CRtpMsgClient::GetOutputRedline() const
+{
+    unsigned long redlineBytes = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_bucket != NULL)
+        {
+            m_bucket->GetRedline(&redlineBytes, NULL);
+        }
+    }
+
+    return (redlineBytes);
 }
 
 void

@@ -633,6 +633,9 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                 break;
             }
 
+            char suiteName[64] = "";
+            m_trans->GetSslSuite(suiteName);
+
             char localIp[64]        = "";
             char remoteIp[64]       = "";
             char remoteIpConfig[64] = "";
@@ -647,7 +650,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                 break;
             }
 
-            buffer[size - 1] = '\0';
+            buffer[0] = '\0';
 
             if (m_info.mmType >= RTP_MMT_MSG_MIN && m_info.mmType <= RTP_MMT_MSG_MAX)
             {

@@ -302,7 +302,6 @@ int main(int argc, char* argv[])
     }
 
     static char s_traceInfo[1024] = "";
-    s_traceInfo[sizeof(s_traceInfo) - 1] = '\0';
 
     logFile->Init(logFileName.c_str(), true);
     if (logFile->GetPos() > 0)

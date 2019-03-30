@@ -301,7 +301,6 @@ CMsgServer::Reconfig(const MSG_SERVER_CONFIG_INFO& configInfo)
 
     {{{
         char traceInfo[1024] = "";
-        traceInfo[sizeof(traceInfo) - 1] = '\0';
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
@@ -459,7 +458,6 @@ EXIT:
 
     {{{
         char traceInfo[1024] = "";
-        traceInfo[sizeof(traceInfo) - 1] = '\0';
         if (ret)
         {
             snprintf_pro(
@@ -555,7 +553,6 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
         msgServer->GetUserCount(NULL, &baseUserCount, &subUserCount);
 
         char traceInfo[1024] = "";
-        traceInfo[sizeof(traceInfo) - 1] = '\0';
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
@@ -633,7 +630,6 @@ CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
         msgServer->GetUserCount(NULL, &baseUserCount, &subUserCount);
 
         char traceInfo[1024] = "";
-        traceInfo[sizeof(traceInfo) - 1] = '\0';
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),

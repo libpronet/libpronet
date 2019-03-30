@@ -40,11 +40,12 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define MAX_PENDING_COUNT     5000
-#define DEFAULT_REDLINE_BYTES (1024 * 1024 * 8)
-#define HEARTBEAT_INTERVAL    1
-#define RECONNECT_INTERVAL    10
-#define DEFAULT_TIMEOUT       20
+#define MAX_PENDING_COUNT            5000
+#define DEFAULT_REDLINE_BYTES_SERVER (1024 * 1024 * 8)
+#define DEFAULT_REDLINE_BYTES_USER   (1024 * 1024)
+#define HEARTBEAT_INTERVAL           1
+#define RECONNECT_INTERVAL           10
+#define DEFAULT_TIMEOUT              20
 
 static const RTP_MSG_USER  ROOT_ID_C2S(1, 1, 65535);                             /* 1-1-65535 */
 static const unsigned char SERVER_CID   = 1;                                     /* 1-... */
@@ -100,7 +101,8 @@ m_localSslForced(localSslForced)
     m_uplinkLocalIp          = "";
     m_uplinkTimeoutInSeconds = DEFAULT_TIMEOUT;
     m_localTimeoutInSeconds  = DEFAULT_TIMEOUT;
-    m_redlineBytes           = DEFAULT_REDLINE_BYTES;
+    m_redlineBytesServer     = DEFAULT_REDLINE_BYTES_SERVER;
+    m_redlineBytesUser       = DEFAULT_REDLINE_BYTES_USER;
 }
 
 CRtpMsgC2s::~CRtpMsgC2s()
@@ -485,9 +487,8 @@ CRtpMsgC2s::AsyncKickoutUser(PRO_INT64* args)
 
 void
 PRO_CALLTYPE
-CRtpMsgC2s::SetOutputRedline(unsigned long redlineBytes)
+CRtpMsgC2s::SetOutputRedlineToServer(unsigned long redlineBytes)
 {
-    assert(redlineBytes > 0);
     if (redlineBytes == 0)
     {
         return;
@@ -501,7 +502,7 @@ CRtpMsgC2s::SetOutputRedline(unsigned long redlineBytes)
             return;
         }
 
-        m_redlineBytes = redlineBytes;
+        m_redlineBytesServer = redlineBytes;
         if (m_msgClient != NULL)
         {
             m_msgClient->SetOutputRedline(redlineBytes);
@@ -511,14 +512,50 @@ CRtpMsgC2s::SetOutputRedline(unsigned long redlineBytes)
 
 unsigned long
 PRO_CALLTYPE
-CRtpMsgC2s::GetOutputRedline() const
+CRtpMsgC2s::GetOutputRedlineToServer() const
 {
     unsigned long redlineBytes = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
 
-        redlineBytes = m_redlineBytes;
+        redlineBytes = m_redlineBytesServer;
+    }
+
+    return (redlineBytes);
+}
+
+void
+PRO_CALLTYPE
+CRtpMsgC2s::SetOutputRedlineToUser(unsigned long redlineBytes)
+{
+    if (redlineBytes == 0)
+    {
+        return;
+    }
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_observer == NULL || m_reactor == NULL || m_service == NULL || m_task == NULL)
+        {
+            return;
+        }
+
+        m_redlineBytesUser = redlineBytes;
+    }
+}
+
+unsigned long
+PRO_CALLTYPE
+CRtpMsgC2s::GetOutputRedlineToUser() const
+{
+    unsigned long redlineBytes = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        redlineBytes = m_redlineBytesUser;
     }
 
     return (redlineBytes);
@@ -926,7 +963,7 @@ CRtpMsgC2s::OnOkMsg(IRtpMsgClient*      msgClient,
         m_c2sUser    = *myUser; /* login */
         m_c2sUserBak = *myUser;
 
-        m_msgClient->SetOutputRedline(m_redlineBytes);
+        m_msgClient->SetOutputRedline(m_redlineBytesServer);
 
         m_observer->AddRef();
         observer = m_observer;
@@ -1020,11 +1057,11 @@ CRtpMsgC2s::ProcessMsg_client_login_ok(IRtpMsgClient*          msgClient,
         return;
     }
 
-    bool                ret          = true;
-    IRtpMsgC2sObserver* observer     = NULL;
-    IRtpSession*        oldSession   = NULL;
-    IRtpSession*        newSession   = NULL;
-    char                publicIp[64] = "";
+    bool                         ret        = true;
+    IRtpMsgC2sObserver*          observer   = NULL;
+    IRtpSession*                 oldSession = NULL;
+    IRtpSession*                 newSession = NULL;
+    RTP_MSG_AsyncOnAcceptSession acceptedInfo;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -1047,27 +1084,27 @@ CRtpMsgC2s::ProcessMsg_client_login_ok(IRtpMsgClient*          msgClient,
         }
         else
         {
-            const RTP_MSG_AsyncOnAcceptSession info = itr->second;
+            acceptedInfo = itr->second;
             m_timerId2Info.erase(itr);
 
             m_reactor->CancelTimer(client_index);
 
             RTP_SESSION_INFO localInfo;
             memset(&localInfo, 0, sizeof(RTP_SESSION_INFO));
-            localInfo.remoteVersion = info.remoteInfo.localVersion;
+            localInfo.remoteVersion = acceptedInfo.remoteInfo.localVersion;
             localInfo.mmType        = m_mmType;
-            localInfo.packMode      = info.remoteInfo.packMode;
+            localInfo.packMode      = acceptedInfo.remoteInfo.packMode;
 
             RTP_INIT_ARGS initArgs;
             memset(&initArgs, 0, sizeof(RTP_INIT_ARGS));
 
-            if (info.remoteInfo.sessionType == RTP_ST_SSLCLIENT_EX)
+            if (acceptedInfo.remoteInfo.sessionType == RTP_ST_SSLCLIENT_EX)
             {
                 initArgs.sslserverEx.observer   = this;
                 initArgs.sslserverEx.reactor    = m_reactor;
-                initArgs.sslserverEx.sslCtx     = info.sslCtx;
-                initArgs.sslserverEx.sockId     = info.sockId;
-                initArgs.sslserverEx.unixSocket = info.unixSocket;
+                initArgs.sslserverEx.sslCtx     = acceptedInfo.sslCtx;
+                initArgs.sslserverEx.sockId     = acceptedInfo.sockId;
+                initArgs.sslserverEx.unixSocket = acceptedInfo.unixSocket;
 
                 newSession = CreateRtpSessionWrapper(RTP_ST_SSLSERVER_EX, &initArgs, &localInfo);
             }
@@ -1075,21 +1112,21 @@ CRtpMsgC2s::ProcessMsg_client_login_ok(IRtpMsgClient*          msgClient,
             {
                 initArgs.tcpserverEx.observer   = this;
                 initArgs.tcpserverEx.reactor    = m_reactor;
-                initArgs.tcpserverEx.sockId     = info.sockId;
-                initArgs.tcpserverEx.unixSocket = info.unixSocket;
+                initArgs.tcpserverEx.sockId     = acceptedInfo.sockId;
+                initArgs.tcpserverEx.unixSocket = acceptedInfo.unixSocket;
 
                 newSession = CreateRtpSessionWrapper(RTP_ST_TCPSERVER_EX, &initArgs, &localInfo);
             }
 
             if (newSession == NULL)
             {
-                ProSslCtx_Delete(info.sslCtx);
-                ProCloseSockId(info.sockId);
+                ProSslCtx_Delete(acceptedInfo.sslCtx);
+                ProCloseSockId(acceptedInfo.sockId);
                 ret = false;
             }
             else
             {
-                newSession->GetRemoteIp(publicIp);
+                newSession->SetOutputRedline(m_redlineBytesUser, 0);
 
                 CProStlMap<RTP_MSG_USER, IRtpSession*>::iterator const itr2 =
                     m_user2Session.find(user);
@@ -1100,7 +1137,7 @@ CRtpMsgC2s::ProcessMsg_client_login_ok(IRtpMsgClient*          msgClient,
                     m_user2Session.erase(itr2);
                 }
 
-                ret = SendAckToDownlink(newSession, &user, publicIp);
+                ret = SendAckToDownlink(newSession, &user, acceptedInfo.remoteIp.c_str());
                 if (ret)
                 {
                     m_session2User[newSession] = user;
@@ -1121,7 +1158,7 @@ CRtpMsgC2s::ProcessMsg_client_login_ok(IRtpMsgClient*          msgClient,
 
     if (ret)
     {
-        observer->OnOkUser(this, &user, publicIp);
+        observer->OnOkUser(this, &user, acceptedInfo.remoteIp.c_str());
     }
     else
     {

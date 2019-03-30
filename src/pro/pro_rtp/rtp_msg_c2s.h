@@ -86,9 +86,13 @@ public:
 
     virtual void PRO_CALLTYPE KickoutUser(const RTP_MSG_USER* user);
 
-    virtual void PRO_CALLTYPE SetOutputRedline(unsigned long redlineBytes);
+    virtual void PRO_CALLTYPE SetOutputRedlineToServer(unsigned long redlineBytes);
 
-    virtual unsigned long PRO_CALLTYPE GetOutputRedline() const;
+    virtual unsigned long PRO_CALLTYPE GetOutputRedlineToServer() const;
+
+    virtual void PRO_CALLTYPE SetOutputRedlineToUser(unsigned long redlineBytes);
+
+    virtual unsigned long PRO_CALLTYPE GetOutputRedlineToUser() const;
 
 private:
 
@@ -252,7 +256,8 @@ private:
     CProStlString                                           m_uplinkLocalIp;
     unsigned long                                           m_uplinkTimeoutInSeconds;
     unsigned long                                           m_localTimeoutInSeconds;
-    unsigned long                                           m_redlineBytes;
+    unsigned long                                           m_redlineBytesServer;
+    unsigned long                                           m_redlineBytesUser;
     RTP_MSG_USER                                            m_c2sUser;
     RTP_MSG_USER                                            m_c2sUserBak;
 

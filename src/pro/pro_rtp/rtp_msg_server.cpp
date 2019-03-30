@@ -37,9 +37,10 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define MAX_PENDING_COUNT     5000
-#define DEFAULT_REDLINE_BYTES (1024 * 1024 * 8)
-#define DEFAULT_TIMEOUT       20
+#define MAX_PENDING_COUNT          5000
+#define DEFAULT_REDLINE_BYTES_C2S  (1024 * 1024 * 8)
+#define DEFAULT_REDLINE_BYTES_USER (1024 * 1024)
+#define DEFAULT_TIMEOUT            20
 
 static const RTP_MSG_USER  ROOT_ID    (1, 1, 0);                                  /* 1-1 */
 static const RTP_MSG_USER  ROOT_ID_C2S(1, 1, 65535);                              /* 1-1-65535 */
@@ -128,7 +129,8 @@ m_sslForced(sslForced)
     m_service          = NULL;
     m_task             = NULL;
     m_timeoutInSeconds = DEFAULT_TIMEOUT;
-    m_redlineBytes     = DEFAULT_REDLINE_BYTES;
+    m_redlineBytesC2s  = DEFAULT_REDLINE_BYTES_C2S;
+    m_redlineBytesUser = DEFAULT_REDLINE_BYTES_USER;
 }
 
 CRtpMsgServer::~CRtpMsgServer()
@@ -496,9 +498,8 @@ CRtpMsgServer::SendMsg(const void*         buf,
 
 void
 PRO_CALLTYPE
-CRtpMsgServer::SetOutputRedline(unsigned long redlineBytes)
+CRtpMsgServer::SetOutputRedlineToC2s(unsigned long redlineBytes)
 {
-    assert(redlineBytes > 0);
     if (redlineBytes == 0)
     {
         return;
@@ -512,20 +513,56 @@ CRtpMsgServer::SetOutputRedline(unsigned long redlineBytes)
             return;
         }
 
-        m_redlineBytes = redlineBytes;
+        m_redlineBytesC2s = redlineBytes;
     }
 }
 
 unsigned long
 PRO_CALLTYPE
-CRtpMsgServer::GetOutputRedline() const
+CRtpMsgServer::GetOutputRedlineToC2s() const
 {
     unsigned long redlineBytes = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
 
-        redlineBytes = m_redlineBytes;
+        redlineBytes = m_redlineBytesC2s;
+    }
+
+    return (redlineBytes);
+}
+
+void
+PRO_CALLTYPE
+CRtpMsgServer::SetOutputRedlineToUser(unsigned long redlineBytes)
+{
+    if (redlineBytes == 0)
+    {
+        return;
+    }
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_observer == NULL || m_reactor == NULL || m_service == NULL || m_task == NULL)
+        {
+            return;
+        }
+
+        m_redlineBytesUser = redlineBytes;
+    }
+}
+
+unsigned long
+PRO_CALLTYPE
+CRtpMsgServer::GetOutputRedlineToUser() const
+{
+    unsigned long redlineBytes = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        redlineBytes = m_redlineBytesUser;
     }
 
     return (redlineBytes);
@@ -1421,6 +1458,8 @@ CRtpMsgServer::AddBaseUser(RTP_SESSION_TYPE        sessionType,
             return (false);
         }
 
+        newSession->SetOutputRedline(isC2s ? m_redlineBytesC2s : m_redlineBytesUser, 0);
+
         /*
          * remove old
          */
@@ -1600,11 +1639,6 @@ CRtpMsgServer::AddSubUser(const RTP_MSG_USER&  c2sUser,
          */
         newCtx->subUsers.insert(subUser);
         m_user2Ctx[subUser] = newCtx;
-
-        if (newCtx->subUsers.size() == 1)
-        {
-            newSession->SetOutputRedline(m_redlineBytes, 0);
-        }
 
         newSession->AddRef();
         m_observer->AddRef();
