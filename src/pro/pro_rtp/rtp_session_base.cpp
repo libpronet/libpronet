@@ -72,6 +72,7 @@ CRtpSessionBase::CRtpSessionBase()
     m_tcpConnected   = false;
     m_handshakeOk    = false;
     m_onOkCalled     = false;
+    m_bigPacket      = NULL;
 
     m_canUpcall      = true;
 
@@ -79,6 +80,15 @@ CRtpSessionBase::CRtpSessionBase()
     memset(&m_localAddr       , 0, sizeof(pbsd_sockaddr_in));
     memset(&m_remoteAddr      , 0, sizeof(pbsd_sockaddr_in));
     memset(&m_remoteAddrConfig, 0, sizeof(pbsd_sockaddr_in));
+}
+
+CRtpSessionBase::~CRtpSessionBase()
+{
+    if (m_bigPacket != NULL)
+    {
+        m_bigPacket->Release();
+        m_bigPacket = NULL;
+    }
 }
 
 unsigned long

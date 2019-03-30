@@ -123,6 +123,22 @@ int main(int argc, char* argv[])
                     configInfo.msgs_handshake_timeout = value;
                 }
             }
+            else if (stricmp(configName.c_str(), "msgs_redline_bytes_c2s") == 0)
+            {
+                const int value = atoi(configValue.c_str());
+                if (value > 0)
+                {
+                    configInfo.msgs_redline_bytes_c2s = value;
+                }
+            }
+            else if (stricmp(configName.c_str(), "msgs_redline_bytes_usr") == 0)
+            {
+                const int value = atoi(configValue.c_str());
+                if (value > 0)
+                {
+                    configInfo.msgs_redline_bytes_usr = value;
+                }
+            }
             else if (stricmp(configName.c_str(), "msgs_db_readonly") == 0)
             {
                 configInfo.msgs_db_readonly = atoi(configValue.c_str()) != 0;
@@ -241,7 +257,7 @@ int main(int argc, char* argv[])
     snprintf_pro(
         s_traceInfo,
         sizeof(s_traceInfo),
-        " rtp_msg_server --- [hubPort : %u] --- ok! \n\n"
+        " rtp_msg_server --- [servicePort : %u] --- ok! \n\n"
         ,
         (unsigned int)configInfo.msgs_hub_port
         );

@@ -155,6 +155,8 @@ CTest::Init(IProReactor*                  reactor,
             goto EXIT;
         }
 
+        msgClient->SetOutputRedline(configInfo.msgc_redline_bytes);
+
         m_reactor    = reactor;
         m_configInfo = configInfo;
         m_sslConfig  = sslConfig;

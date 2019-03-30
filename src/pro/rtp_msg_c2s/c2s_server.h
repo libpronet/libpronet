@@ -37,14 +37,16 @@ struct C2S_SERVER_CONFIG_INFO
 {
     C2S_SERVER_CONFIG_INFO()
     {
-        c2ss_thread_count        = 40;
-        c2ss_uplink_ip           = "127.0.0.1";
-        c2ss_uplink_port         = 3000;
-        c2ss_uplink_password     = "test";
-        c2ss_uplink_local_ip     = "0.0.0.0";
-        c2ss_uplink_timeout      = 20;
-        c2ss_local_hub_port      = 3000;
-        c2ss_local_timeout       = 20;
+        c2ss_thread_count         = 40;
+        c2ss_uplink_ip            = "127.0.0.1";
+        c2ss_uplink_port          = 3000;
+        c2ss_uplink_password      = "test";
+        c2ss_uplink_local_ip      = "0.0.0.0";
+        c2ss_uplink_timeout       = 20;
+        c2ss_uplink_redline_bytes = 8192000;
+        c2ss_local_hub_port       = 4000;
+        c2ss_local_timeout        = 20;
+        c2ss_local_redline_bytes  = 1024000;
 
         c2ss_enable_ssl          = true;
         c2ss_ssl_enable_sha1cert = true;
@@ -80,15 +82,17 @@ struct C2S_SERVER_CONFIG_INFO
 
         CProConfigStream configStream;
 
-        configStream.AddUint("c2ss_thread_count"       , c2ss_thread_count);
-        configStream.Add    ("c2ss_uplink_ip"          , c2ss_uplink_ip);
-        configStream.AddUint("c2ss_uplink_port"        , c2ss_uplink_port);
-        configStream.Add    ("c2ss_uplink_id"          , idString);
-        configStream.Add    ("c2ss_uplink_password"    , c2ss_uplink_password);
-        configStream.Add    ("c2ss_uplink_local_ip"    , c2ss_uplink_local_ip);
-        configStream.AddUint("c2ss_uplink_timeout"     , c2ss_uplink_timeout);
-        configStream.AddUint("c2ss_local_hub_port"     , c2ss_local_hub_port);
-        configStream.AddUint("c2ss_local_timeout"      , c2ss_local_timeout);
+        configStream.AddUint("c2ss_thread_count"        , c2ss_thread_count);
+        configStream.Add    ("c2ss_uplink_ip"           , c2ss_uplink_ip);
+        configStream.AddUint("c2ss_uplink_port"         , c2ss_uplink_port);
+        configStream.Add    ("c2ss_uplink_id"           , idString);
+        configStream.Add    ("c2ss_uplink_password"     , c2ss_uplink_password);
+        configStream.Add    ("c2ss_uplink_local_ip"     , c2ss_uplink_local_ip);
+        configStream.AddUint("c2ss_uplink_timeout"      , c2ss_uplink_timeout);
+        configStream.AddUint("c2ss_uplink_redline_bytes", c2ss_uplink_redline_bytes);
+        configStream.AddUint("c2ss_local_hub_port"      , c2ss_local_hub_port);
+        configStream.AddUint("c2ss_local_timeout"       , c2ss_local_timeout);
+        configStream.AddUint("c2ss_local_redline_bytes" , c2ss_local_redline_bytes);
 
         configStream.AddInt ("c2ss_enable_ssl"         , c2ss_enable_ssl);
         configStream.AddInt ("c2ss_ssl_enable_sha1cert", c2ss_ssl_enable_sha1cert);
@@ -118,8 +122,10 @@ struct C2S_SERVER_CONFIG_INFO
     CProStlString                c2ss_uplink_password;
     CProStlString                c2ss_uplink_local_ip;
     unsigned int                 c2ss_uplink_timeout;
+    unsigned int                 c2ss_uplink_redline_bytes;
     unsigned short               c2ss_local_hub_port;
     unsigned int                 c2ss_local_timeout;
+    unsigned int                 c2ss_local_redline_bytes;
 
     bool                         c2ss_enable_ssl;
     bool                         c2ss_ssl_enable_sha1cert;

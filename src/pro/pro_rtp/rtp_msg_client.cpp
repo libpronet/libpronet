@@ -401,7 +401,8 @@ CRtpMsgClient::PushData(const void*         buf,
 
         const unsigned long msgHeaderSize =
             sizeof(RTP_MSG_HEADER) + sizeof(RTP_MSG_USER) * (dstUserCount - 1);
-        if (cachedBytes + msgHeaderSize + size > redlineBytes) /* check redline */
+        if (cachedBytes + msgHeaderSize + size > redlineBytes && /* check redline */
+            cachedBytes > 0)
         {
             return (false);
         }

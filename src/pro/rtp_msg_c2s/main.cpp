@@ -38,9 +38,9 @@
 #define LOG_FILE_NAME    "rtp_msg_c2s.log"
 #define CONFIG_FILE_NAME "rtp_msg_c2s.cfg"
 
-static const unsigned char SERVER_CID   = 1;                                     /* 1-... */
-static const PRO_UINT64    NODE_UID_MIN = 1;                                     /* 1 ~ 0xEFFFFFFFFF */
-static const PRO_UINT64    NODE_UID_MAX = ((PRO_UINT64)0xEF << 32) | 0xFFFFFFFF; /* 1 ~ 0xEFFFFFFFFF */
+static const unsigned char SERVER_CID    = 1;                                     /* 1-... */
+static const PRO_UINT64    NODE_UID_MIN  = 1;                                     /* 1 ~ 0xFFFFFFFFFF */
+static const PRO_UINT64    NODE_UID_MAXX = ((PRO_UINT64)0xFF << 32) | 0xFFFFFFFF; /* 1 ~ 0xFFFFFFFFFF */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -130,7 +130,7 @@ int main(int argc, char* argv[])
                     RtpMsgString2User(configValue.c_str(), &uplinkId);
 
                     if (uplinkId.classId == SERVER_CID &&
-                        uplinkId.UserId() >= NODE_UID_MIN && uplinkId.UserId() <= NODE_UID_MAX)
+                        uplinkId.UserId() >= NODE_UID_MIN && uplinkId.UserId() <= NODE_UID_MAXX)
                     {
                         configInfo.c2ss_uplink_id = uplinkId;
                     }
@@ -161,6 +161,14 @@ int main(int argc, char* argv[])
                     configInfo.c2ss_uplink_timeout = value;
                 }
             }
+            else if (stricmp(configName.c_str(), "c2ss_uplink_redline_bytes") == 0)
+            {
+                const int value = atoi(configValue.c_str());
+                if (value > 0)
+                {
+                    configInfo.c2ss_uplink_redline_bytes = value;
+                }
+            }
             else if (stricmp(configName.c_str(), "c2ss_local_hub_port") == 0)
             {
                 const int value = atoi(configValue.c_str());
@@ -175,6 +183,14 @@ int main(int argc, char* argv[])
                 if (value > 0)
                 {
                     configInfo.c2ss_local_timeout = value;
+                }
+            }
+            else if (stricmp(configName.c_str(), "c2ss_local_redline_bytes") == 0)
+            {
+                const int value = atoi(configValue.c_str());
+                if (value > 0)
+                {
+                    configInfo.c2ss_local_redline_bytes = value;
                 }
             }
             else if (stricmp(configName.c_str(), "c2ss_enable_ssl") == 0)
@@ -308,7 +324,7 @@ int main(int argc, char* argv[])
     snprintf_pro(
         s_traceInfo,
         sizeof(s_traceInfo),
-        " rtp_msg_c2s --- [hubPort : %u, server : %s:%u] --- ok! \n\n"
+        " rtp_msg_c2s --- [servicePort : %u, server : %s:%u] --- ok! \n\n"
         ,
         (unsigned int)configInfo.c2ss_local_hub_port,
         configInfo.c2ss_uplink_ip.c_str(),

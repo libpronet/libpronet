@@ -253,6 +253,8 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                     break;
                 }
 
+                m_peerAliveTick = ProGetTickCount64();
+
                 recvPool.Flush(size);
                 m_remoteAddr  = *remoteAddr; /* bind */
                 m_handshakeOk = true;
@@ -274,8 +276,6 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                     break;
                 }
 
-                m_peerAliveTick = ProGetTickCount64();
-
                 packet = CRtpPacket::CreateInstance(
                     sizeof(RTP_EXT) + ext.hdrAndPayloadSize, RTP_EPM_DEFAULT);
                 if (packet == NULL)
@@ -295,6 +295,8 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                         recvPool.Flush(dataSize);
                         break;
                     }
+
+                    m_peerAliveTick = ProGetTickCount64();
 
                     RTP_PACKET& magicPacket = packet->GetPacket();
 

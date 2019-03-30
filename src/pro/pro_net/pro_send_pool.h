@@ -50,14 +50,14 @@ public:
         m_pendingPos = NULL;
     }
 
-    void Fill(const void* buf, size_t size)
+    void Fill(const void* buf, size_t size, PRO_UINT64 actionId = 0)
     {
         if (buf == NULL || size == 0)
         {
             return;
         }
 
-        CProBuffer* const p = new CProBuffer;
+        CProBuffer* const p = new CProBuffer(actionId);
         if (!p->Resize(size))
         {
             delete p;

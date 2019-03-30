@@ -101,16 +101,17 @@ CRtpBucket::PushBackAddRef(IRtpPacket* packet)
         return (false);
     }
 
-    m_flowStat.PushData(1, packet->GetPayloadSize());
+    const unsigned long size = packet->GetPayloadSize();
+    m_flowStat.PushData(1, size);
 
-    if (m_totalBytes >= m_redlineBytes)
+    if (m_totalBytes + size > m_redlineBytes && m_totalBytes > 0)
     {
         return (false);
     }
 
     packet->AddRef();
     m_packets.push_back(packet);
-    m_totalBytes += packet->GetPayloadSize();
+    m_totalBytes += size;
 
     return (true);
 }
@@ -126,9 +127,10 @@ CRtpBucket::PopFrontRelease(IRtpPacket* packet)
 
     m_packets.pop_front();
 
-    m_flowStat.PopData(1, packet->GetPayloadSize());
+    const unsigned long size = packet->GetPayloadSize();
+    m_flowStat.PopData(1, size);
 
-    m_totalBytes -= packet->GetPayloadSize();
+    m_totalBytes -= size;
     packet->Release();
 }
 
@@ -225,12 +227,13 @@ CRtpAudioBucket::PushBackAddRef(IRtpPacket* packet)
         return (false);
     }
 
-    m_flowStat.PushData(1, packet->GetPayloadSize());
+    const unsigned long size = packet->GetPayloadSize();
+    m_flowStat.PushData(1, size);
 
     /*
      * remove old packets
      */
-    while (m_totalBytes >= m_redlineBytes)
+    while (m_totalBytes + size > m_redlineBytes)
     {
         IRtpPacket* const packet2 = m_packets.front();
         m_packets.pop_front();
@@ -240,26 +243,9 @@ CRtpAudioBucket::PushBackAddRef(IRtpPacket* packet)
 
     packet->AddRef();
     m_packets.push_back(packet);
-    m_totalBytes += packet->GetPayloadSize();
+    m_totalBytes += size;
 
     return (true);
-}
-
-void
-PRO_CALLTYPE
-CRtpAudioBucket::PopFrontRelease(IRtpPacket* packet)
-{
-    if (packet == NULL || m_totalBytes == 0 || packet != m_packets.front())
-    {
-        return;
-    }
-
-    m_packets.pop_front();
-
-    m_flowStat.PopData(1, packet->GetPayloadSize());
-
-    m_totalBytes -= packet->GetPayloadSize();
-    packet->Release();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -345,7 +331,8 @@ CRtpVideoBucket::PushBackAddRef(IRtpPacket* packet)
     const bool       keyFrame           = packet->GetKeyFrame();
     const bool       firstPacketOfFrame = packet->GetFirstPacketOfFrame();
 
-    m_flowStat.PushData(marker ? 1 : 0, packet->GetPayloadSize());
+    const unsigned long size = packet->GetPayloadSize();
+    m_flowStat.PushData(marker ? 1 : 0, size);
 
     /*
      * 1. check synchronization point
@@ -422,7 +409,7 @@ CRtpVideoBucket::PushBackAddRef(IRtpPacket* packet)
         }
 
         m_waitingFrame->bucket.PushBackAddRef(packet);
-        m_totalBytes += packet->GetPayloadSize();
+        m_totalBytes += size;
     }
 
     /*
@@ -505,9 +492,10 @@ CRtpVideoBucket::PopFrontRelease(IRtpPacket* packet)
         return;
     }
 
-    m_flowStat.PopData(packet->GetMarker() ? 1 : 0, packet->GetPayloadSize());
+    const unsigned long size = packet->GetPayloadSize();
+    m_flowStat.PopData(packet->GetMarker() ? 1 : 0, size);
 
-    m_totalBytes -= packet->GetPayloadSize();
+    m_totalBytes -= size;
     m_sendingFrame->bucket.PopFrontRelease(packet);
 
     if (m_sendingFrame->bucket.GetFront() == NULL)

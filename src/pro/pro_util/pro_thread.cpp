@@ -43,7 +43,7 @@
 #endif
 
 #if !defined(PRO_THREAD_STACK_SIZE)
-#define PRO_THREAD_STACK_SIZE             1040384 /* (1024 * 1024 - 8192) */
+#define PRO_THREAD_STACK_SIZE             (1024 * 1024 - 8192)
 #endif
 
 /////////////////////////////////////////////////////////////////////////////

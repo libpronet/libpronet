@@ -29,7 +29,7 @@ class CProBuffer
 {
 public:
 
-    CProBuffer();
+    CProBuffer(PRO_INT64 magic = 0);
 
     ~CProBuffer();
 
@@ -50,10 +50,16 @@ public:
         return ((unsigned long)m_size);
     }
 
+    PRO_INT64 Magic() const
+    {
+        return (m_magic);
+    }
+
 private:
 
-    char*  m_data;
-    size_t m_size;
+    const PRO_INT64 m_magic;
+    char*           m_data;
+    size_t          m_size;
 
     DECLARE_SGI_POOL(0);
 };

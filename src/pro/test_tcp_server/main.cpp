@@ -209,13 +209,17 @@ int main(int argc, char* argv[])
     tester = CTest::CreateInstance();
     if (tester == NULL || !tester->Init(reactor, configInfo))
     {
-        printf("\n test_tcp_server --- error! can't create tester. \n");
+        printf(
+            "\n test_tcp_server --- error! can't create tester on port %u. \n"
+            ,
+            (unsigned int)configInfo.tcps_port
+            );
 
         goto EXIT;
     }
 
     printf(
-        " test_tcp_server --- [hub : %s, port : %u] --- ok! \n\n"
+        " test_tcp_server --- [usingHub : %s, listenPort : %u] --- ok! \n\n"
         ,
         configInfo.tcps_using_hub ? "true" : "false",
         (unsigned int)configInfo.tcps_port

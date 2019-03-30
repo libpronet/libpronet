@@ -38,8 +38,10 @@ struct SERVICE_HUB_CONFIG_INFO
     SERVICE_HUB_CONFIG_INFO()
     {
         hubs_thread_count      = 20;
-        hubs_listen_port       = 3000;
         hubs_handshake_timeout = 10;
+
+        hubs_listen_ports.push_back(3000);
+        hubs_listen_ports.push_back(4000);
     }
 
     void ToConfigs(CProStlVector<PRO_CONFIG_ITEM>& configs) const
@@ -47,15 +49,17 @@ struct SERVICE_HUB_CONFIG_INFO
         CProConfigStream configStream;
 
         configStream.AddUint("hubs_thread_count"     , hubs_thread_count);
-        configStream.AddUint("hubs_listen_port"      , hubs_listen_port);
         configStream.AddUint("hubs_handshake_timeout", hubs_handshake_timeout);
+
+        configStream.AddUint("hubs_listen_port"      , hubs_listen_ports);
 
         configStream.Get(configs);
     }
 
-    unsigned int   hubs_thread_count; /* 1 ~ 100 */
-    unsigned short hubs_listen_port;
-    unsigned int   hubs_handshake_timeout;
+    unsigned int                hubs_thread_count; /* 1 ~ 100 */
+    unsigned int                hubs_handshake_timeout;
+
+    CProStlVector<unsigned int> hubs_listen_ports;
 
     DECLARE_SGI_POOL(0);
 };
@@ -67,10 +71,11 @@ int main(int argc, char* argv[])
 {
     ProNetInit();
 
-    IProReactor*            reactor        = NULL;
-    IProServiceHub*         serviceHub     = NULL;
-    CProStlString           configFileName = "";
-    SERVICE_HUB_CONFIG_INFO configInfo;
+    IProReactor*                   reactor        = NULL;
+    CProStlString                  portString     = "";
+    CProStlString                  configFileName = "";
+    SERVICE_HUB_CONFIG_INFO        configInfo;
+    CProStlVector<IProServiceHub*> hubs;
 
     {
         char exeRoot[1024] = "";
@@ -98,6 +103,8 @@ int main(int argc, char* argv[])
                 );
         }
 
+        configInfo.hubs_listen_ports.clear();
+
         int       i = 0;
         const int c = (int)configs.size();
 
@@ -114,14 +121,6 @@ int main(int argc, char* argv[])
                     configInfo.hubs_thread_count = value;
                 }
             }
-            else if (stricmp(configName.c_str(), "hubs_listen_port") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0 && value <= 65535)
-                {
-                    configInfo.hubs_listen_port = (unsigned short)value;
-                }
-            }
             else if (stricmp(configName.c_str(), "hubs_handshake_timeout") == 0)
             {
                 const int value = atoi(configValue.c_str());
@@ -130,10 +129,25 @@ int main(int argc, char* argv[])
                     configInfo.hubs_handshake_timeout = value;
                 }
             }
+            else if (stricmp(configName.c_str(), "hubs_listen_port") == 0)
+            {
+                const int value = atoi(configValue.c_str());
+                if (value > 0 && value <= 65535)
+                {
+                    configInfo.hubs_listen_ports.push_back(value);
+                }
+            }
             else
             {
             }
         }
+    }
+
+    if (configInfo.hubs_listen_ports.size() == 0)
+    {
+        printf(" pro_service_hub --- error! 'hubs_listen_port' is not found. \n\n");
+
+        goto EXIT;
     }
 
     reactor = ProCreateReactor(configInfo.hubs_thread_count);
@@ -144,25 +158,61 @@ int main(int argc, char* argv[])
         goto EXIT;
     }
 
-    serviceHub = ProCreateServiceHub(
-        reactor, configInfo.hubs_listen_port, configInfo.hubs_handshake_timeout);
-    if (serviceHub == NULL)
     {
-        printf(" pro_service_hub --- error! can't create service hub. \n\n");
+        int       i = 0;
+        const int c = (int)configInfo.hubs_listen_ports.size();
 
-        goto EXIT;
+        for (; i < c; ++i)
+        {
+            IProServiceHub* const hub = ProCreateServiceHub(
+                reactor, (unsigned short)configInfo.hubs_listen_ports[i],
+                configInfo.hubs_handshake_timeout);
+            if (hub == NULL)
+            {
+                printf(
+                    " pro_service_hub --- error! can't create service hub on the port %u. \n\n"
+                    ,
+                    (unsigned int)configInfo.hubs_listen_ports[i]
+                    );
+
+                goto EXIT;
+            }
+
+            hubs.push_back(hub);
+
+            char info[64] = "";
+            sprintf(info, "%u", (unsigned int)configInfo.hubs_listen_ports[i]);
+            if (i == 0)
+            {
+                portString =  info;
+            }
+            else
+            {
+                portString += ',';
+                portString += info;
+            }
+        }
     }
 
     printf(
-        " pro_service_hub --- [listenPort : %u] --- ok! \n\n"
+        " pro_service_hub --- [listenPorts : %s] --- ok! \n\n"
         ,
-        (unsigned int)configInfo.hubs_listen_port
+        portString.c_str()
         );
     ProSleep(-1);
 
 EXIT:
 
-    ProDeleteServiceHub(serviceHub);
+    {
+        int       i = 0;
+        const int c = (int)hubs.size();
+
+        for (; i < c; ++i)
+        {
+            ProDeleteServiceHub(hubs[i]);
+        }
+    }
+
     ProDeleteReactor(reactor);
     ProSleep(3000);
 

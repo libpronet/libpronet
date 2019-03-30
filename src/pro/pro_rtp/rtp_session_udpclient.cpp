@@ -241,8 +241,6 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
                 break;
             }
 
-            m_peerAliveTick = ProGetTickCount64();
-
             if (m_remoteAddr.sin_addr.s_addr != 0
                 &&
                 (remoteAddr->sin_addr.s_addr != m_remoteAddr.sin_addr.s_addr ||
@@ -292,6 +290,8 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
                     recvPool.Flush(dataSize);
                     break;
                 }
+
+                m_peerAliveTick = ProGetTickCount64();
 
                 hdr.v  = 2;
                 hdr.p  = 0;

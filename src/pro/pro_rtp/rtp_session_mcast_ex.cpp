@@ -247,8 +247,6 @@ CRtpSessionMcastEx::OnRecv(IProTransport*          trans,
                 break;
             }
 
-            m_peerAliveTick = ProGetTickCount64();
-
             RTP_EXT ext;
             recvPool.PeekData(&ext, sizeof(RTP_EXT));
             ext.hdrAndPayloadSize = pbsd_ntoh16(ext.hdrAndPayloadSize);
@@ -260,6 +258,7 @@ CRtpSessionMcastEx::OnRecv(IProTransport*          trans,
 
             if (ext.hdrAndPayloadSize == 0)
             {
+                m_peerAliveTick = ProGetTickCount64();
                 recvPool.Flush(sizeof(RTP_EXT));
                 continue;
             }
@@ -283,6 +282,8 @@ CRtpSessionMcastEx::OnRecv(IProTransport*          trans,
                     recvPool.Flush(dataSize);
                     break;
                 }
+
+                m_peerAliveTick = ProGetTickCount64();
 
                 RTP_PACKET& magicPacket = packet->GetPacket();
 

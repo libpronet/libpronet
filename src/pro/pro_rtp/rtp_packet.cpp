@@ -27,11 +27,6 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define MAX_PAYLOAD_SIZE (1024 * 63)
-
-/////////////////////////////////////////////////////////////////////////////
-////
-
 CRtpPacket*
 CRtpPacket::CreateInstance(const void*       payloadBuffer,
                            unsigned long     payloadSize,
@@ -52,8 +47,16 @@ CRtpPacket::CreateInstance(const void*       payloadBuffer,
 
     if (packMode == RTP_EPM_DEFAULT || packMode == RTP_EPM_TCP2)
     {
-        assert(payloadSize <= MAX_PAYLOAD_SIZE);
-        if (payloadSize > MAX_PAYLOAD_SIZE)
+        assert(payloadSize <= PRO_TCP2_PAYLOAD_SIZE);
+        if (payloadSize > PRO_TCP2_PAYLOAD_SIZE)
+        {
+            return (NULL);
+        }
+    }
+    else
+    {
+        assert(payloadSize <= PRO_TCP4_PAYLOAD_SIZE);
+        if (payloadSize > PRO_TCP4_PAYLOAD_SIZE)
         {
             return (NULL);
         }
@@ -88,8 +91,16 @@ CRtpPacket::CreateInstance(unsigned long     payloadSize,
 
     if (packMode == RTP_EPM_DEFAULT || packMode == RTP_EPM_TCP2)
     {
-        assert(payloadSize <= MAX_PAYLOAD_SIZE);
-        if (payloadSize > MAX_PAYLOAD_SIZE)
+        assert(payloadSize <= PRO_TCP2_PAYLOAD_SIZE);
+        if (payloadSize > PRO_TCP2_PAYLOAD_SIZE)
+        {
+            return (NULL);
+        }
+    }
+    else
+    {
+        assert(payloadSize <= PRO_TCP4_PAYLOAD_SIZE);
+        if (payloadSize > PRO_TCP4_PAYLOAD_SIZE)
         {
             return (NULL);
         }
@@ -541,7 +552,7 @@ CRtpPacket::GetPayloadSize16() const
     else
     {
         size =  pbsd_ntoh32(m_packet->hdr->len4);
-        size =  size <= MAX_PAYLOAD_SIZE ? size : 0;
+        size =  size <= PRO_TCP2_PAYLOAD_SIZE ? size : 0;
     }
 
     return ((PRO_UINT16)size);

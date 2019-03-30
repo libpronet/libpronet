@@ -30,6 +30,15 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+#if defined(PRO_TCP2_PAYLOAD_SIZE)
+#undef  PRO_TCP2_PAYLOAD_SIZE
+#endif
+#define PRO_TCP2_PAYLOAD_SIZE (1024 * 63)
+
+#if !defined(PRO_TCP4_PAYLOAD_SIZE)
+#define PRO_TCP4_PAYLOAD_SIZE (1024 * 1024 * 64)
+#endif
+
 struct RTP_EXT
 {
     PRO_UINT32    mmId                  ;

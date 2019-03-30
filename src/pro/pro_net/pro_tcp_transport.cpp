@@ -73,7 +73,6 @@ m_recvPoolSize(recvPoolSize > 0 ? recvPoolSize : DEFAULT_RECV_POOL_SIZE)
     m_onWr          = false;
     m_pendingWr     = false;
     m_requestOnSend = false;
-    m_actionId      = 0;
     m_sendingFd     = -1;
     m_timerId       = 0;
 
@@ -384,9 +383,8 @@ CProTcpTransport::SendData(const void*             buf,
             m_onWr = true;
         }
 
-        m_sendPool.Fill(buf, size);
+        m_sendPool.Fill(buf, size, actionId);
         m_pendingWr = true;
-        m_actionId  = actionId;
     }
 
     return (true);
@@ -858,8 +856,7 @@ CProTcpTransport::OnOutput(PRO_INT64 sockId)
         m_requestOnSend = false;
         if (onSendBuf != NULL)
         {
-            actionId = m_actionId;
-            m_actionId = 0;
+            actionId = onSendBuf->Magic();
         }
 
         m_observer->AddRef();

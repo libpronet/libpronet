@@ -488,8 +488,7 @@ CProSslTransport::DoSend(PRO_INT64 sockId)
         m_requestOnSend = false;
         if (onSendBuf != NULL)
         {
-            actionId = m_actionId;
-            m_actionId = 0;
+            actionId = onSendBuf->Magic();
         }
 
         m_observer->AddRef();

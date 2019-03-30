@@ -65,9 +65,7 @@ protected:
 
     CRtpSessionBase();
 
-    virtual ~CRtpSessionBase()
-    {
-    }
+    virtual ~CRtpSessionBase();
 
     virtual void PRO_CALLTYPE GetInfo(RTP_SESSION_INFO* info) const;
 
@@ -228,6 +226,7 @@ protected:
     bool                    m_tcpConnected;     /* for tcp, tcp_ex, ssl_ex */
     bool                    m_handshakeOk;      /* for udp_ex, tcp_ex, ssl_ex */
     bool                    m_onOkCalled;
+    CRtpPacket*             m_bigPacket;
     mutable CProThreadMutex m_lock;
 
     bool                    m_canUpcall;

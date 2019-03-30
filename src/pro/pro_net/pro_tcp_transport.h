@@ -154,7 +154,6 @@ protected:
     bool                    m_onWr;
     bool                    m_pendingWr;
     bool                    m_requestOnSend;
-    PRO_UINT64              m_actionId;
     CProRecvPool            m_recvPool;
     CProSendPool            m_sendPool;
     PRO_INT64               m_sendingFd;

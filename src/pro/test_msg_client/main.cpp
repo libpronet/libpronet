@@ -161,6 +161,14 @@ int main(int argc, char* argv[])
                     configInfo.msgc_handshake_timeout = value;
                 }
             }
+            else if (stricmp(configName.c_str(), "msgc_redline_bytes") == 0)
+            {
+                const int value = atoi(configValue.c_str());
+                if (value > 0)
+                {
+                    configInfo.msgc_redline_bytes = value;
+                }
+            }
             else if (stricmp(configName.c_str(), "msgc_enable_ssl") == 0)
             {
                 configInfo.msgc_enable_ssl = atoi(configValue.c_str()) != 0;

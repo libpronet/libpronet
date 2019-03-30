@@ -103,8 +103,6 @@ public:
     }
 
     virtual bool PRO_CALLTYPE PushBackAddRef(IRtpPacket* packet);
-
-    virtual void PRO_CALLTYPE PopFrontRelease(IRtpPacket* packet);
 };
 
 /////////////////////////////////////////////////////////////////////////////

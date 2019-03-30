@@ -225,7 +225,6 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
             if (ext.hdrAndPayloadSize == 0)
             {
                 m_peerAliveTick = ProGetTickCount64();
-
                 recvPool.Flush(sizeof(RTP_EXT));
                 continue;
             }
@@ -250,6 +249,8 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
                     break;
                 }
 
+                m_peerAliveTick = ProGetTickCount64();
+
                 recvPool.Flush(size);
                 m_handshakeOk = true;
 
@@ -258,8 +259,6 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
             }
             else
             {
-                m_peerAliveTick = ProGetTickCount64();
-
                 packet = CRtpPacket::CreateInstance(
                     sizeof(RTP_EXT) + ext.hdrAndPayloadSize, RTP_EPM_DEFAULT);
                 if (packet == NULL)
@@ -279,6 +278,8 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
                         recvPool.Flush(dataSize);
                         break;
                     }
+
+                    m_peerAliveTick = ProGetTickCount64();
 
                     RTP_PACKET& magicPacket = packet->GetPacket();
 

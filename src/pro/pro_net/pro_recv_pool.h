@@ -78,51 +78,6 @@ public:
         return (true);
     }
 
-    void* ContinuousIdleBuf()
-    {
-        return (m_idle);
-    }
-
-    unsigned long ContinuousIdleSize() const
-    {
-        if (m_idle + m_idleSize > m_end)
-        {
-            return ((unsigned long)(m_end - m_idle));
-        }
-
-        return ((unsigned long)m_idleSize);
-    }
-
-    void Fill(size_t size)
-    {
-        if (size == 0 || size > ContinuousIdleSize())
-        {
-            return;
-        }
-
-        if (m_data == NULL)
-        {
-            m_data = m_idle;
-        }
-
-        m_dataSize += size;
-
-        if (m_idleSize - size == 0)
-        {
-            m_idle = NULL;
-        }
-        else
-        {
-            m_idle += size;
-            if (m_idle == m_end)
-            {
-                m_idle = m_begin;
-            }
-        }
-
-        m_idleSize -= size;
-    }
-
     virtual unsigned long PRO_CALLTYPE PeekDataSize() const
     {
         return ((unsigned long)m_dataSize);
@@ -189,6 +144,56 @@ public:
         }
 
         m_dataSize -= size;
+    }
+
+    virtual unsigned long PRO_CALLTYPE GetFreeSize() const
+    {
+        return ((unsigned long)m_idleSize);
+    }
+
+    void* ContinuousIdleBuf()
+    {
+        return (m_idle);
+    }
+
+    unsigned long ContinuousIdleSize() const
+    {
+        if (m_idle + m_idleSize > m_end)
+        {
+            return ((unsigned long)(m_end - m_idle));
+        }
+
+        return ((unsigned long)m_idleSize);
+    }
+
+    void Fill(size_t size)
+    {
+        if (size == 0 || size > ContinuousIdleSize())
+        {
+            return;
+        }
+
+        if (m_data == NULL)
+        {
+            m_data = m_idle;
+        }
+
+        m_dataSize += size;
+
+        if (m_idleSize - size == 0)
+        {
+            m_idle = NULL;
+        }
+        else
+        {
+            m_idle += size;
+            if (m_idle == m_end)
+            {
+                m_idle = m_begin;
+            }
+        }
+
+        m_idleSize -= size;
     }
 
 private:

@@ -41,7 +41,9 @@ struct MSG_SERVER_CONFIG_INFO
         msgs_thread_count        = 40;
         msgs_hub_port            = 3000;
         msgs_handshake_timeout   = 20;
-        msgs_db_readonly         = false;
+        msgs_redline_bytes_c2s   = 8192000;
+        msgs_redline_bytes_usr   = 1024000;
+        msgs_db_readonly         = true;
 
         msgs_enable_ssl          = true;
         msgs_ssl_forced          = false;
@@ -69,6 +71,8 @@ struct MSG_SERVER_CONFIG_INFO
         configStream.AddUint("msgs_thread_count"       , msgs_thread_count);
         configStream.AddUint("msgs_hub_port"           , msgs_hub_port);
         configStream.AddUint("msgs_handshake_timeout"  , msgs_handshake_timeout);
+        configStream.AddUint("msgs_redline_bytes_c2s"  , msgs_redline_bytes_c2s);
+        configStream.AddUint("msgs_redline_bytes_usr"  , msgs_redline_bytes_usr);
         configStream.AddInt ("msgs_db_readonly"        , msgs_db_readonly);
 
         configStream.AddInt ("msgs_enable_ssl"         , msgs_enable_ssl);
@@ -91,6 +95,8 @@ struct MSG_SERVER_CONFIG_INFO
     unsigned int                 msgs_thread_count; /* 1 ~ 100 */
     unsigned short               msgs_hub_port;
     unsigned int                 msgs_handshake_timeout;
+    unsigned int                 msgs_redline_bytes_c2s;
+    unsigned int                 msgs_redline_bytes_usr;
     bool                         msgs_db_readonly;
 
     bool                         msgs_enable_ssl;

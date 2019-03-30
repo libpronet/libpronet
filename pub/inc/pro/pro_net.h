@@ -542,21 +542,26 @@ class IProRecvPool
 public:
 
     /*
-     * 查询接收池内缓冲的数据长度
+     * 查询接收池内的数据量
      */
     virtual unsigned long PRO_CALLTYPE PeekDataSize() const = 0;
 
     /*
-     * 复制接收池内靠前的指定长度的数据
+     * 读取接收池内的数据
      */
     virtual void PRO_CALLTYPE PeekData(void* buf, size_t size) const = 0;
 
     /*
-     * 刷掉已经复制的数据
+     * 刷掉已经读取的数据
      *
      * 腾出空间,以便容纳新的数据
      */
     virtual void PRO_CALLTYPE Flush(size_t size) = 0;
+
+    /*
+     * 查询接收池内剩余的存储空间
+     */
+    virtual unsigned long PRO_CALLTYPE GetFreeSize() const = 0;
 };
 
 /*

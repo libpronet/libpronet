@@ -261,8 +261,6 @@ CRtpSessionMcast::OnRecv(IProTransport*          trans,
                 break;
             }
 
-            m_peerAliveTick = ProGetTickCount64();
-
             packet = CRtpPacket::CreateInstance(dataSize, RTP_EPM_DEFAULT);
             if (packet == NULL)
             {
@@ -290,6 +288,8 @@ CRtpSessionMcast::OnRecv(IProTransport*          trans,
                     recvPool.Flush(dataSize);
                     break;
                 }
+
+                m_peerAliveTick = ProGetTickCount64();
 
                 hdr.v  = 2;
                 hdr.p  = 0;

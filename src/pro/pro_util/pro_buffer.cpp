@@ -25,7 +25,8 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-CProBuffer::CProBuffer()
+CProBuffer::CProBuffer(PRO_INT64 magic)
+: m_magic(magic)
 {
     m_data = NULL;
     m_size = 0;

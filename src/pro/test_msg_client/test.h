@@ -40,6 +40,7 @@ struct MSG_CLIENT_CONFIG_INFO
         msgc_password            = "test";
         msgc_local_ip            = "0.0.0.0";
         msgc_handshake_timeout   = 20;
+        msgc_redline_bytes       = 1024000;
 
         msgc_enable_ssl          = false;
         msgc_ssl_enable_sha1cert = true;
@@ -67,6 +68,7 @@ struct MSG_CLIENT_CONFIG_INFO
         configStream.Add    ("msgc_password"           , msgc_password);
         configStream.Add    ("msgc_local_ip"           , msgc_local_ip);
         configStream.AddUint("msgc_handshake_timeout"  , msgc_handshake_timeout);
+        configStream.AddUint("msgc_redline_bytes"      , msgc_redline_bytes);
 
         configStream.AddInt ("msgc_enable_ssl"         , msgc_enable_ssl);
         configStream.AddInt ("msgc_ssl_enable_sha1cert", msgc_ssl_enable_sha1cert);
@@ -84,6 +86,7 @@ struct MSG_CLIENT_CONFIG_INFO
     CProStlString                msgc_password;
     CProStlString                msgc_local_ip;
     unsigned int                 msgc_handshake_timeout;
+    unsigned int                 msgc_redline_bytes;
 
     bool                         msgc_enable_ssl;
     bool                         msgc_ssl_enable_sha1cert;

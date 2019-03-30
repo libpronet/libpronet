@@ -343,6 +343,8 @@ CRtpSessionTcpclient::OnRecv(IProTransport*          trans,
                 return;
             }
 
+            m_peerAliveTick = ProGetTickCount64();
+
             IProRecvPool&       recvPool = *m_trans->GetRecvPool();
             const unsigned long dataSize = recvPool.PeekDataSize();
 
@@ -350,8 +352,6 @@ CRtpSessionTcpclient::OnRecv(IProTransport*          trans,
             {
                 break;
             }
-
-            m_peerAliveTick = ProGetTickCount64();
 
             PRO_UINT16 packetSize = 0;
             recvPool.PeekData(&packetSize, sizeof(PRO_UINT16));
