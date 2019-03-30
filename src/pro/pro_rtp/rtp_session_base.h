@@ -62,6 +62,8 @@ protected:
 
     virtual void PRO_CALLTYPE GetInfo(RTP_SESSION_INFO* info) const;
 
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(char suiteName[64]) const;
+
     virtual PRO_INT64 PRO_CALLTYPE GetSockId() const;
 
     virtual const char* PRO_CALLTYPE GetLocalIp(char localIp[64]) const;

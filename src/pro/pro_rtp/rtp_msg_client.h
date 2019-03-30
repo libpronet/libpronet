@@ -82,6 +82,8 @@ public:
 
     virtual void PRO_CALLTYPE GetUser(RTP_MSG_USER* user) const;
 
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(char suiteName[64]) const;
+
     virtual bool PRO_CALLTYPE SendMsg(
         const void*         buf,
         unsigned long       size,

@@ -514,6 +514,11 @@ public:
     virtual void PRO_CALLTYPE GetUser(RTP_MSG_USER* user) const = 0;
 
     /*
+     * 获取加密套件
+     */
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(char suiteName[64]) const = 0;
+
+    /*
      * 发送消息
      *
      * 系统内部有消息发送队列
@@ -711,6 +716,11 @@ public:
      * 获取c2s用户号
      */
     virtual void PRO_CALLTYPE GetC2sUser(RTP_MSG_USER* c2sUser) const = 0;
+
+    /*
+     * 获取c2s<->server链路的加密套件
+     */
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetC2sSslSuite(char suiteName[64]) const = 0;
 
     /*
      * 获取用户数

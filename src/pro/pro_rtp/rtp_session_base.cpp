@@ -115,6 +115,26 @@ CRtpSessionBase::GetInfo(RTP_SESSION_INFO* info) const
     }
 }
 
+PRO_SSL_SUITE_ID
+PRO_CALLTYPE
+CRtpSessionBase::GetSslSuite(char suiteName[64]) const
+{
+    strcpy(suiteName, "NONE");
+
+    PRO_SSL_SUITE_ID suiteId = PRO_SSL_SUITE_NONE;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_trans != NULL)
+        {
+            suiteId = m_trans->GetSslSuite(suiteName);
+        }
+    }
+
+    return (suiteId);
+}
+
 PRO_INT64
 PRO_CALLTYPE
 CRtpSessionBase::GetSockId() const
@@ -585,6 +605,9 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
         return;
     }
 
+    char suiteName[64] = "";
+    trans->GetSslSuite(suiteName);
+
     IRtpSessionObserver* observer = NULL;
 
     {
@@ -637,6 +660,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     "\t CRtpSessionBase(M) - remoteVersion    : %u (for tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(M) - sessionType      : %u \n"
                     "\t CRtpSessionBase(M) - packMode         : %u (for tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(M) - sslSuiteName     : %s (for ssl_ex) \n"
                     "\t CRtpSessionBase(M) - someId           : %u \n"
                     "\t CRtpSessionBase(M) - mmId             : %u \n"
                     "\t CRtpSessionBase(M) - inSrcMmId        : %u \n"
@@ -664,6 +688,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (unsigned int)m_info.remoteVersion,
                     (unsigned int)m_info.sessionType,
                     (unsigned int)m_info.packMode,
+                    suiteName,
                     (unsigned int)m_info.someId,
                     (unsigned int)m_info.mmId,
                     (unsigned int)m_info.inSrcMmId,
@@ -699,6 +724,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     "\t CRtpSessionBase(A) - remoteVersion    : %u (for tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(A) - sessionType      : %u \n"
                     "\t CRtpSessionBase(A) - packMode         : %u (for tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(A) - sslSuiteName     : %s (for ssl_ex) \n"
                     "\t CRtpSessionBase(A) - someId           : %u \n"
                     "\t CRtpSessionBase(A) - mmId             : %u \n"
                     "\t CRtpSessionBase(A) - inSrcMmId        : %u \n"
@@ -726,6 +752,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (unsigned int)m_info.remoteVersion,
                     (unsigned int)m_info.sessionType,
                     (unsigned int)m_info.packMode,
+                    suiteName,
                     (unsigned int)m_info.someId,
                     (unsigned int)m_info.mmId,
                     (unsigned int)m_info.inSrcMmId,
@@ -761,6 +788,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     "\t CRtpSessionBase(V) - remoteVersion    : %u (for tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(V) - sessionType      : %u \n"
                     "\t CRtpSessionBase(V) - packMode         : %u (for tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(V) - sslSuiteName     : %s (for ssl_ex) \n"
                     "\t CRtpSessionBase(V) - someId           : %u \n"
                     "\t CRtpSessionBase(V) - mmId             : %u \n"
                     "\t CRtpSessionBase(V) - inSrcMmId        : %u \n"
@@ -788,6 +816,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (unsigned int)m_info.remoteVersion,
                     (unsigned int)m_info.sessionType,
                     (unsigned int)m_info.packMode,
+                    suiteName,
                     (unsigned int)m_info.someId,
                     (unsigned int)m_info.mmId,
                     (unsigned int)m_info.inSrcMmId,

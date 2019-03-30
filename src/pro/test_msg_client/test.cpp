@@ -367,14 +367,19 @@ CTest::OnOkMsg(IRtpMsgClient*      msgClient,
     }
 
     {{{
+        char suiteName[64] = "";
+        msgClient->GetSslSuite(suiteName);
+
         printf(
             "\n"
-            " CTest::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s, server : %s:%u) \n"
+            " CTest::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s, sslSuite : %s,"
+            " server : %s:%u) \n"
             ,
             (unsigned int)myUser->classId,
             myUser->UserId(),
             (unsigned int)myUser->instId,
             myPublicIp,
+            suiteName,
             m_configInfo.msgc_server_ip.c_str(),
             (unsigned int)m_configInfo.msgc_server_port
             );

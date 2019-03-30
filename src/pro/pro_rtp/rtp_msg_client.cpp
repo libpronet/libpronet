@@ -302,6 +302,26 @@ CRtpMsgClient::GetUser(RTP_MSG_USER* user) const
     }
 }
 
+PRO_SSL_SUITE_ID
+PRO_CALLTYPE
+CRtpMsgClient::GetSslSuite(char suiteName[64]) const
+{
+    strcpy(suiteName, "NONE");
+
+    PRO_SSL_SUITE_ID suiteId = PRO_SSL_SUITE_NONE;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_session != NULL)
+        {
+            suiteId = m_session->GetSslSuite(suiteName);
+        }
+    }
+
+    return (suiteId);
+}
+
 bool
 PRO_CALLTYPE
 CRtpMsgClient::SendMsg(const void*         buf,

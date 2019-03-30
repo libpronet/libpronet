@@ -5,7 +5,7 @@ LOCAL_MODULE    := test_rtp
 LOCAL_SRC_FILES := main.cpp \
                    test.cpp
 
-LOCAL_C_INCLUDES    :=
+LOCAL_C_INCLUDES    := $(PRO_ROOT_DIR)/src/pro/pro_net
 LOCAL_CFLAGS        := -fno-strict-aliasing
 LOCAL_CPPFLAGS      :=
 LOCAL_CPP_EXTENSION := .cpp .cxx .cc

@@ -370,6 +370,26 @@ CRtpMsgC2s::GetC2sUser(RTP_MSG_USER* c2sUser) const
     }
 }
 
+PRO_SSL_SUITE_ID
+PRO_CALLTYPE
+CRtpMsgC2s::GetC2sSslSuite(char suiteName[64]) const
+{
+    strcpy(suiteName, "NONE");
+
+    PRO_SSL_SUITE_ID suiteId = PRO_SSL_SUITE_NONE;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_msgClient != NULL)
+        {
+            suiteId = m_msgClient->GetSslSuite(suiteName);
+        }
+    }
+
+    return (suiteId);
+}
+
 void
 PRO_CALLTYPE
 CRtpMsgC2s::GetUserCount(unsigned long* pendingUserCount, /* = NULL */

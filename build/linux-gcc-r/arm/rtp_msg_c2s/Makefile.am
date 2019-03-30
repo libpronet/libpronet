@@ -8,7 +8,7 @@ probin_PROGRAMS = rtp_msg_c2s
 rtp_msg_c2s_SOURCES = ../../../../src/pro/rtp_msg_c2s/c2s_server.cpp \
                       ../../../../src/pro/rtp_msg_c2s/main.cpp
 
-rtp_msg_c2s_CPPFLAGS =
+rtp_msg_c2s_CPPFLAGS = -I../../../src/pro/pro_net
 
 rtp_msg_c2s_CFLAGS   = -fno-strict-aliasing
 rtp_msg_c2s_CXXFLAGS = -fno-strict-aliasing

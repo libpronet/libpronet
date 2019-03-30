@@ -703,6 +703,26 @@ CRtpSessionWrapper::GetInfo(RTP_SESSION_INFO* info) const
     }
 }
 
+PRO_SSL_SUITE_ID
+PRO_CALLTYPE
+CRtpSessionWrapper::GetSslSuite(char suiteName[64]) const
+{
+    strcpy(suiteName, "NONE");
+
+    PRO_SSL_SUITE_ID suiteId = PRO_SSL_SUITE_NONE;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_session != NULL)
+        {
+            suiteId = m_session->GetSslSuite(suiteName);
+        }
+    }
+
+    return (suiteId);
+}
+
 PRO_INT64
 PRO_CALLTYPE
 CRtpSessionWrapper::GetSockId() const

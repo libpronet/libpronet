@@ -1866,8 +1866,7 @@ PRO_CALLTYPE
 ProSslCtx_GetSuite(PRO_SSL_CTX* ctx,
                    char         suiteName[64])
 {
-    suiteName[0]  = '\0';
-    suiteName[63] = '\0';
+    strcpy(suiteName, "NONE");
 
     assert(ctx != NULL);
     if (ctx == NULL)

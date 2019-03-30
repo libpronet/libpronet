@@ -8,7 +8,7 @@ LOCAL_SRC_FILES := main.cpp          \
                    db_connection.cpp \
                    sqlite3.c
 
-LOCAL_C_INCLUDES    :=
+LOCAL_C_INCLUDES    := $(PRO_ROOT_DIR)/src/pro/pro_net
 LOCAL_CFLAGS        := -DSQLITE_THREADSAFE=1 -fno-strict-aliasing
 LOCAL_CPPFLAGS      :=
 LOCAL_CPP_EXTENSION := .cpp .cxx .cc

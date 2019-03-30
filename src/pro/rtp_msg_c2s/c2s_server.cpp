@@ -385,17 +385,22 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
     }
 
     {{{
+        char suiteName[64] = "";
+        msgC2s->GetC2sSslSuite(suiteName);
+
         char traceInfo[1024] = "";
         traceInfo[sizeof(traceInfo) - 1] = '\0';
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-            " CC2sServer::OnOkC2s(id : %u-" PRO_PRT64U "-%u, publicIp : %s, server : %s:%u) \n"
+            " CC2sServer::OnOkC2s(id : %u-" PRO_PRT64U "-%u, publicIp : %s, sslSuite : %s,"
+            " server : %s:%u) \n"
             ,
             (unsigned int)c2sUser->classId,
             c2sUser->UserId(),
             (unsigned int)c2sUser->instId,
             c2sPublicIp,
+            suiteName,
             m_configInfo.c2ss_uplink_ip.c_str(),
             (unsigned int)m_configInfo.c2ss_uplink_port
             );

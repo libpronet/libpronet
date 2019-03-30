@@ -27,7 +27,7 @@ LOCAL_SRC_FILES := rtp_framework.cpp            \
                    rtp_msg_server.cpp           \
                    rtp_session_wrapper.cpp
 
-LOCAL_C_INCLUDES    :=
+LOCAL_C_INCLUDES    := $(PRO_ROOT_DIR)/src/pro/pro_net
 LOCAL_CFLAGS        := -DPRO_RTP_EXPORTS \
                        -fno-strict-aliasing -fvisibility=hidden
 LOCAL_CPPFLAGS      :=

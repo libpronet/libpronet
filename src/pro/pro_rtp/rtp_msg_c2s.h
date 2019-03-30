@@ -77,6 +77,8 @@ public:
 
     virtual void PRO_CALLTYPE GetC2sUser(RTP_MSG_USER* c2sUser) const;
 
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetC2sSslSuite(char suiteName[64]) const;
+
     virtual void PRO_CALLTYPE GetUserCount(
         unsigned long* pendingUserCount, /* = NULL */
         unsigned long* userCount         /* = NULL */
