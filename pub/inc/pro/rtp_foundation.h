@@ -521,7 +521,7 @@ public:
     virtual bool PRO_CALLTYPE SendMsg(
         const void*         buf,         /* 消息内容 */
         PRO_UINT16          size,        /* 最多(1024 * 60)字节 */
-        PRO_UINT32          charset,     /* 用户自定义的消息字符集代码 */
+        PRO_UINT16          charset,     /* 用户自定义的消息字符集代码 */
         const RTP_MSG_USER* dstUsers,    /* 消息接收者 */
         unsigned char       dstUserCount /* 最多255个目标 */
         ) = 0;
@@ -560,7 +560,7 @@ public:
         IRtpMsgClient*      msgClient,
         const void*         buf,
         PRO_UINT16          size,
-        PRO_UINT32          charset,
+        PRO_UINT16          charset,
         const RTP_MSG_USER* srcUser
         ) = 0;
 
@@ -607,7 +607,7 @@ public:
     virtual bool PRO_CALLTYPE SendMsg(
         const void*         buf,         /* 消息内容 */
         PRO_UINT16          size,        /* 最多(1024 * 60)字节 */
-        PRO_UINT32          charset,     /* 用户自定义的消息字符集代码 */
+        PRO_UINT16          charset,     /* 用户自定义的消息字符集代码 */
         const RTP_MSG_USER* dstUsers,    /* 消息接收者 */
         unsigned char       dstUserCount /* 最多255个目标 */
         ) = 0;
@@ -689,7 +689,7 @@ public:
         IRtpMsgServer*      msgServer,
         const void*         buf,
         PRO_UINT16          size,
-        PRO_UINT32          charset,
+        PRO_UINT16          charset,
         const RTP_MSG_USER* srcUser
         ) = 0;
 };

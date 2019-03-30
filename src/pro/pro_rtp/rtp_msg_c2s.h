@@ -154,7 +154,7 @@ private:
         IRtpMsgClient*      msgClient,
         const void*         buf,
         PRO_UINT16          size,
-        PRO_UINT32          charset,
+        PRO_UINT16          charset,
         const RTP_MSG_USER* srcUser
         );
 
@@ -162,7 +162,7 @@ private:
         IRtpMsgClient*      msgClient,
         const void*         buf,
         PRO_UINT16          size,
-        PRO_UINT32          charset,
+        PRO_UINT16          charset,
         const RTP_MSG_USER* srcUser,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount
@@ -191,14 +191,19 @@ private:
         PRO_UINT64              nonce
         );
 
+    bool SendAckToDownlink(
+        IRtpSession*        session,
+        const RTP_MSG_USER* user,
+        const char*         publicIp
+        );
+
     bool SendMsgToDownlink(
         IRtpSession**       sessions,
         unsigned char       sessionCount,
         const void*         buf,
         PRO_UINT16          size,
-        PRO_UINT32          charset,
-        const RTP_MSG_USER* srcUser,
-        const char*         publicIp /* = NULL */
+        PRO_UINT16          charset,
+        const RTP_MSG_USER* srcUser
         );
 
     static void ReportLogout(

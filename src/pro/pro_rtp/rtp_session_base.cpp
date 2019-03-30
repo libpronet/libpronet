@@ -616,6 +616,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     "\t CRtpSessionBase(M) - localVersion     : %u (for tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(M) - remoteVersion    : %u (for tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(M) - sessionType      : %u \n"
+                    "\t CRtpSessionBase(M) - packType         : %u \n"
                     "\t CRtpSessionBase(M) - someId           : %u \n"
                     "\t CRtpSessionBase(M) - mmId             : %u \n"
                     "\t CRtpSessionBase(M) - inSrcMmId        : %u \n"
@@ -641,6 +642,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (unsigned int)m_info.localVersion,
                     (unsigned int)m_info.remoteVersion,
                     (unsigned int)m_info.sessionType,
+                    (unsigned int)m_info.packType,
                     (unsigned int)m_info.someId,
                     (unsigned int)m_info.mmId,
                     (unsigned int)m_info.inSrcMmId,
@@ -674,6 +676,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     "\t CRtpSessionBase(A) - localVersion     : %u (for tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(A) - remoteVersion    : %u (for tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(A) - sessionType      : %u \n"
+                    "\t CRtpSessionBase(A) - packType         : %u \n"
                     "\t CRtpSessionBase(A) - someId           : %u \n"
                     "\t CRtpSessionBase(A) - mmId             : %u \n"
                     "\t CRtpSessionBase(A) - inSrcMmId        : %u \n"
@@ -699,6 +702,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (unsigned int)m_info.localVersion,
                     (unsigned int)m_info.remoteVersion,
                     (unsigned int)m_info.sessionType,
+                    (unsigned int)m_info.packType,
                     (unsigned int)m_info.someId,
                     (unsigned int)m_info.mmId,
                     (unsigned int)m_info.inSrcMmId,
@@ -732,6 +736,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     "\t CRtpSessionBase(V) - localVersion     : %u (for tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(V) - remoteVersion    : %u (for tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(V) - sessionType      : %u \n"
+                    "\t CRtpSessionBase(V) - packType         : %u \n"
                     "\t CRtpSessionBase(V) - someId           : %u \n"
                     "\t CRtpSessionBase(V) - mmId             : %u \n"
                     "\t CRtpSessionBase(V) - inSrcMmId        : %u \n"
@@ -757,6 +762,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (unsigned int)m_info.localVersion,
                     (unsigned int)m_info.remoteVersion,
                     (unsigned int)m_info.sessionType,
+                    (unsigned int)m_info.packType,
                     (unsigned int)m_info.someId,
                     (unsigned int)m_info.mmId,
                     (unsigned int)m_info.inSrcMmId,

@@ -39,14 +39,14 @@
  *        |                       Reactor                        |
  *        |   ____________     _____________     _____________   |
  *        |  A            |   A             |   A             |  |
- *        |  |     Acc    |   |   General   |   |     MM      |  |
- *        |  |   NetTask  |   |  TimerTask  |   |  TimerTask  |  |
+ *        |  |     Acc    |   |     I/O     |   |   General   |  |
+ *        |  |   NetTask  |   |   NetTask   |   |  TimerTask  |  |
  *        |  |____________V   |_____________V   |_____________V  |
  *        |                                                      |
  *        |   ____________     _____________     _____________   |
  *        |  A            |   A             |   A             |  |
- *        |  |    I/O     |   |     I/O     |   |     I/O     |  |
- *        |  |   NetTask  |   |   NetTask   |   |   NetTask   |  |
+ *        |  |    I/O     |   |     I/O     |   |     MM      |  |
+ *        |  |   NetTask  |   |   NetTask   |   |  TimerTask  |  |
  *        |  |____________V   |_____________V   |_____________V  |
  *        |                                                      |
  *        |       ...               ...               ...        |
@@ -54,30 +54,30 @@
  *                 |                  |                  |
  *                 |       ...        |       ...        |
  *         ________V_______   ________V_______   ________V_______
- *        |   ServiceHub   | |  ServiceHost   | |   Transport    |
+ *        |   Transport    | |   ServiceHub   | |  ServiceHost   |
  *        | (EventHandler) | | (EventHandler) | | (EventHandler) |
  *        |________________| |________________| |________________|
  *                   Fig.2 structure diagram of Reactor
  */
 
-/*       __________________                     __________________
- *      |    ServiceHub    |<----------------->|  MsgServiceHost  |
- *      |   ____________   |    ServicePipe    |  (Msg-Acceptor)  | Process2
- *      |  |            |  |                   |__________________|
- *      |  |  Acceptor  |  |        ...         __________________
- *      |  |____________|  |                   | MediaServiceHost |
- *      |                  |    ServicePipe    | (Media-Acceptor) | Process3
- *      |__________________|<----------------->|__________________|
- *            Process1
- *                   Fig.3 structure diagram of ServiceHub
+/*       __________________                     _________________
+ *      |    ServiceHub    |<----------------->|   ServiceHost   |
+ *      |   ____________   |    ServicePipe    |(Acceptor Shadow)| Audio-Process
+ *      |  |            |  |                   |_________________|
+ *      |  |  Acceptor  |  |        ...         _________________
+ *      |  |____________|  |                   |   ServiceHost   |
+ *      |                  |    ServicePipe    |(Acceptor Shadow)| Video-Process
+ *      |__________________|<----------------->|_________________|
+ *           Hub-Process
+ *                Fig.3 structure diagram of ServiceHub
  */
 
 /*
  * 1) client ----->                connect()                -----> server
  * 2) client <-----                 accept()                <----- server
- * 3] client <-----                  nonce                  <----- server
- * 4] client ----->  serviceId + serviceOpt + (r) + (r+1)   -----> server
- *          Fig.4 acceptor/connector handshake protocol flow chart
+ * 3) client <-----                  nonce                  <----- server
+ * 4) client ----->  serviceId + serviceOpt + (r) + (r+1)   -----> server
+ *       Fig.4 acceptor_ex/connector_ex handshake protocol flow chart
  */
 
 #if !defined(____PRO_NET_H____)

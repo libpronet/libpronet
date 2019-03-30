@@ -138,7 +138,7 @@ private:
         IRtpMsgClient*      msgClient,
         const void*         buf,
         PRO_UINT16          size,
-        PRO_UINT32          charset,
+        PRO_UINT16          charset,
         const RTP_MSG_USER* srcUser
         );
 

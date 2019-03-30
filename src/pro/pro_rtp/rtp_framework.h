@@ -32,24 +32,16 @@
  *                     Fig.1 module hierarchy diagram
  */
 
-/*       __________________                   ___________________
- *      |    ServiceHub    |<--------------->|    RtpService     |
- *      |   ____________   |   ServicePipe   |  (Msg-Acceptor)   | Process2
- *      |  |            |  |                 |   _____________   |
- *      |  |  Acceptor  |  |       ...       |  |             |  |
- *      |  |____________|  |                 |  | ServiceHost |  |
- *      |                  |   ServicePipe   |  |_____________|  |
- *      |__________________|<--------\       |___________________|
- *            Process1               |
- *                                   |        ___________________
- *                                   \------>|    RtpService     |
- *                                           |  (A/V-Acceptor)   | Process3
- *                                           |   _____________   |
- *                                           |  |             |  |
- *                                           |  | ServiceHost |  |
- *                                           |  |_____________|  |
- *                                           |___________________|
- *                 Fig.2 structure diagram of RtpService
+/*       __________________                     _________________
+ *      |    ServiceHub    |<----------------->|   RtpService    |
+ *      |   ____________   |    ServicePipe    |(Acceptor Shadow)| Audio-Process
+ *      |  |            |  |                   |_________________|
+ *      |  |  Acceptor  |  |        ...         _________________
+ *      |  |____________|  |                   |   RtpService    |
+ *      |                  |    ServicePipe    |(Acceptor Shadow)| Video-Process
+ *      |__________________|<----------------->|_________________|
+ *           Hub-Process
+ *                Fig.2 structure diagram of RtpService
  */
 
 /*
@@ -241,6 +233,18 @@ static const RTP_MM_TYPE RTP_MMT_CTRL_MAX  = 50;
  */
 
 /*
+ * [[[[ 扩展打包类型
+ */
+typedef unsigned char RTP_EXT_PACK_TYPE;
+
+static const RTP_EXT_PACK_TYPE RTP_EPT_DEF  = 0; /* ext8 + rfc12 + payload */
+static const RTP_EXT_PACK_TYPE RTP_EPT_TCP2 = 2; /* len2 + payload */
+static const RTP_EXT_PACK_TYPE RTP_EPT_TCP4 = 4; /* len4 + payload */
+/*
+ * ]]]]
+ */
+
+/*
  * [[[[ 会话类型
  */
 typedef unsigned char RTP_SESSION_TYPE;
@@ -266,19 +270,21 @@ static const RTP_SESSION_TYPE RTP_ST_MCAST_EX     = 12; /* mcast-扩展协议端 */
  */
 struct RTP_SESSION_INFO
 {
-    PRO_UINT16       localVersion;     /* 本地版本号===[c/s自动],     for tcp_ex, ssl_ex */
-    PRO_UINT16       remoteVersion;    /* 远端版本号===[c自动,s手动], for tcp_ex, ssl_ex */
-    RTP_SESSION_TYPE sessionType;      /* 会话类型=====[c/s自动] */
-    RTP_MM_TYPE      mmType;           /* 媒体类型=====[c/s手动] */
-    char             passwordHash[32]; /* 口令hash值===[c自动,s手动], for tcp_ex, ssl_ex */
-    char             reserved[34];
+    PRO_UINT16        localVersion;     /* 本地版本号===[c自动,s自动], for tcp_ex, ssl_ex */
+    PRO_UINT16        remoteVersion;    /* 远端版本号===[c自动,s设置], for tcp_ex, ssl_ex */
+    RTP_SESSION_TYPE  sessionType;      /* 会话类型=====[c自动,s自动] */
+    RTP_MM_TYPE       mmType;           /* 媒体类型=====[c设置,s设置] */
+    RTP_EXT_PACK_TYPE packType;         /* 打包类型=====[c设置,s设置], for tcp_ex, ssl_ex */
+    char              reserved1;
+    char              passwordHash[32]; /* 口令hash值===[c自动,s设置], for tcp_ex, ssl_ex */
+    char              reserved2[40];
 
-    PRO_UINT32       someId;           /* 某种id.比如房间id,目标节点id等,由上层定义 */
-    PRO_UINT32       mmId;             /* 节点id */
-    PRO_UINT32       inSrcMmId;        /* 输入媒体流的源节点id.可以为0 */
-    PRO_UINT32       outSrcMmId;       /* 输出媒体流的源节点id.可以为0 */
+    PRO_UINT32        someId;           /* 某种id.比如房间id,目标节点id等,由上层定义 */
+    PRO_UINT32        mmId;             /* 节点id */
+    PRO_UINT32        inSrcMmId;        /* 输入媒体流的源节点id.可以为0 */
+    PRO_UINT32        outSrcMmId;       /* 输出媒体流的源节点id.可以为0 */
 
-    char             userData[64];     /* 用户自定义数据 */
+    char              userData[64];     /* 用户自定义数据 */
 };
 
 /////////////////////////////////////////////////////////////////////////////

@@ -592,8 +592,8 @@ CRtpMsgC2s::AcceptSession(IRtpService*            service,
         );
     assert(remoteInfo->mmType == m_mmType);
 
-    RTP_MSG_HEADER msgHeader;
-    RTP_MSG_USER   user;
+    RTP_MSG_HEADER0 msgHeader;
+    RTP_MSG_USER    user;
 
     if (m_localSslConfig == NULL)
     {
@@ -613,9 +613,9 @@ CRtpMsgC2s::AcceptSession(IRtpService*            service,
     {
     }
 
-    memcpy(&msgHeader, remoteInfo->userData, sizeof(RTP_MSG_HEADER));
-    user        = msgHeader.srcUser;
-    user.instId = pbsd_ntoh16(msgHeader.srcUser.instId);
+    memcpy(&msgHeader, remoteInfo->userData, sizeof(RTP_MSG_HEADER0));
+    user        = msgHeader.user;
+    user.instId = pbsd_ntoh16(msgHeader.user.instId);
 
     assert(user.classId > 0);
     assert(
@@ -743,7 +743,7 @@ CRtpMsgC2s::OnRecvSession(IRtpSession* session,
 
     const void* const   msgBodyPtr  = (char*)msgHeaderPtr + msgHeaderSize;
     const unsigned long msgBodySize = packet->GetPayloadSize() - msgHeaderSize;
-    const PRO_UINT32    charset     = pbsd_ntoh32(msgHeaderPtr->charset);
+    const PRO_UINT16    charset     = pbsd_ntoh16(msgHeaderPtr->charset);
 
     RTP_MSG_USER srcUser = msgHeaderPtr->srcUser;
     srcUser.instId       = pbsd_ntoh16(msgHeaderPtr->srcUser.instId);
@@ -803,7 +803,7 @@ CRtpMsgC2s::OnRecvSession(IRtpSession* session,
         if (sessionCount > 0)
         {
             SendMsgToDownlink(sessions, sessionCount, msgBodyPtr, (PRO_UINT16)msgBodySize,
-                charset, &srcUser, NULL);
+                charset, &srcUser);
         }
 
         if (uplinkUserCount > 0 && m_msgClient != NULL)
@@ -917,7 +917,7 @@ PRO_CALLTYPE
 CRtpMsgC2s::OnRecvMsg(IRtpMsgClient*      msgClient,
                       const void*         buf,
                       PRO_UINT16          size,
-                      PRO_UINT32          charset,
+                      PRO_UINT16          charset,
                       const RTP_MSG_USER* srcUser)
 {{
     CProThreadMutexGuard mon(m_lockUpcall);
@@ -1075,8 +1075,7 @@ CRtpMsgC2s::ProcessMsg_client_login_ok(IRtpMsgClient*          msgClient,
                     m_user2Session.erase(itr2);
                 }
 
-                const char buf[] = { 0 }; /* dummy data */
-                ret = SendMsgToDownlink(&newSession, 1, buf, sizeof(buf), 0, &user, publicIp);
+                ret = SendAckToDownlink(newSession, &user, publicIp);
                 if (ret)
                 {
                     m_session2User[newSession] = user;
@@ -1214,7 +1213,7 @@ PRO_CALLTYPE
 CRtpMsgC2s::OnTransferMsg(IRtpMsgClient*      msgClient,
                           const void*         buf,
                           PRO_UINT16          size,
-                          PRO_UINT32          charset,
+                          PRO_UINT16          charset,
                           const RTP_MSG_USER* srcUser,
                           const RTP_MSG_USER* dstUsers,
                           unsigned char       dstUserCount)
@@ -1262,7 +1261,7 @@ CRtpMsgC2s::OnTransferMsg(IRtpMsgClient*      msgClient,
 
         if (sessionCount > 0)
         {
-            SendMsgToDownlink(sessions, sessionCount, buf, size, charset, srcUser, NULL);
+            SendMsgToDownlink(sessions, sessionCount, buf, size, charset, srcUser);
         }
     }
 }
@@ -1406,13 +1405,52 @@ CRtpMsgC2s::OnTimer(unsigned long timerId,
 }
 
 bool
+CRtpMsgC2s::SendAckToDownlink(IRtpSession*        session,
+                              const RTP_MSG_USER* user,
+                              const char*         publicIp)
+{
+    assert(session != NULL);
+    assert(user != NULL);
+    assert(user->classId > 0);
+    assert(user->UserId() > 0);
+    assert(publicIp != NULL);
+    assert(publicIp[0] != '\0');
+    if (session == NULL || user == NULL || user->classId == 0 || user->UserId() == 0 ||
+        publicIp == NULL || publicIp[0] == '\0')
+    {
+        return (false);
+    }
+
+    const unsigned long msgHeaderSize = sizeof(RTP_MSG_HEADER0);
+
+    IRtpPacket* const packet = CreateRtpPacketSpace(msgHeaderSize);
+    if (packet == NULL)
+    {
+        return (false);
+    }
+
+    RTP_MSG_HEADER0* const msgHeaderPtr = (RTP_MSG_HEADER0*)packet->GetPayloadBuffer();
+    memset(msgHeaderPtr, 0, msgHeaderSize);
+
+    msgHeaderPtr->version     = pbsd_hton16(RTP_MSG_PROTOCOL_VERSION);
+    msgHeaderPtr->user        = *user;
+    msgHeaderPtr->user.instId = pbsd_hton16(user->instId);
+    msgHeaderPtr->publicIp    = pbsd_inet_aton(publicIp);
+
+    packet->SetMmType(m_mmType);
+    const bool ret = session->SendPacket(packet);
+    packet->Release();
+
+    return (ret);
+}
+
+bool
 CRtpMsgC2s::SendMsgToDownlink(IRtpSession**       sessions,
                               unsigned char       sessionCount,
                               const void*         buf,
                               PRO_UINT16          size,
-                              PRO_UINT32          charset,
-                              const RTP_MSG_USER* srcUser,
-                              const char*         publicIp) /* = NULL */
+                              PRO_UINT16          charset,
+                              const RTP_MSG_USER* srcUser)
 {
     assert(sessions != NULL);
     assert(sessionCount > 0);
@@ -1438,11 +1476,7 @@ CRtpMsgC2s::SendMsgToDownlink(IRtpSession**       sessions,
     RTP_MSG_HEADER* const msgHeaderPtr = (RTP_MSG_HEADER*)packet->GetPayloadBuffer();
     memset(msgHeaderPtr, 0, msgHeaderSize);
 
-    msgHeaderPtr->charset        = pbsd_hton32(charset);
-    if (publicIp != NULL)
-    {
-        msgHeaderPtr->publicIp   = pbsd_inet_aton(publicIp);
-    }
+    msgHeaderPtr->charset        = pbsd_hton16(charset);
     msgHeaderPtr->srcUser        = *srcUser;
     msgHeaderPtr->srcUser.instId = pbsd_hton16(srcUser->instId);
 

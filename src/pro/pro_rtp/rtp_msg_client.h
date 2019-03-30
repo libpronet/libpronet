@@ -37,7 +37,7 @@ public:
         IRtpMsgClient*      msgClient,
         const void*         buf,
         PRO_UINT16          size,
-        PRO_UINT32          charset,
+        PRO_UINT16          charset,
         const RTP_MSG_USER* srcUser,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount
@@ -85,7 +85,7 @@ public:
     virtual bool PRO_CALLTYPE SendMsg(
         const void*         buf,
         PRO_UINT16          size,
-        PRO_UINT32          charset,
+        PRO_UINT16          charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount
         );
@@ -93,7 +93,7 @@ public:
     bool TransferMsg(
         const void*         buf,
         PRO_UINT16          size,
-        PRO_UINT32          charset,
+        PRO_UINT16          charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount,
         const RTP_MSG_USER* srcUser
@@ -138,16 +138,26 @@ private:
         PRO_INT64     userData
         );
 
-    bool PushMsg(
+    bool PushData(
         const void*         buf,
         PRO_UINT16          size,
-        PRO_UINT32          charset,
+        PRO_UINT16          charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount,
         const RTP_MSG_USER* srcUser /* = NULL */
         );
 
     void SendData(bool onOkCalled);
+
+    void RecvAck(
+        IRtpSession* session,
+        IRtpPacket*  packet
+        );
+
+    void RecvData(
+        IRtpSession* session,
+        IRtpPacket*  packet
+        );
 
 private:
 

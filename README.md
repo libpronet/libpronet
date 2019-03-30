@@ -56,14 +56,14 @@ under the directory of "pub/inc/pro" for more.
         |                       Reactor                        |
         |   ____________     _____________     _____________   |
         |  A            |   A             |   A             |  |
-        |  |     Acc    |   |   General   |   |     MM      |  |
-        |  |   NetTask  |   |  TimerTask  |   |  TimerTask  |  |
+        |  |     Acc    |   |     I/O     |   |   General   |  |
+        |  |   NetTask  |   |   NetTask   |   |  TimerTask  |  |
         |  |____________V   |_____________V   |_____________V  |
         |                                                      |
         |   ____________     _____________     _____________   |
         |  A            |   A             |   A             |  |
-        |  |    I/O     |   |     I/O     |   |     I/O     |  |
-        |  |   NetTask  |   |   NetTask   |   |   NetTask   |  |
+        |  |    I/O     |   |     I/O     |   |     MM      |  |
+        |  |   NetTask  |   |   NetTask   |   |  TimerTask  |  |
         |  |____________V   |_____________V   |_____________V  |
         |                                                      |
         |       ...               ...               ...        |
@@ -71,29 +71,32 @@ under the directory of "pub/inc/pro" for more.
                  |                  |                  |
                  |       ...        |       ...        |
          ________V_______   ________V_______   ________V_______
-        |   ServiceHub   | |  ServiceHost   | |   Transport    |
+        |   Transport    | |   ServiceHub   | |  ServiceHost   |
         | (EventHandler) | | (EventHandler) | | (EventHandler) |
         |________________| |________________| |________________|
                    Fig.2 structure diagram of Reactor
 
-        __________________                   ___________________
-       |    ServiceHub    |<--------------->|    RtpService     |
-       |   ____________   |   ServicePipe   |  (Msg-Acceptor)   | Process2
-       |  |            |  |                 |   _____________   |
-       |  |  Acceptor  |  |       ...       |  |             |  |
-       |  |____________|  |                 |  | ServiceHost |  |
-       |                  |   ServicePipe   |  |_____________|  |
-       |__________________|<--------\       |___________________|
-             Process1               |
-                                    |        ___________________
-                                    \------>|    RtpService     |
-                                            |  (A/V-Acceptor)   | Process3
-                                            |   _____________   |
-                                            |  |             |  |
-                                            |  | ServiceHost |  |
-                                            |  |_____________|  |
-                                            |___________________|
-                  Fig.3 structure diagram of RtpService
+        __________________                     _________________
+       |    ServiceHub    |<----------------->|   ServiceHost   |
+       |   ____________   |    ServicePipe    |(Acceptor Shadow)| Audio-Process
+       |  |            |  |                   |_________________|
+       |  |  Acceptor  |  |        ...         _________________
+       |  |____________|  |                   |   ServiceHost   |
+       |                  |    ServicePipe    |(Acceptor Shadow)| Video-Process
+       |__________________|<----------------->|_________________|
+            Hub-Process
+                Fig.3-1 structure diagram of ServiceHub
+
+        __________________                     _________________
+       |    ServiceHub    |<----------------->|   RtpService    |
+       |   ____________   |    ServicePipe    |(Acceptor Shadow)| Audio-Process
+       |  |            |  |                   |_________________|
+       |  |  Acceptor  |  |        ...         _________________
+       |  |____________|  |                   |   RtpService    |
+       |                  |    ServicePipe    |(Acceptor Shadow)| Video-Process
+       |__________________|<----------------->|_________________|
+            Hub-Process
+                Fig.3-2 structure diagram of RtpService
 
          ______________________________________________________
         |                                                      |

@@ -31,17 +31,27 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+#define RTP_MSG_PROTOCOL_VERSION 0
+
 class CProFunctorCommandTask;
+
+struct RTP_MSG_HEADER0
+{
+    PRO_UINT16     version;      /* the current protocol version is 0 */
+    RTP_MSG_USER   user;
+    union
+    {
+        char       reserved[10];
+        PRO_UINT32 publicIp;
+    };
+
+    DECLARE_SGI_POOL(0);
+};
 
 struct RTP_MSG_HEADER
 {
-    union
-    {
-        PRO_UINT32 charset;      /* ANSI, UTF-8, ... */
-        PRO_UINT32 publicIp;
-    };
+    PRO_UINT16     charset;      /* ANSI, UTF-8, ... */
     RTP_MSG_USER   srcUser;
-    PRO_UINT16     version;      /* the current protocol version is 0 */
     char           reserved[1];
     unsigned char  dstUserCount; /* to 255 users at most */
     RTP_MSG_USER   dstUsers[1];  /* a variable-length array */
@@ -145,7 +155,7 @@ public:
     virtual bool PRO_CALLTYPE SendMsg(
         const void*         buf,
         PRO_UINT16          size,
-        PRO_UINT32          charset,
+        PRO_UINT16          charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount
         );
@@ -226,16 +236,21 @@ private:
         PRO_INT64            appData
         );
 
+    bool SendAckToDownlink(
+        IRtpSession*        session,
+        const RTP_MSG_USER* user,
+        const char*         publicIp
+        );
+
     bool SendMsgToDownlink(
         IRtpSession**       sessions,
         unsigned char       sessionCount,
         const void*         buf,
         PRO_UINT16          size,
-        PRO_UINT32          charset,
+        PRO_UINT16          charset,
         const RTP_MSG_USER* srcUser,
-        const RTP_MSG_USER* dstUsers,     /* = NULL */
-        unsigned char       dstUserCount, /* = 0 */
-        const char*         publicIp      /* = NULL */
+        const RTP_MSG_USER* dstUsers,    /* = NULL */
+        unsigned char       dstUserCount /* = 0 */
         );
 
     void NotifyKickout(
