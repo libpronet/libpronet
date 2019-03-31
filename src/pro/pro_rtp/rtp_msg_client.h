@@ -67,8 +67,8 @@ public:
     static CRtpMsgClient* CreateInstance(
         bool                         enableTransfer,
         RTP_MM_TYPE                  mmType,
-        const PRO_SSL_CLIENT_CONFIG* sslConfig,     /* = NULL */
-        const char*                  sslServiceName /* = NULL */
+        const PRO_SSL_CLIENT_CONFIG* sslConfig, /* = NULL */
+        const char*                  sslSni     /* = NULL */
         );
 
     bool Init(
@@ -118,8 +118,8 @@ private:
     CRtpMsgClient(
         bool                         enableTransfer,
         RTP_MM_TYPE                  mmType,
-        const PRO_SSL_CLIENT_CONFIG* sslConfig,     /* = NULL */
-        const char*                  sslServiceName /* = NULL */
+        const PRO_SSL_CLIENT_CONFIG* sslConfig, /* = NULL */
+        const char*                  sslSni     /* = NULL */
         );
 
     virtual ~CRtpMsgClient();
@@ -176,7 +176,7 @@ private:
     const bool                         m_enableTransfer; /* for c2s */
     const RTP_MM_TYPE                  m_mmType;
     const PRO_SSL_CLIENT_CONFIG* const m_sslConfig;
-    const CProStlString                m_sslServiceName;
+    const CProStlString                m_sslSni;
 
     IRtpMsgClientObserver*             m_observer;
     IProReactor*                       m_reactor;

@@ -58,10 +58,10 @@ public:
 
     static CRtpMsgC2s* CreateInstance(
         RTP_MM_TYPE                  mmType,
-        const PRO_SSL_CLIENT_CONFIG* uplinkSslConfig,      /* = NULL */
-        const char*                  uplinkSslServiceName, /* = NULL */
-        const PRO_SSL_SERVER_CONFIG* localSslConfig,       /* = NULL */
-        bool                         localSslForced        /* = false */
+        const PRO_SSL_CLIENT_CONFIG* uplinkSslConfig, /* = NULL */
+        const char*                  uplinkSslSni,    /* = NULL */
+        const PRO_SSL_SERVER_CONFIG* localSslConfig,  /* = NULL */
+        bool                         localSslForced   /* = false */
         );
 
     bool Init(
@@ -106,10 +106,10 @@ private:
 
     CRtpMsgC2s(
         RTP_MM_TYPE                  mmType,
-        const PRO_SSL_CLIENT_CONFIG* uplinkSslConfig,      /* = NULL */
-        const char*                  uplinkSslServiceName, /* = NULL */
-        const PRO_SSL_SERVER_CONFIG* localSslConfig,       /* = NULL */
-        bool                         localSslForced        /* = false */
+        const PRO_SSL_CLIENT_CONFIG* uplinkSslConfig, /* = NULL */
+        const char*                  uplinkSslSni,    /* = NULL */
+        const PRO_SSL_SERVER_CONFIG* localSslConfig,  /* = NULL */
+        bool                         localSslForced   /* = false */
         );
 
     virtual ~CRtpMsgC2s();
@@ -246,7 +246,7 @@ private:
 
     const RTP_MM_TYPE                                       m_mmType;
     const PRO_SSL_CLIENT_CONFIG* const                      m_uplinkSslConfig;
-    const CProStlString                                     m_uplinkSslServiceName;
+    const CProStlString                                     m_uplinkSslSni;
     const PRO_SSL_SERVER_CONFIG* const                      m_localSslConfig;
     const bool                                              m_localSslForced;
 

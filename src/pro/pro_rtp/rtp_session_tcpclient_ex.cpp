@@ -63,11 +63,11 @@ CRtpSessionTcpclientEx::CreateInstance(const RTP_SESSION_INFO* localInfo)
 }
 
 CRtpSessionTcpclientEx::CRtpSessionTcpclientEx(const RTP_SESSION_INFO&      localInfo,
-                                               const PRO_SSL_CLIENT_CONFIG* sslConfig,      /* = NULL */
-                                               const char*                  sslServiceName) /* = NULL */
+                                               const PRO_SSL_CLIENT_CONFIG* sslConfig, /* = NULL */
+                                               const char*                  sslSni)    /* = NULL */
                                                :
 m_sslConfig(sslConfig),
-m_sslServiceName(sslServiceName != NULL ? sslServiceName : "")
+m_sslSni(sslSni != NULL ? sslSni : "")
 {
     m_info               = localInfo;
     m_info.localVersion  = RTP_SESSION_PROTOCOL_VERSION;
@@ -1067,7 +1067,7 @@ CRtpSessionTcpclientEx::DoHandshake(PRO_INT64  sockId,
     if (m_sslConfig != NULL)
     {
         PRO_SSL_CTX* const sslCtx = ProSslCtx_Createc(
-            m_sslConfig, m_sslServiceName.c_str(), sockId, nonce);
+            m_sslConfig, m_sslSni.c_str(), sockId, nonce);
         if (sslCtx != NULL)
         {
             m_sslHandshaker = ProCreateSslHandshaker(

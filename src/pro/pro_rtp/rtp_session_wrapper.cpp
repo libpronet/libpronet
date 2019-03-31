@@ -185,10 +185,10 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
 
     case RTP_ST_SSLCLIENT_EX:
         {
-            initArgs2.sslclientEx.sslServiceName[sizeof(initArgs2.sslclientEx.sslServiceName) - 1] = '\0';
-            initArgs2.sslclientEx.remoteIp[sizeof(initArgs2.sslclientEx.remoteIp) - 1]             = '\0';
-            initArgs2.sslclientEx.password[sizeof(initArgs2.sslclientEx.password) - 1]             = '\0';
-            initArgs2.sslclientEx.localIp[sizeof(initArgs2.sslclientEx.localIp) - 1]               = '\0';
+            initArgs2.sslclientEx.sslSni[sizeof(initArgs2.sslclientEx.sslSni) - 1]     = '\0';
+            initArgs2.sslclientEx.remoteIp[sizeof(initArgs2.sslclientEx.remoteIp) - 1] = '\0';
+            initArgs2.sslclientEx.password[sizeof(initArgs2.sslclientEx.password) - 1] = '\0';
+            initArgs2.sslclientEx.localIp[sizeof(initArgs2.sslclientEx.localIp) - 1]   = '\0';
             break;
         }
 
@@ -463,7 +463,7 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                     initArgs2.comm.reactor,
                     &m_info,
                     initArgs2.sslclientEx.sslConfig,
-                    initArgs2.sslclientEx.sslServiceName,
+                    initArgs2.sslclientEx.sslSni,
                     initArgs2.sslclientEx.remoteIp,
                     initArgs2.sslclientEx.remotePort,
                     initArgs2.sslclientEx.password,

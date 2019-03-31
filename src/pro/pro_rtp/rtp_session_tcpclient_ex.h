@@ -68,8 +68,8 @@ protected:
 
     CRtpSessionTcpclientEx(
         const RTP_SESSION_INFO&      localInfo,
-        const PRO_SSL_CLIENT_CONFIG* sslConfig,     /* = NULL */
-        const char*                  sslServiceName /* = NULL */
+        const PRO_SSL_CLIENT_CONFIG* sslConfig, /* = NULL */
+        const char*                  sslSni     /* = NULL */
         );
 
     virtual ~CRtpSessionTcpclientEx();
@@ -142,7 +142,7 @@ protected:
 private:
 
     const PRO_SSL_CLIENT_CONFIG* const m_sslConfig;
-    const CProStlString                m_sslServiceName;
+    const CProStlString                m_sslSni;
     CProStlString                      m_password;
     unsigned long                      m_timeoutInSeconds;
 

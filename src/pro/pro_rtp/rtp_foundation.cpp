@@ -80,7 +80,7 @@ CreateRtpMsgClient(IRtpMsgClientObserver*       observer,
                    IProReactor*                 reactor,
                    RTP_MM_TYPE                  mmType,
                    const PRO_SSL_CLIENT_CONFIG* sslConfig,        /* = NULL */
-                   const char*                  sslServiceName,   /* = NULL */
+                   const char*                  sslSni,           /* = NULL */
                    const char*                  remoteIp,
                    unsigned short               remotePort,
                    const RTP_MSG_USER*          user,
@@ -91,7 +91,7 @@ CreateRtpMsgClient(IRtpMsgClientObserver*       observer,
     ProRtpInit();
 
     CRtpMsgClient* const msgClient = CRtpMsgClient::CreateInstance(
-        false, mmType, sslConfig, sslServiceName);
+        false, mmType, sslConfig, sslSni);
     if (msgClient == NULL)
     {
         return (NULL);
@@ -174,7 +174,7 @@ CreateRtpMsgC2s(IRtpMsgC2sObserver*          observer,
                 IProReactor*                 reactor,
                 RTP_MM_TYPE                  mmType,
                 const PRO_SSL_CLIENT_CONFIG* uplinkSslConfig,        /* = NULL */
-                const char*                  uplinkSslServiceName,   /* = NULL */
+                const char*                  uplinkSslSni,           /* = NULL */
                 const char*                  uplinkIp,
                 unsigned short               uplinkPort,
                 const RTP_MSG_USER*          uplinkUser,
@@ -189,7 +189,7 @@ CreateRtpMsgC2s(IRtpMsgC2sObserver*          observer,
     ProRtpInit();
 
     CRtpMsgC2s* const msgC2s = CRtpMsgC2s::CreateInstance(
-        mmType, uplinkSslConfig, uplinkSslServiceName, localSslConfig, localSslForced);
+        mmType, uplinkSslConfig, uplinkSslSni, localSslConfig, localSslForced);
     if (msgC2s == NULL)
     {
         return (NULL);

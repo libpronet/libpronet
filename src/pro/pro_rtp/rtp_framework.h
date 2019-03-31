@@ -1174,7 +1174,7 @@ CreateRtpSessionTcpserverEx(IRtpSessionObserver*    observer,
  * reactor          : 反应器
  * localInfo        : 会话信息
  * sslConfig        : ssl配置
- * sslServiceName   : ssl服务名.如果有效,则参与认证服务端证书
+ * sslSni           : ssl服务名.如果有效,则参与认证服务端证书
  * remoteIp         : 远端的ip地址或域名
  * remotePort       : 远端的端口号
  * password         : 会话口令
@@ -1192,7 +1192,7 @@ CreateRtpSessionSslclientEx(IRtpSessionObserver*         observer,
                             IProReactor*                 reactor,
                             const RTP_SESSION_INFO*      localInfo,
                             const PRO_SSL_CLIENT_CONFIG* sslConfig,
-                            const char*                  sslServiceName, /* = NULL */
+                            const char*                  sslSni, /* = NULL */
                             const char*                  remoteIp,
                             unsigned short               remotePort,
                             const char*                  password         = NULL,

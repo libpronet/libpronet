@@ -86,9 +86,9 @@ struct RTP_INIT_UDPCLIENT
 {
     IRtpSessionObserver*         observer;
     IProReactor*                 reactor;
-    char                         localIp[64];        /* = "" */
-    unsigned short               localPort;          /* = 0 */
-    IRtpBucket*                  bucket;             /* = NULL */
+    char                         localIp[64];      /* = "" */
+    unsigned short               localPort;        /* = 0 */
+    IRtpBucket*                  bucket;           /* = NULL */
 };
 
 /*
@@ -100,9 +100,9 @@ struct RTP_INIT_UDPSERVER
 {
     IRtpSessionObserver*         observer;
     IProReactor*                 reactor;
-    char                         localIp[64];        /* = "" */
-    unsigned short               localPort;          /* = 0 */
-    IRtpBucket*                  bucket;             /* = NULL */
+    char                         localIp[64];      /* = "" */
+    unsigned short               localPort;        /* = 0 */
+    IRtpBucket*                  bucket;           /* = NULL */
 };
 
 /*
@@ -116,9 +116,9 @@ struct RTP_INIT_TCPCLIENT
     IProReactor*                 reactor;
     char                         remoteIp[64];
     unsigned short               remotePort;
-    char                         localIp[64];        /* = "" */
-    unsigned long                timeoutInSeconds;   /* = 0 */
-    IRtpBucket*                  bucket;             /* = NULL */
+    char                         localIp[64];      /* = "" */
+    unsigned long                timeoutInSeconds; /* = 0 */
+    IRtpBucket*                  bucket;           /* = NULL */
 };
 
 /*
@@ -130,10 +130,10 @@ struct RTP_INIT_TCPSERVER
 {
     IRtpSessionObserver*         observer;
     IProReactor*                 reactor;
-    char                         localIp[64];        /* = "" */
-    unsigned short               localPort;          /* = 0 */
-    unsigned long                timeoutInSeconds;   /* = 0 */
-    IRtpBucket*                  bucket;             /* = NULL */
+    char                         localIp[64];      /* = "" */
+    unsigned short               localPort;        /* = 0 */
+    unsigned long                timeoutInSeconds; /* = 0 */
+    IRtpBucket*                  bucket;           /* = NULL */
 };
 
 /*
@@ -147,9 +147,9 @@ struct RTP_INIT_UDPCLIENT_EX
     IProReactor*                 reactor;
     char                         remoteIp[64];
     unsigned short               remotePort;
-    char                         localIp[64];        /* = "" */
-    unsigned long                timeoutInSeconds;   /* = 0 */
-    IRtpBucket*                  bucket;             /* = NULL */
+    char                         localIp[64];      /* = "" */
+    unsigned long                timeoutInSeconds; /* = 0 */
+    IRtpBucket*                  bucket;           /* = NULL */
 };
 
 /*
@@ -161,10 +161,10 @@ struct RTP_INIT_UDPSERVER_EX
 {
     IRtpSessionObserver*         observer;
     IProReactor*                 reactor;
-    char                         localIp[64];        /* = "" */
-    unsigned short               localPort;          /* = 0 */
-    unsigned long                timeoutInSeconds;   /* = 0 */
-    IRtpBucket*                  bucket;             /* = NULL */
+    char                         localIp[64];      /* = "" */
+    unsigned short               localPort;        /* = 0 */
+    unsigned long                timeoutInSeconds; /* = 0 */
+    IRtpBucket*                  bucket;           /* = NULL */
 };
 
 /*
@@ -178,10 +178,10 @@ struct RTP_INIT_TCPCLIENT_EX
     IProReactor*                 reactor;
     char                         remoteIp[64];
     unsigned short               remotePort;
-    char                         password[64];       /* = "" */
-    char                         localIp[64];        /* = "" */
-    unsigned long                timeoutInSeconds;   /* = 0 */
-    IRtpBucket*                  bucket;             /* = NULL */
+    char                         password[64];     /* = "" */
+    char                         localIp[64];      /* = "" */
+    unsigned long                timeoutInSeconds; /* = 0 */
+    IRtpBucket*                  bucket;           /* = NULL */
 };
 
 /*
@@ -195,7 +195,7 @@ struct RTP_INIT_TCPSERVER_EX
     IProReactor*                 reactor;
     PRO_INT64                    sockId;
     bool                         unixSocket;
-    IRtpBucket*                  bucket;             /* = NULL */
+    IRtpBucket*                  bucket;           /* = NULL */
 };
 
 /*
@@ -209,13 +209,13 @@ struct RTP_INIT_SSLCLIENT_EX
     IRtpSessionObserver*         observer;
     IProReactor*                 reactor;
     const PRO_SSL_CLIENT_CONFIG* sslConfig;
-    char                         sslServiceName[64]; /* = "" */
+    char                         sslSni[64];       /* = "" */
     char                         remoteIp[64];
     unsigned short               remotePort;
-    char                         password[64];       /* = "" */
-    char                         localIp[64];        /* = "" */
-    unsigned long                timeoutInSeconds;   /* = 0 */
-    IRtpBucket*                  bucket;             /* = NULL */
+    char                         password[64];     /* = "" */
+    char                         localIp[64];      /* = "" */
+    unsigned long                timeoutInSeconds; /* = 0 */
+    IRtpBucket*                  bucket;           /* = NULL */
 };
 
 /*
@@ -230,7 +230,7 @@ struct RTP_INIT_SSLSERVER_EX
     PRO_SSL_CTX*                 sslCtx;
     PRO_INT64                    sockId;
     bool                         unixSocket;
-    IRtpBucket*                  bucket;             /* = NULL */
+    IRtpBucket*                  bucket;           /* = NULL */
 };
 
 /*
@@ -243,9 +243,9 @@ struct RTP_INIT_MCAST
     IRtpSessionObserver*         observer;
     IProReactor*                 reactor;
     char                         mcastIp[64];
-    unsigned short               mcastPort;          /* = 0 */
-    char                         localIp[64];        /* = "" */
-    IRtpBucket*                  bucket;             /* = NULL */
+    unsigned short               mcastPort;        /* = 0 */
+    char                         localIp[64];      /* = "" */
+    IRtpBucket*                  bucket;           /* = NULL */
 };
 
 /*
@@ -258,9 +258,9 @@ struct RTP_INIT_MCAST_EX
     IRtpSessionObserver*         observer;
     IProReactor*                 reactor;
     char                         mcastIp[64];
-    unsigned short               mcastPort;          /* = 0 */
-    char                         localIp[64];        /* = "" */
-    IRtpBucket*                  bucket;             /* = NULL */
+    unsigned short               mcastPort;        /* = 0 */
+    char                         localIp[64];      /* = "" */
+    IRtpBucket*                  bucket;           /* = NULL */
 };
 
 /*
@@ -899,7 +899,7 @@ DeleteRtpSessionWrapper(IRtpSession* sessionWrapper);
  * reactor          : 反应器
  * mmType           : 消息媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
  * sslConfig        : ssl配置. NULL表示明文传输
- * sslServiceName   : ssl服务名.如果有效,则参与认证服务端证书
+ * sslSni           : ssl服务名.如果有效,则参与认证服务端证书
  * remoteIp         : 服务器的ip地址或域名
  * remotePort       : 服务器的端口号
  * user             : 用户号
@@ -918,7 +918,7 @@ CreateRtpMsgClient(IRtpMsgClientObserver*       observer,
                    IProReactor*                 reactor,
                    RTP_MM_TYPE                  mmType,
                    const PRO_SSL_CLIENT_CONFIG* sslConfig,         /* = NULL */
-                   const char*                  sslServiceName,    /* = NULL */
+                   const char*                  sslSni,            /* = NULL */
                    const char*                  remoteIp,
                    unsigned short               remotePort,
                    const RTP_MSG_USER*          user,
@@ -991,7 +991,7 @@ DeleteRtpMsgServer(IRtpMsgServer* msgServer);
  * reactor                : 反应器
  * mmType                 : 消息媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
  * uplinkSslConfig        : 级联的ssl配置. NULL表示c2s<->server之间明文传输
- * uplinkSslServiceName   : 级联的ssl服务名.如果有效,则参与认证服务端证书
+ * uplinkSslSni           : 级联的ssl服务名.如果有效,则参与认证服务端证书
  * uplinkIp               : 服务器的ip地址或域名
  * uplinkPort             : 服务器的端口号
  * uplinkUser             : c2s的用户号
@@ -1014,7 +1014,7 @@ CreateRtpMsgC2s(IRtpMsgC2sObserver*          observer,
                 IProReactor*                 reactor,
                 RTP_MM_TYPE                  mmType,
                 const PRO_SSL_CLIENT_CONFIG* uplinkSslConfig,        /* = NULL */
-                const char*                  uplinkSslServiceName,   /* = NULL */
+                const char*                  uplinkSslSni,           /* = NULL */
                 const char*                  uplinkIp,
                 unsigned short               uplinkPort,
                 const RTP_MSG_USER*          uplinkUser,

@@ -44,7 +44,7 @@ public:
     static CRtpSessionSslclientEx* CreateInstance(
         const RTP_SESSION_INFO*      localInfo,
         const PRO_SSL_CLIENT_CONFIG* sslConfig,
-        const char*                  sslServiceName /* = NULL */
+        const char*                  sslSni /* = NULL */
         );
 
 private:
@@ -52,7 +52,7 @@ private:
     CRtpSessionSslclientEx(
         const RTP_SESSION_INFO&      localInfo,
         const PRO_SSL_CLIENT_CONFIG* sslConfig,
-        const char*                  sslServiceName /* = NULL */
+        const char*                  sslSni /* = NULL */
         );
 
     virtual ~CRtpSessionSslclientEx()

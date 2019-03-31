@@ -27,7 +27,7 @@
 CRtpSessionSslclientEx*
 CRtpSessionSslclientEx::CreateInstance(const RTP_SESSION_INFO*      localInfo,
                                        const PRO_SSL_CLIENT_CONFIG* sslConfig,
-                                       const char*                  sslServiceName) /* = NULL */
+                                       const char*                  sslSni) /* = NULL */
 {
     assert(localInfo != NULL);
     assert(localInfo->mmType != 0);
@@ -50,16 +50,16 @@ CRtpSessionSslclientEx::CreateInstance(const RTP_SESSION_INFO*      localInfo,
     }
 
     CRtpSessionSslclientEx* const session =
-        new CRtpSessionSslclientEx(*localInfo, sslConfig, sslServiceName);
+        new CRtpSessionSslclientEx(*localInfo, sslConfig, sslSni);
 
     return (session);
 }
 
 CRtpSessionSslclientEx::CRtpSessionSslclientEx(const RTP_SESSION_INFO&      localInfo,
                                                const PRO_SSL_CLIENT_CONFIG* sslConfig,
-                                               const char*                  sslServiceName) /* = NULL */
+                                               const char*                  sslSni) /* = NULL */
                                                :
-CRtpSessionTcpclientEx(localInfo, sslConfig, sslServiceName)
+CRtpSessionTcpclientEx(localInfo, sslConfig, sslSni)
 {
     m_info.sessionType = RTP_ST_SSLCLIENT_EX;
 }

@@ -747,7 +747,7 @@ CreateRtpSessionSslclientEx(IRtpSessionObserver*         observer,
                             IProReactor*                 reactor,
                             const RTP_SESSION_INFO*      localInfo,
                             const PRO_SSL_CLIENT_CONFIG* sslConfig,
-                            const char*                  sslServiceName,   /* = NULL */
+                            const char*                  sslSni,           /* = NULL */
                             const char*                  remoteIp,
                             unsigned short               remotePort,
                             const char*                  password,         /* = NULL */
@@ -757,7 +757,7 @@ CreateRtpSessionSslclientEx(IRtpSessionObserver*         observer,
     ProRtpInit();
 
     CRtpSessionSslclientEx* const session =
-        CRtpSessionSslclientEx::CreateInstance(localInfo, sslConfig, sslServiceName);
+        CRtpSessionSslclientEx::CreateInstance(localInfo, sslConfig, sslSni);
     if (session == NULL)
     {
         return (NULL);

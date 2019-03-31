@@ -44,8 +44,8 @@ static const PRO_UINT64 NODE_UID_MAXX = ((PRO_UINT64)0xFF << 32) | 0xFFFFFFFF; /
 CRtpMsgClient*
 CRtpMsgClient::CreateInstance(bool                         enableTransfer,
                               RTP_MM_TYPE                  mmType,
-                              const PRO_SSL_CLIENT_CONFIG* sslConfig,      /* = NULL */
-                              const char*                  sslServiceName) /* = NULL */
+                              const PRO_SSL_CLIENT_CONFIG* sslConfig, /* = NULL */
+                              const char*                  sslSni)    /* = NULL */
 {
     assert(mmType != 0);
     if (mmType == 0)
@@ -54,20 +54,20 @@ CRtpMsgClient::CreateInstance(bool                         enableTransfer,
     }
 
     CRtpMsgClient* const msgClient =
-        new CRtpMsgClient(enableTransfer, mmType, sslConfig, sslServiceName);
+        new CRtpMsgClient(enableTransfer, mmType, sslConfig, sslSni);
 
     return (msgClient);
 }
 
 CRtpMsgClient::CRtpMsgClient(bool                         enableTransfer,
                              RTP_MM_TYPE                  mmType,
-                             const PRO_SSL_CLIENT_CONFIG* sslConfig,      /* = NULL */
-                             const char*                  sslServiceName) /* = NULL */
+                             const PRO_SSL_CLIENT_CONFIG* sslConfig, /* = NULL */
+                             const char*                  sslSni)    /* = NULL */
                              :
 m_enableTransfer(enableTransfer),
 m_mmType(mmType),
 m_sslConfig(sslConfig),
-m_sslServiceName(sslServiceName != NULL ? sslServiceName : "")
+m_sslSni(sslSni != NULL ? sslSni : "")
 {
     m_observer   = NULL;
     m_reactor    = NULL;
@@ -160,8 +160,8 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
             initArgs.sslclientEx.sslConfig        = m_sslConfig;
             initArgs.sslclientEx.remotePort       = remotePort;
             initArgs.sslclientEx.timeoutInSeconds = timeoutInSeconds;
-            strncpy_pro(initArgs.sslclientEx.sslServiceName,
-                sizeof(initArgs.sslclientEx.sslServiceName), m_sslServiceName.c_str());
+            strncpy_pro(initArgs.sslclientEx.sslSni,
+                sizeof(initArgs.sslclientEx.sslSni), m_sslSni.c_str());
             strncpy_pro(initArgs.sslclientEx.remoteIp,
                 sizeof(initArgs.sslclientEx.remoteIp), remoteIp);
             if (password != NULL)

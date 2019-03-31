@@ -59,10 +59,10 @@ typedef void (CRtpMsgC2s::* ACTION)(PRO_INT64*);
 
 CRtpMsgC2s*
 CRtpMsgC2s::CreateInstance(RTP_MM_TYPE                  mmType,
-                           const PRO_SSL_CLIENT_CONFIG* uplinkSslConfig,      /* = NULL */
-                           const char*                  uplinkSslServiceName, /* = NULL */
-                           const PRO_SSL_SERVER_CONFIG* localSslConfig,       /* = NULL */
-                           bool                         localSslForced)       /* = false */
+                           const PRO_SSL_CLIENT_CONFIG* uplinkSslConfig, /* = NULL */
+                           const char*                  uplinkSslSni,    /* = NULL */
+                           const PRO_SSL_SERVER_CONFIG* localSslConfig,  /* = NULL */
+                           bool                         localSslForced)  /* = false */
 {
     assert(mmType != 0);
     if (mmType == 0)
@@ -71,20 +71,20 @@ CRtpMsgC2s::CreateInstance(RTP_MM_TYPE                  mmType,
     }
 
     CRtpMsgC2s* const msgC2s = new CRtpMsgC2s(
-        mmType, uplinkSslConfig, uplinkSslServiceName, localSslConfig, localSslForced);
+        mmType, uplinkSslConfig, uplinkSslSni, localSslConfig, localSslForced);
 
     return (msgC2s);
 }
 
 CRtpMsgC2s::CRtpMsgC2s(RTP_MM_TYPE                  mmType,
-                       const PRO_SSL_CLIENT_CONFIG* uplinkSslConfig,      /* = NULL */
-                       const char*                  uplinkSslServiceName, /* = NULL */
-                       const PRO_SSL_SERVER_CONFIG* localSslConfig,       /* = NULL */
-                       bool                         localSslForced)       /* = false */
+                       const PRO_SSL_CLIENT_CONFIG* uplinkSslConfig, /* = NULL */
+                       const char*                  uplinkSslSni,    /* = NULL */
+                       const PRO_SSL_SERVER_CONFIG* localSslConfig,  /* = NULL */
+                       bool                         localSslForced)  /* = false */
                        :
 m_mmType(mmType),
 m_uplinkSslConfig(uplinkSslConfig),
-m_uplinkSslServiceName(uplinkSslServiceName != NULL ? uplinkSslServiceName : ""),
+m_uplinkSslSni(uplinkSslSni != NULL ? uplinkSslSni : ""),
 m_localSslConfig(localSslConfig),
 m_localSslForced(localSslForced)
 {
@@ -203,7 +203,7 @@ CRtpMsgC2s::Init(IRtpMsgC2sObserver* observer,
         }
 
         msgClient = CRtpMsgClient::CreateInstance(
-            true, m_mmType, m_uplinkSslConfig, m_uplinkSslServiceName.c_str());
+            true, m_mmType, m_uplinkSslConfig, m_uplinkSslSni.c_str());
         if (msgClient == NULL)
         {
             goto EXIT;
@@ -1430,7 +1430,7 @@ CRtpMsgC2s::OnTimer(unsigned long timerId,
                 m_connectTick = tick;
 
                 m_msgClient = CRtpMsgClient::CreateInstance(
-                    true, m_mmType, m_uplinkSslConfig, m_uplinkSslServiceName.c_str());
+                    true, m_mmType, m_uplinkSslConfig, m_uplinkSslSni.c_str());
                 if (m_msgClient != NULL)
                 {
                     if (!m_msgClient->Init(
