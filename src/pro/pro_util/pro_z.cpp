@@ -163,8 +163,8 @@ ProGetExeDir_(char buf[1024])
     buf[size - 1] = '\0';
 
 #if defined(WIN32)
-    ::GetModuleFileName(NULL, buf, size - 1);
-    ::GetLongPathName(buf, buf, size - 1);
+    ::GetModuleFileNameA(NULL, buf, size - 1);
+    ::GetLongPathNameA(buf, buf, size - 1);
     char* const slash = strrchr(buf, '\\');
     if (slash != NULL)
     {
@@ -208,8 +208,8 @@ ProGetExePath(char buf[1024])
     buf[size - 1] = '\0';
 
 #if defined(WIN32)
-    ::GetModuleFileName(NULL, buf, size - 1);
-    ::GetLongPathName(buf, buf, size - 1);
+    ::GetModuleFileNameA(NULL, buf, size - 1);
+    ::GetLongPathNameA(buf, buf, size - 1);
 #else
     const long bytes = readlink("/proc/self/exe", buf, size - 1);
     if (bytes > 0 && bytes < size)
