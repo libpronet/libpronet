@@ -1256,7 +1256,7 @@ CRtpMsgServer::ProcessMsg_client_login(IRtpSession*            session,
         CProStlString theString = "";
         msgStream.ToString(theString);
 
-        SendMsgToDownlink(&session, 1, theString.c_str(), theString.length(),
+        SendMsgToDownlink(&session, 1, theString.c_str(), (unsigned long)theString.length(),
             0, &ROOT_ID_C2S, &c2sUser, 1);
     }
 }
@@ -1660,7 +1660,7 @@ CRtpMsgServer::AddSubUser(const RTP_MSG_USER&  c2sUser,
     {
         newSession->SuspendRecv();
 
-        SendMsgToDownlink(&newSession, 1, msgText.c_str(), msgText.length(),
+        SendMsgToDownlink(&newSession, 1, msgText.c_str(), (unsigned long)msgText.length(),
             0, &ROOT_ID_C2S, &c2sUser, 1);
     }
 
@@ -1821,6 +1821,6 @@ CRtpMsgServer::NotifyKickout(IRtpSession*        session,
     CProStlString theString = "";
     msgStream.ToString(theString);
 
-    SendMsgToDownlink(&session, 1, theString.c_str(), theString.length(),
+    SendMsgToDownlink(&session, 1, theString.c_str(), (unsigned long)theString.length(),
         0, &ROOT_ID_C2S, &c2sUser, 1);
 }

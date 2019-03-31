@@ -53,7 +53,7 @@ CProStatBitRate::SetTimeSpan(unsigned long timeSpanInSeconds) /* = 5 */
 }
 
 void
-CProStatBitRate::PushData(unsigned long dataBytes)
+CProStatBitRate::PushData(size_t dataBytes)
 {
     if (m_startTick == 0)
     {

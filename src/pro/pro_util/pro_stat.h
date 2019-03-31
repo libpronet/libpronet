@@ -33,7 +33,7 @@ public:
 
     void SetTimeSpan(unsigned long timeSpanInSeconds); /* = 5 */
 
-    void PushData(unsigned long dataBytes);
+    void PushData(size_t dataBytes);
 
     double CalcBitRate();
 

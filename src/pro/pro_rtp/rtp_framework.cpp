@@ -64,12 +64,12 @@ static CRtpPortAllocator*     g_s_tcpPortAllocator   = NULL;
 static volatile unsigned long g_s_keepaliveInSeconds = 60;
 static volatile unsigned long g_s_flowctrlInSeconds  = 1;
 static volatile unsigned long g_s_statInSeconds      = 5;
-static size_t                 g_s_udpSockBufSizeRecv[256]; /* mmType0 ~ mmType255 */
-static size_t                 g_s_udpSockBufSizeSend[256]; /* mmType0 ~ mmType255 */
-static size_t                 g_s_udpRecvPoolSize[256];    /* mmType0 ~ mmType255 */
-static size_t                 g_s_tcpSockBufSizeRecv[256]; /* mmType0 ~ mmType255 */
-static size_t                 g_s_tcpSockBufSizeSend[256]; /* mmType0 ~ mmType255 */
-static size_t                 g_s_tcpRecvPoolSize[256];    /* mmType0 ~ mmType255 */
+static unsigned long          g_s_udpSockBufSizeRecv[256]; /* mmType0 ~ mmType255 */
+static unsigned long          g_s_udpSockBufSizeSend[256]; /* mmType0 ~ mmType255 */
+static unsigned long          g_s_udpRecvPoolSize[256];    /* mmType0 ~ mmType255 */
+static unsigned long          g_s_tcpSockBufSizeRecv[256]; /* mmType0 ~ mmType255 */
+static unsigned long          g_s_tcpSockBufSizeSend[256]; /* mmType0 ~ mmType255 */
+static unsigned long          g_s_tcpRecvPoolSize[256];    /* mmType0 ~ mmType255 */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -373,10 +373,10 @@ GetRtpStatTimeSpan()
 PRO_RTP_API
 void
 PRO_CALLTYPE
-SetRtpUdpSocketParams(RTP_MM_TYPE mmType,
-                      size_t      sockBufSizeRecv, /* = 0 */
-                      size_t      sockBufSizeSend, /* = 0 */
-                      size_t      recvPoolSize)    /* = 0 */
+SetRtpUdpSocketParams(RTP_MM_TYPE   mmType,
+                      unsigned long sockBufSizeRecv, /* = 0 */
+                      unsigned long sockBufSizeSend, /* = 0 */
+                      unsigned long recvPoolSize)    /* = 0 */
 {
     if (sockBufSizeRecv > 0)
     {
@@ -402,25 +402,25 @@ GetRtpUdpSocketParams(RTP_MM_TYPE    mmType,
 {
     if (sockBufSizeRecv != NULL)
     {
-        *sockBufSizeRecv = (unsigned long)g_s_udpSockBufSizeRecv[mmType];
+        *sockBufSizeRecv = g_s_udpSockBufSizeRecv[mmType];
     }
     if (sockBufSizeSend != NULL)
     {
-        *sockBufSizeSend = (unsigned long)g_s_udpSockBufSizeSend[mmType];
+        *sockBufSizeSend = g_s_udpSockBufSizeSend[mmType];
     }
     if (recvPoolSize != NULL)
     {
-        *recvPoolSize    = (unsigned long)g_s_udpRecvPoolSize[mmType];
+        *recvPoolSize    = g_s_udpRecvPoolSize[mmType];
     }
 }
 
 PRO_RTP_API
 void
 PRO_CALLTYPE
-SetRtpTcpSocketParams(RTP_MM_TYPE mmType,
-                      size_t      sockBufSizeRecv, /* = 0 */
-                      size_t      sockBufSizeSend, /* = 0 */
-                      size_t      recvPoolSize)    /* = 0 */
+SetRtpTcpSocketParams(RTP_MM_TYPE   mmType,
+                      unsigned long sockBufSizeRecv, /* = 0 */
+                      unsigned long sockBufSizeSend, /* = 0 */
+                      unsigned long recvPoolSize)    /* = 0 */
 {
     if (sockBufSizeRecv > 0)
     {
@@ -446,15 +446,15 @@ GetRtpTcpSocketParams(RTP_MM_TYPE    mmType,
 {
     if (sockBufSizeRecv != NULL)
     {
-        *sockBufSizeRecv = (unsigned long)g_s_tcpSockBufSizeRecv[mmType];
+        *sockBufSizeRecv = g_s_tcpSockBufSizeRecv[mmType];
     }
     if (sockBufSizeSend != NULL)
     {
-        *sockBufSizeSend = (unsigned long)g_s_tcpSockBufSizeSend[mmType];
+        *sockBufSizeSend = g_s_tcpSockBufSizeSend[mmType];
     }
     if (recvPoolSize != NULL)
     {
-        *recvPoolSize    = (unsigned long)g_s_tcpRecvPoolSize[mmType];
+        *recvPoolSize    = g_s_tcpRecvPoolSize[mmType];
     }
 }
 

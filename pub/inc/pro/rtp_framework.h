@@ -837,10 +837,10 @@ GetRtpStatTimeSpan();
 PRO_RTP_API
 void
 PRO_CALLTYPE
-SetRtpUdpSocketParams(RTP_MM_TYPE mmType,
-                      size_t      sockBufSizeRecv, /* = 0 */
-                      size_t      sockBufSizeSend, /* = 0 */
-                      size_t      recvPoolSize);   /* = 0 */
+SetRtpUdpSocketParams(RTP_MM_TYPE   mmType,
+                      unsigned long sockBufSizeRecv, /* = 0 */
+                      unsigned long sockBufSizeSend, /* = 0 */
+                      unsigned long recvPoolSize);   /* = 0 */
 
 /*
  * 功能: 获取底层udp套接字的系统参数
@@ -879,10 +879,10 @@ GetRtpUdpSocketParams(RTP_MM_TYPE    mmType,
 PRO_RTP_API
 void
 PRO_CALLTYPE
-SetRtpTcpSocketParams(RTP_MM_TYPE mmType,
-                      size_t      sockBufSizeRecv, /* = 0 */
-                      size_t      sockBufSizeSend, /* = 0 */
-                      size_t      recvPoolSize);   /* = 0 */
+SetRtpTcpSocketParams(RTP_MM_TYPE   mmType,
+                      unsigned long sockBufSizeRecv, /* = 0 */
+                      unsigned long sockBufSizeSend, /* = 0 */
+                      unsigned long recvPoolSize);   /* = 0 */
 
 /*
  * 功能: 获取底层tcp套接字的系统参数
