@@ -64,14 +64,29 @@ GetMsgUserRow(CDbConnection&      db,
         return (0);
     }
 
-    const DB_ROW_UNIT& dbrow = dbrows.rows_out[0];
+    {
+        const DB_ROW_UNIT& dbrow = dbrows.rows_out[0];
 
-    row._cid_      = dbrow.cells[0].i64;
-    row._uid_      = dbrow.cells[1].i64;
-    row._maxiids_  = dbrow.cells[2].i64;
-    row._isc2s_    = dbrow.cells[3].i64;
-    row._passwd_   = dbrow.cells[4].txt;
-    row._bindedip_ = dbrow.cells[5].txt;
+        row._cid_      = dbrow.cells[0].i64;
+        row._uid_      = dbrow.cells[1].i64;
+        row._maxiids_  = dbrow.cells[2].i64;
+        row._isc2s_    = dbrow.cells[3].i64;
+        row._passwd_   = dbrow.cells[4].txt;
+        row._bindedip_ = dbrow.cells[5].txt;
+    }
+
+    int       i = 0;
+    const int c = (int)dbrows.rows_out.size();
+
+    for (; i < c; ++i)
+    {
+        DB_ROW_UNIT& dbrow = dbrows.rows_out[i];
+        if (!dbrow.cells[4].txt.empty())
+        {
+            ProZeroMemory(&dbrow.cells[4].txt[0], dbrow.cells[4].txt.length());
+            dbrow.cells[4].txt = "";
+        }
+    }
 
     row.Adjust();
 

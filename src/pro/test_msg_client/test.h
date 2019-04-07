@@ -25,6 +25,7 @@
 #include "../pro_util/pro_config_stream.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
+#include "../pro_util/pro_ssl_util.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
 
@@ -53,6 +54,15 @@ struct MSG_CLIENT_CONFIG_INFO
         msgc_ssl_cafile.push_back("");
         msgc_ssl_crlfile.push_back("");
         msgc_ssl_crlfile.push_back("");
+    }
+
+    ~MSG_CLIENT_CONFIG_INFO()
+    {
+        if (!msgc_password.empty())
+        {
+            ProZeroMemory(&msgc_password[0], msgc_password.length());
+            msgc_password = "";
+        }
     }
 
     void ToConfigs(CProStlVector<PRO_CONFIG_ITEM>& configs) const

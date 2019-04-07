@@ -231,6 +231,12 @@ int main(int argc, char* argv[])
         goto EXIT;
     }
 
+    if (!configInfo.msgc_password.empty())
+    {
+        ProZeroMemory(&configInfo.msgc_password[0], configInfo.msgc_password.length());
+        configInfo.msgc_password = "";
+    }
+
     printf("\n test_msg_client --- connecting... \n");
 
     printf(

@@ -243,10 +243,8 @@ CC2sServer::Init(IProReactor*                  reactor,
 
         if (!m_configInfo.c2ss_uplink_password.empty())
         {
-            ProZeroMemory(
-                &m_configInfo.c2ss_uplink_password[0],
-                m_configInfo.c2ss_uplink_password.length()
-                );
+            ProZeroMemory(&m_configInfo.c2ss_uplink_password[0],
+                m_configInfo.c2ss_uplink_password.length());
             m_configInfo.c2ss_uplink_password = "";
         }
     }

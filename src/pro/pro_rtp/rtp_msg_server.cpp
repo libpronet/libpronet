@@ -105,8 +105,9 @@ CRtpMsgServer::CreateInstance(RTP_MM_TYPE                  mmType,
                               const PRO_SSL_SERVER_CONFIG* sslConfig, /* = NULL */
                               bool                         sslForced) /* = false */
 {
-    assert(mmType != 0);
-    if (mmType == 0)
+    assert(mmType >= RTP_MMT_MSG_MIN);
+    assert(mmType <= RTP_MMT_MSG_MAX);
+    if (mmType < RTP_MMT_MSG_MIN || mmType > RTP_MMT_MSG_MAX)
     {
         return (NULL);
     }

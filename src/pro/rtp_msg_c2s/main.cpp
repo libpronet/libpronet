@@ -315,9 +315,7 @@ int main(int argc, char* argv[])
     if (!configInfo.c2ss_uplink_password.empty())
     {
         ProZeroMemory(
-            &configInfo.c2ss_uplink_password[0],
-            configInfo.c2ss_uplink_password.length()
-            );
+            &configInfo.c2ss_uplink_password[0], configInfo.c2ss_uplink_password.length());
         configInfo.c2ss_uplink_password = "";
     }
 

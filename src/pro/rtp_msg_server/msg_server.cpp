@@ -392,8 +392,6 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
             long ret2 = GetMsgUserRow(m_db, *user, userRow); /* uid */
             if (ret2 == 0)
             {
-                userRow.~TBL_MSG_USER_ROW();
-
                 const RTP_MSG_USER user0(user->classId, 0, 0);
                 ret2 = GetMsgUserRow(m_db, user0, userRow);  /* uid0 */
             }

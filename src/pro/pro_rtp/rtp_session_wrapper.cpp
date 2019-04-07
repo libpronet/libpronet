@@ -24,6 +24,7 @@
 #include "../pro_util/pro_file_monitor.h"
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_reorder.h"
+#include "../pro_util/pro_ssl_util.h"
 #include "../pro_util/pro_stat.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread.h"
@@ -413,6 +414,8 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                     initArgs2.tcpclientEx.localIp,
                     initArgs2.tcpclientEx.timeoutInSeconds
                     );
+                ProZeroMemory(
+                    initArgs2.tcpclientEx.password, sizeof(initArgs2.tcpclientEx.password));
                 if (m_session == NULL)
                 {
                     break;
@@ -470,6 +473,8 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                     initArgs2.sslclientEx.localIp,
                     initArgs2.sslclientEx.timeoutInSeconds
                     );
+                ProZeroMemory(
+                    initArgs2.sslclientEx.password, sizeof(initArgs2.sslclientEx.password));
                 if (m_session == NULL)
                 {
                     break;

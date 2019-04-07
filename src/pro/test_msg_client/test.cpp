@@ -24,6 +24,7 @@
 #include "../pro_util/pro_config_stream.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
+#include "../pro_util/pro_ssl_util.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_unicode.h"
@@ -161,6 +162,12 @@ CTest::Init(IProReactor*                  reactor,
         m_configInfo = configInfo;
         m_sslConfig  = sslConfig;
         m_msgClient  = msgClient;
+
+        if (!m_configInfo.msgc_password.empty())
+        {
+            ProZeroMemory(&m_configInfo.msgc_password[0], m_configInfo.msgc_password.length());
+            m_configInfo.msgc_password = "";
+        }
     }
 
     return (true);

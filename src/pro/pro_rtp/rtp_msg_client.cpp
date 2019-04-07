@@ -47,8 +47,9 @@ CRtpMsgClient::CreateInstance(bool                         enableTransfer,
                               const PRO_SSL_CLIENT_CONFIG* sslConfig, /* = NULL */
                               const char*                  sslSni)    /* = NULL */
 {
-    assert(mmType != 0);
-    if (mmType == 0)
+    assert(mmType >= RTP_MMT_MSG_MIN);
+    assert(mmType <= RTP_MMT_MSG_MAX);
+    if (mmType < RTP_MMT_MSG_MIN || mmType > RTP_MMT_MSG_MAX)
     {
         return (NULL);
     }

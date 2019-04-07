@@ -25,6 +25,7 @@
 #include "../pro_util/pro_config_stream.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
+#include "../pro_util/pro_ssl_util.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
 
@@ -73,6 +74,15 @@ struct C2S_SERVER_CONFIG_INFO
         c2ss_ssl_local_crlfile.push_back("");
         c2ss_ssl_local_certfile.push_back("./server.crt");
         c2ss_ssl_local_certfile.push_back("");
+    }
+
+    ~C2S_SERVER_CONFIG_INFO()
+    {
+        if (!c2ss_uplink_password.empty())
+        {
+            ProZeroMemory(&c2ss_uplink_password[0], c2ss_uplink_password.length());
+            c2ss_uplink_password = "";
+        }
     }
 
     void ToConfigs(CProStlVector<PRO_CONFIG_ITEM>& configs) const
