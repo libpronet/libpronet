@@ -71,21 +71,18 @@ int main(int argc, char* argv[])
 {
     ProNetInit();
 
-    IProReactor*                   reactor        = NULL;
-    CProStlString                  portString     = "";
-    CProStlString                  configFileName = "";
+    IProReactor*                   reactor    = NULL;
+    CProStlString                  portString = "";
     SERVICE_HUB_CONFIG_INFO        configInfo;
     CProStlVector<IProServiceHub*> hubs;
 
-    {
-        char exeRoot[1024] = "";
-        ProGetExeDir_(exeRoot);
+    char exeRoot[1024] = "";
+    ProGetExeDir_(exeRoot);
 
-        configFileName =  exeRoot;
+    {
+        CProStlString configFileName = exeRoot;
         configFileName += CONFIG_FILE_NAME;
-    }
 
-    {
         CProConfigFile configFile;
         configFile.Init(configFileName.c_str());
 

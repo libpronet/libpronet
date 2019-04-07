@@ -57,10 +57,10 @@ int main(int argc, char* argv[])
     CProStlString          configFileName  = "";
     MSG_SERVER_CONFIG_INFO configInfo;
 
-    {
-        char exeRoot[1024] = "";
-        ProGetExeDir_(exeRoot);
+    char exeRoot[1024] = "";
+    ProGetExeDir_(exeRoot);
 
+    {
         logFileName    =  exeRoot;
         logFileName    += LOG_FILE_NAME;
         dbFileName     =  exeRoot;
@@ -96,8 +96,8 @@ int main(int argc, char* argv[])
 
         for (; i < c; ++i)
         {
-            const CProStlString& configName  = configs[i].configName;
-            const CProStlString& configValue = configs[i].configValue;
+            CProStlString& configName  = configs[i].configName;
+            CProStlString& configValue = configs[i].configValue;
 
             if (stricmp(configName.c_str(), "msgs_thread_count") == 0)
             {
@@ -159,11 +159,33 @@ int main(int argc, char* argv[])
             {
                 if (!configValue.empty())
                 {
+                    if (configValue[0] == '.' ||
+                        configValue.find_first_of("\\/") == CProStlString::npos)
+                    {
+                        CProStlString fileName = exeRoot;
+                        fileName += configValue;
+                        configValue = fileName;
+                    }
+                }
+
+                if (!configValue.empty())
+                {
                     configInfo.msgs_ssl_cafile.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "msgs_ssl_crlfile") == 0)
             {
+                if (!configValue.empty())
+                {
+                    if (configValue[0] == '.' ||
+                        configValue.find_first_of("\\/") == CProStlString::npos)
+                    {
+                        CProStlString fileName = exeRoot;
+                        fileName += configValue;
+                        configValue = fileName;
+                    }
+                }
+
                 if (!configValue.empty())
                 {
                     configInfo.msgs_ssl_crlfile.push_back(configValue);
@@ -173,11 +195,33 @@ int main(int argc, char* argv[])
             {
                 if (!configValue.empty())
                 {
+                    if (configValue[0] == '.' ||
+                        configValue.find_first_of("\\/") == CProStlString::npos)
+                    {
+                        CProStlString fileName = exeRoot;
+                        fileName += configValue;
+                        configValue = fileName;
+                    }
+                }
+
+                if (!configValue.empty())
+                {
                     configInfo.msgs_ssl_certfile.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "msgs_ssl_keyfile") == 0)
             {
+                if (!configValue.empty())
+                {
+                    if (configValue[0] == '.' ||
+                        configValue.find_first_of("\\/") == CProStlString::npos)
+                    {
+                        CProStlString fileName = exeRoot;
+                        fileName += configValue;
+                        configValue = fileName;
+                    }
+                }
+
                 configInfo.msgs_ssl_keyfile = configValue;
             }
             else if (stricmp(configName.c_str(), "msgs_log_loop_bytes") == 0)

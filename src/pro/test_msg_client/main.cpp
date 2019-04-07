@@ -71,20 +71,17 @@ int main(int argc, char* argv[])
 
     IProReactor*           reactor        = NULL;
     CTest*                 tester         = NULL;
-    CProStlString          configFileName = "";
-    MSG_CLIENT_CONFIG_INFO configInfo;
     char                   bindString[64] = "";
     RTP_MSG_USER           bindUser;
+    MSG_CLIENT_CONFIG_INFO configInfo;
+
+    char exeRoot[1024] = "";
+    ProGetExeDir_(exeRoot);
 
     {
-        char exeRoot[1024] = "";
-        ProGetExeDir_(exeRoot);
-
-        configFileName =  exeRoot;
+        CProStlString configFileName = exeRoot;
         configFileName += CONFIG_FILE_NAME;
-    }
 
-    {
         CProConfigFile configFile;
         configFile.Init(configFileName.c_str());
 
@@ -181,11 +178,33 @@ int main(int argc, char* argv[])
             {
                 if (!configValue.empty())
                 {
+                    if (configValue[0] == '.' ||
+                        configValue.find_first_of("\\/") == CProStlString::npos)
+                    {
+                        CProStlString fileName = exeRoot;
+                        fileName += configValue;
+                        configValue = fileName;
+                    }
+                }
+
+                if (!configValue.empty())
+                {
                     configInfo.msgc_ssl_cafile.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "msgc_ssl_crlfile") == 0)
             {
+                if (!configValue.empty())
+                {
+                    if (configValue[0] == '.' ||
+                        configValue.find_first_of("\\/") == CProStlString::npos)
+                    {
+                        CProStlString fileName = exeRoot;
+                        fileName += configValue;
+                        configValue = fileName;
+                    }
+                }
+
                 if (!configValue.empty())
                 {
                     configInfo.msgc_ssl_crlfile.push_back(configValue);

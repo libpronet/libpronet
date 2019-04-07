@@ -40,20 +40,17 @@ int main(int argc, char* argv[])
 {
     ProNetInit();
 
-    IProReactor*           reactor        = NULL;
-    CTest*                 tester         = NULL;
-    CProStlString          configFileName = "";
+    IProReactor*           reactor = NULL;
+    CTest*                 tester  = NULL;
     TCP_SERVER_CONFIG_INFO configInfo;
 
-    {
-        char exeRoot[1024] = "";
-        ProGetExeDir_(exeRoot);
+    char exeRoot[1024] = "";
+    ProGetExeDir_(exeRoot);
 
-        configFileName =  exeRoot;
+    {
+        CProStlString configFileName = exeRoot;
         configFileName += CONFIG_FILE_NAME;
-    }
 
-    {
         CProConfigFile configFile;
         configFile.Init(configFileName.c_str());
 
@@ -81,8 +78,8 @@ int main(int argc, char* argv[])
 
         for (; i < c; ++i)
         {
-            const CProStlString& configName  = configs[i].configName;
-            const CProStlString& configValue = configs[i].configValue;
+            CProStlString& configName  = configs[i].configName;
+            CProStlString& configValue = configs[i].configValue;
 
             if (stricmp(configName.c_str(), "tcps_thread_count") == 0)
             {
@@ -164,11 +161,33 @@ int main(int argc, char* argv[])
             {
                 if (!configValue.empty())
                 {
+                    if (configValue[0] == '.' ||
+                        configValue.find_first_of("\\/") == CProStlString::npos)
+                    {
+                        CProStlString fileName = exeRoot;
+                        fileName += configValue;
+                        configValue = fileName;
+                    }
+                }
+
+                if (!configValue.empty())
+                {
                     configInfo.tcps_ssl_cafile.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "tcps_ssl_crlfile") == 0)
             {
+                if (!configValue.empty())
+                {
+                    if (configValue[0] == '.' ||
+                        configValue.find_first_of("\\/") == CProStlString::npos)
+                    {
+                        CProStlString fileName = exeRoot;
+                        fileName += configValue;
+                        configValue = fileName;
+                    }
+                }
+
                 if (!configValue.empty())
                 {
                     configInfo.tcps_ssl_crlfile.push_back(configValue);
@@ -178,11 +197,33 @@ int main(int argc, char* argv[])
             {
                 if (!configValue.empty())
                 {
+                    if (configValue[0] == '.' ||
+                        configValue.find_first_of("\\/") == CProStlString::npos)
+                    {
+                        CProStlString fileName = exeRoot;
+                        fileName += configValue;
+                        configValue = fileName;
+                    }
+                }
+
+                if (!configValue.empty())
+                {
                     configInfo.tcps_ssl_certfile.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "tcps_ssl_keyfile") == 0)
             {
+                if (!configValue.empty())
+                {
+                    if (configValue[0] == '.' ||
+                        configValue.find_first_of("\\/") == CProStlString::npos)
+                    {
+                        CProStlString fileName = exeRoot;
+                        fileName += configValue;
+                        configValue = fileName;
+                    }
+                }
+
                 configInfo.tcps_ssl_keyfile = configValue;
             }
             else

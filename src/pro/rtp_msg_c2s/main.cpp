@@ -57,10 +57,10 @@ int main(int argc, char* argv[])
     CProStlString          configFileName = "";
     C2S_SERVER_CONFIG_INFO configInfo;
 
-    {
-        char exeRoot[1024] = "";
-        ProGetExeDir_(exeRoot);
+    char exeRoot[1024] = "";
+    ProGetExeDir_(exeRoot);
 
+    {
         logFileName    =  exeRoot;
         logFileName    += LOG_FILE_NAME;
         configFileName =  exeRoot;
@@ -205,11 +205,33 @@ int main(int argc, char* argv[])
             {
                 if (!configValue.empty())
                 {
+                    if (configValue[0] == '.' ||
+                        configValue.find_first_of("\\/") == CProStlString::npos)
+                    {
+                        CProStlString fileName = exeRoot;
+                        fileName += configValue;
+                        configValue = fileName;
+                    }
+                }
+
+                if (!configValue.empty())
+                {
                     configInfo.c2ss_ssl_uplink_cafile.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "c2ss_ssl_uplink_crlfile") == 0)
             {
+                if (!configValue.empty())
+                {
+                    if (configValue[0] == '.' ||
+                        configValue.find_first_of("\\/") == CProStlString::npos)
+                    {
+                        CProStlString fileName = exeRoot;
+                        fileName += configValue;
+                        configValue = fileName;
+                    }
+                }
+
                 if (!configValue.empty())
                 {
                     configInfo.c2ss_ssl_uplink_crlfile.push_back(configValue);
@@ -231,11 +253,33 @@ int main(int argc, char* argv[])
             {
                 if (!configValue.empty())
                 {
+                    if (configValue[0] == '.' ||
+                        configValue.find_first_of("\\/") == CProStlString::npos)
+                    {
+                        CProStlString fileName = exeRoot;
+                        fileName += configValue;
+                        configValue = fileName;
+                    }
+                }
+
+                if (!configValue.empty())
+                {
                     configInfo.c2ss_ssl_local_cafile.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "c2ss_ssl_local_crlfile") == 0)
             {
+                if (!configValue.empty())
+                {
+                    if (configValue[0] == '.' ||
+                        configValue.find_first_of("\\/") == CProStlString::npos)
+                    {
+                        CProStlString fileName = exeRoot;
+                        fileName += configValue;
+                        configValue = fileName;
+                    }
+                }
+
                 if (!configValue.empty())
                 {
                     configInfo.c2ss_ssl_local_crlfile.push_back(configValue);
@@ -245,11 +289,33 @@ int main(int argc, char* argv[])
             {
                 if (!configValue.empty())
                 {
+                    if (configValue[0] == '.' ||
+                        configValue.find_first_of("\\/") == CProStlString::npos)
+                    {
+                        CProStlString fileName = exeRoot;
+                        fileName += configValue;
+                        configValue = fileName;
+                    }
+                }
+
+                if (!configValue.empty())
+                {
                     configInfo.c2ss_ssl_local_certfile.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "c2ss_ssl_local_keyfile") == 0)
             {
+                if (!configValue.empty())
+                {
+                    if (configValue[0] == '.' ||
+                        configValue.find_first_of("\\/") == CProStlString::npos)
+                    {
+                        CProStlString fileName = exeRoot;
+                        fileName += configValue;
+                        configValue = fileName;
+                    }
+                }
+
                 configInfo.c2ss_ssl_local_keyfile = configValue;
             }
             else if (stricmp(configName.c_str(), "c2ss_log_loop_bytes") == 0)
