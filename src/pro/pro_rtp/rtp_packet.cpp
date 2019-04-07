@@ -175,7 +175,7 @@ CRtpPacket::ParseRtpBuffer(const char*  buffer,
             break;
         }
 
-        hdr = *(RTP_HEADER*)now;
+        memcpy(&hdr, now, sizeof(RTP_HEADER));
         if (hdr.v != 2)
         {
             break;
@@ -201,7 +201,12 @@ CRtpPacket::ParseRtpBuffer(const char*  buffer,
             }
 
             now += 2;
-            const PRO_UINT16 extCount = pbsd_ntoh16(*(PRO_UINT16*)now);
+
+            PRO_UINT16 extCount = 0;
+            ((char*)&extCount)[0] = now[0];
+            ((char*)&extCount)[1] = now[1];
+            extCount = pbsd_ntoh16(extCount);
+
             now += 2;
 
             needSize += 4 * extCount;
@@ -267,16 +272,17 @@ CRtpPacket::ParseExtBuffer(const char* buffer,
         return (false);
     }
 
-    RTP_EXT ext = *(RTP_EXT*)buffer;
+    RTP_EXT ext;
+    memcpy(&ext, buffer, sizeof(RTP_EXT));
     ext.hdrAndPayloadSize = pbsd_ntoh16(ext.hdrAndPayloadSize);
-
     if (sizeof(RTP_EXT) + ext.hdrAndPayloadSize != size)
     {
         return (false);
     }
 
-    const RTP_HEADER* const hdr = (RTP_HEADER*)(buffer + sizeof(RTP_EXT));
-    if (hdr->v != 2 || hdr->p != 0 || hdr->x != 0 || hdr->cc != 0)
+    RTP_HEADER hdr;
+    memcpy(&hdr, buffer + sizeof(RTP_EXT), sizeof(RTP_HEADER));
+    if (hdr.v != 2 || hdr.p != 0 || hdr.x != 0 || hdr.cc != 0)
     {
         return (false);
     }
