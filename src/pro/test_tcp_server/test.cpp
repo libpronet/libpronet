@@ -328,9 +328,15 @@ CTest::OnAccept(IProAcceptor*  acceptor,
     assert(acceptor != NULL);
     assert(sockId != -1);
     assert(remoteIp != NULL);
-    assert(serviceId > 0);
-    if (acceptor == NULL || sockId == -1 || remoteIp == NULL || serviceId == 0)
+    if (acceptor == NULL || sockId == -1 || remoteIp == NULL)
     {
+        return;
+    }
+
+    if (serviceId == 0)
+    {
+        ProCloseSockId(sockId);
+
         return;
     }
 
