@@ -40,7 +40,8 @@ libpro_rtp_so_CPPFLAGS = -DPRO_RTP_EXPORTS \
 libpro_rtp_so_CFLAGS   = -fno-strict-aliasing -fPIC -fvisibility=hidden
 libpro_rtp_so_CXXFLAGS = -fno-strict-aliasing -fPIC -fvisibility=hidden
 
-libpro_rtp_so_LDFLAGS = -shared -Wl,-soname,libpro_rtp.so -Wl,--no-undefined
+libpro_rtp_so_LDFLAGS = -shared -Wl,-soname,libpro_rtp.so \
+                        -Wl,-rpath,. -Wl,--no-undefined
 libpro_rtp_so_LDADD   =
 
 LIBS = ../pro_net/libpro_net.so       \

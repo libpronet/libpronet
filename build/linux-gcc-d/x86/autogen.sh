@@ -30,3 +30,5 @@ CPPFLAGS="-D_DEBUG                           \
 CFLAGS="  -g -O0 -Wall -march=pentium4 -m32" \
 CXXFLAGS="-g -O0 -Wall -march=pentium4 -m32" \
 LDFLAGS="" $@
+
+rm -f ./configure

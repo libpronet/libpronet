@@ -30,3 +30,5 @@ CPPFLAGS="-D_DEBUG                          \
 CFLAGS="  -g -O0 -Wall -march=nocona -m64"  \
 CXXFLAGS="-g -O0 -Wall -march=nocona -m64"  \
 LDFLAGS="" $@
+
+rm -f ./configure

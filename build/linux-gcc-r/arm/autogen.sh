@@ -39,3 +39,5 @@ CPPFLAGS="-DNDEBUG                          \
 CFLAGS="  -O2 -Wall"                        \
 CXXFLAGS="-O2 -Wall"                        \
 LDFLAGS="" $@
+
+rm -f ./configure

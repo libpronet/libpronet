@@ -35,7 +35,8 @@ libpro_net_so_CPPFLAGS = -DPRO_NET_EXPORTS \
 libpro_net_so_CFLAGS   = -fno-strict-aliasing -fPIC -fvisibility=hidden
 libpro_net_so_CXXFLAGS = -fno-strict-aliasing -fPIC -fvisibility=hidden
 
-libpro_net_so_LDFLAGS = -shared -Wl,-soname,libpro_net.so -Wl,--no-undefined
+libpro_net_so_LDFLAGS = -shared -Wl,-soname,libpro_net.so \
+                        -Wl,-rpath,. -Wl,--no-undefined
 libpro_net_so_LDADD   =
 
 LIBS = ../pro_util/libpro_util.a      \
