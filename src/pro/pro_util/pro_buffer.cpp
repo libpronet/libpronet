@@ -25,14 +25,20 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-CProBuffer::CProBuffer(PRO_INT64 magic)
-: m_magic(magic)
+CProBuffer::CProBuffer()
 {
-    m_data = NULL;
-    m_size = 0;
+    m_data  = NULL;
+    m_size  = 0;
+    m_magic = 0;
 }
 
 CProBuffer::~CProBuffer()
+{
+    Free();
+}
+
+void
+CProBuffer::Free()
 {
     ProFree(m_data);
     m_data = NULL;

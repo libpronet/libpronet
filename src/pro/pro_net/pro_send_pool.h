@@ -57,20 +57,21 @@ public:
             return;
         }
 
-        CProBuffer* const p = new CProBuffer(actionId);
-        if (!p->Resize(size))
+        CProBuffer* const buf2 = new CProBuffer;
+        if (!buf2->Resize(size))
         {
-            delete p;
+            delete buf2;
 
             return;
         }
 
-        memcpy(p->Data(), buf, size);
-        m_bufs.push_back(p);
+        memcpy(buf2->Data(), buf, size);
+        buf2->SetMagic(actionId);
+        m_bufs.push_back(buf2);
 
         if (m_bufs.size() == 1)
         {
-            m_pendingPos = (char*)p->Data();
+            m_pendingPos = (char*)buf2->Data();
         }
     }
 
