@@ -30,86 +30,112 @@
 
 #if defined(WIN32) || defined(_WIN32_WCE)
 
-const CProStlWstring
+void
 PRO_CALLTYPE
-ProAnsiToUnicode(const CProStlString& src)
+ProAnsiToUnicode(CProStlWstring&      dst,
+                 const CProStlString& src)
 {
+    dst = L"";
+
     if (src.empty())
     {
-        return (L"");
+        return;
     }
 
-    CProStlWstring dst(src.length() + 1, L'\0');
-    ::MultiByteToWideChar(CP_ACP, 0, src.c_str(), -1, &dst[0], (int)dst.length());
+    const size_t len = src.length() + 1;
+    dst.resize(len);
 
-    return (dst.c_str());
+    wchar_t* const p = &dst[0];
+    p[0]       = L'\0';
+    p[len - 1] = L'\0';
+
+    ::MultiByteToWideChar(CP_ACP, 0, src.c_str(), -1, p, (int)len);
 }
 
-const CProStlString
+void
 PRO_CALLTYPE
-ProUnicodeToAnsi(const CProStlWstring& src)
+ProUnicodeToAnsi(CProStlString&        dst,
+                 const CProStlWstring& src)
 {
+    dst = "";
+
     if (src.empty())
     {
-        return ("");
+        return;
     }
 
-    CProStlString dst(src.length() * 2 + 1, '\0');
-    ::WideCharToMultiByte(CP_ACP, 0, src.c_str(), -1, &dst[0], (int)dst.length(),
-        NULL, NULL);
+    const size_t len = src.length() * 4 + 1;
+    dst.resize(len);
 
-    return (dst.c_str());
+    char* const p = &dst[0];
+    p[0]       = '\0';
+    p[len - 1] = '\0';
+
+    ::WideCharToMultiByte(CP_ACP, 0, src.c_str(), -1, p, (int)len, NULL, NULL);
 }
 
-const CProStlWstring
+void
 PRO_CALLTYPE
-ProUtf8ToUnicode(const CProStlString& src)
+ProUtf8ToUnicode(CProStlWstring&      dst,
+                 const CProStlString& src)
 {
+    dst = L"";
+
     if (src.empty())
     {
-        return (L"");
+        return;
     }
 
-    CProStlWstring dst(src.length() + 1, L'\0');
-    ::MultiByteToWideChar(CP_UTF8, 0, src.c_str(), -1, &dst[0], (int)dst.length());
+    const size_t len = src.length() + 1;
+    dst.resize(len);
 
-    return (dst.c_str());
+    wchar_t* const p = &dst[0];
+    p[0]       = L'\0';
+    p[len - 1] = L'\0';
+
+    ::MultiByteToWideChar(CP_UTF8, 0, src.c_str(), -1, p, (int)len);
 }
 
-const CProStlString
+void
 PRO_CALLTYPE
-ProUnicodeToUtf8(const CProStlWstring& src)
+ProUnicodeToUtf8(CProStlString&        dst,
+                 const CProStlWstring& src)
 {
+    dst = "";
+
     if (src.empty())
     {
-        return ("");
+        return;
     }
 
-    CProStlString dst(src.length() * 4 + 1, '\0');
-    ::WideCharToMultiByte(CP_UTF8, 0, src.c_str(), -1, &dst[0], (int)dst.length(),
-        NULL, NULL);
+    const size_t len = src.length() * 4 + 1;
+    dst.resize(len);
 
-    return (dst.c_str());
+    char* const p = &dst[0];
+    p[0]       = '\0';
+    p[len - 1] = '\0';
+
+    ::WideCharToMultiByte(CP_UTF8, 0, src.c_str(), -1, p, (int)len, NULL, NULL);
 }
 
-const CProStlString
+void
 PRO_CALLTYPE
-ProAnsiToUtf8(const CProStlString& src)
+ProAnsiToUtf8(CProStlString&       dst,
+              const CProStlString& src)
 {
-    const CProStlWstring tmp = ProAnsiToUnicode(src);
-    const CProStlString  dst = ProUnicodeToUtf8(tmp);
-
-    return (dst.c_str());
+    CProStlWstring uni = L"";
+    ProAnsiToUnicode(uni, src);
+    ProUnicodeToUtf8(dst, uni);
 }
 
-const CProStlString
+void
 PRO_CALLTYPE
-ProUtf8ToAnsi(const CProStlString& src)
+ProUtf8ToAnsi(CProStlString&       dst,
+              const CProStlString& src)
 {
-    const CProStlWstring tmp = ProUtf8ToUnicode(src);
-    const CProStlString  dst = ProUnicodeToAnsi(tmp);
-
-    return (dst.c_str());
+    CProStlWstring uni = L"";
+    ProUtf8ToUnicode(uni, src);
+    ProUnicodeToAnsi(dst, uni);
 }
 
 #endif /* WIN32, _WIN32_WCE */

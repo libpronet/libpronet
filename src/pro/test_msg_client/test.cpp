@@ -234,8 +234,9 @@ CTest::SendMsg(const char* msg)
     }
 
 #if defined(WIN32)
-    const CProStlString msg2 = ProAnsiToUtf8(msg);
-    msg = msg2.c_str();
+    CProStlString tmp = "";
+    ProAnsiToUtf8(tmp, msg);
+    msg = tmp.c_str();
 #endif
 
     {
@@ -323,8 +324,9 @@ CTest::SendMsg(const char*         msg,
     }
 
 #if defined(WIN32)
-    const CProStlString msg2 = ProAnsiToUtf8(msg);
-    msg = msg2.c_str();
+    CProStlString tmp = "";
+    ProAnsiToUtf8(tmp, msg);
+    msg = tmp.c_str();
 #endif
 
     {
@@ -414,7 +416,9 @@ CTest::OnRecvMsg(IRtpMsgClient*      msgClient,
 
     CProStlString msg((char*)buf, size);
 #if defined(WIN32)
-    msg = ProUtf8ToAnsi(msg);
+    CProStlString tmp = "";
+    ProUtf8ToAnsi(tmp, msg);
+    msg = tmp;
 #endif
 
     {
