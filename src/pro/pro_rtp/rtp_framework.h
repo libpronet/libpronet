@@ -675,7 +675,7 @@ FindRtpStreamFromPacket(const IRtpPacket* packet,
  *
  * 返回值: 无
  *
- * 说明: 默认的端口号分配范围为[3000 ~ 5999].偶数开始
+ * 说明: 默认的端口号分配范围为[3000 ~ 5999]
  */
 PRO_RTP_API
 void
@@ -696,7 +696,7 @@ SetRtpPortRange(unsigned short minUdpPort,
  *
  * 返回值: 无
  *
- * 说明: 默认的端口号分配范围为[3000 ~ 5999].偶数开始
+ * 说明: 默认的端口号分配范围为[3000 ~ 5999]
  */
 PRO_RTP_API
 void
@@ -913,7 +913,7 @@ GetRtpTcpSocketParams(RTP_MM_TYPE    mmType,
  * observer         : 回调目标
  * reactor          : 反应器
  * mmType           : 服务的媒体类型
- * serviceHubPort   : 服务hub监听的端口号
+ * serviceHubPort   : 服务hub的端口号
  * timeoutInSeconds : 握手超时.默认10秒
  *
  * 返回值: rtp服务对象或NULL
@@ -972,7 +972,7 @@ CheckRtpServiceData(PRO_UINT64  serviceNonce,
  * reactor   : 反应器
  * localInfo : 会话信息
  * localIp   : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * localPort : 要绑定的本地端口号.[偶数].如果为0,系统将随机分配一个端口号
+ * localPort : 要绑定的本地端口号.如果为0,系统将随机分配一个
  *
  * 返回值: 会话对象或NULL
  *
@@ -995,7 +995,7 @@ CreateRtpSessionUdpclient(IRtpSessionObserver*    observer,
  * reactor   : 反应器
  * localInfo : 会话信息
  * localIp   : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * localPort : 要绑定的本地端口号.[偶数].如果为0,系统将随机分配一个端口号
+ * localPort : 要绑定的本地端口号.如果为0,系统将随机分配一个
  *
  * 返回值: 会话对象或NULL
  *
@@ -1045,7 +1045,7 @@ CreateRtpSessionTcpclient(IRtpSessionObserver*    observer,
  * reactor          : 反应器
  * localInfo        : 会话信息
  * localIp          : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * localPort        : 要绑定的本地端口号.[偶数].如果为0,系统将随机分配一个端口号
+ * localPort        : 要绑定的本地端口号.如果为0,系统将随机分配一个
  * timeoutInSeconds : 握手超时.默认20秒
  *
  * 返回值: 会话对象或NULL
@@ -1097,7 +1097,7 @@ CreateRtpSessionUdpclientEx(IRtpSessionObserver*    observer,
  * reactor          : 反应器
  * localInfo        : 会话信息
  * localIp          : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * localPort        : 要绑定的本地端口号.如果为0,系统将随机分配一个端口号
+ * localPort        : 要绑定的本地端口号.如果为0,系统将随机分配一个
  * timeoutInSeconds : 握手超时.默认20秒
  *
  * 返回值: 会话对象或NULL
@@ -1233,7 +1233,7 @@ CreateRtpSessionSslserverEx(IRtpSessionObserver*    observer,
  * reactor   : 反应器
  * localInfo : 会话信息
  * mcastIp   : 要绑定的多播地址
- * mcastPort : 要绑定的多播端口号.[偶数].如果为0,系统将随机分配一个端口号
+ * mcastPort : 要绑定的多播端口号.如果为0,系统将随机分配一个
  * localIp   : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
  *
  * 返回值: 会话对象或NULL
@@ -1262,7 +1262,7 @@ CreateRtpSessionMcast(IRtpSessionObserver*    observer,
  * reactor   : 反应器
  * localInfo : 会话信息
  * mcastIp   : 要绑定的多播地址
- * mcastPort : 要绑定的多播端口号.如果为0,系统将随机分配一个端口号
+ * mcastPort : 要绑定的多播端口号.如果为0,系统将随机分配一个
  * localIp   : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
  *
  * 返回值: 会话对象或NULL

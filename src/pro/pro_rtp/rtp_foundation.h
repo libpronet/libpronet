@@ -75,12 +75,16 @@ extern "C" {
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-class IRtpBucket;
+class IRtpBucket; /* rtp流控桶 */
 
 /*
  * 会话初始化参数
  *
- * 如果bucket为NULL,系统将自动分配一个bucket
+ * observer  : 回调目标
+ * reactor   : 反应器
+ * localIp   : 要绑定的本地ip地址.如果为"",系统将使用0.0.0.0
+ * localPort : 要绑定的本地端口号.如果为0,系统将随机分配一个
+ * bucket    : 流控桶.如果为NULL,系统将自动分配一个
  */
 struct RTP_INIT_UDPCLIENT
 {
@@ -94,7 +98,11 @@ struct RTP_INIT_UDPCLIENT
 /*
  * 会话初始化参数
  *
- * 如果bucket为NULL,系统将自动分配一个bucket
+ * observer  : 回调目标
+ * reactor   : 反应器
+ * localIp   : 要绑定的本地ip地址.如果为"",系统将使用0.0.0.0
+ * localPort : 要绑定的本地端口号.如果为0,系统将随机分配一个
+ * bucket    : 流控桶.如果为NULL,系统将自动分配一个
  */
 struct RTP_INIT_UDPSERVER
 {
@@ -108,7 +116,13 @@ struct RTP_INIT_UDPSERVER
 /*
  * 会话初始化参数
  *
- * 如果bucket为NULL,系统将自动分配一个bucket
+ * observer         : 回调目标
+ * reactor          : 反应器
+ * remoteIp         : 远端的ip地址或域名
+ * remotePort       : 远端的端口号
+ * localIp          : 要绑定的本地ip地址.如果为"",系统将使用0.0.0.0
+ * timeoutInSeconds : 握手超时.默认20秒
+ * bucket           : 流控桶.如果为NULL,系统将自动分配一个
  */
 struct RTP_INIT_TCPCLIENT
 {
@@ -124,7 +138,12 @@ struct RTP_INIT_TCPCLIENT
 /*
  * 会话初始化参数
  *
- * 如果bucket为NULL,系统将自动分配一个bucket
+ * observer         : 回调目标
+ * reactor          : 反应器
+ * localIp          : 要绑定的本地ip地址.如果为"",系统将使用0.0.0.0
+ * localPort        : 要绑定的本地端口号.如果为0,系统将随机分配一个
+ * timeoutInSeconds : 握手超时.默认20秒
+ * bucket           : 流控桶.如果为NULL,系统将自动分配一个
  */
 struct RTP_INIT_TCPSERVER
 {
@@ -139,7 +158,13 @@ struct RTP_INIT_TCPSERVER
 /*
  * 会话初始化参数
  *
- * 如果bucket为NULL,系统将自动分配一个bucket
+ * observer         : 回调目标
+ * reactor          : 反应器
+ * remoteIp         : 远端的ip地址或域名
+ * remotePort       : 远端的端口号
+ * localIp          : 要绑定的本地ip地址.如果为"",系统将使用0.0.0.0
+ * timeoutInSeconds : 握手超时.默认20秒
+ * bucket           : 流控桶.如果为NULL,系统将自动分配一个
  */
 struct RTP_INIT_UDPCLIENT_EX
 {
@@ -155,7 +180,12 @@ struct RTP_INIT_UDPCLIENT_EX
 /*
  * 会话初始化参数
  *
- * 如果bucket为NULL,系统将自动分配一个bucket
+ * observer         : 回调目标
+ * reactor          : 反应器
+ * localIp          : 要绑定的本地ip地址.如果为"",系统将使用0.0.0.0
+ * localPort        : 要绑定的本地端口号.如果为0,系统将随机分配一个
+ * timeoutInSeconds : 握手超时.默认20秒
+ * bucket           : 流控桶.如果为NULL,系统将自动分配一个
  */
 struct RTP_INIT_UDPSERVER_EX
 {
@@ -170,7 +200,14 @@ struct RTP_INIT_UDPSERVER_EX
 /*
  * 会话初始化参数
  *
- * 如果bucket为NULL,系统将自动分配一个bucket
+ * observer         : 回调目标
+ * reactor          : 反应器
+ * remoteIp         : 远端的ip地址或域名
+ * remotePort       : 远端的端口号
+ * password         : 会话口令
+ * localIp          : 要绑定的本地ip地址.如果为"",系统将使用0.0.0.0
+ * timeoutInSeconds : 握手超时.默认20秒
+ * bucket           : 流控桶.如果为NULL,系统将自动分配一个
  */
 struct RTP_INIT_TCPCLIENT_EX
 {
@@ -187,7 +224,11 @@ struct RTP_INIT_TCPCLIENT_EX
 /*
  * 会话初始化参数
  *
- * 如果bucket为NULL,系统将自动分配一个bucket
+ * observer   : 回调目标
+ * reactor    : 反应器
+ * sockId     : 套接字id.来源于IRtpServiceObserver::OnAcceptSession(...)
+ * unixSocket : 是否unix套接字
+ * bucket     : 流控桶.如果为NULL,系统将自动分配一个
  */
 struct RTP_INIT_TCPSERVER_EX
 {
@@ -201,8 +242,18 @@ struct RTP_INIT_TCPSERVER_EX
 /*
  * 会话初始化参数
  *
- * sslConfig指定的对象必须在会话的生命周期内一直有效;
- * 如果bucket为NULL,系统将自动分配一个bucket
+ * observer         : 回调目标
+ * reactor          : 反应器
+ * sslConfig        : ssl配置
+ * sslSni           : ssl服务名.如果有效,则参与认证服务端证书
+ * remoteIp         : 远端的ip地址或域名
+ * remotePort       : 远端的端口号
+ * password         : 会话口令
+ * localIp          : 要绑定的本地ip地址.如果为"",系统将使用0.0.0.0
+ * timeoutInSeconds : 握手超时.默认20秒
+ * bucket           : 流控桶.如果为NULL,系统将自动分配一个
+ *
+ * 说明: sslConfig指定的对象必须在会话的生命周期内一直有效
  */
 struct RTP_INIT_SSLCLIENT_EX
 {
@@ -221,7 +272,15 @@ struct RTP_INIT_SSLCLIENT_EX
 /*
  * 会话初始化参数
  *
- * 如果bucket为NULL,系统将自动分配一个bucket
+ * observer   : 回调目标
+ * reactor    : 反应器
+ * sslCtx     : ssl上下文
+ * sockId     : 套接字id.来源于IRtpServiceObserver::OnAcceptSession(...)
+ * unixSocket : 是否unix套接字
+ * bucket     : 流控桶.如果为NULL,系统将自动分配一个
+ *
+ * 说明: 如果创建成功,会话将成为(sslCtx, sockId)的属主;否则,调用者应该
+ *       释放(sslCtx, sockId)对应的资源
  */
 struct RTP_INIT_SSLSERVER_EX
 {
@@ -236,7 +295,16 @@ struct RTP_INIT_SSLSERVER_EX
 /*
  * 会话初始化参数
  *
- * 如果bucket为NULL,系统将自动分配一个bucket
+ * observer  : 回调目标
+ * reactor   : 反应器
+ * mcastIp   : 要绑定的多播地址
+ * mcastPort : 要绑定的多播端口号.如果为0,系统将随机分配一个
+ * localIp   : 要绑定的本地ip地址.如果为"",系统将使用0.0.0.0
+ * bucket    : 流控桶.如果为NULL,系统将自动分配一个
+ *
+ * 说明: 合法的多播地址为[224.0.0.0 ~ 239.255.255.255],
+ *       推荐的多播地址为[224.0.1.0 ~ 238.255.255.255],
+ *       RFC-1112(IGMPv1), RFC-2236(IGMPv2), RFC-3376(IGMPv3)
  */
 struct RTP_INIT_MCAST
 {
@@ -251,7 +319,16 @@ struct RTP_INIT_MCAST
 /*
  * 会话初始化参数
  *
- * 如果bucket为NULL,系统将自动分配一个bucket
+ * observer  : 回调目标
+ * reactor   : 反应器
+ * mcastIp   : 要绑定的多播地址
+ * mcastPort : 要绑定的多播端口号.如果为0,系统将随机分配一个
+ * localIp   : 要绑定的本地ip地址.如果为"",系统将使用0.0.0.0
+ * bucket    : 流控桶.如果为NULL,系统将自动分配一个
+ *
+ * 说明: 合法的多播地址为[224.0.0.0 ~ 239.255.255.255],
+ *       推荐的多播地址为[224.0.1.0 ~ 238.255.255.255],
+ *       RFC-1112(IGMPv1), RFC-2236(IGMPv2), RFC-3376(IGMPv3)
  */
 struct RTP_INIT_MCAST_EX
 {
@@ -264,7 +341,7 @@ struct RTP_INIT_MCAST_EX
 };
 
 /*
- * 会话初始化参数
+ * 会话初始化参数公共部分
  */
 struct RTP_INIT_COMMON
 {
@@ -470,7 +547,7 @@ struct RTP_MSG_USER
 ////
 
 /*
- * rtp桶
+ * rtp流控桶
  */
 class IRtpBucket
 {
@@ -950,7 +1027,7 @@ DeleteRtpMsgClient(IRtpMsgClient* msgClient);
  * mmType           : 消息媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
  * sslConfig        : ssl配置. NULL表示明文传输
  * sslForced        : 是否强制使用ssl传输. sslConfig为NULL时该参数忽略
- * serviceHubPort   : 服务hub监听的端口号
+ * serviceHubPort   : 服务hub的端口号
  * timeoutInSeconds : 握手超时.默认20秒
  *
  * 返回值: 消息服务器对象或NULL
@@ -1000,7 +1077,7 @@ DeleteRtpMsgServer(IRtpMsgServer* msgServer);
  * uplinkTimeoutInSeconds : 级联的握手超时.默认20秒
  * localSslConfig         : 近端的ssl配置. NULL表示明文传输
  * localSslForced         : 近端是否强制使用ssl传输. localSslConfig为NULL时该参数忽略
- * localServiceHubPort    : 近端的服务hub监听的端口号
+ * localServiceHubPort    : 近端的服务hub的端口号
  * localTimeoutInSeconds  : 近端的握手超时.默认20秒
  *
  * 返回值: 消息c2s对象或NULL
@@ -1042,13 +1119,13 @@ PRO_CALLTYPE
 DeleteRtpMsgC2s(IRtpMsgC2s* msgC2s);
 
 /*
- * 功能: 创建一个内部实现的基础类型的rtp桶
+ * 功能: 创建一个内部实现的基础类型的流控桶
  *
  * 参数: 无
  *
- * 返回值: rtp桶对象或NULL
+ * 返回值: 流控桶对象或NULL
  *
- * 说明: rtp桶的线程安全性由调用者保证
+ * 说明: 流控桶的线程安全性由调用者保证
  */
 PRO_RTP_API
 IRtpBucket*
@@ -1056,13 +1133,13 @@ PRO_CALLTYPE
 CreateRtpBaseBucket();
 
 /*
- * 功能: 创建一个内部实现的音频类型的rtp桶
+ * 功能: 创建一个内部实现的音频类型的流控桶
  *
  * 参数: 无
  *
- * 返回值: rtp桶对象或NULL
+ * 返回值: 流控桶对象或NULL
  *
- * 说明: rtp桶的线程安全性由调用者保证
+ * 说明: 流控桶的线程安全性由调用者保证
  */
 PRO_RTP_API
 IRtpBucket*
@@ -1070,13 +1147,13 @@ PRO_CALLTYPE
 CreateRtpAudioBucket();
 
 /*
- * 功能: 创建一个内部实现的视频类型的rtp桶
+ * 功能: 创建一个内部实现的视频类型的流控桶
  *
  * 参数: 无
  *
- * 返回值: rtp桶对象或NULL
+ * 返回值: 流控桶对象或NULL
  *
- * 说明: rtp桶的线程安全性由调用者保证
+ * 说明: 流控桶的线程安全性由调用者保证
  */
 PRO_RTP_API
 IRtpBucket*

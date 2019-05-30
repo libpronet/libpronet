@@ -822,7 +822,7 @@ ProDeleteReactor(IProReactor* reactor);
  * observer  : 回调目标
  * reactor   : 反应器
  * localIp   : 要监听的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * localPort : 要监听的端口号.如果为0,系统将随机分配一个端口号
+ * localPort : 要监听的本地端口号.如果为0,系统将随机分配一个
  *
  * 返回值: 接受器对象或NULL
  *
@@ -843,7 +843,7 @@ ProCreateAcceptor(IProAcceptorObserver* observer,
  * observer         : 回调目标
  * reactor          : 反应器
  * localIp          : 要监听的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * localPort        : 要监听的端口号.如果为0,系统将随机分配一个端口号
+ * localPort        : 要监听的本地端口号.如果为0,系统将随机分配一个
  * timeoutInSeconds : 握手超时.默认10秒
  *
  * 返回值: 接受器对象或NULL
@@ -1098,7 +1098,7 @@ ProCreateTcpTransport(IProTransportObserver* observer,
  * observer        : 回调目标
  * reactor         : 反应器
  * localIp         : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * localPort       : 要绑定的端口号.如果为0,系统将随机分配一个端口号
+ * localPort       : 要绑定的本地端口号.如果为0,系统将随机分配一个
  * sockBufSizeRecv : 套接字的系统接收缓冲区字节数.默认(1024 * 56)
  * sockBufSizeSend : 套接字的系统发送缓冲区字节数.默认(1024 * 56)
  * recvPoolSize    : 接收池的字节数.默认(1024 * 65)
@@ -1129,7 +1129,7 @@ ProCreateUdpTransport(IProTransportObserver* observer,
  * observer        : 回调目标
  * reactor         : 反应器
  * mcastIp         : 要绑定的多播地址
- * mcastPort       : 要绑定的多播端口号.如果为0,系统将随机分配一个端口号
+ * mcastPort       : 要绑定的多播端口号.如果为0,系统将随机分配一个
  * localBindIp     : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
  * sockBufSizeRecv : 套接字的系统接收缓冲区字节数.默认(1024 * 56)
  * sockBufSizeSend : 套接字的系统发送缓冲区字节数.默认(1024 * 56)
@@ -1276,7 +1276,7 @@ ProDeleteServiceHost(IProServiceHost* host);
  *
  * 参数:
  * localIp   : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * localPort : 要绑定的端口号
+ * localPort : 要绑定的本地端口号
  *
  * 返回值: 套接字id或-1
  *
@@ -1293,7 +1293,7 @@ ProOpenTcpSockId(const char*    localIp, /* = NULL */
  *
  * 参数:
  * localIp   : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * localPort : 要绑定的端口号
+ * localPort : 要绑定的本地端口号
  *
  * 返回值: 套接字id或-1
  *
