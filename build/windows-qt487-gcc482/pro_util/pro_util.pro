@@ -36,7 +36,6 @@ SOURCES += \
     ../../../src/pro/pro_util/pro_log_file.cpp \
     ../../../src/pro/pro_util/pro_memory_pool.cpp \
     ../../../src/pro/pro_util/pro_ref_count.cpp \
-    ../../../src/pro/pro_util/pro_reorder.cpp \
     ../../../src/pro/pro_util/pro_shaper.cpp \
     ../../../src/pro/pro_util/pro_ssl_util.cpp \
     ../../../src/pro/pro_util/pro_stat.cpp \
@@ -59,7 +58,6 @@ HEADERS += \
     ../../../src/pro/pro_util/pro_log_file.h \
     ../../../src/pro/pro_util/pro_memory_pool.h \
     ../../../src/pro/pro_util/pro_ref_count.h \
-    ../../../src/pro/pro_util/pro_reorder.h \
     ../../../src/pro/pro_util/pro_shaper.h \
     ../../../src/pro/pro_util/pro_ssl_util.h \
     ../../../src/pro/pro_util/pro_stat.h \

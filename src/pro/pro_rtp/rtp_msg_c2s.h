@@ -27,8 +27,8 @@
 #if !defined(RTP_MSG_C2S_H)
 #define RTP_MSG_C2S_H
 
-#include "rtp_foundation.h"
-#include "rtp_framework.h"
+#include "rtp_base.h"
+#include "rtp_msg.h"
 #include "rtp_msg_client.h"
 #include "rtp_msg_server.h"
 #include "../pro_util/pro_ref_count.h"

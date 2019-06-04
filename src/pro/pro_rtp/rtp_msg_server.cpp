@@ -17,8 +17,8 @@
  */
 
 #include "rtp_msg_server.h"
-#include "rtp_foundation.h"
-#include "rtp_framework.h"
+#include "rtp_base.h"
+#include "rtp_msg.h"
 #include "rtp_msg_command.h"
 #include "../pro_net/pro_net.h"
 #include "../pro_util/pro_bsd_wrapper.h"

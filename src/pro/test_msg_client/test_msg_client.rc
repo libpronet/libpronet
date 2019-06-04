@@ -45,11 +45,11 @@ BEGIN
         BLOCK "080404b0"
         BEGIN
             VALUE "Comments", "\0"
-            VALUE "CompanyName", "P.R.O\0"
+            VALUE "CompanyName", "P.R.O.\0"
             VALUE "FileDescription", "\0"
             VALUE "FileVersion", "1, 0, 0, 0\0"
             VALUE "InternalName", "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2018 P.R.O\0"
+            VALUE "LegalCopyright", "Copyright (C) 2018-2019 P.R.O.\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "test_msg_client.exe\0"
             VALUE "PrivateBuild", "\0"

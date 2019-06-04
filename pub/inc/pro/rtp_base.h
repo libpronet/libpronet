@@ -75,8 +75,8 @@
  * PSP-v1.0 (PRO Session Protocol version 1.0)
  */
 
-#if !defined(____RTP_FRAMEWORK_H____)
-#define ____RTP_FRAMEWORK_H____
+#if !defined(____RTP_BASE_H____)
+#define ____RTP_BASE_H____
 
 #include "pro_net.h"
 
@@ -99,11 +99,15 @@ extern "C" {
 #define PRO_RTP_API PRO_IMPORT
 #endif
 
-class IRtpService; /* rtp服务 */
+class IRtpBucket;          /* rtp流控桶 */
+class IRtpService;         /* rtp服务 */
+class IRtpSessionObserver; /* rtp会话回调目标 */
 
 /*
- * [[[[ 媒体类型. 0无效, 1~127保留, 128~255自定义
+ * [[[[ rtp媒体类型. 0无效, 1~127保留, 128~255自定义
  */
+#if !defined(____RTP_MM_TYPE____)
+#define ____RTP_MM_TYPE____
 typedef unsigned char RTP_MM_TYPE;
 
 static const RTP_MM_TYPE RTP_MMT_MSG       = 11; /* 消息[11 ~ 20] */
@@ -121,24 +125,28 @@ static const RTP_MM_TYPE RTP_MMT_VIDEO_MAX = 40;
 static const RTP_MM_TYPE RTP_MMT_CTRL      = 41; /* 控制[41 ~ 50] */
 static const RTP_MM_TYPE RTP_MMT_CTRL_MIN  = 41;
 static const RTP_MM_TYPE RTP_MMT_CTRL_MAX  = 50;
+#endif /* ____RTP_MM_TYPE____ */
 /*
  * ]]]]
  */
 
 /*
- * [[[[ 扩展打包模式
+ * [[[[ rtp扩展打包模式
  */
+#if !defined(____RTP_EXT_PACK_MODE____)
+#define ____RTP_EXT_PACK_MODE____
 typedef unsigned char RTP_EXT_PACK_MODE;
 
 static const RTP_EXT_PACK_MODE RTP_EPM_DEFAULT = 0; /* ext8 + rfc12 + payload */
 static const RTP_EXT_PACK_MODE RTP_EPM_TCP2    = 2; /* len2 + payload */
 static const RTP_EXT_PACK_MODE RTP_EPM_TCP4    = 4; /* len4 + payload */
+#endif /* ____RTP_EXT_PACK_MODE____ */
 /*
  * ]]]]
  */
 
 /*
- * [[[[ 会话类型
+ * [[[[ rtp会话类型
  */
 typedef unsigned char RTP_SESSION_TYPE;
 
@@ -163,30 +171,323 @@ static const RTP_SESSION_TYPE RTP_ST_MCAST_EX     = 12; /* mcast-扩展协议端 */
  */
 struct RTP_SESSION_INFO
 {
-    PRO_UINT16        localVersion;     /* 本地版本号===[     无需设置      ], for tcp_ex, ssl_ex */
-    PRO_UINT16        remoteVersion;    /* 远端版本号===[c无需设置,s必须设置>, for tcp_ex, ssl_ex */
-    RTP_SESSION_TYPE  sessionType;      /* 会话类型=====[     无需设置      ] */
-    RTP_MM_TYPE       mmType;           /* 媒体类型=====<     必须设置      > */
-    RTP_EXT_PACK_MODE packMode;         /* 打包模式=====<     必须设置      >, for tcp_ex, ssl_ex */
+    PRO_UINT16        localVersion;     /* 本地版本号===[      无需设置      ], for tcp_ex, ssl_ex */
+    PRO_UINT16        remoteVersion;    /* 远端版本号===[c无需设置, s必须设置>, for tcp_ex, ssl_ex */
+    RTP_SESSION_TYPE  sessionType;      /* 会话类型=====[      无需设置      ] */
+    RTP_MM_TYPE       mmType;           /* 媒体类型=====<      必须设置      > */
+    RTP_EXT_PACK_MODE packMode;         /* 打包模式=====<      必须设置      >, for tcp_ex, ssl_ex */
     char              reserved1;
-    char              passwordHash[32]; /* 口令hash值===[c无需设置,s必须设置>, for tcp_ex, ssl_ex */
+    char              passwordHash[32]; /* 口令hash值===[c无需设置, s必须设置>, for tcp_ex, ssl_ex */
     char              reserved2[40];
 
-    PRO_UINT32        someId;           /* 某种id.比如房间id,目标节点id等,由上层定义 */
+    PRO_UINT32        someId;           /* 某种id. 比如房间id, 目标节点id等,由上层定义 */
     PRO_UINT32        mmId;             /* 节点id */
-    PRO_UINT32        inSrcMmId;        /* 输入媒体流的源节点id.可以为0 */
-    PRO_UINT32        outSrcMmId;       /* 输出媒体流的源节点id.可以为0 */
+    PRO_UINT32        inSrcMmId;        /* 输入媒体流的源节点id. 可以为0 */
+    PRO_UINT32        outSrcMmId;       /* 输出媒体流的源节点id. 可以为0 */
 
     char              userData[64];     /* 用户自定义数据 */
+};
+
+/*
+ * rtp会话初始化参数
+ *
+ * observer  : 回调目标
+ * reactor   : 反应器
+ * localIp   : 要绑定的本地ip地址.如果为"", 系统将使用0.0.0.0
+ * localPort : 要绑定的本地端口号.如果为0, 系统将随机分配一个
+ * bucket    : 流控桶.如果为NULL, 系统将自动分配一个
+ */
+struct RTP_INIT_UDPCLIENT
+{
+    IRtpSessionObserver*         observer;
+    IProReactor*                 reactor;
+    char                         localIp[64];      /* = "" */
+    unsigned short               localPort;        /* = 0 */
+    IRtpBucket*                  bucket;           /* = NULL */
+};
+
+/*
+ * rtp会话初始化参数
+ *
+ * observer  : 回调目标
+ * reactor   : 反应器
+ * localIp   : 要绑定的本地ip地址. 如果为"", 系统将使用0.0.0.0
+ * localPort : 要绑定的本地端口号. 如果为0, 系统将随机分配一个
+ * bucket    : 流控桶.如果为NULL, 系统将自动分配一个
+ */
+struct RTP_INIT_UDPSERVER
+{
+    IRtpSessionObserver*         observer;
+    IProReactor*                 reactor;
+    char                         localIp[64];      /* = "" */
+    unsigned short               localPort;        /* = 0 */
+    IRtpBucket*                  bucket;           /* = NULL */
+};
+
+/*
+ * rtp会话初始化参数
+ *
+ * observer         : 回调目标
+ * reactor          : 反应器
+ * remoteIp         : 远端的ip地址或域名
+ * remotePort       : 远端的端口号
+ * localIp          : 要绑定的本地ip地址. 如果为"", 系统将使用0.0.0.0
+ * timeoutInSeconds : 握手超时. 默认20秒
+ * bucket           : 流控桶. 如果为NULL, 系统将自动分配一个
+ */
+struct RTP_INIT_TCPCLIENT
+{
+    IRtpSessionObserver*         observer;
+    IProReactor*                 reactor;
+    char                         remoteIp[64];
+    unsigned short               remotePort;
+    char                         localIp[64];      /* = "" */
+    unsigned long                timeoutInSeconds; /* = 0 */
+    IRtpBucket*                  bucket;           /* = NULL */
+};
+
+/*
+ * rtp会话初始化参数
+ *
+ * observer         : 回调目标
+ * reactor          : 反应器
+ * localIp          : 要绑定的本地ip地址. 如果为"", 系统将使用0.0.0.0
+ * localPort        : 要绑定的本地端口号. 如果为0, 系统将随机分配一个
+ * timeoutInSeconds : 握手超时. 默认20秒
+ * bucket           : 流控桶. 如果为NULL, 系统将自动分配一个
+ */
+struct RTP_INIT_TCPSERVER
+{
+    IRtpSessionObserver*         observer;
+    IProReactor*                 reactor;
+    char                         localIp[64];      /* = "" */
+    unsigned short               localPort;        /* = 0 */
+    unsigned long                timeoutInSeconds; /* = 0 */
+    IRtpBucket*                  bucket;           /* = NULL */
+};
+
+/*
+ * rtp会话初始化参数
+ *
+ * observer         : 回调目标
+ * reactor          : 反应器
+ * remoteIp         : 远端的ip地址或域名
+ * remotePort       : 远端的端口号
+ * localIp          : 要绑定的本地ip地址. 如果为"", 系统将使用0.0.0.0
+ * timeoutInSeconds : 握手超时. 默认20秒
+ * bucket           : 流控桶. 如果为NULL, 系统将自动分配一个
+ */
+struct RTP_INIT_UDPCLIENT_EX
+{
+    IRtpSessionObserver*         observer;
+    IProReactor*                 reactor;
+    char                         remoteIp[64];
+    unsigned short               remotePort;
+    char                         localIp[64];      /* = "" */
+    unsigned long                timeoutInSeconds; /* = 0 */
+    IRtpBucket*                  bucket;           /* = NULL */
+};
+
+/*
+ * rtp会话初始化参数
+ *
+ * observer         : 回调目标
+ * reactor          : 反应器
+ * localIp          : 要绑定的本地ip地址. 如果为"", 系统将使用0.0.0.0
+ * localPort        : 要绑定的本地端口号. 如果为0, 系统将随机分配一个
+ * timeoutInSeconds : 握手超时. 默认20秒
+ * bucket           : 流控桶. 如果为NULL, 系统将自动分配一个
+ */
+struct RTP_INIT_UDPSERVER_EX
+{
+    IRtpSessionObserver*         observer;
+    IProReactor*                 reactor;
+    char                         localIp[64];      /* = "" */
+    unsigned short               localPort;        /* = 0 */
+    unsigned long                timeoutInSeconds; /* = 0 */
+    IRtpBucket*                  bucket;           /* = NULL */
+};
+
+/*
+ * rtp会话初始化参数
+ *
+ * observer         : 回调目标
+ * reactor          : 反应器
+ * remoteIp         : 远端的ip地址或域名
+ * remotePort       : 远端的端口号
+ * password         : 会话口令
+ * localIp          : 要绑定的本地ip地址. 如果为"", 系统将使用0.0.0.0
+ * timeoutInSeconds : 握手超时. 默认20秒
+ * bucket           : 流控桶. 如果为NULL, 系统将自动分配一个
+ */
+struct RTP_INIT_TCPCLIENT_EX
+{
+    IRtpSessionObserver*         observer;
+    IProReactor*                 reactor;
+    char                         remoteIp[64];
+    unsigned short               remotePort;
+    char                         password[64];     /* = "" */
+    char                         localIp[64];      /* = "" */
+    unsigned long                timeoutInSeconds; /* = 0 */
+    IRtpBucket*                  bucket;           /* = NULL */
+};
+
+/*
+ * rtp会话初始化参数
+ *
+ * observer   : 回调目标
+ * reactor    : 反应器
+ * sockId     : 套接字id. 来源于IRtpServiceObserver::OnAcceptSession(...)
+ * unixSocket : 是否unix套接字
+ * bucket     : 流控桶. 如果为NULL, 系统将自动分配一个
+ */
+struct RTP_INIT_TCPSERVER_EX
+{
+    IRtpSessionObserver*         observer;
+    IProReactor*                 reactor;
+    PRO_INT64                    sockId;
+    bool                         unixSocket;
+    IRtpBucket*                  bucket;           /* = NULL */
+};
+
+/*
+ * rtp会话初始化参数
+ *
+ * observer         : 回调目标
+ * reactor          : 反应器
+ * sslConfig        : ssl配置
+ * sslSni           : ssl服务名. 如果有效,则参与认证服务端证书
+ * remoteIp         : 远端的ip地址或域名
+ * remotePort       : 远端的端口号
+ * password         : 会话口令
+ * localIp          : 要绑定的本地ip地址. 如果为"", 系统将使用0.0.0.0
+ * timeoutInSeconds : 握手超时. 默认20秒
+ * bucket           : 流控桶. 如果为NULL, 系统将自动分配一个
+ *
+ * 说明: sslConfig指定的对象必须在会话的生命周期内一直有效
+ */
+struct RTP_INIT_SSLCLIENT_EX
+{
+    IRtpSessionObserver*         observer;
+    IProReactor*                 reactor;
+    const PRO_SSL_CLIENT_CONFIG* sslConfig;
+    char                         sslSni[64];       /* = "" */
+    char                         remoteIp[64];
+    unsigned short               remotePort;
+    char                         password[64];     /* = "" */
+    char                         localIp[64];      /* = "" */
+    unsigned long                timeoutInSeconds; /* = 0 */
+    IRtpBucket*                  bucket;           /* = NULL */
+};
+
+/*
+ * rtp会话初始化参数
+ *
+ * observer   : 回调目标
+ * reactor    : 反应器
+ * sslCtx     : ssl上下文
+ * sockId     : 套接字id. 来源于IRtpServiceObserver::OnAcceptSession(...)
+ * unixSocket : 是否unix套接字
+ * bucket     : 流控桶. 如果为NULL, 系统将自动分配一个
+ *
+ * 说明: 如果创建成功,会话将成为(sslCtx, sockId)的属主;否则,调用者应该
+ *       释放(sslCtx, sockId)对应的资源
+ */
+struct RTP_INIT_SSLSERVER_EX
+{
+    IRtpSessionObserver*         observer;
+    IProReactor*                 reactor;
+    PRO_SSL_CTX*                 sslCtx;
+    PRO_INT64                    sockId;
+    bool                         unixSocket;
+    IRtpBucket*                  bucket;           /* = NULL */
+};
+
+/*
+ * rtp会话初始化参数
+ *
+ * observer  : 回调目标
+ * reactor   : 反应器
+ * mcastIp   : 要绑定的多播地址
+ * mcastPort : 要绑定的多播端口号. 如果为0, 系统将随机分配一个
+ * localIp   : 要绑定的本地ip地址. 如果为"", 系统将使用0.0.0.0
+ * bucket    : 流控桶. 如果为NULL, 系统将自动分配一个
+ *
+ * 说明: 合法的多播地址为[224.0.0.0 ~ 239.255.255.255],
+ *       推荐的多播地址为[224.0.1.0 ~ 238.255.255.255],
+ *       RFC-1112(IGMPv1), RFC-2236(IGMPv2), RFC-3376(IGMPv3)
+ */
+struct RTP_INIT_MCAST
+{
+    IRtpSessionObserver*         observer;
+    IProReactor*                 reactor;
+    char                         mcastIp[64];
+    unsigned short               mcastPort;        /* = 0 */
+    char                         localIp[64];      /* = "" */
+    IRtpBucket*                  bucket;           /* = NULL */
+};
+
+/*
+ * rtp会话初始化参数
+ *
+ * observer  : 回调目标
+ * reactor   : 反应器
+ * mcastIp   : 要绑定的多播地址
+ * mcastPort : 要绑定的多播端口号. 如果为0, 系统将随机分配一个
+ * localIp   : 要绑定的本地ip地址. 如果为"", 系统将使用0.0.0.0
+ * bucket    : 流控桶. 如果为NULL, 系统将自动分配一个
+ *
+ * 说明: 合法的多播地址为[224.0.0.0 ~ 239.255.255.255],
+ *       推荐的多播地址为[224.0.1.0 ~ 238.255.255.255],
+ *       RFC-1112(IGMPv1), RFC-2236(IGMPv2), RFC-3376(IGMPv3)
+ */
+struct RTP_INIT_MCAST_EX
+{
+    IRtpSessionObserver*         observer;
+    IProReactor*                 reactor;
+    char                         mcastIp[64];
+    unsigned short               mcastPort;        /* = 0 */
+    char                         localIp[64];      /* = "" */
+    IRtpBucket*                  bucket;           /* = NULL */
+};
+
+/*
+ * rtp会话初始化参数公共部分
+ */
+struct RTP_INIT_COMMON
+{
+    IRtpSessionObserver*         observer;
+    IProReactor*                 reactor;
+};
+
+/*
+ * rtp会话初始化参数集合
+ */
+struct RTP_INIT_ARGS
+{
+    union
+    {
+        RTP_INIT_UDPCLIENT       udpclient;
+        RTP_INIT_UDPSERVER       udpserver;
+        RTP_INIT_TCPCLIENT       tcpclient;
+        RTP_INIT_TCPSERVER       tcpserver;
+        RTP_INIT_UDPCLIENT_EX    udpclientEx;
+        RTP_INIT_UDPSERVER_EX    udpserverEx;
+        RTP_INIT_TCPCLIENT_EX    tcpclientEx;
+        RTP_INIT_TCPSERVER_EX    tcpserverEx;
+        RTP_INIT_SSLCLIENT_EX    sslclientEx;
+        RTP_INIT_SSLSERVER_EX    sslserverEx;
+        RTP_INIT_MCAST           mcast;
+        RTP_INIT_MCAST_EX        mcastEx;
+        RTP_INIT_COMMON          comm;
+    };
 };
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
 /*
- * rtp packet
- *
- * please refer to "pro_util/pro_reorder.cpp"
+ * rtp包
  */
 #if !defined(____IRtpPacket____)
 #define ____IRtpPacket____
@@ -249,6 +550,73 @@ public:
     virtual PRO_INT64 PRO_CALLTYPE GetTick() const = 0;
 };
 #endif /* ____IRtpPacket____ */
+
+/*
+ * rtp流控桶
+ */
+class IRtpBucket
+{
+public:
+
+    virtual void PRO_CALLTYPE Destroy() = 0;
+
+    virtual unsigned long PRO_CALLTYPE GetTotalBytes() const = 0;
+
+    virtual IRtpPacket* PRO_CALLTYPE GetFront() = 0;
+
+    virtual bool PRO_CALLTYPE PushBackAddRef(IRtpPacket* packet) = 0;
+
+    virtual void PRO_CALLTYPE PopFrontRelease(IRtpPacket* packet) = 0;
+
+    virtual void PRO_CALLTYPE Reset() = 0;
+
+    virtual void PRO_CALLTYPE SetRedline(
+        unsigned long redlineBytes,  /* = 0 */
+        unsigned long redlineFrames  /* = 0 */
+        ) = 0;
+
+    virtual void PRO_CALLTYPE GetRedline(
+        unsigned long* redlineBytes, /* = NULL */
+        unsigned long* redlineFrames /* = NULL */
+        ) const = 0;
+
+    virtual void PRO_CALLTYPE GetFlowctrlInfo(
+        float*         inFrameRate,  /* = NULL */
+        float*         inBitRate,    /* = NULL */
+        float*         outFrameRate, /* = NULL */
+        float*         outBitRate,   /* = NULL */
+        unsigned long* cachedBytes,  /* = NULL */
+        unsigned long* cachedFrames  /* = NULL */
+        ) const = 0;
+
+    virtual void PRO_CALLTYPE ResetFlowctrlInfo() = 0;
+};
+
+/*
+ * rtp重排序器
+ */
+class IRtpReorder
+{
+public:
+
+    virtual void PRO_CALLTYPE SetMaxPacketCount(
+        unsigned char maxPacketCount              /* = 5 */
+        ) = 0;
+
+    virtual void PRO_CALLTYPE SetMaxWaitingDuration(
+        unsigned char maxWaitingDurationInSeconds /* = 1 */
+        ) = 0;
+
+    virtual void PRO_CALLTYPE SetMaxBrokenDuration(
+        unsigned char maxBrokenDurationInSeconds  /* = 10 */
+        ) = 0;
+
+    virtual void PRO_CALLTYPE PushBack(IRtpPacket* packet) = 0;
+
+    virtual IRtpPacket* PRO_CALLTYPE PopFront() = 0;
+
+    virtual void PRO_CALLTYPE Reset() = 0;
+};
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -376,7 +744,7 @@ public:
     /*
      * 直接发送rtp包
      *
-     * 如果返回false,表示发送池已满,上层应该缓冲数据以待
+     * 如果返回false, 表示发送池已满,上层应该缓冲数据以待
      * OnSendSession(...)回调拉取
      */
     virtual bool PRO_CALLTYPE SendPacket(IRtpPacket* packet) = 0;
@@ -384,7 +752,7 @@ public:
     /*
      * 通过定时器平滑发送rtp包(for CRtpSessionWrapper only)
      *
-     * sendDurationMs为平滑周期.默认1毫秒
+     * sendDurationMs为平滑周期. 默认1毫秒
      */
     virtual bool PRO_CALLTYPE SendPacketByTimer(
         IRtpPacket*   packet,
@@ -530,7 +898,7 @@ public:
     virtual void PRO_CALLTYPE OnCloseSession(
         IRtpSession* session,
         long         errorCode,   /* 系统错误码 */
-        long         sslCode,     /* ssl错误码.参见"mbedtls/error.h, ssl.h, x509.h, ..." */
+        long         sslCode,     /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
         bool         tcpConnected /* tcp连接是否已经建立 */
         ) = 0;
 };
@@ -583,7 +951,7 @@ ProRtpVersion(unsigned char* major,  /* = NULL */
  *
  * 说明: 调用者应该继续初始化rtp包的头部字段
  *
- *       如果packMode为RTP_EPM_DEFAULT或RTP_EPM_TCP2,那么payloadSize最多
+ *       如果packMode为RTP_EPM_DEFAULT或RTP_EPM_TCP2, 那么payloadSize最多
  *       (1024 * 63)字节
  */
 PRO_RTP_API
@@ -606,7 +974,7 @@ CreateRtpPacket(const void*       payloadBuffer,
  *       例如,视频编码器可以通过IRtpPacket::GetPayloadBuffer(...)得到媒体
  *       数据指针,然后直接进行媒体数据的初始化等操作
  *
- *       如果packMode为RTP_EPM_DEFAULT或RTP_EPM_TCP2,那么payloadSize最多
+ *       如果packMode为RTP_EPM_DEFAULT或RTP_EPM_TCP2, 那么payloadSize最多
  *       (1024 * 63)字节
  */
 PRO_RTP_API
@@ -675,7 +1043,7 @@ FindRtpStreamFromPacket(const IRtpPacket* packet,
  *
  * 返回值: 无
  *
- * 说明: 默认的端口号分配范围为[3000 ~ 5999].偶数开始
+ * 说明: 默认的端口号分配范围为[3000 ~ 5999]
  */
 PRO_RTP_API
 void
@@ -696,7 +1064,7 @@ SetRtpPortRange(unsigned short minUdpPort,
  *
  * 返回值: 无
  *
- * 说明: 默认的端口号分配范围为[3000 ~ 5999].偶数开始
+ * 说明: 默认的端口号分配范围为[3000 ~ 5999]
  */
 PRO_RTP_API
 void
@@ -711,7 +1079,7 @@ GetRtpPortRange(unsigned short* minUdpPort,  /* = NULL */
  *
  * 参数: 无
  *
- * 返回值: udp端口号.[偶数]
+ * 返回值: udp端口号. [偶数]
  *
  * 说明: 返回的端口号不一定空闲,应该多次分配尝试
  */
@@ -725,7 +1093,7 @@ AllocRtpUdpPort();
  *
  * 参数: 无
  *
- * 返回值: tcp端口号.[偶数]
+ * 返回值: tcp端口号. [偶数]
  *
  * 说明: 返回的端口号不一定空闲,应该多次分配尝试
  */
@@ -738,11 +1106,11 @@ AllocRtpTcpPort();
  * 功能: 设置会话的保活超时
  *
  * 参数:
- * keepaliveInSeconds : 保活超时.默认60秒
+ * keepaliveInSeconds : 保活超时. 默认60秒
  *
  * 返回值: 无
  *
- * 说明: 配合reactor的心跳定时器使用.保活超时应该大于心跳周期的2倍
+ * 说明: 配合reactor的心跳定时器使用. 保活超时应该大于心跳周期的2倍
  */
 PRO_RTP_API
 void
@@ -754,9 +1122,9 @@ SetRtpKeepaliveTimeout(unsigned long keepaliveInSeconds); /* = 60 */
  *
  * 参数: 无
  *
- * 返回值: 保活超时.默认60秒
+ * 返回值: 保活超时. 默认60秒
  *
- * 说明: 配合reactor的心跳定时器使用.保活超时应该大于心跳周期的2倍
+ * 说明: 配合reactor的心跳定时器使用. 保活超时应该大于心跳周期的2倍
  */
 PRO_RTP_API
 unsigned long
@@ -767,7 +1135,7 @@ GetRtpKeepaliveTimeout();
  * 功能: 设置会话的流控时间窗
  *
  * 参数:
- * flowctrlInSeconds : 流控时间窗.默认1秒
+ * flowctrlInSeconds : 流控时间窗. 默认1秒
  *
  * 返回值: 无
  *
@@ -783,7 +1151,7 @@ SetRtpFlowctrlTimeSpan(unsigned long flowctrlInSeconds); /* = 1 */
  *
  * 参数: 无
  *
- * 返回值: 流控时间窗.默认1秒
+ * 返回值: 流控时间窗. 默认1秒
  *
  * 说明: 无
  */
@@ -796,7 +1164,7 @@ GetRtpFlowctrlTimeSpan();
  * 功能: 设置会话的统计时间窗
  *
  * 参数:
- * statInSeconds : 统计时间窗.默认5秒
+ * statInSeconds : 统计时间窗. 默认5秒
  *
  * 返回值: 无
  *
@@ -812,7 +1180,7 @@ SetRtpStatTimeSpan(unsigned long statInSeconds); /* = 5 */
  *
  * 参数: 无
  *
- * 返回值: 统计时间窗.默认5秒
+ * 返回值: 统计时间窗. 默认5秒
  *
  * 说明: 无
  */
@@ -826,9 +1194,9 @@ GetRtpStatTimeSpan();
  *
  * 参数:
  * mmType          : 媒体类型
- * sockBufSizeRecv : 底层套接字的系统接收缓冲区字节数.默认(1024 * 56)
- * sockBufSizeSend : 底层套接字的系统发送缓冲区字节数.默认(1024 * 56)
- * recvPoolSize    : 底层接收池的字节数.默认(1024 * 65)
+ * sockBufSizeRecv : 底层套接字的系统接收缓冲区字节数. 默认(1024 * 56)
+ * sockBufSizeSend : 底层套接字的系统发送缓冲区字节数. 默认(1024 * 56)
+ * recvPoolSize    : 底层接收池的字节数. 默认(1024 * 65)
  *
  * 返回值: 无
  *
@@ -847,9 +1215,9 @@ SetRtpUdpSocketParams(RTP_MM_TYPE   mmType,
  *
  * 参数:
  * mmType          : 媒体类型
- * sockBufSizeRecv : 返回的底层套接字的系统接收缓冲区字节数.默认(1024 * 56)
- * sockBufSizeSend : 返回的底层套接字的系统发送缓冲区字节数.默认(1024 * 56)
- * recvPoolSize    : 返回的底层接收池的字节数.默认(1024 * 65)
+ * sockBufSizeRecv : 返回的底层套接字的系统接收缓冲区字节数. 默认(1024 * 56)
+ * sockBufSizeSend : 返回的底层套接字的系统发送缓冲区字节数. 默认(1024 * 56)
+ * recvPoolSize    : 返回的底层接收池的字节数. 默认(1024 * 65)
  *
  * 返回值: 无
  *
@@ -868,9 +1236,9 @@ GetRtpUdpSocketParams(RTP_MM_TYPE    mmType,
  *
  * 参数:
  * mmType          : 媒体类型
- * sockBufSizeRecv : 底层套接字的系统接收缓冲区字节数.默认(1024 * 56)
- * sockBufSizeSend : 底层套接字的系统发送缓冲区字节数.默认(1024 * 8)
- * recvPoolSize    : 底层接收池的字节数.默认(1024 * 65)
+ * sockBufSizeRecv : 底层套接字的系统接收缓冲区字节数. 默认(1024 * 56)
+ * sockBufSizeSend : 底层套接字的系统发送缓冲区字节数. 默认(1024 * 8)
+ * recvPoolSize    : 底层接收池的字节数. 默认(1024 * 65)
  *
  * 返回值: 无
  *
@@ -889,9 +1257,9 @@ SetRtpTcpSocketParams(RTP_MM_TYPE   mmType,
  *
  * 参数:
  * mmType          : 媒体类型
- * sockBufSizeRecv : 返回的底层套接字的系统接收缓冲区字节数.默认(1024 * 56)
- * sockBufSizeSend : 返回的底层套接字的系统发送缓冲区字节数.默认(1024 * 8)
- * recvPoolSize    : 返回的底层接收池的字节数.默认(1024 * 65)
+ * sockBufSizeRecv : 返回的底层套接字的系统接收缓冲区字节数. 默认(1024 * 56)
+ * sockBufSizeSend : 返回的底层套接字的系统发送缓冲区字节数. 默认(1024 * 8)
+ * recvPoolSize    : 返回的底层接收池的字节数. 默认(1024 * 65)
  *
  * 返回值: 无
  *
@@ -909,12 +1277,12 @@ GetRtpTcpSocketParams(RTP_MM_TYPE    mmType,
  * 功能: 创建一个rtp服务
  *
  * 参数:
- * sslConfig        : ssl配置.可以为NULL
+ * sslConfig        : ssl配置. 可以为NULL
  * observer         : 回调目标
  * reactor          : 反应器
  * mmType           : 服务的媒体类型
- * serviceHubPort   : 服务hub监听的端口号
- * timeoutInSeconds : 握手超时.默认10秒
+ * serviceHubPort   : 服务hub的端口号
+ * timeoutInSeconds : 握手超时. 默认10秒
  *
  * 返回值: rtp服务对象或NULL
  *
@@ -965,329 +1333,29 @@ CheckRtpServiceData(PRO_UINT64  serviceNonce,
                     const char  clientPasswordHash[32]);
 
 /*
- * 功能: 创建一个RTP_ST_UDPCLIENT类型的会话
+ * 功能: 创建一个rtp会话包装
  *
  * 参数:
- * observer  : 回调目标
- * reactor   : 反应器
- * localInfo : 会话信息
- * localIp   : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * localPort : 要绑定的本地端口号.[偶数].如果为0,系统将随机分配一个端口号
+ * sessionType : 会话类型
+ * initArgs    : 会话初始化参数
+ * localInfo   : 会话信息
  *
- * 返回值: 会话对象或NULL
+ * 返回值: 会话包装对象或NULL
  *
- * 说明: 可以使用IRtpSession::GetLocalPort(...)获取本地端口号
+ * 说明: 会话包装对象包含流控策略
  */
 PRO_RTP_API
 IRtpSession*
 PRO_CALLTYPE
-CreateRtpSessionUdpclient(IRtpSessionObserver*    observer,
-                          IProReactor*            reactor,
-                          const RTP_SESSION_INFO* localInfo,
-                          const char*             localIp   = NULL,
-                          unsigned short          localPort = 0);
+CreateRtpSessionWrapper(RTP_SESSION_TYPE        sessionType,
+                        const RTP_INIT_ARGS*    initArgs,
+                        const RTP_SESSION_INFO* localInfo);
 
 /*
- * 功能: 创建一个RTP_ST_UDPSERVER类型的会话
+ * 功能: 删除一个rtp会话包装
  *
  * 参数:
- * observer  : 回调目标
- * reactor   : 反应器
- * localInfo : 会话信息
- * localIp   : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * localPort : 要绑定的本地端口号.[偶数].如果为0,系统将随机分配一个端口号
- *
- * 返回值: 会话对象或NULL
- *
- * 说明: 可以使用IRtpSession::GetLocalPort(...)获取本地端口号
- */
-PRO_RTP_API
-IRtpSession*
-PRO_CALLTYPE
-CreateRtpSessionUdpserver(IRtpSessionObserver*    observer,
-                          IProReactor*            reactor,
-                          const RTP_SESSION_INFO* localInfo,
-                          const char*             localIp   = NULL,
-                          unsigned short          localPort = 0);
-
-/*
- * 功能: 创建一个RTP_ST_TCPCLIENT类型的会话
- *
- * 参数:
- * observer         : 回调目标
- * reactor          : 反应器
- * localInfo        : 会话信息
- * remoteIp         : 远端的ip地址或域名
- * remotePort       : 远端的端口号
- * localIp          : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * timeoutInSeconds : 握手超时.默认20秒
- *
- * 返回值: 会话对象或NULL
- *
- * 说明: 无
- */
-PRO_RTP_API
-IRtpSession*
-PRO_CALLTYPE
-CreateRtpSessionTcpclient(IRtpSessionObserver*    observer,
-                          IProReactor*            reactor,
-                          const RTP_SESSION_INFO* localInfo,
-                          const char*             remoteIp,
-                          unsigned short          remotePort,
-                          const char*             localIp          = NULL,
-                          unsigned long           timeoutInSeconds = 0);
-
-/*
- * 功能: 创建一个RTP_ST_TCPSERVER类型的会话
- *
- * 参数:
- * observer         : 回调目标
- * reactor          : 反应器
- * localInfo        : 会话信息
- * localIp          : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * localPort        : 要绑定的本地端口号.[偶数].如果为0,系统将随机分配一个端口号
- * timeoutInSeconds : 握手超时.默认20秒
- *
- * 返回值: 会话对象或NULL
- *
- * 说明: 可以使用IRtpSession::GetLocalPort(...)获取本地端口号
- */
-PRO_RTP_API
-IRtpSession*
-PRO_CALLTYPE
-CreateRtpSessionTcpserver(IRtpSessionObserver*    observer,
-                          IProReactor*            reactor,
-                          const RTP_SESSION_INFO* localInfo,
-                          const char*             localIp          = NULL,
-                          unsigned short          localPort        = 0,
-                          unsigned long           timeoutInSeconds = 0);
-
-/*
- * 功能: 创建一个RTP_ST_UDPCLIENT_EX类型的会话
- *
- * 参数:
- * observer         : 回调目标
- * reactor          : 反应器
- * localInfo        : 会话信息
- * remoteIp         : 远端的ip地址或域名
- * remotePort       : 远端的端口号
- * localIp          : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * timeoutInSeconds : 握手超时.默认20秒
- *
- * 返回值: 会话对象或NULL
- *
- * 说明: 无
- */
-PRO_RTP_API
-IRtpSession*
-PRO_CALLTYPE
-CreateRtpSessionUdpclientEx(IRtpSessionObserver*    observer,
-                            IProReactor*            reactor,
-                            const RTP_SESSION_INFO* localInfo,
-                            const char*             remoteIp,
-                            unsigned short          remotePort,
-                            const char*             localIp          = NULL,
-                            unsigned long           timeoutInSeconds = 0);
-
-/*
- * 功能: 创建一个RTP_ST_UDPSERVER_EX类型的会话
- *
- * 参数:
- * observer         : 回调目标
- * reactor          : 反应器
- * localInfo        : 会话信息
- * localIp          : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * localPort        : 要绑定的本地端口号.如果为0,系统将随机分配一个端口号
- * timeoutInSeconds : 握手超时.默认20秒
- *
- * 返回值: 会话对象或NULL
- *
- * 说明: 可以使用IRtpSession::GetLocalPort(...)获取本地端口号
- */
-PRO_RTP_API
-IRtpSession*
-PRO_CALLTYPE
-CreateRtpSessionUdpserverEx(IRtpSessionObserver*    observer,
-                            IProReactor*            reactor,
-                            const RTP_SESSION_INFO* localInfo,
-                            const char*             localIp          = NULL,
-                            unsigned short          localPort        = 0,
-                            unsigned long           timeoutInSeconds = 0);
-
-/*
- * 功能: 创建一个RTP_ST_TCPCLIENT_EX类型的会话
- *
- * 参数:
- * observer         : 回调目标
- * reactor          : 反应器
- * localInfo        : 会话信息
- * remoteIp         : 远端的ip地址或域名
- * remotePort       : 远端的端口号
- * password         : 会话口令
- * localIp          : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * timeoutInSeconds : 握手超时.默认20秒
- *
- * 返回值: 会话对象或NULL
- *
- * 说明: 无
- */
-PRO_RTP_API
-IRtpSession*
-PRO_CALLTYPE
-CreateRtpSessionTcpclientEx(IRtpSessionObserver*    observer,
-                            IProReactor*            reactor,
-                            const RTP_SESSION_INFO* localInfo,
-                            const char*             remoteIp,
-                            unsigned short          remotePort,
-                            const char*             password         = NULL,
-                            const char*             localIp          = NULL,
-                            unsigned long           timeoutInSeconds = 0);
-
-/*
- * 功能: 创建一个RTP_ST_TCPSERVER_EX类型的会话
- *
- * 参数:
- * observer   : 回调目标
- * reactor    : 反应器
- * localInfo  : 会话信息.根据IRtpServiceObserver::OnAcceptSession(...)的remoteInfo构造
- * sockId     : 套接字id.来源于IRtpServiceObserver::OnAcceptSession(...)
- * unixSocket : 是否unix套接字
- *
- * 返回值: 会话对象或NULL
- *
- * 说明: 无
- */
-PRO_RTP_API
-IRtpSession*
-PRO_CALLTYPE
-CreateRtpSessionTcpserverEx(IRtpSessionObserver*    observer,
-                            IProReactor*            reactor,
-                            const RTP_SESSION_INFO* localInfo,
-                            PRO_INT64               sockId,
-                            bool                    unixSocket);
-
-/*
- * 功能: 创建一个RTP_ST_SSLCLIENT_EX类型的会话
- *
- * 参数:
- * observer         : 回调目标
- * reactor          : 反应器
- * localInfo        : 会话信息
- * sslConfig        : ssl配置
- * sslSni           : ssl服务名.如果有效,则参与认证服务端证书
- * remoteIp         : 远端的ip地址或域名
- * remotePort       : 远端的端口号
- * password         : 会话口令
- * localIp          : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * timeoutInSeconds : 握手超时.默认20秒
- *
- * 返回值: 会话对象或NULL
- *
- * 说明: sslConfig指定的对象必须在会话的生命周期内一直有效
- */
-PRO_RTP_API
-IRtpSession*
-PRO_CALLTYPE
-CreateRtpSessionSslclientEx(IRtpSessionObserver*         observer,
-                            IProReactor*                 reactor,
-                            const RTP_SESSION_INFO*      localInfo,
-                            const PRO_SSL_CLIENT_CONFIG* sslConfig,
-                            const char*                  sslSni, /* = NULL */
-                            const char*                  remoteIp,
-                            unsigned short               remotePort,
-                            const char*                  password         = NULL,
-                            const char*                  localIp          = NULL,
-                            unsigned long                timeoutInSeconds = 0);
-
-/*
- * 功能: 创建一个RTP_ST_SSLSERVER_EX类型的会话
- *
- * 参数:
- * observer   : 回调目标
- * reactor    : 反应器
- * localInfo  : 会话信息.根据IRtpServiceObserver::OnAcceptSession(...)的remoteInfo构造
- * sslCtx     : ssl上下文
- * sockId     : 套接字id.来源于IRtpServiceObserver::OnAcceptSession(...)
- * unixSocket : 是否unix套接字
- *
- * 返回值: 会话对象或NULL
- *
- * 说明: 如果创建成功,会话将成为(sslCtx, sockId)的属主;否则,调用者应该
- *       释放(sslCtx, sockId)对应的资源
- */
-PRO_RTP_API
-IRtpSession*
-PRO_CALLTYPE
-CreateRtpSessionSslserverEx(IRtpSessionObserver*    observer,
-                            IProReactor*            reactor,
-                            const RTP_SESSION_INFO* localInfo,
-                            PRO_SSL_CTX*            sslCtx,
-                            PRO_INT64               sockId,
-                            bool                    unixSocket);
-
-/*
- * 功能: 创建一个RTP_ST_MCAST类型的会话
- *
- * 参数:
- * observer  : 回调目标
- * reactor   : 反应器
- * localInfo : 会话信息
- * mcastIp   : 要绑定的多播地址
- * mcastPort : 要绑定的多播端口号.[偶数].如果为0,系统将随机分配一个端口号
- * localIp   : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- *
- * 返回值: 会话对象或NULL
- *
- * 说明: 合法的多播地址为[224.0.0.0 ~ 239.255.255.255],
- *       推荐的多播地址为[224.0.1.0 ~ 238.255.255.255],
- *       RFC-1112(IGMPv1), RFC-2236(IGMPv2), RFC-3376(IGMPv3)
- *
- *       可以使用IRtpSession::GetLocalPort(...)获取多播端口号
- */
-PRO_RTP_API
-IRtpSession*
-PRO_CALLTYPE
-CreateRtpSessionMcast(IRtpSessionObserver*    observer,
-                      IProReactor*            reactor,
-                      const RTP_SESSION_INFO* localInfo,
-                      const char*             mcastIp,
-                      unsigned short          mcastPort = 0,
-                      const char*             localIp   = NULL);
-
-/*
- * 功能: 创建一个RTP_ST_MCAST_EX类型的会话
- *
- * 参数:
- * observer  : 回调目标
- * reactor   : 反应器
- * localInfo : 会话信息
- * mcastIp   : 要绑定的多播地址
- * mcastPort : 要绑定的多播端口号.如果为0,系统将随机分配一个端口号
- * localIp   : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- *
- * 返回值: 会话对象或NULL
- *
- * 说明: 合法的多播地址为[224.0.0.0 ~ 239.255.255.255],
- *       推荐的多播地址为[224.0.1.0 ~ 238.255.255.255],
- *       RFC-1112(IGMPv1), RFC-2236(IGMPv2), RFC-3376(IGMPv3)
- *
- *       可以使用IRtpSession::GetLocalPort(...)获取多播端口号
- */
-PRO_RTP_API
-IRtpSession*
-PRO_CALLTYPE
-CreateRtpSessionMcastEx(IRtpSessionObserver*    observer,
-                        IProReactor*            reactor,
-                        const RTP_SESSION_INFO* localInfo,
-                        const char*             mcastIp,
-                        unsigned short          mcastPort = 0,
-                        const char*             localIp   = NULL);
-
-/*
- * 功能: 删除一个会话
- *
- * 参数:
- * session : 会话对象
+ * sessionWrapper : 会话包装对象
  *
  * 返回值: 无
  *
@@ -1296,7 +1364,78 @@ CreateRtpSessionMcastEx(IRtpSessionObserver*    observer,
 PRO_RTP_API
 void
 PRO_CALLTYPE
-DeleteRtpSession(IRtpSession* session);
+DeleteRtpSessionWrapper(IRtpSession* sessionWrapper);
+
+/*
+ * 功能: 创建一个内部实现的基础类型的流控桶
+ *
+ * 参数: 无
+ *
+ * 返回值: 流控桶对象或NULL
+ *
+ * 说明: 流控桶的线程安全性由调用者负责
+ */
+PRO_RTP_API
+IRtpBucket*
+PRO_CALLTYPE
+CreateRtpBaseBucket();
+
+/*
+ * 功能: 创建一个内部实现的音频类型的流控桶
+ *
+ * 参数: 无
+ *
+ * 返回值: 流控桶对象或NULL
+ *
+ * 说明: 流控桶的线程安全性由调用者负责
+ */
+PRO_RTP_API
+IRtpBucket*
+PRO_CALLTYPE
+CreateRtpAudioBucket();
+
+/*
+ * 功能: 创建一个内部实现的视频类型的流控桶
+ *
+ * 参数: 无
+ *
+ * 返回值: 流控桶对象或NULL
+ *
+ * 说明: 流控桶的线程安全性由调用者负责
+ */
+PRO_RTP_API
+IRtpBucket*
+PRO_CALLTYPE
+CreateRtpVideoBucket();
+
+/*
+ * 功能: 创建一个重排序器
+ *
+ * 参数: 无
+ *
+ * 返回值: 重排序器对象或NULL
+ *
+ * 说明: 重排序器的线程安全性由调用者负责
+ */
+PRO_RTP_API
+IRtpReorder*
+PRO_CALLTYPE
+CreateRtpReorder();
+
+/*
+ * 功能: 删除一个重排序器
+ *
+ * 参数:
+ * reorder : 重排序器对象
+ *
+ * 返回值: 无
+ *
+ * 说明: 无
+ */
+PRO_RTP_API
+void
+PRO_CALLTYPE
+DeleteRtpReorder(IRtpReorder* reorder);
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -1305,4 +1444,4 @@ DeleteRtpSession(IRtpSession* session);
 }
 #endif
 
-#endif /* ____RTP_FRAMEWORK_H____ */
+#endif /* ____RTP_BASE_H____ */

@@ -19,8 +19,7 @@
 #if !defined(TEST_H)
 #define TEST_H
 
-#include "../pro_rtp/rtp_foundation.h"
-#include "../pro_rtp/rtp_framework.h"
+#include "../pro_rtp/rtp_base.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_shaper.h"

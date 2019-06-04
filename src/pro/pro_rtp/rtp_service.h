@@ -19,7 +19,7 @@
 #if !defined(RTP_SERVICE_H)
 #define RTP_SERVICE_H
 
-#include "rtp_framework.h"
+#include "rtp_base.h"
 #include "../pro_net/pro_net.h"
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_stl.h"

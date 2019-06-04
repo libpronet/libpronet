@@ -18,8 +18,7 @@
 
 #include "test.h"
 #include "../pro_net/pro_net.h"
-#include "../pro_rtp/rtp_foundation.h"
-#include "../pro_rtp/rtp_framework.h"
+#include "../pro_rtp/rtp_base.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_z.h"
 #include <cassert>
@@ -128,9 +127,9 @@ int main(int argc, char* argv[])
     {
         kbps = 0;
     }
-    if (kbps > 1024000)
+    if (kbps > 2048000)
     {
-        kbps = 1024000;
+        kbps = 2048000;
     }
 
     reactor = ProCreateReactor(THREAD_COUNT);

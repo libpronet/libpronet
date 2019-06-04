@@ -16,13 +16,11 @@
  * This file is part of LibProNet (http://www.libpro.org)
  */
 
-#include "rtp_foundation.h"
-#include "rtp_bucket.h"
-#include "rtp_framework.h"
+#include "rtp_msg.h"
+#include "rtp_base.h"
 #include "rtp_msg_c2s.h"
 #include "rtp_msg_client.h"
 #include "rtp_msg_server.h"
-#include "rtp_session_wrapper.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_z.h"
 
@@ -32,46 +30,6 @@ extern "C" {
 
 /////////////////////////////////////////////////////////////////////////////
 ////
-
-PRO_RTP_API
-IRtpSession*
-PRO_CALLTYPE
-CreateRtpSessionWrapper(RTP_SESSION_TYPE        sessionType,
-                        const RTP_INIT_ARGS*    initArgs,
-                        const RTP_SESSION_INFO* localInfo)
-{
-    ProRtpInit();
-
-    CRtpSessionWrapper* const sessionWrapper = CRtpSessionWrapper::CreateInstance(localInfo);
-    if (sessionWrapper == NULL)
-    {
-        return (NULL);
-    }
-
-    if (!sessionWrapper->Init(sessionType, initArgs))
-    {
-        sessionWrapper->Release();
-
-        return (NULL);
-    }
-
-    return (sessionWrapper);
-}
-
-PRO_RTP_API
-void
-PRO_CALLTYPE
-DeleteRtpSessionWrapper(IRtpSession* sessionWrapper)
-{
-    if (sessionWrapper == NULL)
-    {
-        return;
-    }
-
-    CRtpSessionWrapper* const p = (CRtpSessionWrapper*)sessionWrapper;
-    p->Fini();
-    p->Release();
-}
 
 PRO_RTP_API
 IRtpMsgClient*
@@ -219,36 +177,6 @@ DeleteRtpMsgC2s(IRtpMsgC2s* msgC2s)
     CRtpMsgC2s* const p = (CRtpMsgC2s*)msgC2s;
     p->Fini();
     p->Release();
-}
-
-PRO_RTP_API
-IRtpBucket*
-PRO_CALLTYPE
-CreateRtpBaseBucket()
-{
-    CRtpBucket* const bucket = new CRtpBucket;
-
-    return (bucket);
-}
-
-PRO_RTP_API
-IRtpBucket*
-PRO_CALLTYPE
-CreateRtpAudioBucket()
-{
-    CRtpAudioBucket* const bucket = new CRtpAudioBucket;
-
-    return (bucket);
-}
-
-PRO_RTP_API
-IRtpBucket*
-PRO_CALLTYPE
-CreateRtpVideoBucket()
-{
-    CRtpVideoBucket* const bucket = new CRtpVideoBucket;
-
-    return (bucket);
 }
 
 PRO_RTP_API

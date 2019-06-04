@@ -17,7 +17,7 @@
  */
 
 #include "rtp_service.h"
-#include "rtp_framework.h"
+#include "rtp_base.h"
 #include "rtp_packet.h"
 #include "../pro_net/pro_net.h"
 #include "../pro_util/pro_bsd_wrapper.h"

@@ -16,40 +16,41 @@
  * This file is part of LibProNet (http://www.libpro.org)
  */
 
-#if !defined(____PRO_REORDER_H____)
-#define ____PRO_REORDER_H____
+#if !defined(RTP_REORDER_H)
+#define RTP_REORDER_H
 
-#include "pro_a.h"
-#include "pro_memory_pool.h"
-#include "pro_stl.h"
-
-/////////////////////////////////////////////////////////////////////////////
-////
-
-class IRtpPacket;
+#include "rtp_base.h"
+#include "../pro_util/pro_memory_pool.h"
+#include "../pro_util/pro_stl.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-class CProReorder
+class CRtpReorder : public IRtpReorder
 {
 public:
 
-    CProReorder();
+    CRtpReorder();
 
-    ~CProReorder();
+    virtual ~CRtpReorder();
 
-    void SetMaxPacketCount(unsigned char maxPacketCount);                  /* = 5 */
+    virtual void PRO_CALLTYPE SetMaxPacketCount(
+        unsigned char maxPacketCount              /* = 5 */
+        );
 
-    void SetMaxWaitingDuration(unsigned char maxWaitingDurationInSeconds); /* = 1 */
+    virtual void PRO_CALLTYPE SetMaxWaitingDuration(
+        unsigned char maxWaitingDurationInSeconds /* = 1 */
+        );
 
-    void SetMaxBrokenDuration(unsigned char maxBrokenDurationInSeconds);   /* = 10 */
+    virtual void PRO_CALLTYPE SetMaxBrokenDuration(
+        unsigned char maxBrokenDurationInSeconds  /* = 10 */
+        );
 
-    void PushBack(IRtpPacket* packet);
+    virtual void PRO_CALLTYPE PushBack(IRtpPacket* packet);
 
-    IRtpPacket* PopFront();
+    virtual IRtpPacket* PRO_CALLTYPE PopFront();
 
-    void Reset();
+    virtual void PRO_CALLTYPE Reset();
 
 private:
 
@@ -66,4 +67,4 @@ private:
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#endif /* ____PRO_REORDER_H____ */
+#endif /* RTP_REORDER_H */

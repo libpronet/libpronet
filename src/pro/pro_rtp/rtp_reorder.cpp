@@ -16,12 +16,12 @@
  * This file is part of LibProNet (http://www.libpro.org)
  */
 
-#include "pro_a.h"
-#include "pro_reorder.h"
-#include "pro_memory_pool.h"
-#include "pro_stl.h"
-#include "pro_time_util.h"
-#include "pro_z.h"
+#include "rtp_reorder.h"
+#include "rtp_base.h"
+#include "../pro_util/pro_memory_pool.h"
+#include "../pro_util/pro_stl.h"
+#include "../pro_util/pro_time_util.h"
+#include "../pro_util/pro_z.h"
 #include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
@@ -32,87 +32,7 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if !defined(____RTP_FRAMEWORK_H____)
-#define RTP_MM_TYPE       unsigned char
-#define RTP_EXT_PACK_MODE unsigned char
-#endif
-
-/*
- * rtp packet
- *
- * please refer to "rtp_framework/rtp_framework.h"
- */
-#if !defined(____IRtpPacket____)
-#define ____IRtpPacket____
-class IRtpPacket
-{
-public:
-
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
-
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
-
-    virtual void PRO_CALLTYPE SetMarker(bool m) = 0;
-
-    virtual bool PRO_CALLTYPE GetMarker() const = 0;
-
-    virtual void PRO_CALLTYPE SetPayloadType(char pt) = 0;
-
-    virtual char PRO_CALLTYPE GetPayloadType() const = 0;
-
-    virtual void PRO_CALLTYPE SetSequence(PRO_UINT16 seq) = 0;
-
-    virtual PRO_UINT16 PRO_CALLTYPE GetSequence() const = 0;
-
-    virtual void PRO_CALLTYPE SetTimeStamp(PRO_UINT32 ts) = 0;
-
-    virtual PRO_UINT32 PRO_CALLTYPE GetTimeStamp() const = 0;
-
-    virtual void PRO_CALLTYPE SetSsrc(PRO_UINT32 ssrc) = 0;
-
-    virtual PRO_UINT32 PRO_CALLTYPE GetSsrc() const = 0;
-
-    virtual void PRO_CALLTYPE SetMmId(PRO_UINT32 mmId) = 0;
-
-    virtual PRO_UINT32 PRO_CALLTYPE GetMmId() const = 0;
-
-    virtual void PRO_CALLTYPE SetMmType(RTP_MM_TYPE mmType) = 0;
-
-    virtual RTP_MM_TYPE PRO_CALLTYPE GetMmType() const = 0;
-
-    virtual void PRO_CALLTYPE SetKeyFrame(bool keyFrame) = 0;
-
-    virtual bool PRO_CALLTYPE GetKeyFrame() const = 0;
-
-    virtual void PRO_CALLTYPE SetFirstPacketOfFrame(bool firstPacket) = 0;
-
-    virtual bool PRO_CALLTYPE GetFirstPacketOfFrame() const = 0;
-
-    virtual const void* PRO_CALLTYPE GetPayloadBuffer() const = 0;
-
-    virtual void* PRO_CALLTYPE GetPayloadBuffer() = 0;
-
-    virtual unsigned long PRO_CALLTYPE GetPayloadSize() const = 0;
-
-    virtual PRO_UINT16 PRO_CALLTYPE GetPayloadSize16() const = 0;
-
-    virtual RTP_EXT_PACK_MODE PRO_CALLTYPE GetPackMode() const = 0;
-
-    virtual void PRO_CALLTYPE SetTick(PRO_INT64 tick) = 0;
-
-    virtual PRO_INT64 PRO_CALLTYPE GetTick() const = 0;
-};
-#endif /* ____IRtpPacket____ */
-
-#if !defined(____RTP_FRAMEWORK_H____)
-#undef RTP_MM_TYPE
-#undef RTP_EXT_PACK_MODE
-#endif
-
-/////////////////////////////////////////////////////////////////////////////
-////
-
-CProReorder::CProReorder()
+CRtpReorder::CRtpReorder()
 {
     m_maxPacketCount     = 5;
     m_maxWaitingDuration = 1;
@@ -121,13 +41,14 @@ CProReorder::CProReorder()
     m_lastValidTick      = 0;
 }
 
-CProReorder::~CProReorder()
+CRtpReorder::~CRtpReorder()
 {
     Reset();
 }
 
 void
-CProReorder::SetMaxPacketCount(unsigned char maxPacketCount) /* = 5 */
+PRO_CALLTYPE
+CRtpReorder::SetMaxPacketCount(unsigned char maxPacketCount) /* = 5 */
 {
     assert(maxPacketCount > 0);
     if (maxPacketCount == 0)
@@ -139,7 +60,8 @@ CProReorder::SetMaxPacketCount(unsigned char maxPacketCount) /* = 5 */
 }
 
 void
-CProReorder::SetMaxWaitingDuration(unsigned char maxWaitingDurationInSeconds) /* = 1 */
+PRO_CALLTYPE
+CRtpReorder::SetMaxWaitingDuration(unsigned char maxWaitingDurationInSeconds) /* = 1 */
 {
     assert(maxWaitingDurationInSeconds > 0);
     if (maxWaitingDurationInSeconds == 0)
@@ -151,7 +73,8 @@ CProReorder::SetMaxWaitingDuration(unsigned char maxWaitingDurationInSeconds) /*
 }
 
 void
-CProReorder::SetMaxBrokenDuration(unsigned char maxBrokenDurationInSeconds) /* = 10 */
+PRO_CALLTYPE
+CRtpReorder::SetMaxBrokenDuration(unsigned char maxBrokenDurationInSeconds) /* = 10 */
 {
     assert(maxBrokenDurationInSeconds > 0);
     if (maxBrokenDurationInSeconds == 0)
@@ -163,7 +86,8 @@ CProReorder::SetMaxBrokenDuration(unsigned char maxBrokenDurationInSeconds) /* =
 }
 
 void
-CProReorder::PushBack(IRtpPacket* packet)
+PRO_CALLTYPE
+CRtpReorder::PushBack(IRtpPacket* packet)
 {
     assert(packet != NULL);
     if (packet == NULL)
@@ -293,7 +217,8 @@ CProReorder::PushBack(IRtpPacket* packet)
 }
 
 IRtpPacket*
-CProReorder::PopFront()
+PRO_CALLTYPE
+CRtpReorder::PopFront()
 {
     CProStlMap<PRO_INT64, IRtpPacket*>::iterator const itr = m_seq64ToPacket.begin();
     if (itr == m_seq64ToPacket.end())
@@ -322,7 +247,8 @@ CProReorder::PopFront()
 }
 
 void
-CProReorder::Reset()
+PRO_CALLTYPE
+CRtpReorder::Reset()
 {
     m_minSeq64      = -1;
     m_lastValidTick = 0;

@@ -23,7 +23,7 @@
 #if !defined(RTP_PACKET_H)
 #define RTP_PACKET_H
 
-#include "rtp_framework.h"
+#include "rtp_base.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
 

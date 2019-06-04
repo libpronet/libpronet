@@ -17,9 +17,8 @@
  */
 
 #include "rtp_bucket.h"
+#include "rtp_base.h"
 #include "rtp_flow_stat.h"
-#include "rtp_foundation.h"
-#include "rtp_framework.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_z.h"

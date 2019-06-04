@@ -23,10 +23,8 @@
 #if !defined(RTP_SESSION_WRAPPER_H)
 #define RTP_SESSION_WRAPPER_H
 
-#include "rtp_foundation.h"
-#include "rtp_framework.h"
+#include "rtp_base.h"
 #include "../pro_util/pro_ref_count.h"
-#include "../pro_util/pro_reorder.h"
 #include "../pro_util/pro_stat.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
@@ -200,7 +198,7 @@ private:
     PRO_INT64                 m_pushTick;
     CProStlDeque<IRtpPacket*> m_pushPackets;
 
-    CProReorder               m_reorderInput;
+    IRtpReorder*              m_reorderInput;
     mutable CProStatBitRate   m_statFrameRateInput;
     mutable CProStatBitRate   m_statFrameRateOutput;
     mutable CProStatBitRate   m_statBitRateInput;

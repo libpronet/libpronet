@@ -19,8 +19,8 @@
 #if !defined(MSG_SERVER_H)
 #define MSG_SERVER_H
 
-#include "../pro_rtp/rtp_foundation.h"
-#include "../pro_rtp/rtp_framework.h"
+#include "../pro_rtp/rtp_base.h"
+#include "../pro_rtp/rtp_msg.h"
 #include "../pro_util/pro_config_file.h"
 #include "../pro_util/pro_config_stream.h"
 #include "../pro_util/pro_memory_pool.h"

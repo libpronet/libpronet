@@ -18,8 +18,7 @@
 
 #include "test.h"
 #include "../pro_net/pro_net.h"
-#include "../pro_rtp/rtp_foundation.h"
-#include "../pro_rtp/rtp_framework.h"
+#include "../pro_rtp/rtp_base.h"
 #include "../pro_shared/pro_shared.h"
 #include "../pro_util/pro_bsd_wrapper.h"
 #include "../pro_util/pro_memory_pool.h"
@@ -40,8 +39,8 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define RECV_BUF_SIZE     (1024 * 1024)
-#define SEND_BUF_SIZE     (1024 * 1024)
+#define RECV_BUF_SIZE     (1024 * 1024 * 2)
+#define SEND_BUF_SIZE     (1024 * 1024 * 2)
 #define SEND_PACKET_SIZE  1024
 #define SEND_PAYLOAD_TYPE 109
 #define SEND_TIMER_MS     1

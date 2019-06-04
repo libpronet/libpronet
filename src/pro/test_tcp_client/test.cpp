@@ -295,8 +295,9 @@ CTest::SendMsg(const char* msg)
     }
 
 #if defined(WIN32)
-    const CProStlString msg2 = ProAnsiToUtf8(msg);
-    msg = msg2.c_str();
+    CProStlString tmp = "";
+    ProAnsiToUtf8(tmp, msg);
+    msg = tmp.c_str();
 #endif
 
     {

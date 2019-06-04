@@ -63,10 +63,10 @@
  * PMP-v1.0 (PRO Messaging Protocol version 1.0)
  */
 
-#if !defined(____RTP_FOUNDATION_H____)
-#define ____RTP_FOUNDATION_H____
+#if !defined(____RTP_MSG_H____)
+#define ____RTP_MSG_H____
 
-#include "rtp_framework.h"
+#include "rtp_base.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -74,226 +74,6 @@ extern "C" {
 
 /////////////////////////////////////////////////////////////////////////////
 ////
-
-class IRtpBucket;
-
-/*
- * 会话初始化参数
- *
- * 如果bucket为NULL,系统将自动分配一个bucket
- */
-struct RTP_INIT_UDPCLIENT
-{
-    IRtpSessionObserver*         observer;
-    IProReactor*                 reactor;
-    char                         localIp[64];      /* = "" */
-    unsigned short               localPort;        /* = 0 */
-    IRtpBucket*                  bucket;           /* = NULL */
-};
-
-/*
- * 会话初始化参数
- *
- * 如果bucket为NULL,系统将自动分配一个bucket
- */
-struct RTP_INIT_UDPSERVER
-{
-    IRtpSessionObserver*         observer;
-    IProReactor*                 reactor;
-    char                         localIp[64];      /* = "" */
-    unsigned short               localPort;        /* = 0 */
-    IRtpBucket*                  bucket;           /* = NULL */
-};
-
-/*
- * 会话初始化参数
- *
- * 如果bucket为NULL,系统将自动分配一个bucket
- */
-struct RTP_INIT_TCPCLIENT
-{
-    IRtpSessionObserver*         observer;
-    IProReactor*                 reactor;
-    char                         remoteIp[64];
-    unsigned short               remotePort;
-    char                         localIp[64];      /* = "" */
-    unsigned long                timeoutInSeconds; /* = 0 */
-    IRtpBucket*                  bucket;           /* = NULL */
-};
-
-/*
- * 会话初始化参数
- *
- * 如果bucket为NULL,系统将自动分配一个bucket
- */
-struct RTP_INIT_TCPSERVER
-{
-    IRtpSessionObserver*         observer;
-    IProReactor*                 reactor;
-    char                         localIp[64];      /* = "" */
-    unsigned short               localPort;        /* = 0 */
-    unsigned long                timeoutInSeconds; /* = 0 */
-    IRtpBucket*                  bucket;           /* = NULL */
-};
-
-/*
- * 会话初始化参数
- *
- * 如果bucket为NULL,系统将自动分配一个bucket
- */
-struct RTP_INIT_UDPCLIENT_EX
-{
-    IRtpSessionObserver*         observer;
-    IProReactor*                 reactor;
-    char                         remoteIp[64];
-    unsigned short               remotePort;
-    char                         localIp[64];      /* = "" */
-    unsigned long                timeoutInSeconds; /* = 0 */
-    IRtpBucket*                  bucket;           /* = NULL */
-};
-
-/*
- * 会话初始化参数
- *
- * 如果bucket为NULL,系统将自动分配一个bucket
- */
-struct RTP_INIT_UDPSERVER_EX
-{
-    IRtpSessionObserver*         observer;
-    IProReactor*                 reactor;
-    char                         localIp[64];      /* = "" */
-    unsigned short               localPort;        /* = 0 */
-    unsigned long                timeoutInSeconds; /* = 0 */
-    IRtpBucket*                  bucket;           /* = NULL */
-};
-
-/*
- * 会话初始化参数
- *
- * 如果bucket为NULL,系统将自动分配一个bucket
- */
-struct RTP_INIT_TCPCLIENT_EX
-{
-    IRtpSessionObserver*         observer;
-    IProReactor*                 reactor;
-    char                         remoteIp[64];
-    unsigned short               remotePort;
-    char                         password[64];     /* = "" */
-    char                         localIp[64];      /* = "" */
-    unsigned long                timeoutInSeconds; /* = 0 */
-    IRtpBucket*                  bucket;           /* = NULL */
-};
-
-/*
- * 会话初始化参数
- *
- * 如果bucket为NULL,系统将自动分配一个bucket
- */
-struct RTP_INIT_TCPSERVER_EX
-{
-    IRtpSessionObserver*         observer;
-    IProReactor*                 reactor;
-    PRO_INT64                    sockId;
-    bool                         unixSocket;
-    IRtpBucket*                  bucket;           /* = NULL */
-};
-
-/*
- * 会话初始化参数
- *
- * sslConfig指定的对象必须在会话的生命周期内一直有效;
- * 如果bucket为NULL,系统将自动分配一个bucket
- */
-struct RTP_INIT_SSLCLIENT_EX
-{
-    IRtpSessionObserver*         observer;
-    IProReactor*                 reactor;
-    const PRO_SSL_CLIENT_CONFIG* sslConfig;
-    char                         sslSni[64];       /* = "" */
-    char                         remoteIp[64];
-    unsigned short               remotePort;
-    char                         password[64];     /* = "" */
-    char                         localIp[64];      /* = "" */
-    unsigned long                timeoutInSeconds; /* = 0 */
-    IRtpBucket*                  bucket;           /* = NULL */
-};
-
-/*
- * 会话初始化参数
- *
- * 如果bucket为NULL,系统将自动分配一个bucket
- */
-struct RTP_INIT_SSLSERVER_EX
-{
-    IRtpSessionObserver*         observer;
-    IProReactor*                 reactor;
-    PRO_SSL_CTX*                 sslCtx;
-    PRO_INT64                    sockId;
-    bool                         unixSocket;
-    IRtpBucket*                  bucket;           /* = NULL */
-};
-
-/*
- * 会话初始化参数
- *
- * 如果bucket为NULL,系统将自动分配一个bucket
- */
-struct RTP_INIT_MCAST
-{
-    IRtpSessionObserver*         observer;
-    IProReactor*                 reactor;
-    char                         mcastIp[64];
-    unsigned short               mcastPort;        /* = 0 */
-    char                         localIp[64];      /* = "" */
-    IRtpBucket*                  bucket;           /* = NULL */
-};
-
-/*
- * 会话初始化参数
- *
- * 如果bucket为NULL,系统将自动分配一个bucket
- */
-struct RTP_INIT_MCAST_EX
-{
-    IRtpSessionObserver*         observer;
-    IProReactor*                 reactor;
-    char                         mcastIp[64];
-    unsigned short               mcastPort;        /* = 0 */
-    char                         localIp[64];      /* = "" */
-    IRtpBucket*                  bucket;           /* = NULL */
-};
-
-/*
- * 会话初始化参数
- */
-struct RTP_INIT_COMMON
-{
-    IRtpSessionObserver*         observer;
-    IProReactor*                 reactor;
-};
-
-/*
- * 会话初始化参数集合
- */
-struct RTP_INIT_ARGS
-{
-    union
-    {
-        RTP_INIT_UDPCLIENT       udpclient;
-        RTP_INIT_UDPSERVER       udpserver;
-        RTP_INIT_TCPCLIENT       tcpclient;
-        RTP_INIT_TCPSERVER       tcpserver;
-        RTP_INIT_UDPCLIENT_EX    udpclientEx;
-        RTP_INIT_UDPSERVER_EX    udpserverEx;
-        RTP_INIT_TCPCLIENT_EX    tcpclientEx;
-        RTP_INIT_TCPSERVER_EX    tcpserverEx;
-        RTP_INIT_SSLCLIENT_EX    sslclientEx;
-        RTP_INIT_SSLSERVER_EX    sslserverEx;
-        RTP_INIT_MCAST           mcast;
-        RTP_INIT_MCAST_EX        mcastEx;
-        RTP_INIT_COMMON          comm;
-    };
-};
 
 /*
  * 消息用户号. 1-2-1, 1-2-2, 1-3-1, 1-3-2, ...; 2-1-1, 2-1-2, 2-2-1, 2-2-2, ...
@@ -464,50 +244,6 @@ struct RTP_MSG_USER
     unsigned char userId4;
     unsigned char userId5;
     PRO_UINT16    instId;
-};
-
-/////////////////////////////////////////////////////////////////////////////
-////
-
-/*
- * rtp桶
- */
-class IRtpBucket
-{
-public:
-
-    virtual void PRO_CALLTYPE Destroy() = 0;
-
-    virtual unsigned long PRO_CALLTYPE GetTotalBytes() const = 0;
-
-    virtual IRtpPacket* PRO_CALLTYPE GetFront() = 0;
-
-    virtual bool PRO_CALLTYPE PushBackAddRef(IRtpPacket* packet) = 0;
-
-    virtual void PRO_CALLTYPE PopFrontRelease(IRtpPacket* packet) = 0;
-
-    virtual void PRO_CALLTYPE Reset() = 0;
-
-    virtual void PRO_CALLTYPE SetRedline(
-        unsigned long redlineBytes,  /* = 0 */
-        unsigned long redlineFrames  /* = 0 */
-        ) = 0;
-
-    virtual void PRO_CALLTYPE GetRedline(
-        unsigned long* redlineBytes, /* = NULL */
-        unsigned long* redlineFrames /* = NULL */
-        ) const = 0;
-
-    virtual void PRO_CALLTYPE GetFlowctrlInfo(
-        float*         inFrameRate,  /* = NULL */
-        float*         inBitRate,    /* = NULL */
-        float*         outFrameRate, /* = NULL */
-        float*         outBitRate,   /* = NULL */
-        unsigned long* cachedBytes,  /* = NULL */
-        unsigned long* cachedFrames  /* = NULL */
-        ) const = 0;
-
-    virtual void PRO_CALLTYPE ResetFlowctrlInfo() = 0;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -858,40 +594,6 @@ public:
 ////
 
 /*
- * 功能: 创建一个会话包装
- *
- * 参数:
- * sessionType : 会话类型
- * initArgs    : 会话初始化参数
- * localInfo   : 会话信息
- *
- * 返回值: 会话包装对象或NULL
- *
- * 说明: 会话包装对象包含流控策略
- */
-PRO_RTP_API
-IRtpSession*
-PRO_CALLTYPE
-CreateRtpSessionWrapper(RTP_SESSION_TYPE        sessionType,
-                        const RTP_INIT_ARGS*    initArgs,
-                        const RTP_SESSION_INFO* localInfo);
-
-/*
- * 功能: 删除一个会话包装
- *
- * 参数:
- * sessionWrapper : 会话包装对象
- *
- * 返回值: 无
- *
- * 说明: 无
- */
-PRO_RTP_API
-void
-PRO_CALLTYPE
-DeleteRtpSessionWrapper(IRtpSession* sessionWrapper);
-
-/*
  * 功能: 创建一个消息客户端
  *
  * 参数:
@@ -950,7 +652,7 @@ DeleteRtpMsgClient(IRtpMsgClient* msgClient);
  * mmType           : 消息媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
  * sslConfig        : ssl配置. NULL表示明文传输
  * sslForced        : 是否强制使用ssl传输. sslConfig为NULL时该参数忽略
- * serviceHubPort   : 服务hub监听的端口号
+ * serviceHubPort   : 服务hub的端口号
  * timeoutInSeconds : 握手超时.默认20秒
  *
  * 返回值: 消息服务器对象或NULL
@@ -1000,7 +702,7 @@ DeleteRtpMsgServer(IRtpMsgServer* msgServer);
  * uplinkTimeoutInSeconds : 级联的握手超时.默认20秒
  * localSslConfig         : 近端的ssl配置. NULL表示明文传输
  * localSslForced         : 近端是否强制使用ssl传输. localSslConfig为NULL时该参数忽略
- * localServiceHubPort    : 近端的服务hub监听的端口号
+ * localServiceHubPort    : 近端的服务hub的端口号
  * localTimeoutInSeconds  : 近端的握手超时.默认20秒
  *
  * 返回值: 消息c2s对象或NULL
@@ -1040,48 +742,6 @@ PRO_RTP_API
 void
 PRO_CALLTYPE
 DeleteRtpMsgC2s(IRtpMsgC2s* msgC2s);
-
-/*
- * 功能: 创建一个内部实现的基础类型的rtp桶
- *
- * 参数: 无
- *
- * 返回值: rtp桶对象或NULL
- *
- * 说明: rtp桶的线程安全性由调用者保证
- */
-PRO_RTP_API
-IRtpBucket*
-PRO_CALLTYPE
-CreateRtpBaseBucket();
-
-/*
- * 功能: 创建一个内部实现的音频类型的rtp桶
- *
- * 参数: 无
- *
- * 返回值: rtp桶对象或NULL
- *
- * 说明: rtp桶的线程安全性由调用者保证
- */
-PRO_RTP_API
-IRtpBucket*
-PRO_CALLTYPE
-CreateRtpAudioBucket();
-
-/*
- * 功能: 创建一个内部实现的视频类型的rtp桶
- *
- * 参数: 无
- *
- * 返回值: rtp桶对象或NULL
- *
- * 说明: rtp桶的线程安全性由调用者保证
- */
-PRO_RTP_API
-IRtpBucket*
-PRO_CALLTYPE
-CreateRtpVideoBucket();
 
 /*
  * 功能: 将RTP_MSG_USER结构转换为"cid-uid-iid"格式的串
@@ -1124,4 +784,4 @@ RtpMsgString2User(const char*   idString,
 }
 #endif
 
-#endif /* ____RTP_FOUNDATION_H____ */
+#endif /* ____RTP_MSG_H____ */

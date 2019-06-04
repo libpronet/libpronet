@@ -17,13 +17,12 @@
  */
 
 #include "rtp_session_wrapper.h"
+#include "rtp_base.h"
 #include "rtp_bucket.h"
-#include "rtp_foundation.h"
-#include "rtp_framework.h"
+#include "rtp_session_a.h"
 #include "../pro_net/pro_net.h"
 #include "../pro_util/pro_file_monitor.h"
 #include "../pro_util/pro_ref_count.h"
-#include "../pro_util/pro_reorder.h"
 #include "../pro_util/pro_ssl_util.h"
 #include "../pro_util/pro_stat.h"
 #include "../pro_util/pro_stl.h"
@@ -74,6 +73,12 @@ CRtpSessionWrapper::CreateInstance(const RTP_SESSION_INFO* localInfo)
     }
 
     CRtpSessionWrapper* const sessionWrapper = new CRtpSessionWrapper(*localInfo);
+    if (sessionWrapper->m_reorderInput == NULL)
+    {
+        delete sessionWrapper;
+
+        return (NULL);
+    }
 
     return (sessionWrapper);
 }
@@ -98,23 +103,31 @@ CRtpSessionWrapper::CRtpSessionWrapper(const RTP_SESSION_INFO& localInfo)
     m_sendDurationMs   = 0;
     m_pushTick         = 0;
 
-    if (localInfo.mmType >= RTP_MMT_AUDIO_MIN && localInfo.mmType <= RTP_MMT_AUDIO_MAX)
+    m_reorderInput     = CreateRtpReorder();
+
+    if (m_reorderInput != NULL)
     {
-        m_reorderInput.SetMaxPacketCount(AUDIO_REORDER_PACKET_COUNT);
-    }
-    else if (localInfo.mmType >= RTP_MMT_VIDEO_MIN && localInfo.mmType <= RTP_MMT_VIDEO_MAX)
-    {
-        m_reorderInput.SetMaxPacketCount(VIDEO_REORDER_PACKET_COUNT);
-    }
-    else
-    {
-        m_reorderInput.SetMaxPacketCount(DEFAULT_REORDER_PACKET_COUNT);
+        if (localInfo.mmType >= RTP_MMT_AUDIO_MIN && localInfo.mmType <= RTP_MMT_AUDIO_MAX)
+        {
+            m_reorderInput->SetMaxPacketCount(AUDIO_REORDER_PACKET_COUNT);
+        }
+        else if (localInfo.mmType >= RTP_MMT_VIDEO_MIN && localInfo.mmType <= RTP_MMT_VIDEO_MAX)
+        {
+            m_reorderInput->SetMaxPacketCount(VIDEO_REORDER_PACKET_COUNT);
+        }
+        else
+        {
+            m_reorderInput->SetMaxPacketCount(DEFAULT_REORDER_PACKET_COUNT);
+        }
     }
 }
 
 CRtpSessionWrapper::~CRtpSessionWrapper()
 {
     Fini();
+
+    DeleteRtpReorder(m_reorderInput);
+    m_reorderInput = NULL;
 }
 
 bool
@@ -649,7 +662,7 @@ CRtpSessionWrapper::Fini()
         m_timerId     = 0;
         m_sendTimerId = 0;
 
-        m_reorderInput.Reset();
+        m_reorderInput->Reset();
         pushPackets = m_pushPackets;
         m_pushPackets.clear();
         bucket = m_bucket;
@@ -1151,7 +1164,7 @@ CRtpSessionWrapper::EnableInput(bool enable)
 
         m_enableInput = enable;
 
-        m_reorderInput.Reset();
+        m_reorderInput->Reset();
 
         m_statFrameRateInput.Reset();
         m_statBitRateInput.Reset();
@@ -1503,11 +1516,11 @@ CRtpSessionWrapper::OnRecvSession(IRtpSession* session,
         }
         else
         {
-            m_reorderInput.PushBack(packet);
+            m_reorderInput->PushBack(packet);
 
             while (1)
             {
-                IRtpPacket* const packet2 = m_reorderInput.PopFront();
+                IRtpPacket* const packet2 = m_reorderInput->PopFront();
                 if (packet2 == NULL)
                 {
                     break;

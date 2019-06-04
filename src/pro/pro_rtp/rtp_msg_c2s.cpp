@@ -17,8 +17,8 @@
  */
 
 #include "rtp_msg_c2s.h"
-#include "rtp_foundation.h"
-#include "rtp_framework.h"
+#include "rtp_base.h"
+#include "rtp_msg.h"
 #include "rtp_msg_client.h"
 #include "rtp_msg_command.h"
 #include "rtp_msg_server.h"

@@ -25,29 +25,18 @@ EXPORTS
     CreateRtpService
     DeleteRtpService
     CheckRtpServiceData
-    CreateRtpSessionUdpclient
-    CreateRtpSessionUdpserver
-    CreateRtpSessionTcpclient
-    CreateRtpSessionTcpserver
-    CreateRtpSessionUdpclientEx
-    CreateRtpSessionUdpserverEx
-    CreateRtpSessionTcpclientEx
-    CreateRtpSessionTcpserverEx
-    CreateRtpSessionSslclientEx
-    CreateRtpSessionSslserverEx
-    CreateRtpSessionMcast
-    CreateRtpSessionMcastEx
-    DeleteRtpSession
     CreateRtpSessionWrapper
     DeleteRtpSessionWrapper
+    CreateRtpBaseBucket
+    CreateRtpAudioBucket
+    CreateRtpVideoBucket
+    CreateRtpReorder
+    DeleteRtpReorder
     CreateRtpMsgClient
     DeleteRtpMsgClient
     CreateRtpMsgServer
     DeleteRtpMsgServer
     CreateRtpMsgC2s
     DeleteRtpMsgC2s
-    CreateRtpBaseBucket
-    CreateRtpAudioBucket
-    CreateRtpVideoBucket
     RtpMsgUser2String
     RtpMsgString2User

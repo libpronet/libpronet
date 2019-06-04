@@ -17,7 +17,7 @@
  */
 
 #include "rtp_packet.h"
-#include "rtp_framework.h"
+#include "rtp_base.h"
 #include "../pro_util/pro_bsd_wrapper.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"

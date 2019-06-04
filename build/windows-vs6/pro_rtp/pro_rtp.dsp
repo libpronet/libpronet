@@ -91,16 +91,32 @@ LINK32=link.exe
 
 # Name "05_pro_rtp - Win32 Release"
 # Name "05_pro_rtp - Win32 Debug"
-# Begin Group "rtp_framework"
+# Begin Group "rtp_base"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_framework.cpp
+SOURCE=..\..\..\src\pro\pro_rtp\rtp_base.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_framework.h
+SOURCE=..\..\..\src\pro\pro_rtp\rtp_base.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\pro\pro_rtp\rtp_bucket.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\pro\pro_rtp\rtp_bucket.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\pro\pro_rtp\rtp_flow_stat.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\pro\pro_rtp\rtp_flow_stat.h
 # End Source File
 # Begin Source File
 
@@ -120,11 +136,27 @@ SOURCE=..\..\..\src\pro\pro_rtp\rtp_port_allocator.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\..\src\pro\pro_rtp\rtp_reorder.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\pro\pro_rtp\rtp_reorder.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\..\src\pro\pro_rtp\rtp_service.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\..\..\src\pro\pro_rtp\rtp_service.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_a.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_a.h
 # End Source File
 # Begin Source File
 
@@ -230,33 +262,25 @@ SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_udpserver_ex.cpp
 
 SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_udpserver_ex.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_wrapper.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_wrapper.h
+# End Source File
 # End Group
-# Begin Group "rtp_foundation"
+# Begin Group "rtp_msg"
 
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_bucket.cpp
+SOURCE=..\..\..\src\pro\pro_rtp\rtp_msg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_bucket.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_flow_stat.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_flow_stat.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_foundation.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_foundation.h
+SOURCE=..\..\..\src\pro\pro_rtp\rtp_msg.h
 # End Source File
 # Begin Source File
 
@@ -285,14 +309,6 @@ SOURCE=..\..\..\src\pro\pro_rtp\rtp_msg_server.cpp
 # Begin Source File
 
 SOURCE=..\..\..\src\pro\pro_rtp\rtp_msg_server.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_wrapper.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_wrapper.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"

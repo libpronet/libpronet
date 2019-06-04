@@ -11,7 +11,6 @@ LOCAL_SRC_FILES := pro_bsd_wrapper.cpp          \
                    pro_log_file.cpp             \
                    pro_memory_pool.cpp          \
                    pro_ref_count.cpp            \
-                   pro_reorder.cpp              \
                    pro_shaper.cpp               \
                    pro_ssl_util.cpp             \
                    pro_stat.cpp                 \

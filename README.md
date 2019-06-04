@@ -28,8 +28,8 @@ with ease, qualifying as a underlying communication engine of a large
 service cluster system, a multimedia communication system or
 a messaging system.
 
-Please refer to "pro_net.h", "rtp_framework.h", and "rtp_foundation.h"
-under the directory of "pub/inc/pro" for more.
+Please refer to "pro_net.h", "rtp_base.h", and "rtp_msg.h" under the
+directory of "pub/inc/pro" for more.
 
          ______________________________________________________
         |                                                      |
@@ -142,9 +142,11 @@ the file "build/DEFINE.txt" for more.
 
    2)Open the workspace file "build/windows-vs6/pro.dsw"
 
-3. VS2010 on Windows
+3. VS2010/VS2013 on Windows
 
-   The solution file is "build/windows-vs2010/pro.sln"
+   The solution file for VS2010 is "build/windows-vs2010/pro.sln"
+
+   The solution file for VS2013 is "build/windows-vs2013/pro.sln"
 
 4. Qt Creator on Windows
 
@@ -167,22 +169,22 @@ How to run the messaging system on Linux?
 By default, the installation location is "/usr/local/libpronet",
 which we call "${install}".
 
-1) See the file "${install}/pre_run.sh.txt", and do something
+1) See the file "${install}/bin/pre_run.sh.txt"
 
-2) Adjust the config file "${install}/pro_service_hub.cfg", and
-   start a "${install}/pro_service_hub" process
+2) Adjust the config file "${install}/bin/pro_service_hub.cfg", and
+   start a "${install}/bin/pro_service_hub" process
 
-   > cd ${install}
+   > cd ${install}/bin
 
    > ./pro_service_hub
 
-3) Adjust the config file "${install}/rtp_msg_server.cfg", and
-   start a "${install}/rtp_msg_server" process
+3) Adjust the config file "${install}/bin/rtp_msg_server.cfg", and
+   start a "${install}/bin/rtp_msg_server" process
 
    > ./rtp_msg_server
 
-4) Adjust the config file "${install}/rtp_msg_client.cfg", and
-   start some "${install}/rtp_msg_client" processes
+4) Adjust the config file "${install}/bin/rtp_msg_client.cfg", and
+   start some "${install}/bin/rtp_msg_client" processes
 
    > ./rtp_msg_client
 
@@ -193,17 +195,17 @@ How to run the tests on Linux?
 By default, the installation location is "/usr/local/libpronet",
 which we call "${install}".
 
-1) See the file "${install}/pre_run.sh.txt", and do something
+1) See the file "${install}/bin/pre_run.sh.txt"
 
-2) Adjust the config file "${install}/test_tcp_server.cfg", and
-   start a "${install}/test_tcp_server" process
+2) Adjust the config file "${install}/bin/test_tcp_server.cfg", and
+   start a "${install}/bin/test_tcp_server" process
 
-   > cd ${install}
+   > cd ${install}/bin
 
    > ./test_tcp_server
 
-3) Adjust the config file "${install}/test_tcp_client.cfg", and
-   start some "${install}/test_tcp_client" processes
+3) Adjust the config file "${install}/bin/test_tcp_client.cfg", and
+   start some "${install}/bin/test_tcp_client" processes
 
    > ./test_tcp_client
    or
@@ -215,23 +217,23 @@ which we call "${install}".
 How to run the messaging system on Windows(64bit)?
 ====
 
-1) Run the script "pub\lib-r\_get-win-vs2010.bat",
-   and run the script "pub_test\_get-vs2010-x86_64-r.bat"
+1) Run the script "pub/lib-r/_get-win-vs2010.bat",
+   and run the script "pub_test/_get-vs2010-x86_64-r.bat"
 
-2) Adjust the config file "pub_test\vs2010-x86_64-r\pro_service_hub.cfg",
-   and start a "pub_test\vs2010-x86_64-r\pro_service_hub.exe" process
+2) Adjust the config file "pub_test/vs2010-x86_64-r/pro_service_hub.cfg",
+   and start a "pub_test/vs2010-x86_64-r/pro_service_hub.exe" process
 
    > cd pub_test\vs2010-x86_64-r
 
    > pro_service_hub
 
-3) Adjust the config file "pub_test\vs2010-x86_64-r\rtp_msg_server.cfg",
-   and start a "pub_test\vs2010-x86_64-r\rtp_msg_server.exe" process
+3) Adjust the config file "pub_test/vs2010-x86_64-r/rtp_msg_server.cfg",
+   and start a "pub_test/vs2010-x86_64-r/rtp_msg_server.exe" process
 
    > rtp_msg_server
 
-4) Adjust the config file "pub_test\vs2010-x86_64-r\rtp_msg_client.cfg",
-   and start some "pub_test\vs2010-x86_64-r\rtp_msg_client.exe" processes
+4) Adjust the config file "pub_test/vs2010-x86_64-r/rtp_msg_client.cfg",
+   and start some "pub_test/vs2010-x86_64-r/rtp_msg_client.exe" processes
 
    > rtp_msg_client
 
@@ -239,18 +241,18 @@ How to run the messaging system on Windows(64bit)?
 How to run the tests on Windows(64bit)?
 ====
 
-1) Run the script "pub\lib-r\_get-win-vs2010.bat",
-   and run the script "pub_test\_get-vs2010-x86_64-r.bat"
+1) Run the script "pub/lib-r/_get-win-vs2010.bat",
+   and run the script "pub_test/_get-vs2010-x86_64-r.bat"
 
-2) Adjust the config file "pub_test\vs2010-x86_64-r\test_tcp_server.cfg",
-   and start a "pub_test\vs2010-x86_64-r\test_tcp_server.exe" process
+2) Adjust the config file "pub_test/vs2010-x86_64-r/test_tcp_server.cfg",
+   and start a "pub_test/vs2010-x86_64-r/test_tcp_server.exe" process
 
    > cd pub_test\vs2010-x86_64-r
 
    > test_tcp_server
 
-3) Adjust the config file "pub_test\vs2010-x86_64-r\test_tcp_client.cfg",
-   and start some "pub_test\vs2010-x86_64-r\test_tcp_client.exe" processes
+3) Adjust the config file "pub_test/vs2010-x86_64-r/test_tcp_client.cfg",
+   and start some "pub_test/vs2010-x86_64-r/test_tcp_client.exe" processes
 
    > test_tcp_client
    or
