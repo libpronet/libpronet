@@ -337,7 +337,7 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet)
             }
             break;
         }
-    }
+    } /* end of switch (...) */
 
     bool ret = false;
 
@@ -1081,7 +1081,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
             {
                 return;
             }
-        }
+        } /* end of switch (...) */
 
         /*
          * a timeout occured?

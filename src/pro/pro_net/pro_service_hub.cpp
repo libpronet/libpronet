@@ -512,7 +512,7 @@ CProServiceHub::OnTimer(unsigned long timerId,
 
                     pipes.insert(sp.pipe);
                 }
-            }
+            } /* end of while (...) */
         }
     }
 

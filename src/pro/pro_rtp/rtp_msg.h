@@ -78,15 +78,15 @@ extern "C" {
 /*
  * 消息用户号. 1-2-1, 1-2-2, 1-3-1, 1-3-2, ...; 2-1-1, 2-1-2, 2-2-1, 2-2-2, ...
  *
- * classId : 8bits.该字段用于标识用户类别,以便于应用程序分类管理.
+ * classId : 8bits. 该字段用于标识用户类别,以便于应用程序分类管理.
  *           0无效, 1应用服务器节点, 2~255应用客户端节点
  *
- * userId  : 40bits.该字段用于标识用户id(如电话号码),由消息服务器分配或许可.
+ * userId  : 40bits. 该字段用于标识用户id(如电话号码),由消息服务器分配或许可.
  *           0动态分配,范围为[0xF000000000 ~ 0xFFFFFFFFFF];
  *           否则静态分配,范围为[1 ~ 0xEFFFFFFFFF]
  *
- * instId  : 16bits.该字段用于标识用户实例id(如电话分机号),由消息服务器分配
- *           或许可.有效范围为[0 ~ 65535]
+ * instId  : 16bits. 该字段用于标识用户实例id(如电话分机号),由消息服务器分配
+ *           或许可. 有效范围为[0 ~ 65535]
  *
  * 说明    : classId-userId 之 1-1 保留,用于标识消息服务器本身(root)
  */
@@ -267,6 +267,26 @@ public:
     virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(char suiteName[64]) const = 0;
 
     /*
+     * 获取本地ip地址
+     */
+    virtual const char* PRO_CALLTYPE GetLocalIp(char localIp[64]) const = 0;
+
+    /*
+     * 获取本地端口号
+     */
+    virtual unsigned short PRO_CALLTYPE GetLocalPort() const = 0;
+
+    /*
+     * 获取远端ip地址
+     */
+    virtual const char* PRO_CALLTYPE GetRemoteIp(char remoteIp[64]) const = 0;
+
+    /*
+     * 获取远端端口号
+     */
+    virtual unsigned short PRO_CALLTYPE GetRemotePort() const = 0;
+
+    /*
      * 发送消息
      *
      * 系统内部有消息发送队列
@@ -280,14 +300,14 @@ public:
         ) = 0;
 
     /*
-     * 设置链路发送红线.默认(1024 * 1024)字节
+     * 设置链路发送红线. 默认(1024 * 1024)字节
      *
-     * 如果redlineBytes的值为0,则直接返回,什么都不做
+     * 如果redlineBytes的值为0, 则直接返回,什么都不做
      */
     virtual void PRO_CALLTYPE SetOutputRedline(unsigned long redlineBytes) = 0;
 
     /*
-     * 获取链路发送红线.默认(1024 * 1024)字节
+     * 获取链路发送红线. 默认(1024 * 1024)字节
      */
     virtual unsigned long PRO_CALLTYPE GetOutputRedline() const = 0;
 
@@ -335,7 +355,7 @@ public:
     virtual void PRO_CALLTYPE OnCloseMsg(
         IRtpMsgClient* msgClient,
         long           errorCode,   /* 系统错误码 */
-        long           sslCode,     /* ssl错误码.参见"mbedtls/error.h, ssl.h, x509.h, ..." */
+        long           sslCode,     /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
         bool           tcpConnected /* tcp连接是否已经建立 */
         ) = 0;
 };
@@ -378,26 +398,26 @@ public:
         ) = 0;
 
     /*
-     * 设置server->c2s链路发送红线.默认(1024 * 1024 * 8)字节
+     * 设置server->c2s链路发送红线. 默认(1024 * 1024 * 8)字节
      *
-     * 如果redlineBytes的值为0,则直接返回,什么都不做
+     * 如果redlineBytes的值为0, 则直接返回,什么都不做
      */
     virtual void PRO_CALLTYPE SetOutputRedlineToC2s(unsigned long redlineBytes) = 0;
 
     /*
-     * 获取server->c2s链路发送红线.默认(1024 * 1024 * 8)字节
+     * 获取server->c2s链路发送红线. 默认(1024 * 1024 * 8)字节
      */
     virtual unsigned long PRO_CALLTYPE GetOutputRedlineToC2s() const = 0;
 
     /*
-     * 设置server->user链路发送红线.默认(1024 * 1024)字节
+     * 设置server->user链路发送红线. 默认(1024 * 1024)字节
      *
-     * 如果redlineBytes的值为0,则直接返回,什么都不做
+     * 如果redlineBytes的值为0, 则直接返回,什么都不做
      */
     virtual void PRO_CALLTYPE SetOutputRedlineToUser(unsigned long redlineBytes) = 0;
 
     /*
-     * 获取server->user链路发送红线.默认(1024 * 1024)字节
+     * 获取server->user链路发送红线. 默认(1024 * 1024)字节
      */
     virtual unsigned long PRO_CALLTYPE GetOutputRedlineToUser() const = 0;
 
@@ -431,12 +451,12 @@ public:
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,         /* 用户发来的登录用户号 */
         const char*         userPublicIp, /* 用户的ip地址 */
-        const RTP_MSG_USER* c2sUser,      /* 经由哪个c2s而来.可以是NULL */
+        const RTP_MSG_USER* c2sUser,      /* 经由哪个c2s而来. 可以是NULL */
         const char          hash[32],     /* 用户发来的口令hash值 */
-        PRO_UINT64          nonce,        /* 会话随机数.用于CheckRtpServiceData(...)校验口令hash值 */
+        PRO_UINT64          nonce,        /* 会话随机数. 用于CheckRtpServiceData(...)校验口令hash值 */
         PRO_UINT64*         userId,       /* 上层分配或许可的用户id */
         PRO_UINT16*         instId,       /* 上层分配或许可的实例id */
-        PRO_INT64*          appData,      /* 上层设置的标识数据.后续的OnOkUser(...)会带回来 */
+        PRO_INT64*          appData,      /* 上层设置的标识数据. 后续的OnOkUser(...)会带回来 */
         bool*               isC2s         /* 上层设置的是否该节点为c2s */
         ) = 0;
 
@@ -447,7 +467,7 @@ public:
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,         /* 上层分配或许可的用户号 */
         const char*         userPublicIp, /* 用户的ip地址 */
-        const RTP_MSG_USER* c2sUser,      /* 经由哪个c2s而来.可以是NULL */
+        const RTP_MSG_USER* c2sUser,      /* 经由哪个c2s而来. 可以是NULL */
         PRO_INT64           appData       /* OnCheckUser(...)时上层设置的标识数据 */
         ) = 0;
 
@@ -458,7 +478,7 @@ public:
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
         long                errorCode,    /* 系统错误码 */
-        long                sslCode       /* ssl错误码.参见"mbedtls/error.h, ssl.h, x509.h, ..." */
+        long                sslCode       /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
         ) = 0;
 
     /*
@@ -480,7 +500,7 @@ public:
  * 消息c2s
  *
  * c2s位于client与server之间,它可以分散server的负载,还可以隐藏server的位置.
- * 对于client而言,c2s是透明的,client无法区分它连接的是server还是c2s
+ * 对于client而言, c2s是透明的, client无法区分它连接的是server还是c2s
  */
 class IRtpMsgC2s
 {
@@ -497,6 +517,26 @@ public:
     virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetC2sSslSuite(char suiteName[64]) const = 0;
 
     /*
+     * 获取c2s<->server链路的本地ip地址
+     */
+    virtual const char* PRO_CALLTYPE GetC2sLocalIp(char localIp[64]) const = 0;
+
+    /*
+     * 获取c2s<->server链路的本地端口号
+     */
+    virtual unsigned short PRO_CALLTYPE GetC2sLocalPort() const = 0;
+
+    /*
+     * 获取c2s<->server链路的远端ip地址
+     */
+    virtual const char* PRO_CALLTYPE GetC2sRemoteIp(char remoteIp[64]) const = 0;
+
+    /*
+     * 获取c2s<->server链路的远端端口号
+     */
+    virtual unsigned short PRO_CALLTYPE GetC2sRemotePort() const = 0;
+
+    /*
      * 获取用户数
      */
     virtual void PRO_CALLTYPE GetUserCount(
@@ -510,26 +550,26 @@ public:
     virtual void PRO_CALLTYPE KickoutUser(const RTP_MSG_USER* user) = 0;
 
     /*
-     * 设置c2s->server链路发送红线.默认(1024 * 1024 * 8)字节
+     * 设置c2s->server链路发送红线. 默认(1024 * 1024 * 8)字节
      *
-     * 如果redlineBytes的值为0,则直接返回,什么都不做
+     * 如果redlineBytes的值为0, 则直接返回,什么都不做
      */
     virtual void PRO_CALLTYPE SetOutputRedlineToServer(unsigned long redlineBytes) = 0;
 
     /*
-     * 获取c2s->server链路发送红线.默认(1024 * 1024 * 8)字节
+     * 获取c2s->server链路发送红线. 默认(1024 * 1024 * 8)字节
      */
     virtual unsigned long PRO_CALLTYPE GetOutputRedlineToServer() const = 0;
 
     /*
-     * 设置c2s->user链路发送红线.默认(1024 * 1024)字节
+     * 设置c2s->user链路发送红线. 默认(1024 * 1024)字节
      *
-     * 如果redlineBytes的值为0,则直接返回,什么都不做
+     * 如果redlineBytes的值为0, 则直接返回,什么都不做
      */
     virtual void PRO_CALLTYPE SetOutputRedlineToUser(unsigned long redlineBytes) = 0;
 
     /*
-     * 获取c2s->user链路发送红线.默认(1024 * 1024)字节
+     * 获取c2s->user链路发送红线. 默认(1024 * 1024)字节
      */
     virtual unsigned long PRO_CALLTYPE GetOutputRedlineToUser() const = 0;
 
@@ -566,7 +606,7 @@ public:
     virtual void PRO_CALLTYPE OnCloseC2s(
         IRtpMsgC2s* msgC2s,
         long        errorCode,         /* 系统错误码 */
-        long        sslCode,           /* ssl错误码.参见"mbedtls/error.h, ssl.h, x509.h, ..." */
+        long        sslCode,           /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
         bool        tcpConnected       /* tcp连接是否已经建立 */
         ) = 0;
 
@@ -586,7 +626,7 @@ public:
         IRtpMsgC2s*         msgC2s,
         const RTP_MSG_USER* user,
         long                errorCode, /* 系统错误码 */
-        long                sslCode    /* ssl错误码.参见"mbedtls/error.h, ssl.h, x509.h, ..." */
+        long                sslCode    /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
         ) = 0;
 };
 
@@ -601,13 +641,13 @@ public:
  * reactor          : 反应器
  * mmType           : 消息媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
  * sslConfig        : ssl配置. NULL表示明文传输
- * sslSni           : ssl服务名.如果有效,则参与认证服务端证书
+ * sslSni           : ssl服务名. 如果有效,则参与认证服务端证书
  * remoteIp         : 服务器的ip地址或域名
  * remotePort       : 服务器的端口号
  * user             : 用户号
  * password         : 用户口令
- * localIp          : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * timeoutInSeconds : 握手超时.默认20秒
+ * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
+ * timeoutInSeconds : 握手超时. 默认20秒
  *
  * 返回值: 消息客户端对象或NULL
  *
@@ -653,7 +693,7 @@ DeleteRtpMsgClient(IRtpMsgClient* msgClient);
  * sslConfig        : ssl配置. NULL表示明文传输
  * sslForced        : 是否强制使用ssl传输. sslConfig为NULL时该参数忽略
  * serviceHubPort   : 服务hub的端口号
- * timeoutInSeconds : 握手超时.默认20秒
+ * timeoutInSeconds : 握手超时. 默认20秒
  *
  * 返回值: 消息服务器对象或NULL
  *
@@ -693,17 +733,17 @@ DeleteRtpMsgServer(IRtpMsgServer* msgServer);
  * reactor                : 反应器
  * mmType                 : 消息媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
  * uplinkSslConfig        : 级联的ssl配置. NULL表示c2s<->server之间明文传输
- * uplinkSslSni           : 级联的ssl服务名.如果有效,则参与认证服务端证书
+ * uplinkSslSni           : 级联的ssl服务名. 如果有效,则参与认证服务端证书
  * uplinkIp               : 服务器的ip地址或域名
  * uplinkPort             : 服务器的端口号
  * uplinkUser             : c2s的用户号
  * uplinkPassword         : c2s的用户口令
- * uplinkLocalIp          : 级联时要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * uplinkTimeoutInSeconds : 级联的握手超时.默认20秒
+ * uplinkLocalIp          : 级联时要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
+ * uplinkTimeoutInSeconds : 级联的握手超时. 默认20秒
  * localSslConfig         : 近端的ssl配置. NULL表示明文传输
  * localSslForced         : 近端是否强制使用ssl传输. localSslConfig为NULL时该参数忽略
  * localServiceHubPort    : 近端的服务hub的端口号
- * localTimeoutInSeconds  : 近端的握手超时.默认20秒
+ * localTimeoutInSeconds  : 近端的握手超时. 默认20秒
  *
  * 返回值: 消息c2s对象或NULL
  *

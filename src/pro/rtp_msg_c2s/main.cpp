@@ -502,7 +502,7 @@ int main(int argc, char* argv[])
                 else
                 {
                 }
-            }
+            } /* end of for (...) */
 
             printf("\n reloading... \n");
             server->Reconfig(configInfo);

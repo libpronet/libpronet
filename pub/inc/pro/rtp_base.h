@@ -193,9 +193,9 @@ struct RTP_SESSION_INFO
  *
  * observer  : 回调目标
  * reactor   : 反应器
- * localIp   : 要绑定的本地ip地址.如果为"", 系统将使用0.0.0.0
- * localPort : 要绑定的本地端口号.如果为0, 系统将随机分配一个
- * bucket    : 流控桶.如果为NULL, 系统将自动分配一个
+ * localIp   : 要绑定的本地ip地址. 如果为"", 系统将使用0.0.0.0
+ * localPort : 要绑定的本地端口号. 如果为0, 系统将随机分配一个
+ * bucket    : 流控桶. 如果为NULL, 系统将自动分配一个
  */
 struct RTP_INIT_UDPCLIENT
 {
@@ -213,7 +213,7 @@ struct RTP_INIT_UDPCLIENT
  * reactor   : 反应器
  * localIp   : 要绑定的本地ip地址. 如果为"", 系统将使用0.0.0.0
  * localPort : 要绑定的本地端口号. 如果为0, 系统将随机分配一个
- * bucket    : 流控桶.如果为NULL, 系统将自动分配一个
+ * bucket    : 流控桶. 如果为NULL, 系统将自动分配一个
  */
 struct RTP_INIT_UDPSERVER
 {
@@ -1286,7 +1286,7 @@ GetRtpTcpSocketParams(RTP_MM_TYPE    mmType,
  *
  * 返回值: rtp服务对象或NULL
  *
- * 说明: 如果sslConfig为NULL,表示该服务不支持ssl
+ * 说明: 如果sslConfig为NULL, 表示该服务不支持ssl
  */
 PRO_RTP_API
 IRtpService*
@@ -1333,7 +1333,7 @@ CheckRtpServiceData(PRO_UINT64  serviceNonce,
                     const char  clientPasswordHash[32]);
 
 /*
- * 功能: 创建一个rtp会话包装
+ * 功能: 创建一个会话包装
  *
  * 参数:
  * sessionType : 会话类型
@@ -1352,7 +1352,7 @@ CreateRtpSessionWrapper(RTP_SESSION_TYPE        sessionType,
                         const RTP_SESSION_INFO* localInfo);
 
 /*
- * 功能: 删除一个rtp会话包装
+ * 功能: 删除一个会话包装
  *
  * 参数:
  * sessionWrapper : 会话包装对象
@@ -1367,7 +1367,7 @@ PRO_CALLTYPE
 DeleteRtpSessionWrapper(IRtpSession* sessionWrapper);
 
 /*
- * 功能: 创建一个内部实现的基础类型的流控桶
+ * 功能: 创建一个基础类型的流控桶
  *
  * 参数: 无
  *
@@ -1381,7 +1381,7 @@ PRO_CALLTYPE
 CreateRtpBaseBucket();
 
 /*
- * 功能: 创建一个内部实现的音频类型的流控桶
+ * 功能: 创建一个音频类型的流控桶
  *
  * 参数: 无
  *
@@ -1395,7 +1395,7 @@ PRO_CALLTYPE
 CreateRtpAudioBucket();
 
 /*
- * 功能: 创建一个内部实现的视频类型的流控桶
+ * 功能: 创建一个视频类型的流控桶
  *
  * 参数: 无
  *

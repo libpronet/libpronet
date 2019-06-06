@@ -87,6 +87,14 @@ public:
 
     virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetC2sSslSuite(char suiteName[64]) const;
 
+    virtual const char* PRO_CALLTYPE GetC2sLocalIp(char localIp[64]) const;
+
+    virtual unsigned short PRO_CALLTYPE GetC2sLocalPort() const;
+
+    virtual const char* PRO_CALLTYPE GetC2sRemoteIp(char remoteIp[64]) const;
+
+    virtual unsigned short PRO_CALLTYPE GetC2sRemotePort() const;
+
     virtual void PRO_CALLTYPE GetUserCount(
         unsigned long* pendingUserCount, /* = NULL */
         unsigned long* userCount         /* = NULL */

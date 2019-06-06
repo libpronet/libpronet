@@ -365,7 +365,6 @@ DeleteRtpSession(IRtpSession* session)
             p->Release();
             break;
         }
-
     case RTP_ST_UDPSERVER:
         {
             CRtpSessionUdpserver* const p = (CRtpSessionUdpserver*)session;
@@ -373,7 +372,6 @@ DeleteRtpSession(IRtpSession* session)
             p->Release();
             break;
         }
-
     case RTP_ST_TCPCLIENT:
         {
             CRtpSessionTcpclient* const p = (CRtpSessionTcpclient*)session;
@@ -381,7 +379,6 @@ DeleteRtpSession(IRtpSession* session)
             p->Release();
             break;
         }
-
     case RTP_ST_TCPSERVER:
         {
             CRtpSessionTcpserver* const p = (CRtpSessionTcpserver*)session;
@@ -389,7 +386,6 @@ DeleteRtpSession(IRtpSession* session)
             p->Release();
             break;
         }
-
     case RTP_ST_UDPCLIENT_EX:
         {
             CRtpSessionUdpclientEx* const p = (CRtpSessionUdpclientEx*)session;
@@ -397,7 +393,6 @@ DeleteRtpSession(IRtpSession* session)
             p->Release();
             break;
         }
-
     case RTP_ST_UDPSERVER_EX:
         {
             CRtpSessionUdpserverEx* const p = (CRtpSessionUdpserverEx*)session;
@@ -405,7 +400,6 @@ DeleteRtpSession(IRtpSession* session)
             p->Release();
             break;
         }
-
     case RTP_ST_TCPCLIENT_EX:
         {
             CRtpSessionTcpclientEx* const p = (CRtpSessionTcpclientEx*)session;
@@ -413,7 +407,6 @@ DeleteRtpSession(IRtpSession* session)
             p->Release();
             break;
         }
-
     case RTP_ST_TCPSERVER_EX:
         {
             CRtpSessionTcpserverEx* const p = (CRtpSessionTcpserverEx*)session;
@@ -421,7 +414,6 @@ DeleteRtpSession(IRtpSession* session)
             p->Release();
             break;
         }
-
     case RTP_ST_SSLCLIENT_EX:
         {
             CRtpSessionSslclientEx* const p = (CRtpSessionSslclientEx*)session;
@@ -429,7 +421,6 @@ DeleteRtpSession(IRtpSession* session)
             p->Release();
             break;
         }
-
     case RTP_ST_SSLSERVER_EX:
         {
             CRtpSessionSslserverEx* const p = (CRtpSessionSslserverEx*)session;
@@ -437,7 +428,6 @@ DeleteRtpSession(IRtpSession* session)
             p->Release();
             break;
         }
-
     case RTP_ST_MCAST:
         {
             CRtpSessionMcast* const p = (CRtpSessionMcast*)session;
@@ -445,7 +435,6 @@ DeleteRtpSession(IRtpSession* session)
             p->Release();
             break;
         }
-
     case RTP_ST_MCAST_EX:
         {
             CRtpSessionMcastEx* const p = (CRtpSessionMcastEx*)session;

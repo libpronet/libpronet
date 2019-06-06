@@ -448,7 +448,7 @@ int main(int argc, char* argv[])
                 {
                     users.insert(user);
                 }
-            }
+            } /* end of while (...) */
 
             if (users.size() > 0)
             {
@@ -503,7 +503,7 @@ int main(int argc, char* argv[])
                 else
                 {
                 }
-            }
+            } /* end of for (...) */
 
             printf("\n reloading... \n");
             server->Reconfig(configInfo);

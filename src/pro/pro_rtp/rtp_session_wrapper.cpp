@@ -151,39 +151,33 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
             initArgs2.udpclient.localIp[sizeof(initArgs2.udpclient.localIp) - 1] = '\0';
             break;
         }
-
     case RTP_ST_UDPSERVER:
         {
             initArgs2.udpserver.localIp[sizeof(initArgs2.udpserver.localIp) - 1] = '\0';
             break;
         }
-
     case RTP_ST_TCPCLIENT:
         {
             initArgs2.tcpclient.remoteIp[sizeof(initArgs2.tcpclient.remoteIp) - 1] = '\0';
             initArgs2.tcpclient.localIp[sizeof(initArgs2.tcpclient.localIp) - 1]   = '\0';
             break;
         }
-
     case RTP_ST_TCPSERVER:
         {
             initArgs2.tcpserver.localIp[sizeof(initArgs2.tcpserver.localIp) - 1] = '\0';
             break;
         }
-
     case RTP_ST_UDPCLIENT_EX:
         {
             initArgs2.udpclientEx.remoteIp[sizeof(initArgs2.udpclientEx.remoteIp) - 1] = '\0';
             initArgs2.udpclientEx.localIp[sizeof(initArgs2.udpclientEx.localIp) - 1]   = '\0';
             break;
         }
-
     case RTP_ST_UDPSERVER_EX:
         {
             initArgs2.udpserverEx.localIp[sizeof(initArgs2.udpserverEx.localIp) - 1] = '\0';
             break;
         }
-
     case RTP_ST_TCPCLIENT_EX:
         {
             initArgs2.tcpclientEx.remoteIp[sizeof(initArgs2.tcpclientEx.remoteIp) - 1] = '\0';
@@ -191,12 +185,10 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
             initArgs2.tcpclientEx.localIp[sizeof(initArgs2.tcpclientEx.localIp) - 1]   = '\0';
             break;
         }
-
     case RTP_ST_TCPSERVER_EX:
         {
             break;
         }
-
     case RTP_ST_SSLCLIENT_EX:
         {
             initArgs2.sslclientEx.sslSni[sizeof(initArgs2.sslclientEx.sslSni) - 1]     = '\0';
@@ -205,26 +197,22 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
             initArgs2.sslclientEx.localIp[sizeof(initArgs2.sslclientEx.localIp) - 1]   = '\0';
             break;
         }
-
     case RTP_ST_SSLSERVER_EX:
         {
             break;
         }
-
     case RTP_ST_MCAST:
         {
             initArgs2.mcast.mcastIp[sizeof(initArgs2.mcast.mcastIp) - 1] = '\0';
             initArgs2.mcast.localIp[sizeof(initArgs2.mcast.localIp) - 1] = '\0';
             break;
         }
-
     case RTP_ST_MCAST_EX:
         {
             initArgs2.mcastEx.mcastIp[sizeof(initArgs2.mcastEx.mcastIp) - 1] = '\0';
             initArgs2.mcastEx.localIp[sizeof(initArgs2.mcastEx.localIp) - 1] = '\0';
             break;
         }
-
     default:
         {
             assert(0);
@@ -278,7 +266,6 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                 }
                 break;
             }
-
         case RTP_ST_UDPSERVER:
             {
                 m_session = CreateRtpSessionUdpserver(
@@ -304,7 +291,6 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                 }
                 break;
             }
-
         case RTP_ST_TCPCLIENT:
             {
                 m_session = CreateRtpSessionTcpclient(
@@ -332,7 +318,6 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                 }
                 break;
             }
-
         case RTP_ST_TCPSERVER:
             {
                 m_session = CreateRtpSessionTcpserver(
@@ -359,7 +344,6 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                 }
                 break;
             }
-
         case RTP_ST_UDPCLIENT_EX:
             {
                 m_session = CreateRtpSessionUdpclientEx(
@@ -387,7 +371,6 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                 }
                 break;
             }
-
         case RTP_ST_UDPSERVER_EX:
             {
                 m_session = CreateRtpSessionUdpserverEx(
@@ -414,7 +397,6 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                 }
                 break;
             }
-
         case RTP_ST_TCPCLIENT_EX:
             {
                 m_session = CreateRtpSessionTcpclientEx(
@@ -445,7 +427,6 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                 }
                 break;
             }
-
         case RTP_ST_TCPSERVER_EX:
             {
                 m_session = CreateRtpSessionTcpserverEx(
@@ -471,7 +452,6 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                 }
                 break;
             }
-
         case RTP_ST_SSLCLIENT_EX:
             {
                 m_session = CreateRtpSessionSslclientEx(
@@ -504,7 +484,6 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                 }
                 break;
             }
-
         case RTP_ST_SSLSERVER_EX:
             {
                 m_session = CreateRtpSessionSslserverEx(
@@ -531,7 +510,6 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                 }
                 break;
             }
-
         case RTP_ST_MCAST:
             {
                 m_session = CreateRtpSessionMcast(
@@ -558,7 +536,6 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                 }
                 break;
             }
-
         case RTP_ST_MCAST_EX:
             {
                 m_session = CreateRtpSessionMcastEx(

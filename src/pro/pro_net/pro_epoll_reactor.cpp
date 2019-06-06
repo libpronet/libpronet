@@ -500,7 +500,7 @@ CProEpollReactor::WorkerRun()
                 info.handler->OnException(sockId);
                 info.handler->Release();
             }
-        }
+        } /* end of for (...) */
     } /* end of while (...) */
 }
 

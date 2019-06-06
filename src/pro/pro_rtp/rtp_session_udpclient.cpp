@@ -186,7 +186,7 @@ CRtpSessionUdpclient::SetRemoteIpAndPort(const char*    remoteIp,   /* = NULL */
     memset(&remoteAddrConfig, 0, sizeof(pbsd_sockaddr_in));
     remoteAddrConfig.sin_family      = AF_INET;
     remoteAddrConfig.sin_port        = pbsd_hton16(remotePort);
-    remoteAddrConfig.sin_addr.s_addr = pbsd_inet_aton(remoteIp);
+    remoteAddrConfig.sin_addr.s_addr = pbsd_inet_aton(remoteIp); /* DNS */
 
     if (remoteAddrConfig.sin_addr.s_addr == (PRO_UINT32)-1)
     {

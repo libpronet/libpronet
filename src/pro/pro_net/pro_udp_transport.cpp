@@ -116,7 +116,7 @@ CProUdpTransport::Init(IProTransportObserver* observer,
     memset(&remoteAddr, 0, sizeof(pbsd_sockaddr_in));
     remoteAddr.sin_family      = AF_INET;
     remoteAddr.sin_port        = pbsd_hton16(defaultRemotePort);
-    remoteAddr.sin_addr.s_addr = pbsd_inet_aton(defaultRemoteIp);
+    remoteAddr.sin_addr.s_addr = pbsd_inet_aton(defaultRemoteIp); /* DNS */
 
     if (localAddr.sin_addr.s_addr  == (PRO_UINT32)-1 ||
         remoteAddr.sin_addr.s_addr == (PRO_UINT32)-1)

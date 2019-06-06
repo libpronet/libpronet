@@ -388,6 +388,11 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
         char suiteName[64] = "";
         msgC2s->GetC2sSslSuite(suiteName);
 
+        char           remoteIp[64] = "";
+        unsigned short remotePort   = 0;
+        msgC2s->GetC2sRemoteIp(remoteIp);
+        remotePort = msgC2s->GetC2sRemotePort();
+
         char traceInfo[1024] = "";
         snprintf_pro(
             traceInfo,
@@ -400,8 +405,8 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
             (unsigned int)c2sUser->instId,
             c2sPublicIp,
             suiteName,
-            m_configInfo.c2ss_uplink_ip.c_str(),
-            (unsigned int)m_configInfo.c2ss_uplink_port
+            remoteIp,
+            (unsigned int)remotePort
             );
         printf("\n%s", traceInfo);
         strcat(traceInfo, "\n");
@@ -446,6 +451,11 @@ CC2sServer::OnCloseC2s(IRtpMsgC2s* msgC2s,
         RTP_MSG_USER c2sUser;
         msgC2s->GetC2sUser(&c2sUser);
 
+        char           remoteIp[64] = "";
+        unsigned short remotePort   = 0;
+        msgC2s->GetC2sRemoteIp(remoteIp);
+        remotePort = msgC2s->GetC2sRemotePort();
+
         char traceInfo[1024] = "";
         snprintf_pro(
             traceInfo,
@@ -459,8 +469,8 @@ CC2sServer::OnCloseC2s(IRtpMsgC2s* msgC2s,
             (int)errorCode,
             (int)sslCode,
             (int)tcpConnected,
-            m_configInfo.c2ss_uplink_ip.c_str(),
-            (unsigned int)m_configInfo.c2ss_uplink_port
+            remoteIp,
+            (unsigned int)remotePort
             );
         printf("\n%s", traceInfo);
         strcat(traceInfo, "\n");

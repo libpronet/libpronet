@@ -137,7 +137,7 @@ int main(int argc, char* argv[])
             else
             {
             }
-        }
+        } /* end of for (...) */
     }
 
     if (configInfo.hubs_listen_ports.size() == 0)
@@ -188,7 +188,7 @@ int main(int argc, char* argv[])
                 portString += ',';
                 portString += info;
             }
-        }
+        } /* end of for (...) */
     }
 
     printf(

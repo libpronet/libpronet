@@ -381,6 +381,11 @@ CTest::OnOkMsg(IRtpMsgClient*      msgClient,
         char suiteName[64] = "";
         msgClient->GetSslSuite(suiteName);
 
+        char           remoteIp[64] = "";
+        unsigned short remotePort   = 0;
+        msgClient->GetRemoteIp(remoteIp);
+        remotePort = msgClient->GetRemotePort();
+
         printf(
             "\n"
             " CTest::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s, sslSuite : %s,"
@@ -391,8 +396,8 @@ CTest::OnOkMsg(IRtpMsgClient*      msgClient,
             (unsigned int)myUser->instId,
             myPublicIp,
             suiteName,
-            m_configInfo.msgc_server_ip.c_str(),
-            (unsigned int)m_configInfo.msgc_server_port
+            remoteIp,
+            (unsigned int)remotePort
             );
     }}}
 }
@@ -486,6 +491,11 @@ CTest::OnCloseMsg(IRtpMsgClient* msgClient,
         RTP_MSG_USER user;
         msgClient->GetUser(&user);
 
+        char           remoteIp[64] = "";
+        unsigned short remotePort   = 0;
+        msgClient->GetRemoteIp(remoteIp);
+        remotePort = msgClient->GetRemotePort();
+
         printf(
             "\n"
             " CTest::OnCloseMsg(id : %u-" PRO_PRT64U "-%u,"
@@ -497,8 +507,8 @@ CTest::OnCloseMsg(IRtpMsgClient* msgClient,
             (int)errorCode,
             (int)sslCode,
             (int)tcpConnected,
-            m_configInfo.msgc_server_ip.c_str(),
-            (unsigned int)m_configInfo.msgc_server_port
+            remoteIp,
+            (unsigned int)remotePort
             );
     }}}
 }

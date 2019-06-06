@@ -980,7 +980,7 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
             {
                 session2Users[dstCtx->session].push_back(dstUser);
             }
-        }
+        } /* end of for (...) */
 
         /*
          * to baseUsers

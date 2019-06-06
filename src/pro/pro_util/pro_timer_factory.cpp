@@ -541,7 +541,7 @@ CProTimerFactory::WorkerRun(PRO_INT64* args)
                 }
 
                 assert(m_timers.size() == m_timerId2ExpireTick.size());
-            }
+            } /* end of for (...) */
         }
 
         if (timers.size() == 0)

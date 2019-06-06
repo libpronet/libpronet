@@ -74,6 +74,8 @@ m_sslSni(sslSni != NULL ? sslSni : "")
     m_reactor    = NULL;
     m_session    = NULL;
     m_bucket     = NULL;
+    m_remoteIp   = "";
+    m_remotePort = 0;
     m_timerId    = 0;
     m_onOkCalled = false;
 
@@ -117,6 +119,21 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
         user->IsRoot())
     {
         return (false);
+    }
+
+    char remoteIpByDNS[64] = "";
+
+    /*
+     * DNS
+     */
+    {
+        const PRO_UINT32 remoteIp2 = pbsd_inet_aton(remoteIp);
+        if (remoteIp2 == (PRO_UINT32)-1 || remoteIp2 == 0)
+        {
+            return (false);
+        }
+
+        pbsd_inet_ntoa(remoteIp2, remoteIpByDNS);
     }
 
     if (timeoutInSeconds == 0)
@@ -164,7 +181,7 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
             strncpy_pro(initArgs.sslclientEx.sslSni,
                 sizeof(initArgs.sslclientEx.sslSni), m_sslSni.c_str());
             strncpy_pro(initArgs.sslclientEx.remoteIp,
-                sizeof(initArgs.sslclientEx.remoteIp), remoteIp);
+                sizeof(initArgs.sslclientEx.remoteIp), remoteIpByDNS);
             if (password != NULL)
             {
                 strncpy_pro(initArgs.sslclientEx.password,
@@ -186,7 +203,7 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
             initArgs.tcpclientEx.remotePort       = remotePort;
             initArgs.tcpclientEx.timeoutInSeconds = timeoutInSeconds;
             strncpy_pro(initArgs.tcpclientEx.remoteIp,
-                sizeof(initArgs.tcpclientEx.remoteIp), remoteIp);
+                sizeof(initArgs.tcpclientEx.remoteIp), remoteIpByDNS);
             if (password != NULL)
             {
                 strncpy_pro(initArgs.tcpclientEx.password,
@@ -214,12 +231,14 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
         }
 
         observer->AddRef();
-        m_observer = observer;
-        m_reactor  = reactor;
-        m_session  = session;
-        m_bucket   = bucket;
-        m_user     = *user;
-        m_timerId  = reactor->ScheduleTimer(this, (PRO_UINT64)timeoutInSeconds * 1000, false);
+        m_observer   = observer;
+        m_reactor    = reactor;
+        m_session    = session;
+        m_bucket     = bucket;
+        m_remoteIp   = remoteIpByDNS;
+        m_remotePort = remotePort;
+        m_user       = *user;
+        m_timerId    = reactor->ScheduleTimer(this, (PRO_UINT64)timeoutInSeconds * 1000, false);
     }
 
     return (true);
@@ -321,6 +340,70 @@ CRtpMsgClient::GetSslSuite(char suiteName[64]) const
     }
 
     return (suiteId);
+}
+
+const char*
+PRO_CALLTYPE
+CRtpMsgClient::GetLocalIp(char localIp[64]) const
+{
+    strcpy(localIp, "0.0.0.0");
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_session != NULL)
+        {
+            m_session->GetLocalIp(localIp);
+        }
+    }
+
+    return (localIp);
+}
+
+unsigned short
+PRO_CALLTYPE
+CRtpMsgClient::GetLocalPort() const
+{
+    unsigned short localPort = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_session != NULL)
+        {
+            localPort = m_session->GetLocalPort();
+        }
+    }
+
+    return (localPort);
+}
+
+const char*
+PRO_CALLTYPE
+CRtpMsgClient::GetRemoteIp(char remoteIp[64]) const
+{
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        strncpy_pro(remoteIp, 64, m_remoteIp.c_str());
+    }
+
+    return (remoteIp);
+}
+
+unsigned short
+PRO_CALLTYPE
+CRtpMsgClient::GetRemotePort() const
+{
+    unsigned short remotePort = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        remotePort = m_remotePort;
+    }
+
+    return (remotePort);
 }
 
 bool

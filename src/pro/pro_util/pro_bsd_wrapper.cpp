@@ -97,7 +97,7 @@ pbsd_inet_addr_i(const char* ipstring)
                 break;
             }
         }
-    }
+    } /* end of for (...) */
 
     if (p[0] == NULL || p[1] == NULL || p[2] == NULL || p[3] == NULL ||
         p[0][0] == '\0' || p[1][0] == '\0' || p[2][0] == '\0' || p[3][0] == '\0')

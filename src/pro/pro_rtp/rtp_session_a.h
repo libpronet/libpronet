@@ -31,8 +31,8 @@
  * observer  : 回调目标
  * reactor   : 反应器
  * localInfo : 会话信息
- * localIp   : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * localPort : 要绑定的本地端口号.如果为0,系统将随机分配一个
+ * localIp   : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
+ * localPort : 要绑定的本地端口号. 如果为0, 系统将随机分配一个
  *
  * 返回值: 会话对象或NULL
  *
@@ -53,8 +53,8 @@ CreateRtpSessionUdpclient(IRtpSessionObserver*    observer,
  * observer  : 回调目标
  * reactor   : 反应器
  * localInfo : 会话信息
- * localIp   : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * localPort : 要绑定的本地端口号.如果为0,系统将随机分配一个
+ * localIp   : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
+ * localPort : 要绑定的本地端口号. 如果为0, 系统将随机分配一个
  *
  * 返回值: 会话对象或NULL
  *
@@ -77,8 +77,8 @@ CreateRtpSessionUdpserver(IRtpSessionObserver*    observer,
  * localInfo        : 会话信息
  * remoteIp         : 远端的ip地址或域名
  * remotePort       : 远端的端口号
- * localIp          : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * timeoutInSeconds : 握手超时.默认20秒
+ * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
+ * timeoutInSeconds : 握手超时. 默认20秒
  *
  * 返回值: 会话对象或NULL
  *
@@ -101,9 +101,9 @@ CreateRtpSessionTcpclient(IRtpSessionObserver*    observer,
  * observer         : 回调目标
  * reactor          : 反应器
  * localInfo        : 会话信息
- * localIp          : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * localPort        : 要绑定的本地端口号.如果为0,系统将随机分配一个
- * timeoutInSeconds : 握手超时.默认20秒
+ * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
+ * localPort        : 要绑定的本地端口号. 如果为0, 系统将随机分配一个
+ * timeoutInSeconds : 握手超时. 默认20秒
  *
  * 返回值: 会话对象或NULL
  *
@@ -127,8 +127,8 @@ CreateRtpSessionTcpserver(IRtpSessionObserver*    observer,
  * localInfo        : 会话信息
  * remoteIp         : 远端的ip地址或域名
  * remotePort       : 远端的端口号
- * localIp          : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * timeoutInSeconds : 握手超时.默认20秒
+ * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
+ * timeoutInSeconds : 握手超时. 默认20秒
  *
  * 返回值: 会话对象或NULL
  *
@@ -151,9 +151,9 @@ CreateRtpSessionUdpclientEx(IRtpSessionObserver*    observer,
  * observer         : 回调目标
  * reactor          : 反应器
  * localInfo        : 会话信息
- * localIp          : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * localPort        : 要绑定的本地端口号.如果为0,系统将随机分配一个
- * timeoutInSeconds : 握手超时.默认20秒
+ * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
+ * localPort        : 要绑定的本地端口号. 如果为0, 系统将随机分配一个
+ * timeoutInSeconds : 握手超时. 默认20秒
  *
  * 返回值: 会话对象或NULL
  *
@@ -178,8 +178,8 @@ CreateRtpSessionUdpserverEx(IRtpSessionObserver*    observer,
  * remoteIp         : 远端的ip地址或域名
  * remotePort       : 远端的端口号
  * password         : 会话口令
- * localIp          : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * timeoutInSeconds : 握手超时.默认20秒
+ * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
+ * timeoutInSeconds : 握手超时. 默认20秒
  *
  * 返回值: 会话对象或NULL
  *
@@ -202,8 +202,8 @@ CreateRtpSessionTcpclientEx(IRtpSessionObserver*    observer,
  * 参数:
  * observer   : 回调目标
  * reactor    : 反应器
- * localInfo  : 会话信息.根据IRtpServiceObserver::OnAcceptSession(...)的remoteInfo构造
- * sockId     : 套接字id.来源于IRtpServiceObserver::OnAcceptSession(...)
+ * localInfo  : 会话信息. 根据IRtpServiceObserver::OnAcceptSession(...)的remoteInfo构造
+ * sockId     : 套接字id. 来源于IRtpServiceObserver::OnAcceptSession(...)
  * unixSocket : 是否unix套接字
  *
  * 返回值: 会话对象或NULL
@@ -226,12 +226,12 @@ CreateRtpSessionTcpserverEx(IRtpSessionObserver*    observer,
  * reactor          : 反应器
  * localInfo        : 会话信息
  * sslConfig        : ssl配置
- * sslSni           : ssl服务名.如果有效,则参与认证服务端证书
+ * sslSni           : ssl服务名. 如果有效,则参与认证服务端证书
  * remoteIp         : 远端的ip地址或域名
  * remotePort       : 远端的端口号
  * password         : 会话口令
- * localIp          : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
- * timeoutInSeconds : 握手超时.默认20秒
+ * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
+ * timeoutInSeconds : 握手超时. 默认20秒
  *
  * 返回值: 会话对象或NULL
  *
@@ -256,9 +256,9 @@ CreateRtpSessionSslclientEx(IRtpSessionObserver*         observer,
  * 参数:
  * observer   : 回调目标
  * reactor    : 反应器
- * localInfo  : 会话信息.根据IRtpServiceObserver::OnAcceptSession(...)的remoteInfo构造
+ * localInfo  : 会话信息. 根据IRtpServiceObserver::OnAcceptSession(...)的remoteInfo构造
  * sslCtx     : ssl上下文
- * sockId     : 套接字id.来源于IRtpServiceObserver::OnAcceptSession(...)
+ * sockId     : 套接字id. 来源于IRtpServiceObserver::OnAcceptSession(...)
  * unixSocket : 是否unix套接字
  *
  * 返回值: 会话对象或NULL
@@ -283,8 +283,8 @@ CreateRtpSessionSslserverEx(IRtpSessionObserver*    observer,
  * reactor   : 反应器
  * localInfo : 会话信息
  * mcastIp   : 要绑定的多播地址
- * mcastPort : 要绑定的多播端口号.如果为0,系统将随机分配一个
- * localIp   : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
+ * mcastPort : 要绑定的多播端口号. 如果为0, 系统将随机分配一个
+ * localIp   : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
  *
  * 返回值: 会话对象或NULL
  *
@@ -311,8 +311,8 @@ CreateRtpSessionMcast(IRtpSessionObserver*    observer,
  * reactor   : 反应器
  * localInfo : 会话信息
  * mcastIp   : 要绑定的多播地址
- * mcastPort : 要绑定的多播端口号.如果为0,系统将随机分配一个
- * localIp   : 要绑定的本地ip地址.如果为NULL,系统将使用0.0.0.0
+ * mcastPort : 要绑定的多播端口号. 如果为0, 系统将随机分配一个
+ * localIp   : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
  *
  * 返回值: 会话对象或NULL
  *

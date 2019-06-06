@@ -949,6 +949,6 @@ CTest::OnTimer(unsigned long timerId,
             }
 
             m_connectors.insert(connector);
-        }
+        } /* end of while (...) */
     }
 }

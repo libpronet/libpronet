@@ -393,6 +393,70 @@ CRtpMsgC2s::GetC2sSslSuite(char suiteName[64]) const
     return (suiteId);
 }
 
+const char*
+PRO_CALLTYPE
+CRtpMsgC2s::GetC2sLocalIp(char localIp[64]) const
+{
+    strcpy(localIp, "0.0.0.0");
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_msgClient != NULL)
+        {
+            m_msgClient->GetLocalIp(localIp);
+        }
+    }
+
+    return (localIp);
+}
+
+unsigned short
+PRO_CALLTYPE
+CRtpMsgC2s::GetC2sLocalPort() const
+{
+    unsigned short localPort = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_msgClient != NULL)
+        {
+            localPort = m_msgClient->GetLocalPort();
+        }
+    }
+
+    return (localPort);
+}
+
+const char*
+PRO_CALLTYPE
+CRtpMsgC2s::GetC2sRemoteIp(char remoteIp[64]) const
+{
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        strncpy_pro(remoteIp, 64, m_uplinkIp.c_str());
+    }
+
+    return (remoteIp);
+}
+
+unsigned short
+PRO_CALLTYPE
+CRtpMsgC2s::GetC2sRemotePort() const
+{
+    unsigned short remotePort = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        remotePort = m_uplinkPort;
+    }
+
+    return (remotePort);
+}
+
 void
 PRO_CALLTYPE
 CRtpMsgC2s::GetUserCount(unsigned long* pendingUserCount, /* = NULL */

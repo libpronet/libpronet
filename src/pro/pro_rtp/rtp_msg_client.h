@@ -92,6 +92,14 @@ public:
 
     virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(char suiteName[64]) const;
 
+    virtual const char* PRO_CALLTYPE GetLocalIp(char localIp[64]) const;
+
+    virtual unsigned short PRO_CALLTYPE GetLocalPort() const;
+
+    virtual const char* PRO_CALLTYPE GetRemoteIp(char remoteIp[64]) const;
+
+    virtual unsigned short PRO_CALLTYPE GetRemotePort() const;
+
     virtual bool PRO_CALLTYPE SendMsg(
         const void*         buf,
         unsigned long       size,
@@ -182,6 +190,8 @@ private:
     IProReactor*                       m_reactor;
     IRtpSession*                       m_session;
     IRtpBucket*                        m_bucket;
+    CProStlString                      m_remoteIp;
+    unsigned short                     m_remotePort;
     RTP_MSG_USER                       m_user;
     unsigned long                      m_timerId;
     bool                               m_onOkCalled;

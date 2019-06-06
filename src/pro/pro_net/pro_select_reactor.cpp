@@ -568,7 +568,7 @@ CProSelectReactor::WorkerRun()
                     info2.handler = info.handler;
                     PRO_SET_BITS(info2.mask, PRO_MASK_EXCEPTION);
                 }
-            }
+            } /* end of for (...) */
 
 #endif /* WIN32, _WIN32_WCE */
         }
@@ -598,7 +598,7 @@ CProSelectReactor::WorkerRun()
                 info.handler->OnException(sockId);
                 info.handler->Release();
             }
-        }
+        } /* end of for (...) */
     } /* end of while (...) */
 }
 
