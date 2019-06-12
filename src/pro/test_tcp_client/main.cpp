@@ -87,8 +87,8 @@ int main(int argc, char* argv[])
                 );
         }
 
-        configInfo.tcpc_ssl_cafile.clear();
-        configInfo.tcpc_ssl_crlfile.clear();
+        configInfo.tcpc_ssl_cafiles.clear();
+        configInfo.tcpc_ssl_crlfiles.clear();
 
         int       i = 0;
         const int c = (int)configs.size();
@@ -215,7 +215,7 @@ int main(int argc, char* argv[])
 
                 if (!configValue.empty())
                 {
-                    configInfo.tcpc_ssl_cafile.push_back(configValue);
+                    configInfo.tcpc_ssl_cafiles.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "tcpc_ssl_crlfile") == 0)
@@ -233,7 +233,7 @@ int main(int argc, char* argv[])
 
                 if (!configValue.empty())
                 {
-                    configInfo.tcpc_ssl_crlfile.push_back(configValue);
+                    configInfo.tcpc_ssl_crlfiles.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "tcpc_ssl_sni") == 0)

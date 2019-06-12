@@ -85,46 +85,32 @@ CC2sServer::Init(IProReactor*                  reactor,
             return (false);
         }
 
-        if (configInfo.c2ss_enable_ssl && configInfo.c2ss_ssl_uplink_cafile.size() > 0)
+        if (configInfo.c2ss_enable_ssl)
         {
-            uplinkSslConfig = ProSslClientConfig_Create();
-            if (uplinkSslConfig == NULL)
-            {
-                goto EXIT;
-            }
-
-            ProSslClientConfig_EnableSha1Cert(
-                uplinkSslConfig, configInfo.c2ss_ssl_enable_sha1cert);
-
             CProStlVector<const char*>      caFiles;
             CProStlVector<const char*>      crlFiles;
             CProStlVector<PRO_SSL_SUITE_ID> suites;
 
             int i = 0;
-            int c = (int)configInfo.c2ss_ssl_uplink_cafile.size();
+            int c = (int)configInfo.c2ss_ssl_uplink_cafiles.size();
 
             for (; i < c; ++i)
             {
-                caFiles.push_back(&configInfo.c2ss_ssl_uplink_cafile[i][0]);
+                if (!configInfo.c2ss_ssl_uplink_cafiles[i].empty())
+                {
+                    caFiles.push_back(&configInfo.c2ss_ssl_uplink_cafiles[i][0]);
+                }
             }
 
             i = 0;
-            c = (int)configInfo.c2ss_ssl_uplink_crlfile.size();
+            c = (int)configInfo.c2ss_ssl_uplink_crlfiles.size();
 
             for (; i < c; ++i)
             {
-                crlFiles.push_back(&configInfo.c2ss_ssl_uplink_crlfile[i][0]);
-            }
-
-            if (!ProSslClientConfig_SetCaList(
-                uplinkSslConfig,
-                &caFiles[0],
-                caFiles.size(),
-                crlFiles.size() > 0 ? &crlFiles[0] : NULL,
-                crlFiles.size()
-                ))
-            {
-                goto EXIT;
+                if (!configInfo.c2ss_ssl_uplink_crlfiles[i].empty())
+                {
+                    crlFiles.push_back(&configInfo.c2ss_ssl_uplink_crlfiles[i][0]);
+                }
             }
 
             if (configInfo.c2ss_ssl_uplink_aes256)
@@ -140,80 +126,113 @@ CC2sServer::Init(IProReactor*                  reactor,
                 suites.push_back(PRO_SSL_DHE_RSA_WITH_AES_128_GCM_SHA256);
             }
 
-            if (!ProSslClientConfig_SetSuiteList(uplinkSslConfig, &suites[0], suites.size()))
+            if (caFiles.size() > 0)
             {
-                goto EXIT;
+                uplinkSslConfig = ProSslClientConfig_Create();
+                if (uplinkSslConfig == NULL)
+                {
+                    goto EXIT;
+                }
+
+                ProSslClientConfig_EnableSha1Cert(
+                    uplinkSslConfig, configInfo.c2ss_ssl_enable_sha1cert);
+
+                if (!ProSslClientConfig_SetCaList(
+                    uplinkSslConfig,
+                    &caFiles[0],
+                    caFiles.size(),
+                    crlFiles.size() > 0 ? &crlFiles[0] : NULL,
+                    crlFiles.size()
+                    ))
+                {
+                    goto EXIT;
+                }
+
+                if (!ProSslClientConfig_SetSuiteList(uplinkSslConfig, &suites[0], suites.size()))
+                {
+                    goto EXIT;
+                }
             }
         }
 
-        if (configInfo.c2ss_enable_ssl                    &&
-            configInfo.c2ss_ssl_local_cafile.size()   > 0 &&
-            configInfo.c2ss_ssl_local_certfile.size() > 0)
+        if (configInfo.c2ss_enable_ssl)
         {
-            localSslConfig = ProSslServerConfig_Create();
-            if (localSslConfig == NULL)
-            {
-                goto EXIT;
-            }
-
-            ProSslServerConfig_EnableSha1Cert(
-                localSslConfig, configInfo.c2ss_ssl_enable_sha1cert);
-
             CProStlVector<const char*> caFiles;
             CProStlVector<const char*> crlFiles;
             CProStlVector<const char*> certFiles;
 
             int i = 0;
-            int c = (int)configInfo.c2ss_ssl_local_cafile.size();
+            int c = (int)configInfo.c2ss_ssl_local_cafiles.size();
 
             for (; i < c; ++i)
             {
-                caFiles.push_back(&configInfo.c2ss_ssl_local_cafile[i][0]);
+                if (!configInfo.c2ss_ssl_local_cafiles[i].empty())
+                {
+                    caFiles.push_back(&configInfo.c2ss_ssl_local_cafiles[i][0]);
+                }
             }
 
             i = 0;
-            c = (int)configInfo.c2ss_ssl_local_crlfile.size();
+            c = (int)configInfo.c2ss_ssl_local_crlfiles.size();
 
             for (; i < c; ++i)
             {
-                crlFiles.push_back(&configInfo.c2ss_ssl_local_crlfile[i][0]);
+                if (!configInfo.c2ss_ssl_local_crlfiles[i].empty())
+                {
+                    crlFiles.push_back(&configInfo.c2ss_ssl_local_crlfiles[i][0]);
+                }
             }
 
             i = 0;
-            c = (int)configInfo.c2ss_ssl_local_certfile.size();
+            c = (int)configInfo.c2ss_ssl_local_certfiles.size();
 
             for (; i < c; ++i)
             {
-                certFiles.push_back(&configInfo.c2ss_ssl_local_certfile[i][0]);
+                if (!configInfo.c2ss_ssl_local_certfiles[i].empty())
+                {
+                    certFiles.push_back(&configInfo.c2ss_ssl_local_certfiles[i][0]);
+                }
             }
 
-            if (!ProSslServerConfig_SetCaList(
-                localSslConfig,
-                &caFiles[0],
-                caFiles.size(),
-                crlFiles.size() > 0 ? &crlFiles[0] : NULL,
-                crlFiles.size()
-                ))
+            if (caFiles.size() > 0 && certFiles.size() > 0)
             {
-                goto EXIT;
-            }
+                localSslConfig = ProSslServerConfig_Create();
+                if (localSslConfig == NULL)
+                {
+                    goto EXIT;
+                }
 
-            if (!ProSslServerConfig_AppendCertChain(
-                localSslConfig,
-                &certFiles[0],
-                certFiles.size(),
-                configInfo.c2ss_ssl_local_keyfile.c_str(),
-                NULL
-                ))
-            {
-                goto EXIT;
+                ProSslServerConfig_EnableSha1Cert(
+                    localSslConfig, configInfo.c2ss_ssl_enable_sha1cert);
+
+                if (!ProSslServerConfig_SetCaList(
+                    localSslConfig,
+                    &caFiles[0],
+                    caFiles.size(),
+                    crlFiles.size() > 0 ? &crlFiles[0] : NULL,
+                    crlFiles.size()
+                    ))
+                {
+                    goto EXIT;
+                }
+
+                if (!ProSslServerConfig_AppendCertChain(
+                    localSslConfig,
+                    &certFiles[0],
+                    certFiles.size(),
+                    configInfo.c2ss_ssl_local_keyfile.c_str(),
+                    NULL
+                    ))
+                {
+                    goto EXIT;
+                }
             }
         }
 
         msgC2s = CreateRtpMsgC2s(
             this,
             reactor,
-            RTP_MMT_MSG,
+            configInfo.c2ss_mm_type,
             uplinkSslConfig,
             configInfo.c2ss_ssl_uplink_sni.c_str(),
             configInfo.c2ss_uplink_ip.c_str(),

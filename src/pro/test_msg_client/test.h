@@ -42,6 +42,7 @@ struct MSG_CLIENT_CONFIG_INFO
         msgc_local_ip            = "0.0.0.0";
         msgc_handshake_timeout   = 20;
         msgc_redline_bytes       = 1024000;
+        msgc_mm_type             = RTP_MMT_MSG;
 
         msgc_enable_ssl          = false;
         msgc_ssl_enable_sha1cert = true;
@@ -50,10 +51,10 @@ struct MSG_CLIENT_CONFIG_INFO
 
         RtpMsgString2User("2-0-0", &msgc_id);
 
-        msgc_ssl_cafile.push_back("./ca.crt");
-        msgc_ssl_cafile.push_back("");
-        msgc_ssl_crlfile.push_back("");
-        msgc_ssl_crlfile.push_back("");
+        msgc_ssl_cafiles.push_back("./ca.crt");
+        msgc_ssl_cafiles.push_back("");
+        msgc_ssl_crlfiles.push_back("");
+        msgc_ssl_crlfiles.push_back("");
     }
 
     ~MSG_CLIENT_CONFIG_INFO()
@@ -79,11 +80,12 @@ struct MSG_CLIENT_CONFIG_INFO
         configStream.Add    ("msgc_local_ip"           , msgc_local_ip);
         configStream.AddUint("msgc_handshake_timeout"  , msgc_handshake_timeout);
         configStream.AddUint("msgc_redline_bytes"      , msgc_redline_bytes);
+        configStream.AddUint("msgc_mm_type"            , msgc_mm_type);
 
         configStream.AddInt ("msgc_enable_ssl"         , msgc_enable_ssl);
         configStream.AddInt ("msgc_ssl_enable_sha1cert", msgc_ssl_enable_sha1cert);
-        configStream.Add    ("msgc_ssl_cafile"         , msgc_ssl_cafile);
-        configStream.Add    ("msgc_ssl_crlfile"        , msgc_ssl_crlfile);
+        configStream.Add    ("msgc_ssl_cafile"         , msgc_ssl_cafiles);
+        configStream.Add    ("msgc_ssl_crlfile"        , msgc_ssl_crlfiles);
         configStream.Add    ("msgc_ssl_sni"            , msgc_ssl_sni);
         configStream.AddInt ("msgc_ssl_aes256"         , msgc_ssl_aes256);
 
@@ -97,11 +99,12 @@ struct MSG_CLIENT_CONFIG_INFO
     CProStlString                msgc_local_ip;
     unsigned int                 msgc_handshake_timeout;
     unsigned int                 msgc_redline_bytes;
+    RTP_MM_TYPE                  msgc_mm_type; /* RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX */
 
     bool                         msgc_enable_ssl;
     bool                         msgc_ssl_enable_sha1cert;
-    CProStlVector<CProStlString> msgc_ssl_cafile;
-    CProStlVector<CProStlString> msgc_ssl_crlfile;
+    CProStlVector<CProStlString> msgc_ssl_cafiles;
+    CProStlVector<CProStlString> msgc_ssl_crlfiles;
     CProStlString                msgc_ssl_sni;
     bool                         msgc_ssl_aes256;
 

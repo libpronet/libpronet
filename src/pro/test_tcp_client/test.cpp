@@ -79,45 +79,32 @@ CTest::Init(IProReactor*                  reactor,
             return (false);
         }
 
-        if (configInfo.tcpc_enable_ssl && configInfo.tcpc_ssl_cafile.size() > 0)
+        if (configInfo.tcpc_enable_ssl)
         {
-            sslConfig = ProSslClientConfig_Create();
-            if (sslConfig == NULL)
-            {
-                goto EXIT;
-            }
-
-            ProSslClientConfig_EnableSha1Cert(sslConfig, configInfo.tcpc_ssl_enable_sha1cert);
-
             CProStlVector<const char*>      caFiles;
             CProStlVector<const char*>      crlFiles;
             CProStlVector<PRO_SSL_SUITE_ID> suites;
 
             int i = 0;
-            int c = (int)configInfo.tcpc_ssl_cafile.size();
+            int c = (int)configInfo.tcpc_ssl_cafiles.size();
 
             for (; i < c; ++i)
             {
-                caFiles.push_back(&configInfo.tcpc_ssl_cafile[i][0]);
+                if (!configInfo.tcpc_ssl_cafiles[i].empty())
+                {
+                    caFiles.push_back(&configInfo.tcpc_ssl_cafiles[i][0]);
+                }
             }
 
             i = 0;
-            c = (int)configInfo.tcpc_ssl_crlfile.size();
+            c = (int)configInfo.tcpc_ssl_crlfiles.size();
 
             for (; i < c; ++i)
             {
-                crlFiles.push_back(&configInfo.tcpc_ssl_crlfile[i][0]);
-            }
-
-            if (!ProSslClientConfig_SetCaList(
-                sslConfig,
-                &caFiles[0],
-                caFiles.size(),
-                crlFiles.size() > 0 ? &crlFiles[0] : NULL,
-                crlFiles.size()
-                ))
-            {
-                goto EXIT;
+                if (!configInfo.tcpc_ssl_crlfiles[i].empty())
+                {
+                    crlFiles.push_back(&configInfo.tcpc_ssl_crlfiles[i][0]);
+                }
             }
 
             if (configInfo.tcpc_ssl_aes256)
@@ -133,9 +120,31 @@ CTest::Init(IProReactor*                  reactor,
                 suites.push_back(PRO_SSL_DHE_RSA_WITH_AES_128_GCM_SHA256);
             }
 
-            if (!ProSslClientConfig_SetSuiteList(sslConfig, &suites[0], suites.size()))
+            if (caFiles.size() > 0)
             {
-                goto EXIT;
+                sslConfig = ProSslClientConfig_Create();
+                if (sslConfig == NULL)
+                {
+                    goto EXIT;
+                }
+
+                ProSslClientConfig_EnableSha1Cert(sslConfig, configInfo.tcpc_ssl_enable_sha1cert);
+
+                if (!ProSslClientConfig_SetCaList(
+                    sslConfig,
+                    &caFiles[0],
+                    caFiles.size(),
+                    crlFiles.size() > 0 ? &crlFiles[0] : NULL,
+                    crlFiles.size()
+                    ))
+                {
+                    goto EXIT;
+                }
+
+                if (!ProSslClientConfig_SetSuiteList(sslConfig, &suites[0], suites.size()))
+                {
+                    goto EXIT;
+                }
             }
         }
 

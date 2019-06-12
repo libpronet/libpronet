@@ -100,8 +100,8 @@ int main(int argc, char* argv[])
                 );
         }
 
-        configInfo.msgc_ssl_cafile.clear();
-        configInfo.msgc_ssl_crlfile.clear();
+        configInfo.msgc_ssl_cafiles.clear();
+        configInfo.msgc_ssl_crlfiles.clear();
 
         int       i = 0;
         const int c = (int)configs.size();
@@ -166,6 +166,14 @@ int main(int argc, char* argv[])
                     configInfo.msgc_redline_bytes = value;
                 }
             }
+            else if (stricmp(configName.c_str(), "msgc_mm_type") == 0)
+            {
+                const int value = atoi(configValue.c_str());
+                if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
+                {
+                    configInfo.msgc_mm_type = (RTP_MM_TYPE)value;
+                }
+            }
             else if (stricmp(configName.c_str(), "msgc_enable_ssl") == 0)
             {
                 configInfo.msgc_enable_ssl = atoi(configValue.c_str()) != 0;
@@ -189,7 +197,7 @@ int main(int argc, char* argv[])
 
                 if (!configValue.empty())
                 {
-                    configInfo.msgc_ssl_cafile.push_back(configValue);
+                    configInfo.msgc_ssl_cafiles.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "msgc_ssl_crlfile") == 0)
@@ -207,7 +215,7 @@ int main(int argc, char* argv[])
 
                 if (!configValue.empty())
                 {
-                    configInfo.msgc_ssl_crlfile.push_back(configValue);
+                    configInfo.msgc_ssl_crlfiles.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "msgc_ssl_sni") == 0)

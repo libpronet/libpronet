@@ -48,12 +48,12 @@ struct TCP_SERVER_CONFIG_INFO
         tcps_ssl_enable_sha1cert = true;
         tcps_ssl_keyfile         = "./server.key";
 
-        tcps_ssl_cafile.push_back("./ca.crt");
-        tcps_ssl_cafile.push_back("");
-        tcps_ssl_crlfile.push_back("");
-        tcps_ssl_crlfile.push_back("");
-        tcps_ssl_certfile.push_back("./server.crt");
-        tcps_ssl_certfile.push_back("");
+        tcps_ssl_cafiles.push_back("./ca.crt");
+        tcps_ssl_cafiles.push_back("");
+        tcps_ssl_crlfiles.push_back("");
+        tcps_ssl_crlfiles.push_back("");
+        tcps_ssl_certfiles.push_back("./server.crt");
+        tcps_ssl_certfiles.push_back("");
     }
 
     void ToConfigs(CProStlVector<PRO_CONFIG_ITEM>& configs) const
@@ -72,9 +72,9 @@ struct TCP_SERVER_CONFIG_INFO
 
         configStream.AddInt ("tcps_enable_ssl"         , tcps_enable_ssl);
         configStream.AddInt ("tcps_ssl_enable_sha1cert", tcps_ssl_enable_sha1cert);
-        configStream.Add    ("tcps_ssl_cafile"         , tcps_ssl_cafile);
-        configStream.Add    ("tcps_ssl_crlfile"        , tcps_ssl_crlfile);
-        configStream.Add    ("tcps_ssl_certfile"       , tcps_ssl_certfile);
+        configStream.Add    ("tcps_ssl_cafile"         , tcps_ssl_cafiles);
+        configStream.Add    ("tcps_ssl_crlfile"        , tcps_ssl_crlfiles);
+        configStream.Add    ("tcps_ssl_certfile"       , tcps_ssl_certfiles);
         configStream.Add    ("tcps_ssl_keyfile"        , tcps_ssl_keyfile);
 
         configStream.Get(configs);
@@ -92,9 +92,9 @@ struct TCP_SERVER_CONFIG_INFO
 
     bool                         tcps_enable_ssl;
     bool                         tcps_ssl_enable_sha1cert;
-    CProStlVector<CProStlString> tcps_ssl_cafile;
-    CProStlVector<CProStlString> tcps_ssl_crlfile;
-    CProStlVector<CProStlString> tcps_ssl_certfile;
+    CProStlVector<CProStlString> tcps_ssl_cafiles;
+    CProStlVector<CProStlString> tcps_ssl_crlfiles;
+    CProStlVector<CProStlString> tcps_ssl_certfiles;
     CProStlString                tcps_ssl_keyfile;
 
     DECLARE_SGI_POOL(0);

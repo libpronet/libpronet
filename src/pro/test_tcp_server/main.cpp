@@ -69,9 +69,9 @@ int main(int argc, char* argv[])
                 );
         }
 
-        configInfo.tcps_ssl_cafile.clear();
-        configInfo.tcps_ssl_crlfile.clear();
-        configInfo.tcps_ssl_certfile.clear();
+        configInfo.tcps_ssl_cafiles.clear();
+        configInfo.tcps_ssl_crlfiles.clear();
+        configInfo.tcps_ssl_certfiles.clear();
 
         int       i = 0;
         const int c = (int)configs.size();
@@ -172,7 +172,7 @@ int main(int argc, char* argv[])
 
                 if (!configValue.empty())
                 {
-                    configInfo.tcps_ssl_cafile.push_back(configValue);
+                    configInfo.tcps_ssl_cafiles.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "tcps_ssl_crlfile") == 0)
@@ -190,7 +190,7 @@ int main(int argc, char* argv[])
 
                 if (!configValue.empty())
                 {
-                    configInfo.tcps_ssl_crlfile.push_back(configValue);
+                    configInfo.tcps_ssl_crlfiles.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "tcps_ssl_certfile") == 0)
@@ -208,7 +208,7 @@ int main(int argc, char* argv[])
 
                 if (!configValue.empty())
                 {
-                    configInfo.tcps_ssl_certfile.push_back(configValue);
+                    configInfo.tcps_ssl_certfiles.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "tcps_ssl_keyfile") == 0)

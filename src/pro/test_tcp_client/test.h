@@ -53,10 +53,10 @@ struct TCP_CLIENT_CONFIG_INFO
         tcpc_ssl_sni             = "server.libpro.org";
         tcpc_ssl_aes256          = false;
 
-        tcpc_ssl_cafile.push_back("./ca.crt");
-        tcpc_ssl_cafile.push_back("");
-        tcpc_ssl_crlfile.push_back("");
-        tcpc_ssl_crlfile.push_back("");
+        tcpc_ssl_cafiles.push_back("./ca.crt");
+        tcpc_ssl_cafiles.push_back("");
+        tcpc_ssl_crlfiles.push_back("");
+        tcpc_ssl_crlfiles.push_back("");
     }
 
     void ToConfigs(CProStlVector<PRO_CONFIG_ITEM>& configs) const
@@ -78,8 +78,8 @@ struct TCP_CLIENT_CONFIG_INFO
 
         configStream.AddInt ("tcpc_enable_ssl"         , tcpc_enable_ssl);
         configStream.AddInt ("tcpc_ssl_enable_sha1cert", tcpc_ssl_enable_sha1cert);
-        configStream.Add    ("tcpc_ssl_cafile"         , tcpc_ssl_cafile);
-        configStream.Add    ("tcpc_ssl_crlfile"        , tcpc_ssl_crlfile);
+        configStream.Add    ("tcpc_ssl_cafile"         , tcpc_ssl_cafiles);
+        configStream.Add    ("tcpc_ssl_crlfile"        , tcpc_ssl_crlfiles);
         configStream.Add    ("tcpc_ssl_sni"            , tcpc_ssl_sni);
         configStream.AddInt ("tcpc_ssl_aes256"         , tcpc_ssl_aes256);
 
@@ -101,8 +101,8 @@ struct TCP_CLIENT_CONFIG_INFO
 
     bool                         tcpc_enable_ssl;
     bool                         tcpc_ssl_enable_sha1cert;
-    CProStlVector<CProStlString> tcpc_ssl_cafile;
-    CProStlVector<CProStlString> tcpc_ssl_crlfile;
+    CProStlVector<CProStlString> tcpc_ssl_cafiles;
+    CProStlVector<CProStlString> tcpc_ssl_crlfiles;
     CProStlString                tcpc_ssl_sni;
     bool                         tcpc_ssl_aes256;
 

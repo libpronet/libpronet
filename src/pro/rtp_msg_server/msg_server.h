@@ -43,6 +43,7 @@ struct MSG_SERVER_CONFIG_INFO
         msgs_handshake_timeout   = 20;
         msgs_redline_bytes_c2s   = 8192000;
         msgs_redline_bytes_usr   = 1024000;
+        msgs_mm_type             = RTP_MMT_MSG;
         msgs_db_readonly         = true;
 
         msgs_enable_ssl          = true;
@@ -56,12 +57,12 @@ struct MSG_SERVER_CONFIG_INFO
         msgs_log_level_userin    = 0;
         msgs_log_level_userout   = 0;
 
-        msgs_ssl_cafile.push_back("./ca.crt");
-        msgs_ssl_cafile.push_back("");
-        msgs_ssl_crlfile.push_back("");
-        msgs_ssl_crlfile.push_back("");
-        msgs_ssl_certfile.push_back("./server.crt");
-        msgs_ssl_certfile.push_back("");
+        msgs_ssl_cafiles.push_back("./ca.crt");
+        msgs_ssl_cafiles.push_back("");
+        msgs_ssl_crlfiles.push_back("");
+        msgs_ssl_crlfiles.push_back("");
+        msgs_ssl_certfiles.push_back("./server.crt");
+        msgs_ssl_certfiles.push_back("");
     }
 
     void ToConfigs(CProStlVector<PRO_CONFIG_ITEM>& configs) const
@@ -73,14 +74,15 @@ struct MSG_SERVER_CONFIG_INFO
         configStream.AddUint("msgs_handshake_timeout"  , msgs_handshake_timeout);
         configStream.AddUint("msgs_redline_bytes_c2s"  , msgs_redline_bytes_c2s);
         configStream.AddUint("msgs_redline_bytes_usr"  , msgs_redline_bytes_usr);
+        configStream.AddUint("msgs_mm_type"            , msgs_mm_type);
         configStream.AddInt ("msgs_db_readonly"        , msgs_db_readonly);
 
         configStream.AddInt ("msgs_enable_ssl"         , msgs_enable_ssl);
         configStream.AddInt ("msgs_ssl_forced"         , msgs_ssl_forced);
         configStream.AddInt ("msgs_ssl_enable_sha1cert", msgs_ssl_enable_sha1cert);
-        configStream.Add    ("msgs_ssl_cafile"         , msgs_ssl_cafile);
-        configStream.Add    ("msgs_ssl_crlfile"        , msgs_ssl_crlfile);
-        configStream.Add    ("msgs_ssl_certfile"       , msgs_ssl_certfile);
+        configStream.Add    ("msgs_ssl_cafile"         , msgs_ssl_cafiles);
+        configStream.Add    ("msgs_ssl_crlfile"        , msgs_ssl_crlfiles);
+        configStream.Add    ("msgs_ssl_certfile"       , msgs_ssl_certfiles);
         configStream.Add    ("msgs_ssl_keyfile"        , msgs_ssl_keyfile);
 
         configStream.AddUint("msgs_log_loop_bytes"     , msgs_log_loop_bytes);
@@ -97,14 +99,15 @@ struct MSG_SERVER_CONFIG_INFO
     unsigned int                 msgs_handshake_timeout;
     unsigned int                 msgs_redline_bytes_c2s;
     unsigned int                 msgs_redline_bytes_usr;
+    RTP_MM_TYPE                  msgs_mm_type;      /* RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX */
     bool                         msgs_db_readonly;
 
     bool                         msgs_enable_ssl;
     bool                         msgs_ssl_forced;
     bool                         msgs_ssl_enable_sha1cert;
-    CProStlVector<CProStlString> msgs_ssl_cafile;
-    CProStlVector<CProStlString> msgs_ssl_crlfile;
-    CProStlVector<CProStlString> msgs_ssl_certfile;
+    CProStlVector<CProStlString> msgs_ssl_cafiles;
+    CProStlVector<CProStlString> msgs_ssl_crlfiles;
+    CProStlVector<CProStlString> msgs_ssl_certfiles;
     CProStlString                msgs_ssl_keyfile;
 
     unsigned int                 msgs_log_loop_bytes;

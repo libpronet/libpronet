@@ -85,11 +85,11 @@ int main(int argc, char* argv[])
                 );
         }
 
-        configInfo.c2ss_ssl_uplink_cafile.clear();
-        configInfo.c2ss_ssl_uplink_crlfile.clear();
-        configInfo.c2ss_ssl_local_cafile.clear();
-        configInfo.c2ss_ssl_local_crlfile.clear();
-        configInfo.c2ss_ssl_local_certfile.clear();
+        configInfo.c2ss_ssl_uplink_cafiles.clear();
+        configInfo.c2ss_ssl_uplink_crlfiles.clear();
+        configInfo.c2ss_ssl_local_cafiles.clear();
+        configInfo.c2ss_ssl_local_crlfiles.clear();
+        configInfo.c2ss_ssl_local_certfiles.clear();
 
         int       i = 0;
         const int c = (int)configs.size();
@@ -193,6 +193,14 @@ int main(int argc, char* argv[])
                     configInfo.c2ss_local_redline_bytes = value;
                 }
             }
+            else if (stricmp(configName.c_str(), "c2ss_mm_type") == 0)
+            {
+                const int value = atoi(configValue.c_str());
+                if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
+                {
+                    configInfo.c2ss_mm_type = (RTP_MM_TYPE)value;
+                }
+            }
             else if (stricmp(configName.c_str(), "c2ss_enable_ssl") == 0)
             {
                 configInfo.c2ss_enable_ssl = atoi(configValue.c_str()) != 0;
@@ -216,7 +224,7 @@ int main(int argc, char* argv[])
 
                 if (!configValue.empty())
                 {
-                    configInfo.c2ss_ssl_uplink_cafile.push_back(configValue);
+                    configInfo.c2ss_ssl_uplink_cafiles.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "c2ss_ssl_uplink_crlfile") == 0)
@@ -234,7 +242,7 @@ int main(int argc, char* argv[])
 
                 if (!configValue.empty())
                 {
-                    configInfo.c2ss_ssl_uplink_crlfile.push_back(configValue);
+                    configInfo.c2ss_ssl_uplink_crlfiles.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "c2ss_ssl_uplink_sni") == 0)
@@ -264,7 +272,7 @@ int main(int argc, char* argv[])
 
                 if (!configValue.empty())
                 {
-                    configInfo.c2ss_ssl_local_cafile.push_back(configValue);
+                    configInfo.c2ss_ssl_local_cafiles.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "c2ss_ssl_local_crlfile") == 0)
@@ -282,7 +290,7 @@ int main(int argc, char* argv[])
 
                 if (!configValue.empty())
                 {
-                    configInfo.c2ss_ssl_local_crlfile.push_back(configValue);
+                    configInfo.c2ss_ssl_local_crlfiles.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "c2ss_ssl_local_certfile") == 0)
@@ -300,7 +308,7 @@ int main(int argc, char* argv[])
 
                 if (!configValue.empty())
                 {
-                    configInfo.c2ss_ssl_local_certfile.push_back(configValue);
+                    configInfo.c2ss_ssl_local_certfiles.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "c2ss_ssl_local_keyfile") == 0)
@@ -388,11 +396,12 @@ int main(int argc, char* argv[])
     snprintf_pro(
         s_traceInfo,
         sizeof(s_traceInfo),
-        " rtp_msg_c2s --- [servicePort : %u, server : %s:%u] --- ok! \n\n"
+        " rtp_msg_c2s --- [servicePort : %u, server : %s:%u, mmType : %u] --- ok! \n\n"
         ,
         (unsigned int)configInfo.c2ss_local_hub_port,
         configInfo.c2ss_uplink_ip.c_str(),
-        (unsigned int)configInfo.c2ss_uplink_port
+        (unsigned int)configInfo.c2ss_uplink_port,
+        (unsigned int)configInfo.c2ss_mm_type
         );
     printf("%s", s_traceInfo);
     logFile->Log(s_traceInfo);

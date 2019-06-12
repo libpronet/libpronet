@@ -169,7 +169,7 @@ int main(int argc, char* argv[])
                 printf(
                     " pro_service_hub --- error! can't create service hub on the port %u. \n\n"
                     ,
-                    (unsigned int)configInfo.hubs_listen_ports[i]
+                    configInfo.hubs_listen_ports[i]
                     );
 
                 goto EXIT;
@@ -178,14 +178,14 @@ int main(int argc, char* argv[])
             hubs.push_back(hub);
 
             char info[64] = "";
-            sprintf(info, "%u", (unsigned int)configInfo.hubs_listen_ports[i]);
+            sprintf(info, "%u", configInfo.hubs_listen_ports[i]);
             if (i == 0)
             {
                 portString =  info;
             }
             else
             {
-                portString += ',';
+                portString += ", ";
                 portString += info;
             }
         } /* end of for (...) */

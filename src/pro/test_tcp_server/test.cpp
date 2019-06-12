@@ -82,66 +82,76 @@ CTest::Init(IProReactor*                  reactor,
             return (false);
         }
 
-        if (configInfo.tcps_enable_ssl              &&
-            configInfo.tcps_ssl_cafile.size()   > 0 &&
-            configInfo.tcps_ssl_certfile.size() > 0)
+        if (configInfo.tcps_enable_ssl)
         {
-            sslConfig = ProSslServerConfig_Create();
-            if (sslConfig == NULL)
-            {
-                goto EXIT;
-            }
-
-            ProSslServerConfig_EnableSha1Cert(sslConfig, configInfo.tcps_ssl_enable_sha1cert);
-
             CProStlVector<const char*> caFiles;
             CProStlVector<const char*> crlFiles;
             CProStlVector<const char*> certFiles;
 
             int i = 0;
-            int c = (int)configInfo.tcps_ssl_cafile.size();
+            int c = (int)configInfo.tcps_ssl_cafiles.size();
 
             for (; i < c; ++i)
             {
-                caFiles.push_back(&configInfo.tcps_ssl_cafile[i][0]);
+                if (!configInfo.tcps_ssl_cafiles[i].empty())
+                {
+                    caFiles.push_back(&configInfo.tcps_ssl_cafiles[i][0]);
+                }
             }
 
             i = 0;
-            c = (int)configInfo.tcps_ssl_crlfile.size();
+            c = (int)configInfo.tcps_ssl_crlfiles.size();
 
             for (; i < c; ++i)
             {
-                crlFiles.push_back(&configInfo.tcps_ssl_crlfile[i][0]);
+                if (!configInfo.tcps_ssl_crlfiles[i].empty())
+                {
+                    crlFiles.push_back(&configInfo.tcps_ssl_crlfiles[i][0]);
+                }
             }
 
             i = 0;
-            c = (int)configInfo.tcps_ssl_certfile.size();
+            c = (int)configInfo.tcps_ssl_certfiles.size();
 
             for (; i < c; ++i)
             {
-                certFiles.push_back(&configInfo.tcps_ssl_certfile[i][0]);
+                if (!configInfo.tcps_ssl_certfiles[i].empty())
+                {
+                    certFiles.push_back(&configInfo.tcps_ssl_certfiles[i][0]);
+                }
             }
 
-            if (!ProSslServerConfig_SetCaList(
-                sslConfig,
-                &caFiles[0],
-                caFiles.size(),
-                crlFiles.size() > 0 ? &crlFiles[0] : NULL,
-                crlFiles.size()
-                ))
+            if (caFiles.size() > 0 && certFiles.size() > 0)
             {
-                goto EXIT;
-            }
+                sslConfig = ProSslServerConfig_Create();
+                if (sslConfig == NULL)
+                {
+                    goto EXIT;
+                }
 
-            if (!ProSslServerConfig_AppendCertChain(
-                sslConfig,
-                &certFiles[0],
-                certFiles.size(),
-                configInfo.tcps_ssl_keyfile.c_str(),
-                NULL /* password to decrypt the keyfile */
-                ))
-            {
-                goto EXIT;
+                ProSslServerConfig_EnableSha1Cert(sslConfig, configInfo.tcps_ssl_enable_sha1cert);
+
+                if (!ProSslServerConfig_SetCaList(
+                    sslConfig,
+                    &caFiles[0],
+                    caFiles.size(),
+                    crlFiles.size() > 0 ? &crlFiles[0] : NULL,
+                    crlFiles.size()
+                    ))
+                {
+                    goto EXIT;
+                }
+
+                if (!ProSslServerConfig_AppendCertChain(
+                    sslConfig,
+                    &certFiles[0],
+                    certFiles.size(),
+                    configInfo.tcps_ssl_keyfile.c_str(),
+                    NULL /* password to decrypt the keyfile */
+                    ))
+                {
+                    goto EXIT;
+                }
             }
         }
 

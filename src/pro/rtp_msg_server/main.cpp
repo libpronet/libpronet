@@ -87,9 +87,9 @@ int main(int argc, char* argv[])
                 );
         }
 
-        configInfo.msgs_ssl_cafile.clear();
-        configInfo.msgs_ssl_crlfile.clear();
-        configInfo.msgs_ssl_certfile.clear();
+        configInfo.msgs_ssl_cafiles.clear();
+        configInfo.msgs_ssl_crlfiles.clear();
+        configInfo.msgs_ssl_certfiles.clear();
 
         int       i = 0;
         const int c = (int)configs.size();
@@ -139,6 +139,14 @@ int main(int argc, char* argv[])
                     configInfo.msgs_redline_bytes_usr = value;
                 }
             }
+            else if (stricmp(configName.c_str(), "msgs_mm_type") == 0)
+            {
+                const int value = atoi(configValue.c_str());
+                if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
+                {
+                    configInfo.msgs_mm_type = (RTP_MM_TYPE)value;
+                }
+            }
             else if (stricmp(configName.c_str(), "msgs_db_readonly") == 0)
             {
                 configInfo.msgs_db_readonly = atoi(configValue.c_str()) != 0;
@@ -170,7 +178,7 @@ int main(int argc, char* argv[])
 
                 if (!configValue.empty())
                 {
-                    configInfo.msgs_ssl_cafile.push_back(configValue);
+                    configInfo.msgs_ssl_cafiles.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "msgs_ssl_crlfile") == 0)
@@ -188,7 +196,7 @@ int main(int argc, char* argv[])
 
                 if (!configValue.empty())
                 {
-                    configInfo.msgs_ssl_crlfile.push_back(configValue);
+                    configInfo.msgs_ssl_crlfiles.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "msgs_ssl_certfile") == 0)
@@ -206,7 +214,7 @@ int main(int argc, char* argv[])
 
                 if (!configValue.empty())
                 {
-                    configInfo.msgs_ssl_certfile.push_back(configValue);
+                    configInfo.msgs_ssl_certfiles.push_back(configValue);
                 }
             }
             else if (stricmp(configName.c_str(), "msgs_ssl_keyfile") == 0)
@@ -301,9 +309,10 @@ int main(int argc, char* argv[])
     snprintf_pro(
         s_traceInfo,
         sizeof(s_traceInfo),
-        " rtp_msg_server --- [servicePort : %u] --- ok! \n\n"
+        " rtp_msg_server --- [servicePort : %u, mmType : %u] --- ok! \n\n"
         ,
-        (unsigned int)configInfo.msgs_hub_port
+        (unsigned int)configInfo.msgs_hub_port,
+        (unsigned int)configInfo.msgs_mm_type
         );
     printf("%s", s_traceInfo);
     logFile->Log(s_traceInfo);
