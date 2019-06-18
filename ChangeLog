@@ -1,3 +1,39 @@
+LibProNet-1.0.0, tag-release-1.0.0, 2019-06-18
+====
+
+Features
+  * Add support for Visual Studio 2013
+  * Add static libs with -MDd/-MD options to support Qt(Visual Studio
+    edition)
+  * Add detail trace info for memory pool, and turn on trace info
+    on Linux
+  * RTP sessions support RTP_EPM_TCP2 & RTP_EPM_TCP4 packaging mode
+  * RTP sessions support big-packet mode by creating a dynamic
+    receiver-packet(RTP_EPM_TCP4 mode only)
+  * Msg system uses RTP_EPM_TCP4 packaging mode, and the data more than
+    64K bytes can be send
+  * Upgrade rtp-session handshake protocol, and upgrade msg-system
+    protocol:
+    PRO Session   Protocol version 1.0 (PSP-v1.0),
+    PRO Messaging Protocol version 1.0 (PMP-v1.0)
+
+Bugfix
+  * Fix an issue that non-root users can't create reactor on Linux
+
+Changes
+  * Add CProBuffer::SetMagic() method
+  * Add method to get ssl suite
+  * Add methods for getting local/remote addresses of msg nodes
+  * Add output-redline for msg system
+  * Limit the scope of msg_mm_types
+  * Add "mm_type" item to the configuration files for msg servers
+  * Modify the default thread count in config files
+  * Add pre-run scripts set1_sys.sh and set2_proc.sh
+  * Rename pub_run/ to pub_test/
+  * Rename rtp_framework.h to rtp_base.h, and rename rtp_foundation.h
+    to rtp_msg.h
+
+
 LibProNet-0.9.1, tag-release-0.9.1, 2019-02-20
 ====
 
