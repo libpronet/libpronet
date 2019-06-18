@@ -5,7 +5,8 @@ cp ../pub/cfg/server.crt                       ./linux-x86-r/
 cp ../pub/cfg/server.key                       ./linux-x86-r/
 cp ../pub/cfg/*.cfg                            ./linux-x86-r/
 cp ../pub/cfg/rtp_msg_server.db                ./linux-x86-r/
-cp ../pub/cfg/pre_run.sh.txt                   ./linux-x86-r/
+cp ../pub/cfg/set1_sys.sh                      ./linux-x86-r/
+cp ../pub/cfg/set2_proc.sh                     ./linux-x86-r/
 
 cp ../pub/lib-r/linux-gcc/x86/libpro_shared.so ./linux-x86-r/
 cp ../pub/lib-r/linux-gcc/x86/libpro_net.so    ./linux-x86-r/

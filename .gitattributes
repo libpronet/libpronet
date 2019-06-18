@@ -25,6 +25,5 @@ Android.mk        text eol=lf
 
 *.bat             text eol=crlf
 *.sh              text eol=lf
-*.sh.txt          text eol=lf
 *.cfg             text eol=lf
 *.db              -text

@@ -13,4 +13,5 @@ procfg_DATA = ../../../../pub/cfg/ca.crt              \
               ../../../../pub/cfg/test_msg_client.cfg \
               ../../../../pub/cfg/test_tcp_server.cfg \
               ../../../../pub/cfg/test_tcp_client.cfg \
-              ../../../../pub/cfg/pre_run.sh.txt
+              ../../../../pub/cfg/set1_sys.sh         \
+              ../../../../pub/cfg/set2_proc.sh

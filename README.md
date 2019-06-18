@@ -169,12 +169,17 @@ How to run the messaging system on Linux?
 By default, the installation location is "/usr/local/libpronet",
 which we call "${install}".
 
-1) See the file "${install}/bin/pre_run.sh.txt"
+1) Execute the scripts "${install}/bin/set1_sys.sh" and
+   "${install}/bin/set2_proc.sh" in the current shell
+
+   > cd ${install}/bin
+
+   > . ./set1_sys.sh
+
+   > . ./set2_proc.sh
 
 2) Adjust the config file "${install}/bin/pro_service_hub.cfg", and
    start a "${install}/bin/pro_service_hub" process
-
-   > cd ${install}/bin
 
    > ./pro_service_hub
 
@@ -195,12 +200,17 @@ How to run the tests on Linux?
 By default, the installation location is "/usr/local/libpronet",
 which we call "${install}".
 
-1) See the file "${install}/bin/pre_run.sh.txt"
+1) Execute the scripts "${install}/bin/set1_sys.sh" and
+   "${install}/bin/set2_proc.sh" in the current shell
+
+   > cd ${install}/bin
+
+   > . ./set1_sys.sh
+
+   > . ./set2_proc.sh
 
 2) Adjust the config file "${install}/bin/test_tcp_server.cfg", and
    start a "${install}/bin/test_tcp_server" process
-
-   > cd ${install}/bin
 
    > ./test_tcp_server
 

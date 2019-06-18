@@ -5,7 +5,8 @@ cp ../pub/cfg/server.crt                       ./linux-arm-r/
 cp ../pub/cfg/server.key                       ./linux-arm-r/
 cp ../pub/cfg/*.cfg                            ./linux-arm-r/
 cp ../pub/cfg/rtp_msg_server.db                ./linux-arm-r/
-cp ../pub/cfg/pre_run.sh.txt                   ./linux-arm-r/
+cp ../pub/cfg/set1_sys.sh                      ./linux-arm-r/
+cp ../pub/cfg/set2_proc.sh                     ./linux-arm-r/
 
 cp ../pub/lib-r/linux-gcc/arm/libpro_shared.so ./linux-arm-r/
 cp ../pub/lib-r/linux-gcc/arm/libpro_net.so    ./linux-arm-r/
