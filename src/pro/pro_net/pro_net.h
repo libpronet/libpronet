@@ -571,6 +571,10 @@ class IProTransport
 {
 public:
 
+    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+
+    virtual unsigned long PRO_CALLTYPE Release() = 0;
+
     /*
      * 获取传输器类型
      */
@@ -678,10 +682,6 @@ public:
      * 停止心跳定时器
      */
     virtual void PRO_CALLTYPE StopHeartbeat() = 0;
-
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
-
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
 };
 
 /*

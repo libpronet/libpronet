@@ -680,6 +680,10 @@ class IRtpSession
 {
 public:
 
+    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+
+    virtual unsigned long PRO_CALLTYPE Release() = 0;
+
     /*
      * 获取会话信息
      */
@@ -852,10 +856,6 @@ public:
     virtual void PRO_CALLTYPE ResetInputStat() = 0;
 
     virtual void PRO_CALLTYPE ResetOutputStat() = 0;
-
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
-
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
 };
 
 /*

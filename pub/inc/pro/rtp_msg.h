@@ -256,6 +256,10 @@ class IRtpMsgClient
 {
 public:
 
+    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+
+    virtual unsigned long PRO_CALLTYPE Release() = 0;
+
     /*
      * 获取用户号
      */
@@ -310,10 +314,6 @@ public:
      * 获取链路发送红线. 默认(1024 * 1024)字节
      */
     virtual unsigned long PRO_CALLTYPE GetOutputRedline() const = 0;
-
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
-
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
 };
 
 /*
@@ -370,6 +370,10 @@ class IRtpMsgServer
 {
 public:
 
+    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+
+    virtual unsigned long PRO_CALLTYPE Release() = 0;
+
     /*
      * 获取用户数
      */
@@ -420,10 +424,6 @@ public:
      * 获取server->user链路发送红线. 默认(1024 * 1024)字节
      */
     virtual unsigned long PRO_CALLTYPE GetOutputRedlineToUser() const = 0;
-
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
-
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
 };
 
 /*
@@ -506,6 +506,10 @@ class IRtpMsgC2s
 {
 public:
 
+    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+
+    virtual unsigned long PRO_CALLTYPE Release() = 0;
+
     /*
      * 获取c2s用户号
      */
@@ -572,10 +576,6 @@ public:
      * 获取c2s->user链路发送红线. 默认(1024 * 1024)字节
      */
     virtual unsigned long PRO_CALLTYPE GetOutputRedlineToUser() const = 0;
-
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
-
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
 };
 
 /*
