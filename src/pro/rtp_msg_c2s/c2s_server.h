@@ -38,7 +38,7 @@ struct C2S_SERVER_CONFIG_INFO
 {
     C2S_SERVER_CONFIG_INFO()
     {
-        c2ss_thread_count         = 40;
+        c2ss_thread_count         = 20;
         c2ss_uplink_ip            = "127.0.0.1";
         c2ss_uplink_port          = 3000;
         c2ss_uplink_password      = "test";

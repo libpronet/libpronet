@@ -37,7 +37,7 @@ struct SERVICE_HUB_CONFIG_INFO
 {
     SERVICE_HUB_CONFIG_INFO()
     {
-        hubs_thread_count      = 20;
+        hubs_thread_count      = 10;
         hubs_handshake_timeout = 10;
 
         hubs_listen_ports.push_back(3000);

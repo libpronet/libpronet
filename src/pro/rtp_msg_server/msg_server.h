@@ -38,7 +38,7 @@ struct MSG_SERVER_CONFIG_INFO
 {
     MSG_SERVER_CONFIG_INFO()
     {
-        msgs_thread_count        = 40;
+        msgs_thread_count        = 20;
         msgs_hub_port            = 3000;
         msgs_handshake_timeout   = 20;
         msgs_redline_bytes_c2s   = 8192000;

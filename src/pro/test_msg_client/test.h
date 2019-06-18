@@ -36,6 +36,7 @@ struct MSG_CLIENT_CONFIG_INFO
 {
     MSG_CLIENT_CONFIG_INFO()
     {
+        msgc_thread_count        = 2;
         msgc_server_ip           = "127.0.0.1";
         msgc_server_port         = 3000;
         msgc_password            = "test";
@@ -73,6 +74,7 @@ struct MSG_CLIENT_CONFIG_INFO
 
         CProConfigStream configStream;
 
+        configStream.AddUint("msgc_thread_count"       , msgc_thread_count);
         configStream.Add    ("msgc_server_ip"          , msgc_server_ip);
         configStream.AddUint("msgc_server_port"        , msgc_server_port);
         configStream.Add    ("msgc_id"                 , idString);
@@ -92,6 +94,7 @@ struct MSG_CLIENT_CONFIG_INFO
         configStream.Get(configs);
     }
 
+    unsigned int                 msgc_thread_count; /* 1 ~ 100 */
     CProStlString                msgc_server_ip;
     unsigned short               msgc_server_port;
     RTP_MSG_USER                 msgc_id;
@@ -99,7 +102,7 @@ struct MSG_CLIENT_CONFIG_INFO
     CProStlString                msgc_local_ip;
     unsigned int                 msgc_handshake_timeout;
     unsigned int                 msgc_redline_bytes;
-    RTP_MM_TYPE                  msgc_mm_type; /* RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX */
+    RTP_MM_TYPE                  msgc_mm_type;      /* RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX */
 
     bool                         msgc_enable_ssl;
     bool                         msgc_ssl_enable_sha1cert;
