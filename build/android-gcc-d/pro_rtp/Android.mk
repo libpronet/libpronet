@@ -2,10 +2,14 @@ LOCAL_PATH := $(PRO_ROOT_DIR)/src/pro/pro_rtp
 include $(CLEAR_VARS)
 
 LOCAL_MODULE    := pro_rtp
-LOCAL_SRC_FILES := rtp_framework.cpp            \
+LOCAL_SRC_FILES := rtp_base.cpp                 \
+                   rtp_bucket.cpp               \
+                   rtp_flow_stat.cpp            \
                    rtp_packet.cpp               \
                    rtp_port_allocator.cpp       \
+                   rtp_reorder.cpp              \
                    rtp_service.cpp              \
+                   rtp_session_a.cpp            \
                    rtp_session_base.cpp         \
                    rtp_session_mcast.cpp        \
                    rtp_session_mcast_ex.cpp     \
@@ -19,13 +23,11 @@ LOCAL_SRC_FILES := rtp_framework.cpp            \
                    rtp_session_udpclient_ex.cpp \
                    rtp_session_udpserver.cpp    \
                    rtp_session_udpserver_ex.cpp \
-                   rtp_bucket.cpp               \
-                   rtp_flow_stat.cpp            \
-                   rtp_foundation.cpp           \
+                   rtp_session_wrapper.cpp      \
+                   rtp_msg.cpp                  \
                    rtp_msg_c2s.cpp              \
                    rtp_msg_client.cpp           \
-                   rtp_msg_server.cpp           \
-                   rtp_session_wrapper.cpp
+                   rtp_msg_server.cpp
 
 LOCAL_C_INCLUDES    := $(PRO_ROOT_DIR)/src/pro/pro_net
 LOCAL_CFLAGS        := -DPRO_RTP_EXPORTS \

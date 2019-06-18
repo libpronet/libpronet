@@ -98,34 +98,52 @@ CProThreadBase::Spawn(bool realtime)
 
 #else
 
-        pthread_attr_t attr;
-        pthread_attr_init(&attr);
-        pthread_attr_setstacksize(&attr, PRO_THREAD_STACK_SIZE);
+        int retc = -1;
+
+        for (int i = 0; i < 2; ++i)
+        {
+            pthread_attr_t attr;
+            pthread_attr_init(&attr);
+            pthread_attr_setstacksize(&attr, PRO_THREAD_STACK_SIZE);
 
 #if defined(PRO_HAS_PTHREAD_EXPLICIT_SCHED)
-        if (realtime)
-        {
-            struct sched_param sp;
-            memset(&sp, 0, sizeof(struct sched_param));
-            sp.sched_priority = sched_get_priority_max(SCHED_RR);
+            if (realtime)
+            {
+                struct sched_param sp;
+                memset(&sp, 0, sizeof(struct sched_param));
+                sp.sched_priority = sched_get_priority_max(SCHED_RR);
 
-            pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
-            pthread_attr_setschedpolicy(&attr, SCHED_RR);
-            pthread_attr_setschedparam(&attr, &sp);
-        }
+                pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+                pthread_attr_setschedpolicy(&attr, SCHED_RR); /* root is required */
+                pthread_attr_setschedparam(&attr, &sp);
+            }
 #endif
 
-        pthread_t threadId = 0;
-        const int retc = pthread_create(&threadId, &attr, &CProThreadBase::SvcRun, this);
+            pthread_t threadId = 0;
+            retc = pthread_create(&threadId, &attr, &CProThreadBase::SvcRun, this);
+            pthread_attr_destroy(&attr);
 
-        pthread_attr_destroy(&attr);
+            if (retc == 0)
+            {
+                m_threadId2Realtime[threadId] = realtime;
+                break;
+            }
+
+            if (!realtime)
+            {
+                break;
+            }
+
+            /*
+             * downgrade and retry
+             */
+            realtime = false;
+        } /* end of for (...) */
 
         if (retc != 0)
         {
             return (false);
         }
-
-        m_threadId2Realtime[threadId] = realtime;
 
 #endif
 

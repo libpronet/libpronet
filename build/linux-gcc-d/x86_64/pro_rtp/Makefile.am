@@ -6,13 +6,17 @@ proincdir = ${prefix}/libpronet/include/pro
 
 prolib_PROGRAMS = libpro_rtp.so
 
-proinc_HEADERS = ../../../../src/pro/pro_rtp/rtp_framework.h \
-                 ../../../../src/pro/pro_rtp/rtp_foundation.h
+proinc_HEADERS = ../../../../src/pro/pro_rtp/rtp_base.h \
+                 ../../../../src/pro/pro_rtp/rtp_msg.h
 
-libpro_rtp_so_SOURCES = ../../../../src/pro/pro_rtp/rtp_framework.cpp            \
+libpro_rtp_so_SOURCES = ../../../../src/pro/pro_rtp/rtp_base.cpp                 \
+                        ../../../../src/pro/pro_rtp/rtp_bucket.cpp               \
+                        ../../../../src/pro/pro_rtp/rtp_flow_stat.cpp            \
                         ../../../../src/pro/pro_rtp/rtp_packet.cpp               \
                         ../../../../src/pro/pro_rtp/rtp_port_allocator.cpp       \
+                        ../../../../src/pro/pro_rtp/rtp_reorder.cpp              \
                         ../../../../src/pro/pro_rtp/rtp_service.cpp              \
+                        ../../../../src/pro/pro_rtp/rtp_session_a.cpp            \
                         ../../../../src/pro/pro_rtp/rtp_session_base.cpp         \
                         ../../../../src/pro/pro_rtp/rtp_session_mcast.cpp        \
                         ../../../../src/pro/pro_rtp/rtp_session_mcast_ex.cpp     \
@@ -26,13 +30,11 @@ libpro_rtp_so_SOURCES = ../../../../src/pro/pro_rtp/rtp_framework.cpp           
                         ../../../../src/pro/pro_rtp/rtp_session_udpclient_ex.cpp \
                         ../../../../src/pro/pro_rtp/rtp_session_udpserver.cpp    \
                         ../../../../src/pro/pro_rtp/rtp_session_udpserver_ex.cpp \
-                        ../../../../src/pro/pro_rtp/rtp_bucket.cpp               \
-                        ../../../../src/pro/pro_rtp/rtp_flow_stat.cpp            \
-                        ../../../../src/pro/pro_rtp/rtp_foundation.cpp           \
+                        ../../../../src/pro/pro_rtp/rtp_session_wrapper.cpp      \
+                        ../../../../src/pro/pro_rtp/rtp_msg.cpp                  \
                         ../../../../src/pro/pro_rtp/rtp_msg_c2s.cpp              \
                         ../../../../src/pro/pro_rtp/rtp_msg_client.cpp           \
-                        ../../../../src/pro/pro_rtp/rtp_msg_server.cpp           \
-                        ../../../../src/pro/pro_rtp/rtp_session_wrapper.cpp
+                        ../../../../src/pro/pro_rtp/rtp_msg_server.cpp
 
 libpro_rtp_so_CPPFLAGS = -DPRO_RTP_EXPORTS \
                          -I../../../../src/pro/pro_net
