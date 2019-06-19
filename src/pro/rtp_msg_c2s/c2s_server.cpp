@@ -344,6 +344,7 @@ CC2sServer::Reconfig(const C2S_SERVER_CONFIG_INFO& configInfo)
         m_configInfo.c2ss_log_level_userout = configInfo.c2ss_log_level_userout;
 
         m_logFile.SetGreenLevel(configInfo.c2ss_log_level_green);
+        m_logFile.SetMaxSize(configInfo.c2ss_log_loop_bytes);
     }
 
     {{{
@@ -361,10 +362,6 @@ CC2sServer::Reconfig(const C2S_SERVER_CONFIG_INFO& configInfo)
             );
         printf("\n%s", traceInfo);
         strcat(traceInfo, "\n");
-        if (m_logFile.GetPos() >= (long)configInfo.c2ss_log_loop_bytes)
-        {
-            m_logFile.Rewind();
-        }
         m_logFile.Log(traceInfo, configInfo.c2ss_log_level_green); /* green */
     }}}
 }
@@ -429,10 +426,6 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
             );
         printf("\n%s", traceInfo);
         strcat(traceInfo, "\n");
-        if (m_logFile.GetPos() >= (long)m_configInfo.c2ss_log_loop_bytes)
-        {
-            m_logFile.Rewind();
-        }
         m_logFile.Log(traceInfo, m_configInfo.c2ss_log_level_status);
     }}}
 }
@@ -493,10 +486,6 @@ CC2sServer::OnCloseC2s(IRtpMsgC2s* msgC2s,
             );
         printf("\n%s", traceInfo);
         strcat(traceInfo, "\n");
-        if (m_logFile.GetPos() >= (long)m_configInfo.c2ss_log_loop_bytes)
-        {
-            m_logFile.Rewind();
-        }
         m_logFile.Log(traceInfo, m_configInfo.c2ss_log_level_status);
     }}}
 }
@@ -549,10 +538,6 @@ CC2sServer::OnOkUser(IRtpMsgC2s*         msgC2s,
             userPublicIp,
             (unsigned int)userCount
             );
-        if (m_logFile.GetPos() >= (long)m_configInfo.c2ss_log_loop_bytes)
-        {
-            m_logFile.Rewind();
-        }
         m_logFile.Log(traceInfo, m_configInfo.c2ss_log_level_userin);
     }}}
 }
@@ -605,10 +590,6 @@ CC2sServer::OnCloseUser(IRtpMsgC2s*         msgC2s,
             (int)sslCode,
             (unsigned int)userCount
             );
-        if (m_logFile.GetPos() >= (long)m_configInfo.c2ss_log_loop_bytes)
-        {
-            m_logFile.Rewind();
-        }
         m_logFile.Log(traceInfo, m_configInfo.c2ss_log_level_userout);
     }}}
 }

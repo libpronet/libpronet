@@ -35,22 +35,27 @@ public:
 
     ~CProLogFile();
 
-    void Init(const char* fileName, bool increment = false);
+    void Init(const char* fileName, bool append = false);
 
     void SetGreenLevel(long level);
 
     long GetGreenLevel() const;
 
-    void Log(const char* text, long level = 100, bool showTime = true);
+    void SetMaxSize(PRO_INT32 size);
 
-    long GetPos() const;
+    PRO_INT32 GetMaxSize() const;
+
+    PRO_INT32 GetPos() const;
 
     void Rewind();
+
+    void Log(const char* text, long level = 0, bool showTime = true);
 
 private:
 
     FILE*                   m_file;
     long                    m_greenLevel;
+    PRO_INT32               m_maxSize;
     mutable CProThreadMutex m_lock;
 
     DECLARE_SGI_POOL(0);

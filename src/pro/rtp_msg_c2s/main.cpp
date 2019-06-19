@@ -358,12 +358,11 @@ int main(int argc, char* argv[])
 
     static char s_traceInfo[1024] = "";
 
-    logFile->Init(logFileName.c_str(), true);
+    logFile->Init(logFileName.c_str(), true); /* append mode */
+    logFile->SetMaxSize(configInfo.c2ss_log_loop_bytes);
     if (logFile->GetPos() > 0)
     {
-        printf(" rtp_msg_c2s --- error! please delete the log file first. \n\n");
-
-        goto EXIT;
+        logFile->Log("\n\n", 0, false);
     }
 
     reactor = ProCreateReactor(configInfo.c2ss_thread_count);
@@ -411,6 +410,8 @@ int main(int argc, char* argv[])
         " reconfig : reload logging configs from the file \"rtp_msg_c2s.cfg\" \n"
         " exit     : terminate the current process \n"
         );
+
+    logFile->SetGreenLevel(configInfo.c2ss_log_level_green);
 
     while (1)
     {

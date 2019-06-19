@@ -34,6 +34,7 @@ CProLogFile::CProLogFile()
 {
     m_file       = NULL;
     m_greenLevel = 0;
+    m_maxSize    = 0;
 }
 
 CProLogFile::~CProLogFile()
@@ -47,7 +48,7 @@ CProLogFile::~CProLogFile()
 
 void
 CProLogFile::Init(const char* fileName,
-                  bool        increment) /* = false */
+                  bool        append) /* = false */
 {
     assert(fileName != NULL);
     assert(fileName[0] != '\0');
@@ -65,7 +66,7 @@ CProLogFile::Init(const char* fileName,
             return;
         }
 
-        if (increment)
+        if (append)
         {
             m_file = fopen(fileName, "r+b");
             if (m_file == NULL)
@@ -121,8 +122,62 @@ CProLogFile::GetGreenLevel() const
 }
 
 void
+CProLogFile::SetMaxSize(PRO_INT32 size)
+{
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        m_maxSize = size;
+    }
+}
+
+PRO_INT32
+CProLogFile::GetMaxSize() const
+{
+    PRO_INT32 size = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        size = m_maxSize;
+    }
+
+    return (size);
+}
+
+PRO_INT32
+CProLogFile::GetPos() const
+{
+    PRO_INT32 pos = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_file != NULL)
+        {
+            pos = (PRO_INT32)ftell(m_file);
+        }
+    }
+
+    return (pos);
+}
+
+void
+CProLogFile::Rewind()
+{
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_file != NULL)
+        {
+            fseek(m_file, 0, SEEK_SET);
+        }
+    }
+}
+
+void
 CProLogFile::Log(const char* text,
-                 long        level,    /* = 100 */
+                 long        level,    /* = 0 */
                  bool        showTime) /* = true */
 {
     CProStlString totalText = "";
@@ -143,38 +198,16 @@ CProLogFile::Log(const char* text,
 
         if (m_file != NULL && level >= m_greenLevel)
         {
+            const PRO_INT32 pos = (PRO_INT32)ftell(m_file);
+            if (pos < 0
+                ||
+                m_maxSize > 0 && pos >= m_maxSize)
+            {
+                fseek(m_file, 0, SEEK_SET);
+            }
+
             fwrite(totalText.c_str(), 1, totalText.length(), m_file);
             fflush(m_file);
-        }
-    }
-}
-
-long
-CProLogFile::GetPos() const
-{
-    long pos = 0;
-
-    {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_file != NULL)
-        {
-            pos = ftell(m_file);
-        }
-    }
-
-    return (pos);
-}
-
-void
-CProLogFile::Rewind()
-{
-    {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_file != NULL)
-        {
-            fseek(m_file, 0, SEEK_SET);
         }
     }
 }

@@ -264,12 +264,11 @@ int main(int argc, char* argv[])
 
     static char s_traceInfo[1024] = "";
 
-    logFile->Init(logFileName.c_str(), true);
+    logFile->Init(logFileName.c_str(), true); /* append mode */
+    logFile->SetMaxSize(configInfo.msgs_log_loop_bytes);
     if (logFile->GetPos() > 0)
     {
-        printf(" rtp_msg_server --- error! please delete the log file first. \n\n");
-
-        goto EXIT;
+        logFile->Log("\n\n", 0, false);
     }
 
     if (!db->Open(dbFileName.c_str()))
@@ -325,6 +324,8 @@ int main(int argc, char* argv[])
         " reconfig                  : reload logging configs from the file \"rtp_msg_server.cfg\" \n"
         " exit                      : terminate the current process \n"
         );
+
+    logFile->SetGreenLevel(configInfo.msgs_log_level_green);
 
     while (1)
     {

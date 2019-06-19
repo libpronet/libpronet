@@ -284,10 +284,6 @@ CMsgServer::KickoutUsers(const CProStlSet<RTP_MSG_USER>& users)
     }
 
     {{{
-        if (m_logFile.GetPos() >= (int)m_configInfo.msgs_log_loop_bytes)
-        {
-            m_logFile.Rewind();
-        }
         m_logFile.Log(traceInfo.c_str());
     }}}
 }
@@ -310,6 +306,7 @@ CMsgServer::Reconfig(const MSG_SERVER_CONFIG_INFO& configInfo)
         m_configInfo.msgs_log_level_userout = configInfo.msgs_log_level_userout;
 
         m_logFile.SetGreenLevel(configInfo.msgs_log_level_green);
+        m_logFile.SetMaxSize(configInfo.msgs_log_loop_bytes);
     }
 
     {{{
@@ -327,10 +324,6 @@ CMsgServer::Reconfig(const MSG_SERVER_CONFIG_INFO& configInfo)
             );
         printf("\n%s", traceInfo);
         strcat(traceInfo, "\n");
-        if (m_logFile.GetPos() >= (long)configInfo.msgs_log_loop_bytes)
-        {
-            m_logFile.Rewind();
-        }
         m_logFile.Log(traceInfo, configInfo.msgs_log_level_green); /* green */
     }}}
 }
@@ -500,10 +493,6 @@ EXIT:
                 errorString.c_str()
                 );
         }
-        if (m_logFile.GetPos() >= (long)m_configInfo.msgs_log_loop_bytes)
-        {
-            m_logFile.Rewind();
-        }
         m_logFile.Log(traceInfo, m_configInfo.msgs_log_level_userchk);
     }}}
 
@@ -578,10 +567,6 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
             (unsigned int)baseUserCount,
             (unsigned int)subUserCount
             );
-        if (m_logFile.GetPos() >= (long)m_configInfo.msgs_log_loop_bytes)
-        {
-            m_logFile.Rewind();
-        }
         m_logFile.Log(traceInfo, m_configInfo.msgs_log_level_userin);
     }}}
 }
@@ -655,10 +640,6 @@ CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
             (unsigned int)baseUserCount,
             (unsigned int)subUserCount
             );
-        if (m_logFile.GetPos() >= (long)m_configInfo.msgs_log_loop_bytes)
-        {
-            m_logFile.Rewind();
-        }
         m_logFile.Log(traceInfo, m_configInfo.msgs_log_level_userout);
     }}}
 }
