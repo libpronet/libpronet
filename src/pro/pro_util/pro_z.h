@@ -43,11 +43,19 @@
 #include <memory>
 
 #if defined(WIN32) || defined(_WIN32_WCE)
+
 #if !defined(_WIN32_WCE)
 #include <conio.h>
 #endif
 #include <tchar.h>
-#endif
+
+#else  /* WIN32, _WIN32_WCE */
+
+#include <unistd.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+
+#endif /* WIN32, _WIN32_WCE */
 
 #if defined(__cplusplus)
 extern "C" {

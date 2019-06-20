@@ -209,6 +209,9 @@ CProAcceptor::Init(IProAcceptorObserver* observer,
 
         if (access(localAddrUn.sun_path, F_OK) == 0)
         {
+            /*
+             * This may fail with "Permission Denied"!!!
+             */
             unlink(localAddrUn.sun_path);
         }
 
@@ -226,6 +229,11 @@ CProAcceptor::Init(IProAcceptorObserver* observer,
         {
             goto EXIT;
         }
+
+        /*
+         * Allow other users to access the file.
+         */
+        chmod(localAddrUn.sun_path, S_IRWXU | S_IRWXG | S_IRWXO);
 
 #endif /* WIN32, _WIN32_WCE */
 

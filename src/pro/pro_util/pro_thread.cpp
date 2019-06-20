@@ -18,7 +18,6 @@
 
 #include "pro_a.h"
 #include "pro_thread.h"
-#include "pro_bsd_wrapper.h" /* for <unistd.h> */
 #include "pro_memory_pool.h"
 #include "pro_stl.h"
 #include "pro_thread_mutex.h"

@@ -18,7 +18,6 @@
 
 #include "pro_a.h"
 #include "pro_z.h"
-#include "pro_bsd_wrapper.h" /* for <unistd.h> */
 
 #if defined(WIN32) || defined(_WIN32_WCE)
 #include <windows.h>
