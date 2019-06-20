@@ -142,7 +142,7 @@ int main(int argc, char* argv[])
 
     if (configInfo.hubs_listen_ports.size() == 0)
     {
-        printf(" pro_service_hub --- error! 'hubs_listen_port' is not found. \n\n");
+        printf(" pro_service_hub --- error! \"hubs_listen_port\" is not found. \n\n");
 
         goto EXIT;
     }
@@ -167,8 +167,11 @@ int main(int argc, char* argv[])
             if (hub == NULL)
             {
                 printf(
-                    " pro_service_hub --- error! can't create service hub on the port %u. \n\n"
+                    " pro_service_hub --- error! can't create service hub on the port %u. \n"
+                    " [ maybe the port %u or the file \"/tmp/libpronet_127001_%u\" is busy. ] \n\n"
                     ,
+                    configInfo.hubs_listen_ports[i],
+                    configInfo.hubs_listen_ports[i],
                     configInfo.hubs_listen_ports[i]
                     );
 

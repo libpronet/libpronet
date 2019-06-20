@@ -20,7 +20,7 @@
 #define ____PRO_MBEDTLS_H____
 
 #if !defined(____PRO_NET_H____)
-#error "You must include 'pro_net.h' first"
+#error You must include "pro_net.h" first.
 #endif
 
 #if defined(__cplusplus)
