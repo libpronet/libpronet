@@ -220,6 +220,11 @@ CProAcceptor::Init(IProAcceptorObserver* observer,
             goto EXIT;
         }
 
+        /*
+         * Allow other users to access the file. "Write" permissions are required.
+         */
+        chmod(localAddrUn.sun_path, S_IRWXU | S_IRWXG | S_IRWXO);
+
         if (pbsd_listen(sockIdUn) != 0)
         {
             goto EXIT;
@@ -229,11 +234,6 @@ CProAcceptor::Init(IProAcceptorObserver* observer,
         {
             goto EXIT;
         }
-
-        /*
-         * Allow other users to access the file.
-         */
-        chmod(localAddrUn.sun_path, S_IRWXU | S_IRWXG | S_IRWXO);
 
 #endif /* WIN32, _WIN32_WCE */
 
