@@ -53,7 +53,7 @@ CProStatBitRate::SetTimeSpan(unsigned long timeSpanInSeconds) /* = 5 */
 }
 
 void
-CProStatBitRate::PushData(size_t dataBytes)
+CProStatBitRate::PushDataBytes(size_t dataBytes)
 {
     if (m_startTick == 0)
     {
@@ -61,6 +61,19 @@ CProStatBitRate::PushData(size_t dataBytes)
     }
 
     m_bits += (double)dataBytes * 8;
+
+    Update();
+}
+
+void
+CProStatBitRate::PushDataBits(size_t dataBits)
+{
+    if (m_startTick == 0)
+    {
+        m_startTick = ProGetTickCount64() - m_timeSpan * 1000 * OVERLAP_PERCENT / 100;
+    }
+
+    m_bits += dataBits;
 
     Update();
 }

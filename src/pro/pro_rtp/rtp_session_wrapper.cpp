@@ -966,9 +966,9 @@ CRtpSessionWrapper::SendPacketUnlock(IRtpPacket* packet)
                 ||
                 m_info.mmType < RTP_MMT_VIDEO_MIN || m_info.mmType > RTP_MMT_VIDEO_MAX) /* non-video */
             {
-                m_statFrameRateOutput.PushData(1);
+                m_statFrameRateOutput.PushDataBits(1);
             }
-            m_statBitRateOutput.PushData(packet2->GetPayloadSize());
+            m_statBitRateOutput.PushDataBytes(packet2->GetPayloadSize());
             m_statLossRateOutput.PushData(packet2->GetSequence());
 
             m_bucket->PopFrontRelease(packet2);
@@ -1000,9 +1000,9 @@ CRtpSessionWrapper::SendPacketUnlock()
                 ||
                 m_info.mmType < RTP_MMT_VIDEO_MIN || m_info.mmType > RTP_MMT_VIDEO_MAX) /* non-video */
             {
-                m_statFrameRateOutput.PushData(1);
+                m_statFrameRateOutput.PushDataBits(1);
             }
-            m_statBitRateOutput.PushData(packet->GetPayloadSize());
+            m_statBitRateOutput.PushDataBytes(packet->GetPayloadSize());
             m_statLossRateOutput.PushData(packet->GetSequence());
 
             m_bucket->PopFrontRelease(packet);
@@ -1486,9 +1486,9 @@ CRtpSessionWrapper::OnRecvSession(IRtpSession* session,
                 ||
                 m_info.mmType < RTP_MMT_VIDEO_MIN || m_info.mmType > RTP_MMT_VIDEO_MAX)     /* non-video */
             {
-                m_statFrameRateInput.PushData(1);
+                m_statFrameRateInput.PushDataBits(1);
             }
-            m_statBitRateInput.PushData(packet->GetPayloadSize());
+            m_statBitRateInput.PushDataBytes(packet->GetPayloadSize());
             m_statLossRateInput.PushData(packet->GetSequence());
         }
         else
@@ -1509,9 +1509,9 @@ CRtpSessionWrapper::OnRecvSession(IRtpSession* session,
                     ||
                     m_info.mmType < RTP_MMT_VIDEO_MIN || m_info.mmType > RTP_MMT_VIDEO_MAX) /* non-video */
                 {
-                    m_statFrameRateInput.PushData(1);
+                    m_statFrameRateInput.PushDataBits(1);
                 }
-                m_statBitRateInput.PushData(packet2->GetPayloadSize());
+                m_statBitRateInput.PushDataBytes(packet2->GetPayloadSize());
                 m_statLossRateInput.PushData(packet2->GetSequence());
             }
         }
