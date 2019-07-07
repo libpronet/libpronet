@@ -509,12 +509,9 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
 {
     assert(msgServer != NULL);
     assert(user != NULL);
-    assert(user->classId > 0);
-    assert(user->UserId() > 0);
     assert(userPublicIp != NULL);
     assert(userPublicIp[0] != '\0');
-    if (msgServer == NULL || user == NULL || user->classId == 0 || user->UserId() == 0 ||
-        userPublicIp == NULL || userPublicIp[0] == '\0')
+    if (msgServer == NULL || user == NULL || userPublicIp == NULL || userPublicIp[0] == '\0')
     {
         return;
     }
@@ -580,9 +577,7 @@ CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
 {
     assert(msgServer != NULL);
     assert(user != NULL);
-    assert(user->classId > 0);
-    assert(user->UserId() > 0);
-    if (msgServer == NULL || user == NULL || user->classId == 0 || user->UserId() == 0)
+    if (msgServer == NULL || user == NULL)
     {
         return;
     }

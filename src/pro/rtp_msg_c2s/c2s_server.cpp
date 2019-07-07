@@ -374,12 +374,9 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
 {
     assert(msgC2s != NULL);
     assert(c2sUser != NULL);
-    assert(c2sUser->classId > 0);
-    assert(c2sUser->UserId() > 0);
     assert(c2sPublicIp != NULL);
     assert(c2sPublicIp[0] != '\0');
-    if (msgC2s == NULL || c2sUser == NULL || c2sUser->classId == 0 || c2sUser->UserId() == 0 ||
-        c2sPublicIp == NULL || c2sPublicIp[0] == '\0')
+    if (msgC2s == NULL || c2sUser == NULL || c2sPublicIp == NULL || c2sPublicIp[0] == '\0')
     {
         return;
     }
@@ -498,12 +495,9 @@ CC2sServer::OnOkUser(IRtpMsgC2s*         msgC2s,
 {
     assert(msgC2s != NULL);
     assert(user != NULL);
-    assert(user->classId > 0);
-    assert(user->UserId() > 0);
     assert(userPublicIp != NULL);
     assert(userPublicIp[0] != '\0');
-    if (msgC2s == NULL || user == NULL || user->classId == 0 || user->UserId() == 0 ||
-        userPublicIp == NULL || userPublicIp[0] == '\0')
+    if (msgC2s == NULL || user == NULL || userPublicIp == NULL || userPublicIp[0] == '\0')
     {
         return;
     }
@@ -551,9 +545,7 @@ CC2sServer::OnCloseUser(IRtpMsgC2s*         msgC2s,
 {
     assert(msgC2s != NULL);
     assert(user != NULL);
-    assert(user->classId > 0);
-    assert(user->UserId() > 0);
-    if (msgC2s == NULL || user == NULL || user->classId == 0 || user->UserId() == 0)
+    if (msgC2s == NULL || user == NULL)
     {
         return;
     }
