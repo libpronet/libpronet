@@ -1,20 +1,24 @@
 #!/bin/sh
 
-cp ../pub/cfg/ca.crt                           ./linux-arm-d/
-cp ../pub/cfg/server.crt                       ./linux-arm-d/
-cp ../pub/cfg/server.key                       ./linux-arm-d/
-cp ../pub/cfg/*.cfg                            ./linux-arm-d/
-cp ../pub/cfg/rtp_msg_server.db                ./linux-arm-d/
-cp ../pub/cfg/set1_sys.sh                      ./linux-arm-d/
-cp ../pub/cfg/set2_proc.sh                     ./linux-arm-d/
+THIS_DIR=$(dirname $(readlink -f "$0"))
 
-cp ../pub/lib-d/linux-gcc/arm/libpro_shared.so ./linux-arm-d/
-cp ../pub/lib-d/linux-gcc/arm/libpro_net.so    ./linux-arm-d/
-cp ../pub/lib-d/linux-gcc/arm/libpro_rtp.so    ./linux-arm-d/
-cp ../pub/lib-d/linux-gcc/arm/pro_service_hub  ./linux-arm-d/
-cp ../pub/lib-d/linux-gcc/arm/rtp_msg_server   ./linux-arm-d/
-cp ../pub/lib-d/linux-gcc/arm/rtp_msg_c2s      ./linux-arm-d/
-cp ../pub/lib-d/linux-gcc/arm/test_msg_client  ./linux-arm-d/
-cp ../pub/lib-d/linux-gcc/arm/test_rtp         ./linux-arm-d/
-cp ../pub/lib-d/linux-gcc/arm/test_tcp_server  ./linux-arm-d/
-cp ../pub/lib-d/linux-gcc/arm/test_tcp_client  ./linux-arm-d/
+cp ${THIS_DIR}/../pub/cfg/ca.crt                           ${THIS_DIR}/linux-arm-d/
+cp ${THIS_DIR}/../pub/cfg/server.crt                       ${THIS_DIR}/linux-arm-d/
+cp ${THIS_DIR}/../pub/cfg/server.key                       ${THIS_DIR}/linux-arm-d/
+cp ${THIS_DIR}/../pub/cfg/*.cfg                            ${THIS_DIR}/linux-arm-d/
+cp ${THIS_DIR}/../pub/cfg/rtp_msg_server.db                ${THIS_DIR}/linux-arm-d/
+cp ${THIS_DIR}/../pub/cfg/set1_sys.sh                      ${THIS_DIR}/linux-arm-d/
+cp ${THIS_DIR}/../pub/cfg/set2_proc.sh                     ${THIS_DIR}/linux-arm-d/
+cp ${THIS_DIR}/../pub/cfg/run-pro_service_hub.sh           ${THIS_DIR}/linux-arm-d/
+cp ${THIS_DIR}/../pub/cfg/screen-pro_service_hub.sh        ${THIS_DIR}/linux-arm-d/
+
+cp ${THIS_DIR}/../pub/lib-d/linux-gcc/arm/libpro_shared.so ${THIS_DIR}/linux-arm-d/
+cp ${THIS_DIR}/../pub/lib-d/linux-gcc/arm/libpro_net.so    ${THIS_DIR}/linux-arm-d/
+cp ${THIS_DIR}/../pub/lib-d/linux-gcc/arm/libpro_rtp.so    ${THIS_DIR}/linux-arm-d/
+cp ${THIS_DIR}/../pub/lib-d/linux-gcc/arm/pro_service_hub  ${THIS_DIR}/linux-arm-d/
+cp ${THIS_DIR}/../pub/lib-d/linux-gcc/arm/rtp_msg_server   ${THIS_DIR}/linux-arm-d/
+cp ${THIS_DIR}/../pub/lib-d/linux-gcc/arm/rtp_msg_c2s      ${THIS_DIR}/linux-arm-d/
+cp ${THIS_DIR}/../pub/lib-d/linux-gcc/arm/test_msg_client  ${THIS_DIR}/linux-arm-d/
+cp ${THIS_DIR}/../pub/lib-d/linux-gcc/arm/test_rtp         ${THIS_DIR}/linux-arm-d/
+cp ${THIS_DIR}/../pub/lib-d/linux-gcc/arm/test_tcp_server  ${THIS_DIR}/linux-arm-d/
+cp ${THIS_DIR}/../pub/lib-d/linux-gcc/arm/test_tcp_client  ${THIS_DIR}/linux-arm-d/
