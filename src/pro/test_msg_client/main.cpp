@@ -363,6 +363,7 @@ int main(int argc, char* argv[])
         else if (stricmp(p, "reconnect") == 0)
         {
             printf("\n reconnecting... \n");
+            tester->Reconnect();
         }
         else
         {
