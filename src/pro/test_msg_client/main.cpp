@@ -279,6 +279,7 @@ int main(int argc, char* argv[])
         " bind <id> : bind to a destination to send to. \n"
         "             for example, \"bind 2-1-1\" \n"
         " unbind    : cancel the destination bound to \n"
+        " reconnect : reconnect to the message server \n"
         );
 
     while (1)
@@ -337,6 +338,7 @@ int main(int argc, char* argv[])
                 " bind <id> : bind to a destination to send to. \n"
                 "             for example, \"bind 2-1-1\" \n"
                 " unbind    : cancel the destination bound to \n"
+                " reconnect : reconnect to the message server \n"
                 );
         }
         else if (strnicmp(p, "bind ", 5) == 0)
@@ -357,6 +359,10 @@ int main(int argc, char* argv[])
         {
             bindUser.Zero();
             printf("\n unbinding... \n");
+        }
+        else if (stricmp(p, "reconnect") == 0)
+        {
+            printf("\n reconnecting... \n");
         }
         else
         {

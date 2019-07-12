@@ -34,6 +34,11 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+static const RTP_MSG_USER ROOT_ID(1, 1, 0); /* 1-1 */
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
 CTest*
 CTest::CreateInstance()
 {
@@ -171,12 +176,6 @@ CTest::Init(IProReactor*                  reactor,
         m_configInfo = configInfo;
         m_sslConfig  = sslConfig;
         m_msgClient  = msgClient;
-
-        if (!m_configInfo.msgc_password.empty())
-        {
-            ProZeroMemory(&m_configInfo.msgc_password[0], m_configInfo.msgc_password.length());
-            m_configInfo.msgc_password = "";
-        }
     }
 
     return (true);
@@ -256,50 +255,65 @@ CTest::SendMsg(const char* msg)
             return;
         }
 
-        RTP_MSG_USER srcUser;
-        m_msgClient->GetUser(&srcUser);
-        if (srcUser.classId == 0 || srcUser.UserId() == 0)
+        RTP_MSG_USER myUser;
+        m_msgClient->GetUser(&myUser);
+        if (myUser.classId == 0 || myUser.UserId() == 0)
         {
             return;
         }
 
-        PRO_INT64                   uid = 0;
-        RTP_MSG_USER                dstUser;
-        CProStlVector<RTP_MSG_USER> dstUsers;
         CProStlSet<RTP_MSG_USER>    users;
+        CProStlVector<RTP_MSG_USER> dstUsers;
 
-        uid = srcUser.UserId();
-
-        dstUser.classId = srcUser.classId;
-        dstUser.instId  = 1;
+        /*
+         * root
+         */
+        users.insert(ROOT_ID);
 
         /*
          * static users, [1 ~ 50]
          */
-        for (int i = 1; i <= 50; ++i)
         {
-            dstUser.UserId(i);
-            users.insert(dstUser);
+            RTP_MSG_USER dstUser;
+            dstUser.classId = myUser.classId;
+            dstUser.instId  = 1;
+
+            for (int i = 1; i <= 50; ++i)
+            {
+                dstUser.UserId(i);
+                users.insert(dstUser);
+            }
         }
 
         /*
-         * neighbours, [-100 ~ +100]
+         * neighbours, [u-100 ~ u+100]
          */
-        for (int j = 1; j <= 100; ++j)
         {
-            if (uid - j > 0)
+            RTP_MSG_USER dstUser;
+            dstUser.classId = myUser.classId;
+            dstUser.instId  = 1;
+
+            const PRO_INT64 myUid = myUser.UserId();
+
+            for (int i = 1; i <= 100; ++i)
             {
-                dstUser.UserId(uid - j);
-                users.insert(dstUser);
-            }
-            if (uid + j > 0)
-            {
-                dstUser.UserId(uid + j);
-                users.insert(dstUser);
+                if (myUid - i > 0)
+                {
+                    dstUser.UserId(myUid - i);
+                    users.insert(dstUser);
+                }
+                if (myUid + i > 0)
+                {
+                    dstUser.UserId(myUid + i);
+                    users.insert(dstUser);
+                }
             }
         }
 
-        users.erase(srcUser);
+        /*
+         * exclude me
+         */
+        users.erase(myUser);
 
         CProStlSet<RTP_MSG_USER>::const_iterator       itr = users.begin();
         CProStlSet<RTP_MSG_USER>::const_iterator const end = users.end();
@@ -346,15 +360,55 @@ CTest::SendMsg(const char*         msg,
             return;
         }
 
-        RTP_MSG_USER srcUser;
-        m_msgClient->GetUser(&srcUser);
-        if (srcUser.classId == 0 || srcUser.UserId() == 0)
+        RTP_MSG_USER myUser;
+        m_msgClient->GetUser(&myUser);
+        if (myUser.classId == 0 || myUser.UserId() == 0)
         {
             return;
         }
 
         m_msgClient->SendMsg(msg, (unsigned long)strlen(msg), 0, dstUser, 1);
     }
+}
+
+void
+CTest::Reconnect()
+{
+    IRtpMsgClient* oldMsgClient = NULL;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_reactor == NULL || m_msgClient == NULL)
+        {
+            return;
+        }
+
+        IRtpMsgClient* const msgClient = CreateRtpMsgClient(
+            this,
+            m_reactor,
+            m_configInfo.msgc_mm_type,
+            m_sslConfig,
+            m_configInfo.msgc_ssl_sni.c_str(),
+            m_configInfo.msgc_server_ip.c_str(),
+            m_configInfo.msgc_server_port,
+            &m_configInfo.msgc_id,
+            m_configInfo.msgc_password.c_str(),
+            m_configInfo.msgc_local_ip.c_str(),
+            m_configInfo.msgc_handshake_timeout
+            );
+        if (msgClient == NULL)
+        {
+            return;
+        }
+
+        msgClient->SetOutputRedline(m_configInfo.msgc_redline_bytes);
+
+        oldMsgClient = m_msgClient;
+        m_msgClient  = msgClient;
+    }
+
+    DeleteRtpMsgClient(oldMsgClient);
 }
 
 void
@@ -450,8 +504,8 @@ CTest::OnRecvMsg(IRtpMsgClient*      msgClient,
     }
 
     {{{
-        RTP_MSG_USER user;
-        msgClient->GetUser(&user);
+        RTP_MSG_USER myUser;
+        msgClient->GetUser(&myUser);
 
         printf(
             "\n"
@@ -461,9 +515,9 @@ CTest::OnRecvMsg(IRtpMsgClient*      msgClient,
             (unsigned int)srcUser->classId,
             srcUser->UserId(),
             (unsigned int)srcUser->instId,
-            (unsigned int)user.classId,
-            user.UserId(),
-            (unsigned int)user.instId,
+            (unsigned int)myUser.classId,
+            myUser.UserId(),
+            (unsigned int)myUser.instId,
             msg.c_str()
             );
     }}}
@@ -497,8 +551,8 @@ CTest::OnCloseMsg(IRtpMsgClient* msgClient,
     }
 
     {{{
-        RTP_MSG_USER user;
-        msgClient->GetUser(&user);
+        RTP_MSG_USER myUser;
+        msgClient->GetUser(&myUser);
 
         char           remoteIp[64] = "";
         unsigned short remotePort   = 0;
@@ -510,9 +564,9 @@ CTest::OnCloseMsg(IRtpMsgClient* msgClient,
             " CTest::OnCloseMsg(id : %u-" PRO_PRT64U "-%u,"
             " errorCode : [%d, %d], tcpConnected : %d, server : %s:%u) \n"
             ,
-            (unsigned int)user.classId,
-            user.UserId(),
-            (unsigned int)user.instId,
+            (unsigned int)myUser.classId,
+            myUser.UserId(),
+            (unsigned int)myUser.instId,
             (int)errorCode,
             (int)sslCode,
             (int)tcpConnected,

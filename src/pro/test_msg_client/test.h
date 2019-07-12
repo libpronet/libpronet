@@ -141,6 +141,8 @@ public:
         const RTP_MSG_USER* dstUser /* = NULL */
         );
 
+    void Reconnect();
+
 private:
 
     CTest();
