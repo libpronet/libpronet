@@ -1,4 +1,3 @@
-probindir = ${prefix}/libpronet/bin
 prolibdir = ${prefix}/libpronet/lib
 proincdir = ${prefix}/libpronet/include/pro
 
