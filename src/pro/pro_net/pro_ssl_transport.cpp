@@ -118,7 +118,7 @@ CProSslTransport::Init(IProTransportObserver* observer,
         {
             pbsd_sockaddr_un localAddrUn;
             pbsd_sockaddr_un remoteAddrUn;
-            if (pbsd_getsockname_un(sockId, &localAddrUn ) != 0 ||
+            if (pbsd_getsockname_un(sockId, &localAddrUn)  != 0 ||
                 pbsd_getpeername_un(sockId, &remoteAddrUn) != 0)
             {
                 return (false);
@@ -164,7 +164,7 @@ CProSslTransport::Init(IProTransportObserver* observer,
         else
 #endif
         {
-            if (pbsd_getsockname(sockId, &m_localAddr ) != 0 ||
+            if (pbsd_getsockname(sockId, &m_localAddr)  != 0 ||
                 pbsd_getpeername(sockId, &m_remoteAddr) != 0)
             {
                 return (false);

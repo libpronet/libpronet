@@ -169,7 +169,7 @@ CProAcceptor::Init(IProAcceptorObserver* observer,
 #if defined(WIN32) || defined(_WIN32_WCE)
         if (pbsd_bind(sockId, &localAddr, false) != 0)
 #else
-        if (pbsd_bind(sockId, &localAddr, true ) != 0)
+        if (pbsd_bind(sockId, &localAddr, true)  != 0)
 #endif
         {
             goto EXIT;

@@ -107,6 +107,14 @@ int main(int argc, char* argv[])
                     configInfo.msgs_thread_count = value;
                 }
             }
+            else if (stricmp(configName.c_str(), "msgs_mm_type") == 0)
+            {
+                const int value = atoi(configValue.c_str());
+                if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
+                {
+                    configInfo.msgs_mm_type = (RTP_MM_TYPE)value;
+                }
+            }
             else if (stricmp(configName.c_str(), "msgs_hub_port") == 0)
             {
                 const int value = atoi(configValue.c_str());
@@ -137,14 +145,6 @@ int main(int argc, char* argv[])
                 if (value > 0)
                 {
                     configInfo.msgs_redline_bytes_usr = value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgs_mm_type") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
-                {
-                    configInfo.msgs_mm_type = (RTP_MM_TYPE)value;
                 }
             }
             else if (stricmp(configName.c_str(), "msgs_db_readonly") == 0)

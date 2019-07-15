@@ -118,6 +118,14 @@ int main(int argc, char* argv[])
                     configInfo.msgc_thread_count = value;
                 }
             }
+            else if (stricmp(configName.c_str(), "msgc_mm_type") == 0)
+            {
+                const int value = atoi(configValue.c_str());
+                if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
+                {
+                    configInfo.msgc_mm_type = (RTP_MM_TYPE)value;
+                }
+            }
             else if (stricmp(configName.c_str(), "msgc_server_ip") == 0)
             {
                 if (!configValue.empty())
@@ -171,14 +179,6 @@ int main(int argc, char* argv[])
                 if (value > 0)
                 {
                     configInfo.msgc_redline_bytes = value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgc_mm_type") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
-                {
-                    configInfo.msgc_mm_type = (RTP_MM_TYPE)value;
                 }
             }
             else if (stricmp(configName.c_str(), "msgc_enable_ssl") == 0)
@@ -271,7 +271,14 @@ int main(int argc, char* argv[])
         configInfo.msgc_password = "";
     }
 
-    printf("\n test_msg_client --- connecting... \n");
+    printf(
+        "\n"
+        " test_msg_client --- [server : %s:%u, mmType : %u] --- connecting... \n"
+        ,
+        configInfo.msgc_server_ip.c_str(),
+        (unsigned int)configInfo.msgc_server_port,
+        (unsigned int)configInfo.msgc_mm_type
+        );
 
     printf(
         "\n"

@@ -274,7 +274,7 @@ private:
     unsigned long                                           m_localTimeoutInSeconds;
     unsigned long                                           m_redlineBytesServer;
     unsigned long                                           m_redlineBytesUser;
-    RTP_MSG_USER                                            m_c2sUser;
+    RTP_MSG_USER                                            m_c2sUserNow;
     RTP_MSG_USER                                            m_c2sUserBak;
 
     CProStlMap<unsigned long, RTP_MSG_AsyncOnAcceptSession> m_timerId2Info;

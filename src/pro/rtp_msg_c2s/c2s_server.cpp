@@ -252,7 +252,7 @@ CC2sServer::Init(IProReactor*                  reactor,
         }
 
         msgC2s->SetOutputRedlineToServer(configInfo.c2ss_uplink_redline_bytes);
-        msgC2s->SetOutputRedlineToUser  (configInfo.c2ss_local_redline_bytes );
+        msgC2s->SetOutputRedlineToUser  (configInfo.c2ss_local_redline_bytes);
 
         m_reactor         = reactor;
         m_configInfo      = configInfo;

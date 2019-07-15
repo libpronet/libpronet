@@ -39,11 +39,11 @@ struct MSG_SERVER_CONFIG_INFO
     MSG_SERVER_CONFIG_INFO()
     {
         msgs_thread_count        = 20;
+        msgs_mm_type             = RTP_MMT_MSG;
         msgs_hub_port            = 3000;
         msgs_handshake_timeout   = 20;
         msgs_redline_bytes_c2s   = 8192000;
         msgs_redline_bytes_usr   = 1024000;
-        msgs_mm_type             = RTP_MMT_MSG;
         msgs_db_readonly         = true;
 
         msgs_enable_ssl          = true;
@@ -70,11 +70,11 @@ struct MSG_SERVER_CONFIG_INFO
         CProConfigStream configStream;
 
         configStream.AddUint("msgs_thread_count"       , msgs_thread_count);
+        configStream.AddUint("msgs_mm_type"            , msgs_mm_type);
         configStream.AddUint("msgs_hub_port"           , msgs_hub_port);
         configStream.AddUint("msgs_handshake_timeout"  , msgs_handshake_timeout);
         configStream.AddUint("msgs_redline_bytes_c2s"  , msgs_redline_bytes_c2s);
         configStream.AddUint("msgs_redline_bytes_usr"  , msgs_redline_bytes_usr);
-        configStream.AddUint("msgs_mm_type"            , msgs_mm_type);
         configStream.AddInt ("msgs_db_readonly"        , msgs_db_readonly);
 
         configStream.AddInt ("msgs_enable_ssl"         , msgs_enable_ssl);
@@ -95,11 +95,11 @@ struct MSG_SERVER_CONFIG_INFO
     }
 
     unsigned int                 msgs_thread_count; /* 1 ~ 100 */
+    RTP_MM_TYPE                  msgs_mm_type;      /* RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX */
     unsigned short               msgs_hub_port;
     unsigned int                 msgs_handshake_timeout;
     unsigned int                 msgs_redline_bytes_c2s;
     unsigned int                 msgs_redline_bytes_usr;
-    RTP_MM_TYPE                  msgs_mm_type;      /* RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX */
     bool                         msgs_db_readonly;
 
     bool                         msgs_enable_ssl;

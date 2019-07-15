@@ -778,8 +778,8 @@ CRtpMsgC2s::AcceptSession(IRtpService*            service,
             goto EXIT;
         }
 
-        if (m_msgClient == NULL || m_c2sUser.classId == 0 || m_c2sUser.UserId() == 0 ||
-            user == m_c2sUser)
+        if (m_msgClient == NULL || m_c2sUserNow.classId == 0 || m_c2sUserNow.UserId() == 0 ||
+            user == m_c2sUserNow)
         {
             goto EXIT;
         }
@@ -1026,8 +1026,8 @@ CRtpMsgC2s::OnOkMsg(IRtpMsgClient*      msgClient,
             return;
         }
 
-        m_c2sUser    = *myUser; /* login */
-        m_c2sUserBak = *myUser;
+        m_c2sUserNow = *myUser; /* login */
+        m_c2sUserBak = *myUser; /* login */
 
         m_msgClient->SetOutputRedline(m_redlineBytesServer);
 
@@ -1443,8 +1443,8 @@ CRtpMsgC2s::OnCloseMsg(IRtpMsgClient* msgClient,
         m_session2User.clear();
         m_user2Session.clear();
 
-        m_c2sUser.Zero();   /* reset */
-        m_msgClient = NULL; /* reset */
+        m_c2sUserNow.Zero(); /* logout */
+        m_msgClient = NULL;  /* logout */
 
         m_observer->AddRef();
         observer = m_observer;

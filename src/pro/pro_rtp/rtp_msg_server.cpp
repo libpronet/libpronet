@@ -821,7 +821,7 @@ CRtpMsgServer::AsyncOnAcceptSession(PRO_INT64* args)
     baseUser.UserId(userId);
     baseUser.instId = instId;
 
-    ret = false; /* reset */
+    ret = false;
 
     assert(userId >= NODE_UID_MIN);
     assert(userId <= NODE_UID_MAXX);
@@ -1009,7 +1009,7 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
         }
 
         /*
-         * from c2s
+         * to c2sPort
          */
         do
         {
@@ -1064,9 +1064,11 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
         while (0);
 
         /*
-         * from other
+         * to root
          */
-        if (toRoot)
+        if (toRoot
+            ||
+            toC2sPort && !srcCtx->isC2s)
         {
             m_observer->AddRef();
             observer = m_observer;

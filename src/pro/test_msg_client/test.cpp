@@ -20,6 +20,7 @@
 #include "../pro_net/pro_net.h"
 #include "../pro_rtp/rtp_base.h"
 #include "../pro_rtp/rtp_msg.h"
+#include "../pro_util/pro_bsd_wrapper.h"
 #include "../pro_util/pro_config_file.h"
 #include "../pro_util/pro_config_stream.h"
 #include "../pro_util/pro_memory_pool.h"
@@ -67,6 +68,21 @@ CTest::Init(IProReactor*                  reactor,
     if (reactor == NULL)
     {
         return (false);
+    }
+
+    char serverIpByDNS[64] = "";
+
+    /*
+     * DNS, for reconnecting
+     */
+    {
+        const PRO_UINT32 serverIp = pbsd_inet_aton(configInfo.msgc_server_ip.c_str());
+        if (serverIp == (PRO_UINT32)-1 || serverIp == 0)
+        {
+            return (false);
+        }
+
+        pbsd_inet_ntoa(serverIp, serverIpByDNS);
     }
 
     PRO_SSL_CLIENT_CONFIG* sslConfig = NULL;
@@ -158,7 +174,7 @@ CTest::Init(IProReactor*                  reactor,
             configInfo.msgc_mm_type,
             sslConfig,
             configInfo.msgc_ssl_sni.c_str(),
-            configInfo.msgc_server_ip.c_str(),
+            serverIpByDNS,
             configInfo.msgc_server_port,
             &configInfo.msgc_id,
             configInfo.msgc_password.c_str(),
@@ -172,10 +188,11 @@ CTest::Init(IProReactor*                  reactor,
 
         msgClient->SetOutputRedline(configInfo.msgc_redline_bytes);
 
-        m_reactor    = reactor;
-        m_configInfo = configInfo;
-        m_sslConfig  = sslConfig;
-        m_msgClient  = msgClient;
+        m_reactor                   = reactor;
+        m_configInfo                = configInfo;
+        m_configInfo.msgc_server_ip = serverIpByDNS;
+        m_sslConfig                 = sslConfig;
+        m_msgClient                 = msgClient;
     }
 
     return (true);
@@ -197,7 +214,7 @@ CTest::Fini()
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_reactor == NULL || m_msgClient == NULL)
+        if (m_reactor == NULL)
         {
             return;
         }
@@ -379,7 +396,7 @@ CTest::Reconnect()
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_reactor == NULL || m_msgClient == NULL)
+        if (m_reactor == NULL)
         {
             return;
         }
@@ -444,11 +461,6 @@ CTest::OnOkMsg(IRtpMsgClient*      msgClient,
         char suiteName[64] = "";
         msgClient->GetSslSuite(suiteName);
 
-        char           remoteIp[64] = "";
-        unsigned short remotePort   = 0;
-        msgClient->GetRemoteIp(remoteIp);
-        remotePort = msgClient->GetRemotePort();
-
         printf(
             "\n"
             " CTest::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s, sslSuite : %s,"
@@ -459,8 +471,8 @@ CTest::OnOkMsg(IRtpMsgClient*      msgClient,
             (unsigned int)myUser->instId,
             myPublicIp,
             suiteName,
-            remoteIp,
-            (unsigned int)remotePort
+            m_configInfo.msgc_server_ip.c_str(),
+            (unsigned int)m_configInfo.msgc_server_port
             );
     }}}
 }
@@ -554,11 +566,6 @@ CTest::OnCloseMsg(IRtpMsgClient* msgClient,
         RTP_MSG_USER myUser;
         msgClient->GetUser(&myUser);
 
-        char           remoteIp[64] = "";
-        unsigned short remotePort   = 0;
-        msgClient->GetRemoteIp(remoteIp);
-        remotePort = msgClient->GetRemotePort();
-
         printf(
             "\n"
             " CTest::OnCloseMsg(id : %u-" PRO_PRT64U "-%u,"
@@ -570,8 +577,8 @@ CTest::OnCloseMsg(IRtpMsgClient* msgClient,
             (int)errorCode,
             (int)sslCode,
             (int)tcpConnected,
-            remoteIp,
-            (unsigned int)remotePort
+            m_configInfo.msgc_server_ip.c_str(),
+            (unsigned int)m_configInfo.msgc_server_port
             );
     }}}
 }

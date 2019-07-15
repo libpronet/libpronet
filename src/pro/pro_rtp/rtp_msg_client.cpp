@@ -237,7 +237,7 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
         m_bucket     = bucket;
         m_remoteIp   = remoteIpByDNS;
         m_remotePort = remotePort;
-        m_user       = *user;
+        m_userBak    = *user;
         m_timerId    = reactor->ScheduleTimer(this, (PRO_UINT64)timeoutInSeconds * 1000, false);
     }
 
@@ -318,7 +318,7 @@ CRtpMsgClient::GetUser(RTP_MSG_USER* user) const
     {
         CProThreadMutexGuard mon(m_lock);
 
-        *user = m_user;
+        *user = m_userBak;
     }
 }
 
@@ -564,8 +564,8 @@ CRtpMsgClient::SendData(bool onOkCalled)
 
     if (msgHeaderPtr->srcUser.classId == 0)
     {
-        msgHeaderPtr->srcUser        = m_user;
-        msgHeaderPtr->srcUser.instId = pbsd_hton16(m_user.instId);
+        msgHeaderPtr->srcUser        = m_userBak;
+        msgHeaderPtr->srcUser.instId = pbsd_hton16(m_userBak.instId);
     }
 
     if (m_session->SendPacket(packet))
@@ -670,7 +670,7 @@ CRtpMsgClient::RecvAck(IRtpSession* session,
             return;
         }
 
-        m_user = user;
+        m_userBak = user; /* login */
         SendData(true);
 
         m_reactor->CancelTimer(m_timerId);
@@ -763,7 +763,7 @@ CRtpMsgClient::RecvData(IRtpSession* session,
                     continue;
                 }
 
-                if (dstUsers[dstUserCount].classId > 0 && dstUsers[dstUserCount] != m_user)
+                if (dstUsers[dstUserCount].classId > 0 && dstUsers[dstUserCount] != m_userBak)
                 {
                     ++dstUserCount;
                 }
@@ -861,7 +861,7 @@ CRtpMsgClient::OnCloseSession(IRtpSession* session,
             return;
         }
 
-        m_session = NULL;
+        m_session = NULL; /* logout */
 
         m_observer->AddRef();
         observer = m_observer;

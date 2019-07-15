@@ -37,13 +37,13 @@ struct MSG_CLIENT_CONFIG_INFO
     MSG_CLIENT_CONFIG_INFO()
     {
         msgc_thread_count        = 2;
+        msgc_mm_type             = RTP_MMT_MSG;
         msgc_server_ip           = "127.0.0.1";
         msgc_server_port         = 3000;
         msgc_password            = "test";
         msgc_local_ip            = "0.0.0.0";
         msgc_handshake_timeout   = 20;
         msgc_redline_bytes       = 1024000;
-        msgc_mm_type             = RTP_MMT_MSG;
 
         msgc_enable_ssl          = false;
         msgc_ssl_enable_sha1cert = true;
@@ -75,6 +75,7 @@ struct MSG_CLIENT_CONFIG_INFO
         CProConfigStream configStream;
 
         configStream.AddUint("msgc_thread_count"       , msgc_thread_count);
+        configStream.AddUint("msgc_mm_type"            , msgc_mm_type);
         configStream.Add    ("msgc_server_ip"          , msgc_server_ip);
         configStream.AddUint("msgc_server_port"        , msgc_server_port);
         configStream.Add    ("msgc_id"                 , idString);
@@ -82,7 +83,6 @@ struct MSG_CLIENT_CONFIG_INFO
         configStream.Add    ("msgc_local_ip"           , msgc_local_ip);
         configStream.AddUint("msgc_handshake_timeout"  , msgc_handshake_timeout);
         configStream.AddUint("msgc_redline_bytes"      , msgc_redline_bytes);
-        configStream.AddUint("msgc_mm_type"            , msgc_mm_type);
 
         configStream.AddInt ("msgc_enable_ssl"         , msgc_enable_ssl);
         configStream.AddInt ("msgc_ssl_enable_sha1cert", msgc_ssl_enable_sha1cert);
@@ -95,6 +95,7 @@ struct MSG_CLIENT_CONFIG_INFO
     }
 
     unsigned int                 msgc_thread_count; /* 1 ~ 100 */
+    RTP_MM_TYPE                  msgc_mm_type;      /* RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX */
     CProStlString                msgc_server_ip;
     unsigned short               msgc_server_port;
     RTP_MSG_USER                 msgc_id;
@@ -102,7 +103,6 @@ struct MSG_CLIENT_CONFIG_INFO
     CProStlString                msgc_local_ip;
     unsigned int                 msgc_handshake_timeout;
     unsigned int                 msgc_redline_bytes;
-    RTP_MM_TYPE                  msgc_mm_type;      /* RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX */
 
     bool                         msgc_enable_ssl;
     bool                         msgc_ssl_enable_sha1cert;

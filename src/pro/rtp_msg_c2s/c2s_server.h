@@ -39,6 +39,7 @@ struct C2S_SERVER_CONFIG_INFO
     C2S_SERVER_CONFIG_INFO()
     {
         c2ss_thread_count         = 20;
+        c2ss_mm_type              = RTP_MMT_MSG;
         c2ss_uplink_ip            = "127.0.0.1";
         c2ss_uplink_port          = 3000;
         c2ss_uplink_password      = "test";
@@ -48,7 +49,6 @@ struct C2S_SERVER_CONFIG_INFO
         c2ss_local_hub_port       = 4000;
         c2ss_local_timeout        = 20;
         c2ss_local_redline_bytes  = 1024000;
-        c2ss_mm_type              = RTP_MMT_MSG;
 
         c2ss_enable_ssl           = true;
         c2ss_ssl_enable_sha1cert  = true;
@@ -94,6 +94,7 @@ struct C2S_SERVER_CONFIG_INFO
         CProConfigStream configStream;
 
         configStream.AddUint("c2ss_thread_count"        , c2ss_thread_count);
+        configStream.AddUint("c2ss_mm_type"             , c2ss_mm_type);
         configStream.Add    ("c2ss_uplink_ip"           , c2ss_uplink_ip);
         configStream.AddUint("c2ss_uplink_port"         , c2ss_uplink_port);
         configStream.Add    ("c2ss_uplink_id"           , idString);
@@ -104,7 +105,6 @@ struct C2S_SERVER_CONFIG_INFO
         configStream.AddUint("c2ss_local_hub_port"      , c2ss_local_hub_port);
         configStream.AddUint("c2ss_local_timeout"       , c2ss_local_timeout);
         configStream.AddUint("c2ss_local_redline_bytes" , c2ss_local_redline_bytes);
-        configStream.AddUint("c2ss_mm_type"             , c2ss_mm_type);
 
         configStream.AddInt ("c2ss_enable_ssl"          , c2ss_enable_ssl);
         configStream.AddInt ("c2ss_ssl_enable_sha1cert" , c2ss_ssl_enable_sha1cert);
@@ -128,6 +128,7 @@ struct C2S_SERVER_CONFIG_INFO
     }
 
     unsigned int                 c2ss_thread_count; /* 1 ~ 100 */
+    RTP_MM_TYPE                  c2ss_mm_type;      /* RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX */
     CProStlString                c2ss_uplink_ip;
     unsigned short               c2ss_uplink_port;
     RTP_MSG_USER                 c2ss_uplink_id;
@@ -138,7 +139,6 @@ struct C2S_SERVER_CONFIG_INFO
     unsigned short               c2ss_local_hub_port;
     unsigned int                 c2ss_local_timeout;
     unsigned int                 c2ss_local_redline_bytes;
-    RTP_MM_TYPE                  c2ss_mm_type;      /* RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX */
 
     bool                         c2ss_enable_ssl;
     bool                         c2ss_ssl_enable_sha1cert;

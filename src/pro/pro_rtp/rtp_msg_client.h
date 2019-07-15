@@ -192,7 +192,7 @@ private:
     IRtpBucket*                        m_bucket;
     CProStlString                      m_remoteIp;
     unsigned short                     m_remotePort;
-    RTP_MSG_USER                       m_user;
+    RTP_MSG_USER                       m_userBak;
     unsigned long                      m_timerId;
     bool                               m_onOkCalled;
     mutable CProThreadMutex            m_lock;

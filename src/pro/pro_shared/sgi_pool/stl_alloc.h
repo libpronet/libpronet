@@ -249,9 +249,9 @@ public:
         size_t* __heap_size
         )
     {
-        memcpy(__free_list    , (void*)_S_free_list    , sizeof(_S_free_list)    );
-        memcpy(__obj_size     , (void*)_S_obj_size     , sizeof(_S_obj_size)     );
-        memcpy(__busy_obj_num , (void*)_S_busy_obj_num , sizeof(_S_busy_obj_num) );
+        memcpy(__free_list    , (void*)_S_free_list    , sizeof(_S_free_list));
+        memcpy(__obj_size     , (void*)_S_obj_size     , sizeof(_S_obj_size));
+        memcpy(__busy_obj_num , (void*)_S_busy_obj_num , sizeof(_S_busy_obj_num));
         memcpy(__total_obj_num, (void*)_S_total_obj_num, sizeof(_S_total_obj_num));
         if (__heap_size != 0)
         {
