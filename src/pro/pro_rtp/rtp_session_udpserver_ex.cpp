@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Eric Tung <libpronet@gmail.com>
+ * Copyright (C) 2018-2019 Eric Tung <libpronet@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License"),
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * This file is part of LibProNet (http://www.libpro.org)
+ * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
 #include "rtp_session_udpserver_ex.h"

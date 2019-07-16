@@ -60,10 +60,10 @@ ____STD_BEGIN
  * buf_obj = hdr + app_level_obj = 8 + app_level_obj,
  * please refer to "../pro_shared.cpp"
  */
-enum { _MAX_OBJ_BYTES = 8 + 1024 * 128  }; /* sizeof(app_level_obj) <= 128K                   */
-enum { _BIG_OBJ_BYTES = 8 + 4096        }; /* sizeof(app_level_big_obj) >= 4096               */
+enum { _MAX_OBJ_BYTES = 8 + 1024 * 128  }; /* sizeof(app_level_obj) <= 128K */
+enum { _BIG_OBJ_BYTES = 8 + 4096        }; /* sizeof(app_level_big_obj) >= 4096 */
 enum { _CHUNK_SIZE    = 1024 * 1024 * 4 }; /* sizeof(chunk) is 4M, >= glibc::M_MMAP_THRESHOLD */
-enum { _NFREELISTS    = 49              }; /* 49 levels                                       */
+enum { _NFREELISTS    = 49              }; /* 49 levels */
 
 union _Obj
 {
@@ -142,7 +142,7 @@ private:
 
 public:
 
-    /* __n must be > 0 */
+    // __n must be > 0
     static void* allocate(size_t __n)
     {
         if (__n == 0)
@@ -181,7 +181,7 @@ public:
         return (__ret);
     }
 
-    /* __p may not be 0 */
+    // __p may not be 0
     static void deallocate(void* __p, size_t __n)
     {
         if (__p == 0 || __n == 0)
@@ -260,8 +260,8 @@ public:
     }
 };
 
-/* Returns an object of size __n, and optionally adds to size __n free list. */
-/* We assume that __n is properly aligned.                                   */
+// Returns an object of size __n, and optionally adds to size __n free list.
+// We assume that __n is properly aligned.
 template<int __inst>
 void*
 __default_alloc_template<__inst>::_S_refill(size_t __n)
@@ -288,7 +288,7 @@ __default_alloc_template<__inst>::_S_refill(size_t __n)
 
     __my_free_list = _S_free_list + __index;
 
-    /* Build free list in chunk */
+    // Build free list in chunk
     __result = (_Obj*)__chunk;
     *__my_free_list = __next_obj = (_Obj*)(__chunk + __n);
 
@@ -313,9 +313,9 @@ __default_alloc_template<__inst>::_S_refill(size_t __n)
     return (__result);
 }
 
-/* We allocate memory in large chunks in order to avoid fragmenting */
-/* the malloc heap too much.                                        */
-/* We assume that __size is properly aligned.                       */
+// We allocate memory in large chunks in order to avoid fragmenting
+// the malloc heap too much.
+// We assume that __size is properly aligned.
 template<int __inst>
 char*
 __default_alloc_template<__inst>::_S_chunk_alloc(size_t __size,
@@ -475,8 +475,4 @@ __default_alloc_template<__inst>::_S_total_obj_num[_NFREELISTS] =
 
 ____STD_END
 
-#endif /* __SGI_STL_INTERNAL_ALLOC_H */
-
-// Local Variables:
-// mode:C++
-// End:
+#endif // __SGI_STL_INTERNAL_ALLOC_H

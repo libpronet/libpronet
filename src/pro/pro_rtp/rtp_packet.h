@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 Eric Tung <libpronet@gmail.com>
+ * Copyright (C) 2018-2019 Eric Tung <libpronet@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License"),
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * This file is part of LibProNet (http://www.libpro.org)
+ * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
 /*
@@ -41,8 +41,8 @@
 
 struct RTP_EXT
 {
-    PRO_UINT32    mmId                  ;
-    RTP_MM_TYPE   mmType                ;
+    PRO_UINT32    mmId;
+    RTP_MM_TYPE   mmType;
 
 #if defined(PRO_WORDS_BIGENDIAN)
     unsigned char keyFrame           : 1;
@@ -54,7 +54,7 @@ struct RTP_EXT
     unsigned char keyFrame           : 1;
 #endif
 
-    PRO_UINT16    hdrAndPayloadSize     ; /* tcp message boundary */
+    PRO_UINT16    hdrAndPayloadSize; /* tcp message boundary */
 
     DECLARE_SGI_POOL(0);
 };
@@ -79,17 +79,17 @@ struct RTP_HEADER
     unsigned char      m  : 1;
 #endif
 
-    PRO_UINT16         seq   ;
-    PRO_UINT32         ts    ;
+    PRO_UINT16         seq;
+    PRO_UINT32         ts;
     union
     {
-        PRO_UINT32     ssrc  ;
+        PRO_UINT32     ssrc;
         struct
         {
-            PRO_UINT16 dummy ;
-            PRO_UINT16 len2  ;
+            PRO_UINT16 dummy;
+            PRO_UINT16 len2;
         };
-        PRO_UINT32     len4  ;
+        PRO_UINT32     len4;
     };
 
     DECLARE_SGI_POOL(0);
