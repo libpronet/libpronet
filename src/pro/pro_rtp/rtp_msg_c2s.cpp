@@ -883,6 +883,12 @@ CRtpMsgC2s::OnRecvSession(IRtpSession* session,
         return;
     }
 
+    CRtpMsgClient* msgClient       = NULL;
+    unsigned char  sessionCount    = 0;
+    IRtpSession*   sessions[255];
+    unsigned char  uplinkUserCount = 0;
+    RTP_MSG_USER   uplinkUsers[255];
+
     {
         CProThreadMutexGuard mon(m_lock);
 
@@ -898,11 +904,6 @@ CRtpMsgC2s::OnRecvSession(IRtpSession* session,
             return;
         }
 
-        unsigned char sessionCount    = 0;
-        IRtpSession*  sessions[255];
-        unsigned char uplinkUserCount = 0;
-        RTP_MSG_USER  uplinkUsers[255];
-
         for (int i = 0; i < (int)msgHeaderPtr->dstUserCount; ++i)
         {
             RTP_MSG_USER dstUser = msgHeaderPtr->dstUsers[i];
@@ -917,6 +918,7 @@ CRtpMsgC2s::OnRecvSession(IRtpSession* session,
                 m_user2Session.find(dstUser);
             if (itr2 != m_user2Session.end())
             {
+                itr2->second->AddRef();
                 sessions[sessionCount]       = itr2->second;
                 ++sessionCount;
             }
@@ -927,17 +929,25 @@ CRtpMsgC2s::OnRecvSession(IRtpSession* session,
             }
         }
 
-        if (sessionCount > 0)
-        {
-            SendMsgToDownlink(sessions, sessionCount, msgBodyPtr, msgBodySize,
-                charset, &srcUser);
-        }
-
         if (uplinkUserCount > 0 && m_msgClient != NULL)
         {
-            m_msgClient->TransferMsg(msgBodyPtr, msgBodySize,
-                charset, uplinkUsers, uplinkUserCount, &srcUser);
+            m_msgClient->AddRef();
+            msgClient = m_msgClient;
         }
+    }
+
+    for (int i = 0; i < (int)sessionCount; ++i)
+    {
+        SendMsgToDownlink(
+            m_mmType, sessions + i, 1, msgBodyPtr, msgBodySize, charset, &srcUser);
+        sessions[i]->Release();
+    }
+
+    if (msgClient != NULL)
+    {
+        msgClient->TransferMsg(
+            msgBodyPtr, msgBodySize, charset, uplinkUsers, uplinkUserCount, &srcUser);
+        msgClient->Release();
     }
 }
 
@@ -1203,7 +1213,8 @@ CRtpMsgC2s::ProcessMsg_client_login_ok(IRtpMsgClient*          msgClient,
                     m_user2Session.erase(itr2);
                 }
 
-                ret = SendAckToDownlink(newSession, &user, acceptedInfo.remoteIp.c_str());
+                ret = SendAckToDownlink(
+                    m_mmType, newSession, &user, acceptedInfo.remoteIp.c_str());
                 if (ret)
                 {
                     m_session2User[newSession] = user;
@@ -1360,6 +1371,9 @@ CRtpMsgC2s::OnTransferMsg(IRtpMsgClient*      msgClient,
         return;
     }
 
+    unsigned char sessionCount = 0;
+    IRtpSession*  sessions[255];
+
     {
         CProThreadMutexGuard mon(m_lock);
 
@@ -1373,24 +1387,23 @@ CRtpMsgC2s::OnTransferMsg(IRtpMsgClient*      msgClient,
             return;
         }
 
-        unsigned char sessionCount = 0;
-        IRtpSession*  sessions[255];
-
         for (int i = 0; i < (int)dstUserCount; ++i)
         {
             CProStlMap<RTP_MSG_USER, IRtpSession*>::const_iterator const itr =
                 m_user2Session.find(dstUsers[i]);
             if (itr != m_user2Session.end())
             {
+                itr->second->AddRef();
                 sessions[sessionCount] = itr->second;
                 ++sessionCount;
             }
         }
+    }
 
-        if (sessionCount > 0)
-        {
-            SendMsgToDownlink(sessions, sessionCount, buf, size, charset, srcUser);
-        }
+    for (int i = 0; i < (int)sessionCount; ++i)
+    {
+        SendMsgToDownlink(m_mmType, sessions + i, 1, buf, size, charset, srcUser);
+        sessions[i]->Release();
     }
 }
 
@@ -1533,7 +1546,8 @@ CRtpMsgC2s::OnTimer(unsigned long timerId,
 }
 
 bool
-CRtpMsgC2s::SendAckToDownlink(IRtpSession*        session,
+CRtpMsgC2s::SendAckToDownlink(RTP_MM_TYPE         mmType,
+                              IRtpSession*        session,
                               const RTP_MSG_USER* user,
                               const char*         publicIp)
 {
@@ -1565,7 +1579,7 @@ CRtpMsgC2s::SendAckToDownlink(IRtpSession*        session,
     msgHeaderPtr->user.instId = pbsd_hton16(user->instId);
     msgHeaderPtr->publicIp    = pbsd_inet_aton(publicIp);
 
-    packet->SetMmType(m_mmType);
+    packet->SetMmType(mmType);
     const bool ret = session->SendPacket(packet);
     packet->Release();
 
@@ -1573,7 +1587,8 @@ CRtpMsgC2s::SendAckToDownlink(IRtpSession*        session,
 }
 
 bool
-CRtpMsgC2s::SendMsgToDownlink(IRtpSession**       sessions,
+CRtpMsgC2s::SendMsgToDownlink(RTP_MM_TYPE         mmType,
+                              IRtpSession**       sessions,
                               unsigned char       sessionCount,
                               const void*         buf,
                               unsigned long       size,
@@ -1610,7 +1625,7 @@ CRtpMsgC2s::SendMsgToDownlink(IRtpSession**       sessions,
 
     memcpy((char*)msgHeaderPtr + msgHeaderSize, buf, size);
 
-    packet->SetMmType(m_mmType);
+    packet->SetMmType(mmType);
 
     bool ret = true;
 

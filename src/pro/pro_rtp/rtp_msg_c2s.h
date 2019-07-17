@@ -213,13 +213,15 @@ private:
         PRO_UINT64              nonce
         );
 
-    bool SendAckToDownlink(
+    static bool SendAckToDownlink(
+        RTP_MM_TYPE         mmType,
         IRtpSession*        session,
         const RTP_MSG_USER* user,
         const char*         publicIp
         );
 
-    bool SendMsgToDownlink(
+    static bool SendMsgToDownlink(
+        RTP_MM_TYPE         mmType,
         IRtpSession**       sessions,
         unsigned char       sessionCount,
         const void*         buf,

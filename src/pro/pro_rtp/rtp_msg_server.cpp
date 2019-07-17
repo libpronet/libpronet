@@ -379,7 +379,7 @@ CRtpMsgServer::AsyncKickoutUser(PRO_INT64* args)
             ctx->subUsers.erase(user);
             m_user2Ctx.erase(itr);
 
-            NotifyKickout(ctx->session, ctx->baseUser, user);
+            NotifyKickout(m_mmType, ctx->session, ctx->baseUser, user);
         }
 
         m_observer->AddRef();
@@ -416,7 +416,10 @@ CRtpMsgServer::SendMsg(const void*         buf,
         return (false);
     }
 
-    bool ret = true;
+    bool                                                   ret          = true;
+    unsigned char                                          sessionCount = 0;
+    IRtpSession*                                           sessions[255];
+    CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> > session2SubUsers;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -425,10 +428,6 @@ CRtpMsgServer::SendMsg(const void*         buf,
         {
             return (false);
         }
-
-        unsigned char                                          sessionCount = 0;
-        IRtpSession*                                           sessions[255];
-        CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> > session2Users;
 
         for (int i = 0; i < (int)dstUserCount; ++i)
         {
@@ -446,51 +445,66 @@ CRtpMsgServer::SendMsg(const void*         buf,
                 continue;
             }
 
-            RTP_MSG_LINK_CTX* const ctx = itr->second;
+            RTP_MSG_LINK_CTX* const dstCtx = itr->second;
 
-            if (dstUsers[i] == ctx->baseUser)
+            if (dstUsers[i] == dstCtx->baseUser)
             {
-                sessions[sessionCount] = ctx->session;
+                dstCtx->session->AddRef();
+                sessions[sessionCount] = dstCtx->session;
                 ++sessionCount;
             }
             else
             {
-                session2Users[ctx->session].push_back(dstUsers[i]);
+                CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::iterator const itr2 =
+                    session2SubUsers.find(dstCtx->session);
+                if (itr2 != session2SubUsers.end())
+                {
+                    itr2->second.push_back(dstUsers[i]);
+                }
+                else
+                {
+                    dstCtx->session->AddRef();
+                    session2SubUsers[dstCtx->session].push_back(dstUsers[i]);
+                }
             }
         }
+    }
 
-        /*
-         * to baseUsers
-         */
-        if (sessionCount > 0)
+    /*
+     * to baseUsers
+     */
+    for (int i = 0; i < (int)sessionCount; ++i)
+    {
+        const bool ret2 = SendMsgToDownlink(
+            m_mmType, sessions + i, 1, buf, size, charset, &ROOT_ID, NULL, 0);
+        if (!ret2)
         {
-            const bool ret2 = SendMsgToDownlink(sessions, sessionCount, buf, size,
-                charset, &ROOT_ID, NULL, 0);
+            ret = false;
+        }
+
+        sessions[i]->Release();
+    }
+
+    /*
+     * to subUsers
+     */
+    {
+        CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::const_iterator       itr = session2SubUsers.begin();
+        CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::const_iterator const end = session2SubUsers.end();
+
+        for (; itr != end; ++itr)
+        {
+            IRtpSession*                       session = itr->first;
+            const CProStlVector<RTP_MSG_USER>& users   = itr->second;
+
+            const bool ret2 = SendMsgToDownlink(m_mmType, &session, 1, buf, size,
+                charset, &ROOT_ID, &users[0], (unsigned char)users.size());
             if (!ret2)
             {
                 ret = false;
             }
-        }
 
-        /*
-         * to subUsers
-         */
-        {
-            CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::const_iterator       itr = session2Users.begin();
-            CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::const_iterator const end = session2Users.end();
-
-            for (; itr != end; ++itr)
-            {
-                IRtpSession*                       session = itr->first;
-                const CProStlVector<RTP_MSG_USER>& users   = itr->second;
-
-                const bool ret2 = SendMsgToDownlink(&session, 1, buf, size,
-                    charset, &ROOT_ID, &users[0], (unsigned char)users.size());
-                if (!ret2)
-                {
-                    ret = false;
-                }
-            }
+            session->Release();
         }
     }
 
@@ -909,7 +923,10 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
         return;
     }
 
-    IRtpMsgServerObserver* observer = NULL;
+    IRtpMsgServerObserver*                                 observer     = NULL;
+    unsigned char                                          sessionCount = 0;
+    IRtpSession*                                           sessions[255];
+    CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> > session2SubUsers;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -933,11 +950,8 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
             return;
         }
 
-        bool                                                   toRoot       = false;
-        bool                                                   toC2sPort    = false;
-        unsigned char                                          sessionCount = 0;
-        IRtpSession*                                           sessions[255];
-        CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> > session2Users;
+        bool toStdPort = false;
+        bool toC2sPort = false;
 
         for (int i = 0; i < (int)msgHeaderPtr->dstUserCount; ++i)
         {
@@ -957,7 +971,7 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
                 }
                 else
                 {
-                    toRoot    = true;
+                    toStdPort = true;
                 }
                 continue;
             }
@@ -973,40 +987,25 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
 
             if (dstUser == dstCtx->baseUser)
             {
+                dstCtx->session->AddRef();
                 sessions[sessionCount] = dstCtx->session;
                 ++sessionCount;
             }
             else
             {
-                session2Users[dstCtx->session].push_back(dstUser);
+                CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::iterator const itr3 =
+                    session2SubUsers.find(dstCtx->session);
+                if (itr3 != session2SubUsers.end())
+                {
+                    itr3->second.push_back(dstUser);
+                }
+                else
+                {
+                    dstCtx->session->AddRef();
+                    session2SubUsers[dstCtx->session].push_back(dstUser);
+                }
             }
         } /* end of for (...) */
-
-        /*
-         * to baseUsers
-         */
-        if (sessionCount > 0)
-        {
-            SendMsgToDownlink(sessions, sessionCount, msgBodyPtr, msgBodySize,
-                charset, &srcUser, NULL, 0);
-        }
-
-        /*
-         * to subUsers
-         */
-        {
-            CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::const_iterator       itr2 = session2Users.begin();
-            CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::const_iterator const end2 = session2Users.end();
-
-            for (; itr2 != end2; ++itr2)
-            {
-                IRtpSession*                       session = itr2->first;
-                const CProStlVector<RTP_MSG_USER>& users   = itr2->second;
-
-                SendMsgToDownlink(&session, 1, msgBodyPtr, msgBodySize,
-                    charset, &srcUser, &users[0], (unsigned char)users.size());
-            }
-        }
 
         /*
          * to c2sPort
@@ -1064,9 +1063,9 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
         while (0);
 
         /*
-         * to root
+         * to stdPort
          */
-        if (toRoot
+        if (toStdPort
             ||
             toC2sPort && !srcCtx->isC2s)
         {
@@ -1075,6 +1074,37 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
         }
     }
 
+    /*
+     * to baseUsers
+     */
+    for (int i = 0; i < (int)sessionCount; ++i)
+    {
+        SendMsgToDownlink(m_mmType, sessions + i, 1, msgBodyPtr, msgBodySize,
+            charset, &srcUser, NULL, 0);
+        sessions[i]->Release();
+    }
+
+    /*
+     * to subUsers
+     */
+    {
+        CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::const_iterator       itr = session2SubUsers.begin();
+        CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::const_iterator const end = session2SubUsers.end();
+
+        for (; itr != end; ++itr)
+        {
+            IRtpSession*                       session = itr->first;
+            const CProStlVector<RTP_MSG_USER>& users   = itr->second;
+
+            SendMsgToDownlink(m_mmType, &session, 1, msgBodyPtr, msgBodySize,
+                charset, &srcUser, &users[0], (unsigned char)users.size());
+            session->Release();
+        }
+    }
+
+    /*
+     * to root
+     */
     if (observer != NULL)
     {
         observer->OnRecvMsg(this, msgBodyPtr, msgBodySize, charset, &srcUser);
@@ -1259,8 +1289,8 @@ CRtpMsgServer::ProcessMsg_client_login(IRtpSession*            session,
         CProStlString theString = "";
         msgStream.ToString(theString);
 
-        SendMsgToDownlink(&session, 1, theString.c_str(), (unsigned long)theString.length(),
-            0, &ROOT_ID_C2S, &c2sUser, 1);
+        SendMsgToDownlink(m_mmType, &session, 1, theString.c_str(),
+            (unsigned long)theString.length(), 0, &ROOT_ID_C2S, &c2sUser, 1);
     }
 }
 
@@ -1498,7 +1528,7 @@ CRtpMsgServer::AddBaseUser(RTP_SESSION_TYPE        sessionType,
                 ctx->subUsers.erase(baseUser);
                 m_user2Ctx.erase(itr);
 
-                NotifyKickout(ctx->session, ctx->baseUser, baseUser);
+                NotifyKickout(m_mmType, ctx->session, ctx->baseUser, baseUser);
             }
         }
 
@@ -1532,7 +1562,7 @@ CRtpMsgServer::AddBaseUser(RTP_SESSION_TYPE        sessionType,
     {
         newSession->SuspendRecv();
 
-        SendAckToDownlink(newSession, &baseUser, publicIp.c_str());
+        SendAckToDownlink(m_mmType, newSession, &baseUser, publicIp.c_str());
     }
 
     /*
@@ -1630,7 +1660,7 @@ CRtpMsgServer::AddSubUser(const RTP_MSG_USER&  c2sUser,
 
                 if (c2sUser != oldCtx->baseUser)
                 {
-                    NotifyKickout(oldCtx->session, oldCtx->baseUser, subUser);
+                    NotifyKickout(m_mmType, oldCtx->session, oldCtx->baseUser, subUser);
                 }
             }
         }
@@ -1663,8 +1693,8 @@ CRtpMsgServer::AddSubUser(const RTP_MSG_USER&  c2sUser,
     {
         newSession->SuspendRecv();
 
-        SendMsgToDownlink(&newSession, 1, msgText.c_str(), (unsigned long)msgText.length(),
-            0, &ROOT_ID_C2S, &c2sUser, 1);
+        SendMsgToDownlink(m_mmType, &newSession, 1, msgText.c_str(),
+            (unsigned long)msgText.length(), 0, &ROOT_ID_C2S, &c2sUser, 1);
     }
 
     /*
@@ -1682,7 +1712,8 @@ CRtpMsgServer::AddSubUser(const RTP_MSG_USER&  c2sUser,
 }
 
 bool
-CRtpMsgServer::SendAckToDownlink(IRtpSession*        session,
+CRtpMsgServer::SendAckToDownlink(RTP_MM_TYPE         mmType,
+                                 IRtpSession*        session,
                                  const RTP_MSG_USER* user,
                                  const char*         publicIp)
 {
@@ -1714,7 +1745,7 @@ CRtpMsgServer::SendAckToDownlink(IRtpSession*        session,
     msgHeaderPtr->user.instId = pbsd_hton16(user->instId);
     msgHeaderPtr->publicIp    = pbsd_inet_aton(publicIp);
 
-    packet->SetMmType(m_mmType);
+    packet->SetMmType(mmType);
     const bool ret = session->SendPacket(packet);
     packet->Release();
 
@@ -1722,7 +1753,8 @@ CRtpMsgServer::SendAckToDownlink(IRtpSession*        session,
 }
 
 bool
-CRtpMsgServer::SendMsgToDownlink(IRtpSession**       sessions,
+CRtpMsgServer::SendMsgToDownlink(RTP_MM_TYPE         mmType,
+                                 IRtpSession**       sessions,
                                  unsigned char       sessionCount,
                                  const void*         buf,
                                  unsigned long       size,
@@ -1779,7 +1811,7 @@ CRtpMsgServer::SendMsgToDownlink(IRtpSession**       sessions,
 
     memcpy((char*)msgHeaderPtr + msgHeaderSize, buf, size);
 
-    packet->SetMmType(m_mmType);
+    packet->SetMmType(mmType);
 
     bool ret = true;
 
@@ -1798,7 +1830,8 @@ CRtpMsgServer::SendMsgToDownlink(IRtpSession**       sessions,
 }
 
 void
-CRtpMsgServer::NotifyKickout(IRtpSession*        session,
+CRtpMsgServer::NotifyKickout(RTP_MM_TYPE         mmType,
+                             IRtpSession*        session,
                              const RTP_MSG_USER& c2sUser,
                              const RTP_MSG_USER& subUser)
 {
@@ -1824,6 +1857,6 @@ CRtpMsgServer::NotifyKickout(IRtpSession*        session,
     CProStlString theString = "";
     msgStream.ToString(theString);
 
-    SendMsgToDownlink(&session, 1, theString.c_str(), (unsigned long)theString.length(),
-        0, &ROOT_ID_C2S, &c2sUser, 1);
+    SendMsgToDownlink(mmType, &session, 1, theString.c_str(),
+        (unsigned long)theString.length(), 0, &ROOT_ID_C2S, &c2sUser, 1);
 }

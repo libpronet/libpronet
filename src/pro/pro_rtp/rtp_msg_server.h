@@ -249,13 +249,15 @@ private:
         PRO_INT64            appData
         );
 
-    bool SendAckToDownlink(
+    static bool SendAckToDownlink(
+        RTP_MM_TYPE         mmType,
         IRtpSession*        session,
         const RTP_MSG_USER* user,
         const char*         publicIp
         );
 
-    bool SendMsgToDownlink(
+    static bool SendMsgToDownlink(
+        RTP_MM_TYPE         mmType,
         IRtpSession**       sessions,
         unsigned char       sessionCount,
         const void*         buf,
@@ -266,7 +268,8 @@ private:
         unsigned char       dstUserCount /* = 0 */
         );
 
-    void NotifyKickout(
+    static void NotifyKickout(
+        RTP_MM_TYPE         mmType,
         IRtpSession*        session,
         const RTP_MSG_USER& c2sUser,
         const RTP_MSG_USER& subUser
