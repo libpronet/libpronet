@@ -39,8 +39,8 @@ libpro_net_so_LDFLAGS = -shared -Wl,-soname,libpro_net.so \
 libpro_net_so_LDADD   =
 
 LIBS = ../pro_util/libpro_util.a      \
-       ../mbedtls/libmbedtls.a        \
        ../pro_shared/libpro_shared.so \
+       ../mbedtls/libmbedtls.a        \
        -lstdc++                       \
        -lrt                           \
        -lpthread                      \
