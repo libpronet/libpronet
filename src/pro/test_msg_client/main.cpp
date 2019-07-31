@@ -34,6 +34,7 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+#define THREAD_COUNT     2
 #define CONFIG_FILE_NAME "test_msg_client.cfg"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -110,15 +111,7 @@ int main(int argc, char* argv[])
             CProStlString& configName  = configs[i].configName;
             CProStlString& configValue = configs[i].configValue;
 
-            if (stricmp(configName.c_str(), "msgc_thread_count") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0 && value <= 100)
-                {
-                    configInfo.msgc_thread_count = value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgc_mm_type") == 0)
+            if (stricmp(configName.c_str(), "msgc_mm_type") == 0)
             {
                 const int value = atoi(configValue.c_str());
                 if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
@@ -249,7 +242,7 @@ int main(int argc, char* argv[])
         }
     }
 
-    reactor = ProCreateReactor(configInfo.msgc_thread_count);
+    reactor = ProCreateReactor(THREAD_COUNT);
     if (reactor == NULL)
     {
         printf("\n test_msg_client --- error! can't create reactor. \n");

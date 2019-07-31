@@ -36,7 +36,6 @@ struct MSG_CLIENT_CONFIG_INFO
 {
     MSG_CLIENT_CONFIG_INFO()
     {
-        msgc_thread_count        = 2;
         msgc_mm_type             = RTP_MMT_MSG;
         msgc_server_ip           = "127.0.0.1";
         msgc_server_port         = 3000;
@@ -74,7 +73,6 @@ struct MSG_CLIENT_CONFIG_INFO
 
         CProConfigStream configStream;
 
-        configStream.AddUint("msgc_thread_count"       , msgc_thread_count);
         configStream.AddUint("msgc_mm_type"            , msgc_mm_type);
         configStream.Add    ("msgc_server_ip"          , msgc_server_ip);
         configStream.AddUint("msgc_server_port"        , msgc_server_port);
@@ -94,8 +92,7 @@ struct MSG_CLIENT_CONFIG_INFO
         configStream.Get(configs);
     }
 
-    unsigned int                 msgc_thread_count; /* 1 ~ 100 */
-    RTP_MM_TYPE                  msgc_mm_type;      /* RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX */
+    RTP_MM_TYPE                  msgc_mm_type; /* RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX */
     CProStlString                msgc_server_ip;
     unsigned short               msgc_server_port;
     RTP_MSG_USER                 msgc_id;
