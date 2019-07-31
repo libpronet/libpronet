@@ -407,11 +407,26 @@ CRtpMsgServer::SendMsg(const void*         buf,
                        const RTP_MSG_USER* dstUsers,
                        unsigned char       dstUserCount)
 {
-    assert(buf != NULL);
-    assert(size > 0);
+    const bool ret = SendMsg2(buf, size, NULL, 0, charset, dstUsers, dstUserCount);
+
+    return (ret);
+}
+
+bool
+PRO_CALLTYPE
+CRtpMsgServer::SendMsg2(const void*         buf1,
+                        unsigned long       size1,
+                        const void*         buf2,  /* = NULL */
+                        unsigned long       size2, /* = 0 */
+                        PRO_UINT16          charset,
+                        const RTP_MSG_USER* dstUsers,
+                        unsigned char       dstUserCount)
+{
+    assert(buf1 != NULL);
+    assert(size1 > 0);
     assert(dstUsers != NULL);
     assert(dstUserCount > 0);
-    if (buf == NULL || size == 0 || dstUsers == NULL || dstUserCount == 0)
+    if (buf1 == NULL || size1 == 0 || dstUsers == NULL || dstUserCount == 0)
     {
         return (false);
     }
@@ -476,7 +491,7 @@ CRtpMsgServer::SendMsg(const void*         buf,
     for (int i = 0; i < (int)sessionCount; ++i)
     {
         const bool ret2 = SendMsgToDownlink(
-            m_mmType, sessions + i, 1, buf, size, charset, &ROOT_ID, NULL, 0);
+            m_mmType, sessions + i, 1, buf1, size1, buf2, size2, charset, &ROOT_ID, NULL, 0);
         if (!ret2)
         {
             ret = false;
@@ -497,7 +512,7 @@ CRtpMsgServer::SendMsg(const void*         buf,
             IRtpSession*                       session = itr->first;
             const CProStlVector<RTP_MSG_USER>& users   = itr->second;
 
-            const bool ret2 = SendMsgToDownlink(m_mmType, &session, 1, buf, size,
+            const bool ret2 = SendMsgToDownlink(m_mmType, &session, 1, buf1, size1, buf2, size2,
                 charset, &ROOT_ID, &users[0], (unsigned char)users.size());
             if (!ret2)
             {
@@ -1079,7 +1094,7 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
      */
     for (int i = 0; i < (int)sessionCount; ++i)
     {
-        SendMsgToDownlink(m_mmType, sessions + i, 1, msgBodyPtr, msgBodySize,
+        SendMsgToDownlink(m_mmType, sessions + i, 1, msgBodyPtr, msgBodySize, NULL, 0,
             charset, &srcUser, NULL, 0);
         sessions[i]->Release();
     }
@@ -1096,7 +1111,7 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
             IRtpSession*                       session = itr->first;
             const CProStlVector<RTP_MSG_USER>& users   = itr->second;
 
-            SendMsgToDownlink(m_mmType, &session, 1, msgBodyPtr, msgBodySize,
+            SendMsgToDownlink(m_mmType, &session, 1, msgBodyPtr, msgBodySize, NULL, 0,
                 charset, &srcUser, &users[0], (unsigned char)users.size());
             session->Release();
         }
@@ -1290,7 +1305,7 @@ CRtpMsgServer::ProcessMsg_client_login(IRtpSession*            session,
         msgStream.ToString(theString);
 
         SendMsgToDownlink(m_mmType, &session, 1, theString.c_str(),
-            (unsigned long)theString.length(), 0, &ROOT_ID_C2S, &c2sUser, 1);
+            (unsigned long)theString.length(), NULL, 0, 0, &ROOT_ID_C2S, &c2sUser, 1);
     }
 }
 
@@ -1694,7 +1709,7 @@ CRtpMsgServer::AddSubUser(const RTP_MSG_USER&  c2sUser,
         newSession->SuspendRecv();
 
         SendMsgToDownlink(m_mmType, &newSession, 1, msgText.c_str(),
-            (unsigned long)msgText.length(), 0, &ROOT_ID_C2S, &c2sUser, 1);
+            (unsigned long)msgText.length(), NULL, 0, 0, &ROOT_ID_C2S, &c2sUser, 1);
     }
 
     /*
@@ -1756,8 +1771,10 @@ bool
 CRtpMsgServer::SendMsgToDownlink(RTP_MM_TYPE         mmType,
                                  IRtpSession**       sessions,
                                  unsigned char       sessionCount,
-                                 const void*         buf,
-                                 unsigned long       size,
+                                 const void*         buf1,
+                                 unsigned long       size1,
+                                 const void*         buf2,         /* = NULL */
+                                 unsigned long       size2,        /* = 0 */
                                  PRO_UINT16          charset,
                                  const RTP_MSG_USER* srcUser,
                                  const RTP_MSG_USER* dstUsers,     /* = NULL */
@@ -1765,15 +1782,21 @@ CRtpMsgServer::SendMsgToDownlink(RTP_MM_TYPE         mmType,
 {
     assert(sessions != NULL);
     assert(sessionCount > 0);
-    assert(buf != NULL);
-    assert(size > 0);
+    assert(buf1 != NULL);
+    assert(size1 > 0);
     assert(srcUser != NULL);
     assert(srcUser->classId > 0);
     assert(srcUser->UserId() > 0);
-    if (sessions == NULL || sessionCount == 0 || buf == NULL || size == 0 ||
+    if (sessions == NULL || sessionCount == 0 || buf1 == NULL || size1 == 0 ||
         srcUser == NULL || srcUser->classId == 0 || srcUser->UserId() == 0)
     {
         return (false);
+    }
+
+    if (buf2 == NULL || size2 == 0)
+    {
+        buf2  = NULL;
+        size2 = 0;
     }
 
     if (dstUsers == NULL || dstUserCount == 0)
@@ -1785,7 +1808,8 @@ CRtpMsgServer::SendMsgToDownlink(RTP_MM_TYPE         mmType,
     const unsigned long msgHeaderSize =
         sizeof(RTP_MSG_HEADER) + sizeof(RTP_MSG_USER) * (dstUserCount - 1);
 
-    IRtpPacket* const packet = CreateRtpPacketSpace(msgHeaderSize + size, RTP_MSG_PACK_MODE);
+    IRtpPacket* const packet =
+        CreateRtpPacketSpace(msgHeaderSize + size1 + size2, RTP_MSG_PACK_MODE);
     if (packet == NULL)
     {
         return (false);
@@ -1809,7 +1833,11 @@ CRtpMsgServer::SendMsgToDownlink(RTP_MM_TYPE         mmType,
         }
     }
 
-    memcpy((char*)msgHeaderPtr + msgHeaderSize, buf, size);
+    memcpy((char*)msgHeaderPtr + msgHeaderSize, buf1, size1);
+    if (buf2 != NULL && size2 > 0)
+    {
+        memcpy((char*)msgHeaderPtr + msgHeaderSize + size1, buf2, size2);
+    }
 
     packet->SetMmType(mmType);
 
@@ -1858,5 +1886,5 @@ CRtpMsgServer::NotifyKickout(RTP_MM_TYPE         mmType,
     msgStream.ToString(theString);
 
     SendMsgToDownlink(mmType, &session, 1, theString.c_str(),
-        (unsigned long)theString.length(), 0, &ROOT_ID_C2S, &c2sUser, 1);
+        (unsigned long)theString.length(), NULL, 0, 0, &ROOT_ID_C2S, &c2sUser, 1);
 }

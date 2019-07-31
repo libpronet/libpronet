@@ -169,6 +169,16 @@ public:
         unsigned char       dstUserCount
         );
 
+    virtual bool PRO_CALLTYPE SendMsg2(
+        const void*         buf1,
+        unsigned long       size1,
+        const void*         buf2,  /* = NULL */
+        unsigned long       size2, /* = 0 */
+        PRO_UINT16          charset,
+        const RTP_MSG_USER* dstUsers,
+        unsigned char       dstUserCount
+        );
+
     virtual void PRO_CALLTYPE SetOutputRedlineToC2s(unsigned long redlineBytes);
 
     virtual unsigned long PRO_CALLTYPE GetOutputRedlineToC2s() const;
@@ -260,8 +270,10 @@ private:
         RTP_MM_TYPE         mmType,
         IRtpSession**       sessions,
         unsigned char       sessionCount,
-        const void*         buf,
-        unsigned long       size,
+        const void*         buf1,
+        unsigned long       size1,
+        const void*         buf2,        /* = NULL */
+        unsigned long       size2,       /* = 0 */
         PRO_UINT16          charset,
         const RTP_MSG_USER* srcUser,
         const RTP_MSG_USER* dstUsers,    /* = NULL */

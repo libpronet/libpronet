@@ -414,16 +414,31 @@ CRtpMsgClient::SendMsg(const void*         buf,
                        const RTP_MSG_USER* dstUsers,
                        unsigned char       dstUserCount)
 {
-    assert(buf != NULL);
-    assert(size > 0);
+    const bool ret = SendMsg2(buf, size, NULL, 0, charset, dstUsers, dstUserCount);
+
+    return (ret);
+}
+
+bool
+PRO_CALLTYPE
+CRtpMsgClient::SendMsg2(const void*         buf1,
+                        unsigned long       size1,
+                        const void*         buf2,  /* = NULL */
+                        unsigned long       size2, /* = 0 */
+                        PRO_UINT16          charset,
+                        const RTP_MSG_USER* dstUsers,
+                        unsigned char       dstUserCount)
+{
+    assert(buf1 != NULL);
+    assert(size1 > 0);
     assert(dstUsers != NULL);
     assert(dstUserCount > 0);
-    if (buf == NULL || size == 0 || dstUsers == NULL || dstUserCount == 0)
+    if (buf1 == NULL || size1 == 0 || dstUsers == NULL || dstUserCount == 0)
     {
         return (false);
     }
 
-    const bool ret = PushData(buf, size, charset, dstUsers, dstUserCount, NULL);
+    const bool ret = PushData(buf1, size1, buf2, size2, charset, dstUsers, dstUserCount, NULL);
 
     return (ret);
 }
@@ -449,23 +464,31 @@ CRtpMsgClient::TransferMsg(const void*         buf,
         return (false);
     }
 
-    const bool ret = PushData(buf, size, charset, dstUsers, dstUserCount, srcUser);
+    const bool ret = PushData(buf, size, NULL, 0, charset, dstUsers, dstUserCount, srcUser);
 
     return (ret);
 }
 
 bool
-CRtpMsgClient::PushData(const void*         buf,
-                        unsigned long       size,
+CRtpMsgClient::PushData(const void*         buf1,
+                        unsigned long       size1,
+                        const void*         buf2,    /* = NULL */
+                        unsigned long       size2,   /* = 0 */
                         PRO_UINT16          charset,
                         const RTP_MSG_USER* dstUsers,
                         unsigned char       dstUserCount,
                         const RTP_MSG_USER* srcUser) /* = NULL */
 {
-    assert(buf != NULL);
-    assert(size > 0);
+    assert(buf1 != NULL);
+    assert(size1 > 0);
     assert(dstUsers != NULL);
     assert(dstUserCount > 0);
+
+    if (buf2 == NULL || size2 == 0)
+    {
+        buf2  = NULL;
+        size2 = 0;
+    }
 
     bool ret = true;
 
@@ -485,13 +508,14 @@ CRtpMsgClient::PushData(const void*         buf,
 
         const unsigned long msgHeaderSize =
             sizeof(RTP_MSG_HEADER) + sizeof(RTP_MSG_USER) * (dstUserCount - 1);
-        if (cachedBytes + msgHeaderSize + size > redlineBytes && /* check redline */
+        if (cachedBytes + msgHeaderSize + size1 + size2 > redlineBytes && /* check redline */
             cachedBytes > 0)
         {
             return (false);
         }
 
-        IRtpPacket* const packet = CreateRtpPacketSpace(msgHeaderSize + size, RTP_MSG_PACK_MODE);
+        IRtpPacket* const packet =
+            CreateRtpPacketSpace(msgHeaderSize + size1 + size2, RTP_MSG_PACK_MODE);
         if (packet == NULL)
         {
             return (false);
@@ -527,7 +551,11 @@ CRtpMsgClient::PushData(const void*         buf,
             return (false);
         }
 
-        memcpy((char*)msgHeaderPtr + msgHeaderSize, buf, size);
+        memcpy((char*)msgHeaderPtr + msgHeaderSize, buf1, size1);
+        if (buf2 != NULL && size2 > 0)
+        {
+            memcpy((char*)msgHeaderPtr + msgHeaderSize + size1, buf2, size2);
+        }
 
         packet->SetMmType(m_mmType);
         ret = m_bucket->PushBackAddRef(packet);

@@ -108,6 +108,16 @@ public:
         unsigned char       dstUserCount
         );
 
+    virtual bool PRO_CALLTYPE SendMsg2(
+        const void*         buf1,
+        unsigned long       size1,
+        const void*         buf2,  /* = NULL */
+        unsigned long       size2, /* = 0 */
+        PRO_UINT16          charset,
+        const RTP_MSG_USER* dstUsers,
+        unsigned char       dstUserCount
+        );
+
     virtual void PRO_CALLTYPE SetOutputRedline(unsigned long redlineBytes);
 
     virtual unsigned long PRO_CALLTYPE GetOutputRedline() const;
@@ -159,8 +169,10 @@ private:
         );
 
     bool PushData(
-        const void*         buf,
-        unsigned long       size,
+        const void*         buf1,
+        unsigned long       size1,
+        const void*         buf2,   /* = NULL */
+        unsigned long       size2,  /* = 0 */
         PRO_UINT16          charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount,

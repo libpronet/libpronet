@@ -304,6 +304,21 @@ public:
         ) = 0;
 
     /*
+     * 发送消息(buf1 + buf2)
+     *
+     * 系统内部有消息发送队列
+     */
+    virtual bool PRO_CALLTYPE SendMsg2(
+        const void*         buf1,        /* 消息内容1 */
+        unsigned long       size1,       /* 消息长度1 */
+        const void*         buf2,        /* 消息内容2. 可以是NULL */
+        unsigned long       size2,       /* 消息长度2. 可以是0 */
+        PRO_UINT16          charset,     /* 用户自定义的消息字符集代码 */
+        const RTP_MSG_USER* dstUsers,    /* 消息接收者 */
+        unsigned char       dstUserCount /* 最多255个目标 */
+        ) = 0;
+
+    /*
      * 设置链路发送红线. 默认(1024 * 1024)字节
      *
      * 如果redlineBytes的值为0, 则直接返回,什么都不做
@@ -396,6 +411,21 @@ public:
     virtual bool PRO_CALLTYPE SendMsg(
         const void*         buf,         /* 消息内容 */
         unsigned long       size,        /* 消息长度 */
+        PRO_UINT16          charset,     /* 用户自定义的消息字符集代码 */
+        const RTP_MSG_USER* dstUsers,    /* 消息接收者 */
+        unsigned char       dstUserCount /* 最多255个目标 */
+        ) = 0;
+
+    /*
+     * 发送消息(buf1 + buf2)
+     *
+     * 系统内部有消息发送队列
+     */
+    virtual bool PRO_CALLTYPE SendMsg2(
+        const void*         buf1,        /* 消息内容1 */
+        unsigned long       size1,       /* 消息长度1 */
+        const void*         buf2,        /* 消息内容2. 可以是NULL */
+        unsigned long       size2,       /* 消息长度2. 可以是0 */
         PRO_UINT16          charset,     /* 用户自定义的消息字符集代码 */
         const RTP_MSG_USER* dstUsers,    /* 消息接收者 */
         unsigned char       dstUserCount /* 最多255个目标 */
