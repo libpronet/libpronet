@@ -7,6 +7,7 @@ pro_util
   pro_a.h
   pro_bsd_wrapper.h
   pro_buffer.h
+  pro_channel_task_pool.h
   pro_config_file.h
   pro_config_stream.h
   pro_file_monitor.h
