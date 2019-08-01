@@ -91,7 +91,7 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_service_hub\main.cpp
+SOURCE=..\..\..\src\pronet\pro_service_hub\main.cpp
 # End Source File
 # End Group
 # Begin Group "Resource Files"
@@ -99,15 +99,15 @@ SOURCE=..\..\..\src\pro\pro_service_hub\main.cpp
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_service_hub\manifest.bin
+SOURCE=..\..\..\src\pronet\pro_service_hub\manifest.bin
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_service_hub\pro_service_hub.rc
+SOURCE=..\..\..\src\pronet\pro_service_hub\pro_service_hub.rc
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_service_hub\resource.h
+SOURCE=..\..\..\src\pronet\pro_service_hub\resource.h
 # End Source File
 # End Group
 # End Target

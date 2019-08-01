@@ -1,4 +1,4 @@
-LOCAL_PATH := $(PRO_ROOT_DIR)/src/pro/pro_shared
+LOCAL_PATH := $(PRO_ROOT_DIR)/src/pronet/pro_shared
 include $(CLEAR_VARS)
 
 LOCAL_MODULE    := pro_shared

@@ -91,11 +91,11 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\test_tcp_server\main.cpp
+SOURCE=..\..\..\src\pronet\test_tcp_server\main.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\test_tcp_server\test.cpp
+SOURCE=..\..\..\src\pronet\test_tcp_server\test.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -103,7 +103,7 @@ SOURCE=..\..\..\src\pro\test_tcp_server\test.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\test_tcp_server\test.h
+SOURCE=..\..\..\src\pronet\test_tcp_server\test.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
@@ -111,15 +111,15 @@ SOURCE=..\..\..\src\pro\test_tcp_server\test.h
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\test_tcp_server\manifest.bin
+SOURCE=..\..\..\src\pronet\test_tcp_server\manifest.bin
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\test_tcp_server\resource.h
+SOURCE=..\..\..\src\pronet\test_tcp_server\resource.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\test_tcp_server\test_tcp_server.rc
+SOURCE=..\..\..\src\pronet\test_tcp_server\test_tcp_server.rc
 # End Source File
 # End Group
 # End Target

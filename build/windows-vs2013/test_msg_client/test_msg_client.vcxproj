@@ -177,14 +177,12 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pro/pro_net</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/pronet/pro_net</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|Win32'">
@@ -195,14 +193,12 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pro/pro_net</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/pronet/pro_net</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -213,14 +209,12 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pro/pro_net</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/pronet/pro_net</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|x64'">
@@ -231,14 +225,12 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pro/pro_net</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/pronet/pro_net</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -251,7 +243,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pro/pro_net</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/pronet/pro_net</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -259,8 +251,6 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|Win32'">
@@ -273,7 +263,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pro/pro_net</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/pronet/pro_net</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -281,8 +271,6 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -295,7 +283,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pro/pro_net</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/pronet/pro_net</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -303,8 +291,6 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|x64'">
@@ -317,7 +303,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pro/pro_net</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/pronet/pro_net</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -325,23 +311,21 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\pro\test_msg_client\resource.h" />
-    <ClInclude Include="..\..\..\src\pro\test_msg_client\test.h" />
+    <ClInclude Include="..\..\..\src\pronet\test_msg_client\resource.h" />
+    <ClInclude Include="..\..\..\src\pronet\test_msg_client\test.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\..\src\pro\test_msg_client\test_msg_client.rc" />
+    <ResourceCompile Include="..\..\..\src\pronet\test_msg_client\test_msg_client.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\src\pro\test_msg_client\manifest.bin" />
+    <None Include="..\..\..\src\pronet\test_msg_client\manifest.bin" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\pro\test_msg_client\main.cpp" />
-    <ClCompile Include="..\..\..\src\pro\test_msg_client\test.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\test_msg_client\main.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\test_msg_client\test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\mbedtls\mbedtls.vcxproj">

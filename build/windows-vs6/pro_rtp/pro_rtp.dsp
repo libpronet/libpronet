@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "PRO_RTP_EXPORTS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "../../../src/pro/pro_net" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /D "PRO_RTP_EXPORTS" /FR /FD /c
+# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "../../../src/pronet/pro_net" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /D "PRO_RTP_EXPORTS" /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
@@ -71,7 +71,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "PRO_RTP_EXPORTS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "../../../src/pro/pro_net" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /D "PRO_RTP_EXPORTS" /FR /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "../../../src/pronet/pro_net" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /D "PRO_RTP_EXPORTS" /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
@@ -96,179 +96,179 @@ LINK32=link.exe
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_base.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_base.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_base.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_base.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_bucket.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_bucket.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_bucket.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_bucket.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_flow_stat.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_flow_stat.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_flow_stat.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_flow_stat.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_packet.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_packet.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_packet.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_packet.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_port_allocator.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_port_allocator.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_port_allocator.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_port_allocator.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_reorder.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_reorder.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_reorder.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_reorder.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_service.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_service.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_service.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_service.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_a.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_a.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_a.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_a.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_base.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_base.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_base.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_base.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_mcast.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_mcast.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_mcast.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_mcast.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_mcast_ex.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_mcast_ex.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_mcast_ex.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_mcast_ex.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_sslclient_ex.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_sslclient_ex.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_sslclient_ex.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_sslclient_ex.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_sslserver_ex.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_sslserver_ex.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_sslserver_ex.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_sslserver_ex.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_tcpclient.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_tcpclient.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_tcpclient.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_tcpclient.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_tcpclient_ex.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_tcpclient_ex.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_tcpclient_ex.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_tcpclient_ex.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_tcpserver.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_tcpserver.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_tcpserver.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_tcpserver.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_tcpserver_ex.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_tcpserver_ex.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_tcpserver_ex.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_tcpserver_ex.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_udpclient.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_udpclient.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_udpclient.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_udpclient.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_udpclient_ex.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_udpclient_ex.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_udpclient_ex.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_udpclient_ex.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_udpserver.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_udpserver.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_udpserver.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_udpserver.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_udpserver_ex.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_udpserver_ex.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_udpserver_ex.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_udpserver_ex.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_wrapper.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_wrapper.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_wrapper.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_session_wrapper.h
 # End Source File
 # End Group
 # Begin Group "rtp_msg"
@@ -276,39 +276,39 @@ SOURCE=..\..\..\src\pro\pro_rtp\rtp_session_wrapper.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_msg.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_msg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_msg.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_msg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_msg_c2s.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_msg_c2s.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_msg_c2s.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_msg_c2s.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_msg_client.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_msg_client.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_msg_client.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_msg_client.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_msg_command.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_msg_command.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_msg_server.cpp
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_msg_server.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\rtp_msg_server.h
+SOURCE=..\..\..\src\pronet\pro_rtp\rtp_msg_server.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
@@ -316,20 +316,20 @@ SOURCE=..\..\..\src\pro\pro_rtp\rtp_msg_server.h
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\manifest.bin
+SOURCE=..\..\..\src\pronet\pro_rtp\manifest.bin
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\pro_rtp.rc
+SOURCE=..\..\..\src\pronet\pro_rtp\pro_rtp.rc
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\resource.h
+SOURCE=..\..\..\src\pronet\pro_rtp\resource.h
 # End Source File
 # End Group
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_rtp\pro_rtp.def
+SOURCE=..\..\..\src\pronet\pro_rtp\pro_rtp.def
 # End Source File
 # End Target
 # End Project

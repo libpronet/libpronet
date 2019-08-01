@@ -15,28 +15,28 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\pro\test_tcp_client\test.h">
+    <ClInclude Include="..\..\..\src\pronet\test_tcp_client\test.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\pro\test_tcp_client\resource.h">
+    <ClInclude Include="..\..\..\src\pronet\test_tcp_client\resource.h">
       <Filter>Resource Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\..\src\pro\test_tcp_client\test_tcp_client.rc">
+    <ResourceCompile Include="..\..\..\src\pronet\test_tcp_client\test_tcp_client.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\src\pro\test_tcp_client\manifest.bin">
+    <None Include="..\..\..\src\pronet\test_tcp_client\manifest.bin">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\pro\test_tcp_client\test.cpp">
+    <ClCompile Include="..\..\..\src\pronet\test_tcp_client\test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\pro\test_tcp_client\main.cpp">
+    <ClCompile Include="..\..\..\src\pronet\test_tcp_client\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

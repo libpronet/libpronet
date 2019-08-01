@@ -182,10 +182,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ModuleDefinitionFile>../../../src/pro/pro_net/pro_net.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>../../../src/pronet/pro_net/pro_net.def</ModuleDefinitionFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|Win32'">
@@ -201,10 +199,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ModuleDefinitionFile>../../../src/pro/pro_net/pro_net.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>../../../src/pronet/pro_net/pro_net.def</ModuleDefinitionFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -220,10 +216,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ModuleDefinitionFile>../../../src/pro/pro_net/pro_net.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>../../../src/pronet/pro_net/pro_net.def</ModuleDefinitionFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|x64'">
@@ -239,10 +233,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ModuleDefinitionFile>../../../src/pro/pro_net/pro_net.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>../../../src/pronet/pro_net/pro_net.def</ModuleDefinitionFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -262,10 +254,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ModuleDefinitionFile>../../../src/pro/pro_net/pro_net.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>../../../src/pronet/pro_net/pro_net.def</ModuleDefinitionFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|Win32'">
@@ -285,10 +275,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ModuleDefinitionFile>../../../src/pro/pro_net/pro_net.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>../../../src/pronet/pro_net/pro_net.def</ModuleDefinitionFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -308,10 +296,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ModuleDefinitionFile>../../../src/pro/pro_net/pro_net.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>../../../src/pronet/pro_net/pro_net.def</ModuleDefinitionFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|x64'">
@@ -331,64 +317,62 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ModuleDefinitionFile>../../../src/pro/pro_net/pro_net.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>../../../src/pronet/pro_net/pro_net.def</ModuleDefinitionFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="..\..\..\src\pro\pro_net\manifest.bin" />
-    <None Include="..\..\..\src\pro\pro_net\pro_net.def" />
+    <None Include="..\..\..\src\pronet\pro_net\manifest.bin" />
+    <None Include="..\..\..\src\pronet\pro_net\pro_net.def" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\..\src\pro\pro_net\pro_net.rc" />
+    <ResourceCompile Include="..\..\..\src\pronet\pro_net\pro_net.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\pro\pro_net\pro_acceptor.cpp" />
-    <ClCompile Include="..\..\..\src\pro\pro_net\pro_base_reactor.cpp" />
-    <ClCompile Include="..\..\..\src\pro\pro_net\pro_connector.cpp" />
-    <ClCompile Include="..\..\..\src\pro\pro_net\pro_epoll_reactor.cpp" />
-    <ClCompile Include="..\..\..\src\pro\pro_net\pro_handler_mgr.cpp" />
-    <ClCompile Include="..\..\..\src\pro\pro_net\pro_mbedtls.cpp" />
-    <ClCompile Include="..\..\..\src\pro\pro_net\pro_mcast_transport.cpp" />
-    <ClCompile Include="..\..\..\src\pro\pro_net\pro_net.cpp" />
-    <ClCompile Include="..\..\..\src\pro\pro_net\pro_notify_pipe.cpp" />
-    <ClCompile Include="..\..\..\src\pro\pro_net\pro_select_reactor.cpp" />
-    <ClCompile Include="..\..\..\src\pro\pro_net\pro_service_host.cpp" />
-    <ClCompile Include="..\..\..\src\pro\pro_net\pro_service_hub.cpp" />
-    <ClCompile Include="..\..\..\src\pro\pro_net\pro_service_pipe.cpp" />
-    <ClCompile Include="..\..\..\src\pro\pro_net\pro_ssl_handshaker.cpp" />
-    <ClCompile Include="..\..\..\src\pro\pro_net\pro_ssl_transport.cpp" />
-    <ClCompile Include="..\..\..\src\pro\pro_net\pro_tcp_handshaker.cpp" />
-    <ClCompile Include="..\..\..\src\pro\pro_net\pro_tcp_transport.cpp" />
-    <ClCompile Include="..\..\..\src\pro\pro_net\pro_tp_reactor_task.cpp" />
-    <ClCompile Include="..\..\..\src\pro\pro_net\pro_udp_transport.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_acceptor.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_base_reactor.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_connector.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_epoll_reactor.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_handler_mgr.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_mbedtls.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_mcast_transport.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_net.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_notify_pipe.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_select_reactor.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_service_host.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_service_hub.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_service_pipe.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_ssl_handshaker.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_ssl_transport.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_tcp_handshaker.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_tcp_transport.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_tp_reactor_task.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_udp_transport.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_acceptor.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_base_reactor.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_connector.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_epoll_reactor.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_event_handler.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_handler_mgr.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_mbedtls.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_mcast_transport.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_net.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_notify_pipe.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_recv_pool.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_select_reactor.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_send_pool.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_service_host.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_service_hub.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_service_pipe.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_ssl_handshaker.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_ssl_transport.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_tcp_handshaker.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_tcp_transport.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_tp_reactor_task.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\pro_udp_transport.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_net\resource.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_acceptor.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_base_reactor.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_connector.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_epoll_reactor.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_event_handler.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_handler_mgr.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_mbedtls.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_mcast_transport.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_net.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_notify_pipe.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_recv_pool.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_select_reactor.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_send_pool.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_service_host.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_service_hub.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_service_pipe.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_ssl_handshaker.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_ssl_transport.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_tcp_handshaker.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_tcp_transport.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_tp_reactor_task.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_udp_transport.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\resource.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\mbedtls\mbedtls.vcxproj">

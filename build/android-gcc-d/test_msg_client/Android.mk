@@ -1,11 +1,11 @@
-LOCAL_PATH := $(PRO_ROOT_DIR)/src/pro/test_msg_client
+LOCAL_PATH := $(PRO_ROOT_DIR)/src/pronet/test_msg_client
 include $(CLEAR_VARS)
 
 LOCAL_MODULE    := test_msg_client
 LOCAL_SRC_FILES := main.cpp \
                    test.cpp
 
-LOCAL_C_INCLUDES    := $(PRO_ROOT_DIR)/src/pro/pro_net
+LOCAL_C_INCLUDES    := $(PRO_ROOT_DIR)/src/pronet/pro_net
 LOCAL_CFLAGS        := -fno-strict-aliasing
 LOCAL_CPPFLAGS      :=
 LOCAL_CPP_EXTENSION := .cpp .cxx .cc

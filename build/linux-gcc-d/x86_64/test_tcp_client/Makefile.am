@@ -5,8 +5,8 @@ prolibdir = ${prefix}/libpronet/lib
 
 probin_PROGRAMS = test_tcp_client
 
-test_tcp_client_SOURCES = ../../../../src/pro/test_tcp_client/main.cpp \
-                          ../../../../src/pro/test_tcp_client/test.cpp
+test_tcp_client_SOURCES = ../../../../src/pronet/test_tcp_client/main.cpp \
+                          ../../../../src/pronet/test_tcp_client/test.cpp
 
 test_tcp_client_CPPFLAGS =
 

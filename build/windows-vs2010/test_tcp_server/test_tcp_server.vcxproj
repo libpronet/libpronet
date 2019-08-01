@@ -298,18 +298,18 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\pro\test_tcp_server\resource.h" />
-    <ClInclude Include="..\..\..\src\pro\test_tcp_server\test.h" />
+    <ClInclude Include="..\..\..\src\pronet\test_tcp_server\resource.h" />
+    <ClInclude Include="..\..\..\src\pronet\test_tcp_server\test.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\..\src\pro\test_tcp_server\test_tcp_server.rc" />
+    <ResourceCompile Include="..\..\..\src\pronet\test_tcp_server\test_tcp_server.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\src\pro\test_tcp_server\manifest.bin" />
+    <None Include="..\..\..\src\pronet\test_tcp_server\manifest.bin" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\pro\test_tcp_server\main.cpp" />
-    <ClCompile Include="..\..\..\src\pro\test_tcp_server\test.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\test_tcp_server\main.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\test_tcp_server\test.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\mbedtls\mbedtls.vcxproj">

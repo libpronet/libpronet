@@ -181,10 +181,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ModuleDefinitionFile>../../../src/pro/pro_shared/pro_shared.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>../../../src/pronet/pro_shared/pro_shared.def</ModuleDefinitionFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|Win32'">
@@ -199,10 +197,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ModuleDefinitionFile>../../../src/pro/pro_shared/pro_shared.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>../../../src/pronet/pro_shared/pro_shared.def</ModuleDefinitionFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -217,10 +213,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ModuleDefinitionFile>../../../src/pro/pro_shared/pro_shared.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>../../../src/pronet/pro_shared/pro_shared.def</ModuleDefinitionFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|x64'">
@@ -235,10 +229,8 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ModuleDefinitionFile>../../../src/pro/pro_shared/pro_shared.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>../../../src/pronet/pro_shared/pro_shared.def</ModuleDefinitionFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -257,10 +249,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ModuleDefinitionFile>../../../src/pro/pro_shared/pro_shared.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>../../../src/pronet/pro_shared/pro_shared.def</ModuleDefinitionFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|Win32'">
@@ -279,10 +269,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ModuleDefinitionFile>../../../src/pro/pro_shared/pro_shared.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>../../../src/pronet/pro_shared/pro_shared.def</ModuleDefinitionFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -301,10 +289,8 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ModuleDefinitionFile>../../../src/pro/pro_shared/pro_shared.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>../../../src/pronet/pro_shared/pro_shared.def</ModuleDefinitionFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|x64'">
@@ -323,26 +309,24 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ModuleDefinitionFile>../../../src/pro/pro_shared/pro_shared.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>../../../src/pronet/pro_shared/pro_shared.def</ModuleDefinitionFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MinimumRequiredVersion>
-      </MinimumRequiredVersion>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\pro\pro_shared\pro_shared.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_shared\pro_shared.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\src\pro\pro_shared\manifest.bin" />
-    <None Include="..\..\..\src\pro\pro_shared\pro_shared.def" />
+    <None Include="..\..\..\src\pronet\pro_shared\manifest.bin" />
+    <None Include="..\..\..\src\pronet\pro_shared\pro_shared.def" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\pro\pro_shared\pro_shared.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_shared\resource.h" />
-    <ClInclude Include="..\..\..\src\pro\pro_shared\sgi_pool\stl_alloc.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_shared\pro_shared.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_shared\resource.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_shared\sgi_pool\stl_alloc.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\..\src\pro\pro_shared\pro_shared.rc" />
+    <ResourceCompile Include="..\..\..\src\pronet\pro_shared\pro_shared.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

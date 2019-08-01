@@ -42,7 +42,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "../../../src/pro/pro_net" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /FD /c
+# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "../../../src/pronet/pro_net" /D "WIN32" /D "NDEBUG" /D "_CONSOLE" /D "_MBCS" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /FD /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x804 /d "NDEBUG"
 # ADD RSC /l 0x804 /d "NDEBUG"
@@ -68,7 +68,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "../../../src/pro/pro_net" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "../../../src/pronet/pro_net" /D "WIN32" /D "_DEBUG" /D "_CONSOLE" /D "_MBCS" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE RSC /l 0x804 /d "_DEBUG"
 # ADD RSC /l 0x804 /d "_DEBUG"
@@ -91,11 +91,11 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\test_rtp\main.cpp
+SOURCE=..\..\..\src\pronet\test_rtp\main.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\test_rtp\test.cpp
+SOURCE=..\..\..\src\pronet\test_rtp\test.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -103,7 +103,7 @@ SOURCE=..\..\..\src\pro\test_rtp\test.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\test_rtp\test.h
+SOURCE=..\..\..\src\pronet\test_rtp\test.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
@@ -111,15 +111,15 @@ SOURCE=..\..\..\src\pro\test_rtp\test.h
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\test_rtp\manifest.bin
+SOURCE=..\..\..\src\pronet\test_rtp\manifest.bin
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\test_rtp\resource.h
+SOURCE=..\..\..\src\pronet\test_rtp\resource.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\test_rtp\test_rtp.rc
+SOURCE=..\..\..\src\pronet\test_rtp\test_rtp.rc
 # End Source File
 # End Group
 # End Target

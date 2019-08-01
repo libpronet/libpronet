@@ -96,11 +96,11 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_shared\pro_shared.cpp
+SOURCE=..\..\..\src\pronet\pro_shared\pro_shared.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_shared\pro_shared.def
+SOURCE=..\..\..\src\pronet\pro_shared\pro_shared.def
 # End Source File
 # End Group
 # Begin Group "Header Files"
@@ -108,7 +108,7 @@ SOURCE=..\..\..\src\pro\pro_shared\pro_shared.def
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_shared\pro_shared.h
+SOURCE=..\..\..\src\pronet\pro_shared\pro_shared.h
 # End Source File
 # End Group
 # Begin Group "Resource Files"
@@ -116,15 +116,15 @@ SOURCE=..\..\..\src\pro\pro_shared\pro_shared.h
 # PROP Default_Filter "ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe"
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_shared\manifest.bin
+SOURCE=..\..\..\src\pronet\pro_shared\manifest.bin
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_shared\pro_shared.rc
+SOURCE=..\..\..\src\pronet\pro_shared\pro_shared.rc
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_shared\resource.h
+SOURCE=..\..\..\src\pronet\pro_shared\resource.h
 # End Source File
 # End Group
 # Begin Group "sgi_pool"
@@ -132,7 +132,7 @@ SOURCE=..\..\..\src\pro\pro_shared\resource.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\..\..\src\pro\pro_shared\sgi_pool\stl_alloc.h
+SOURCE=..\..\..\src\pronet\pro_shared\sgi_pool\stl_alloc.h
 # End Source File
 # End Group
 # End Target

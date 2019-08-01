@@ -169,7 +169,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;SQLITE_THREADSAFE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pro/pro_net</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/pronet/pro_net</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -185,7 +185,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;SQLITE_THREADSAFE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pro/pro_net</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/pronet/pro_net</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -201,7 +201,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;SQLITE_THREADSAFE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pro/pro_net</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/pronet/pro_net</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -217,7 +217,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;SQLITE_THREADSAFE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pro/pro_net</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/pronet/pro_net</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -235,7 +235,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;SQLITE_THREADSAFE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pro/pro_net</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/pronet/pro_net</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -255,7 +255,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;SQLITE_THREADSAFE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pro/pro_net</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/pronet/pro_net</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -275,7 +275,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;SQLITE_THREADSAFE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pro/pro_net</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/pronet/pro_net</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -295,7 +295,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_WIN32_WINNT=0x0501;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;SQLITE_THREADSAFE=1;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pro/pro_net</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/pronet/pro_net</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -306,25 +306,25 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\pro\rtp_msg_server\db_connection.h" />
-    <ClInclude Include="..\..\..\src\pro\rtp_msg_server\db_struct.h" />
-    <ClInclude Include="..\..\..\src\pro\rtp_msg_server\msg_db.h" />
-    <ClInclude Include="..\..\..\src\pro\rtp_msg_server\msg_server.h" />
-    <ClInclude Include="..\..\..\src\pro\rtp_msg_server\resource.h" />
-    <ClInclude Include="..\..\..\src\pro\rtp_msg_server\sqlite3.h" />
+    <ClInclude Include="..\..\..\src\pronet\rtp_msg_server\db_connection.h" />
+    <ClInclude Include="..\..\..\src\pronet\rtp_msg_server\db_struct.h" />
+    <ClInclude Include="..\..\..\src\pronet\rtp_msg_server\msg_db.h" />
+    <ClInclude Include="..\..\..\src\pronet\rtp_msg_server\msg_server.h" />
+    <ClInclude Include="..\..\..\src\pronet\rtp_msg_server\resource.h" />
+    <ClInclude Include="..\..\..\src\pronet\rtp_msg_server\sqlite3.h" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\..\..\src\pro\rtp_msg_server\rtp_msg_server.rc" />
+    <ResourceCompile Include="..\..\..\src\pronet\rtp_msg_server\rtp_msg_server.rc" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\..\src\pro\rtp_msg_server\manifest.bin" />
+    <None Include="..\..\..\src\pronet\rtp_msg_server\manifest.bin" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\pro\rtp_msg_server\db_connection.cpp" />
-    <ClCompile Include="..\..\..\src\pro\rtp_msg_server\main.cpp" />
-    <ClCompile Include="..\..\..\src\pro\rtp_msg_server\msg_db.cpp" />
-    <ClCompile Include="..\..\..\src\pro\rtp_msg_server\msg_server.cpp" />
-    <ClCompile Include="..\..\..\src\pro\rtp_msg_server\sqlite3.c" />
+    <ClCompile Include="..\..\..\src\pronet\rtp_msg_server\db_connection.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\rtp_msg_server\main.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\rtp_msg_server\msg_db.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\rtp_msg_server\msg_server.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\rtp_msg_server\sqlite3.c" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\mbedtls\mbedtls.vcxproj">
