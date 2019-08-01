@@ -151,6 +151,10 @@ SOURCE=..\..\..\src\pronet\pro_util\pro_buffer.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\..\..\src\pronet\pro_util\pro_channel_task_pool.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\..\src\pronet\pro_util\pro_config_file.cpp
 # End Source File
 # Begin Source File
@@ -228,6 +232,10 @@ SOURCE=..\..\..\src\pronet\pro_util\pro_bsd_wrapper.h
 # Begin Source File
 
 SOURCE=..\..\..\src\pronet\pro_util\pro_buffer.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\pronet\pro_util\pro_channel_task_pool.h
 # End Source File
 # Begin Source File
 

@@ -4,6 +4,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE    := pro_util
 LOCAL_SRC_FILES := pro_bsd_wrapper.cpp          \
                    pro_buffer.cpp               \
+                   pro_channel_task_pool.cpp    \
                    pro_config_file.cpp          \
                    pro_config_stream.cpp        \
                    pro_file_monitor.cpp         \

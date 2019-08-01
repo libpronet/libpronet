@@ -8,6 +8,7 @@ prolib_LIBRARIES = libpro_util.a
 proinc_HEADERS = ../../../../src/pronet/pro_util/pro_a.h                    \
                  ../../../../src/pronet/pro_util/pro_bsd_wrapper.h          \
                  ../../../../src/pronet/pro_util/pro_buffer.h               \
+                 ../../../../src/pronet/pro_util/pro_channel_task_pool.h    \
                  ../../../../src/pronet/pro_util/pro_config_file.h          \
                  ../../../../src/pronet/pro_util/pro_config_stream.h        \
                  ../../../../src/pronet/pro_util/pro_file_monitor.h         \
@@ -30,6 +31,7 @@ proinc_HEADERS = ../../../../src/pronet/pro_util/pro_a.h                    \
 
 libpro_util_a_SOURCES = ../../../../src/pronet/pro_util/pro_bsd_wrapper.cpp          \
                         ../../../../src/pronet/pro_util/pro_buffer.cpp               \
+                        ../../../../src/pronet/pro_util/pro_channel_task_pool.cpp    \
                         ../../../../src/pronet/pro_util/pro_config_file.cpp          \
                         ../../../../src/pronet/pro_util/pro_config_stream.cpp        \
                         ../../../../src/pronet/pro_util/pro_file_monitor.cpp         \

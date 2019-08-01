@@ -38,6 +38,7 @@
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_a.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_bsd_wrapper.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_buffer.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_channel_task_pool.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_config_file.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_config_stream.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_file_monitor.h" />
@@ -61,6 +62,7 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_bsd_wrapper.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_buffer.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_channel_task_pool.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_config_file.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_config_stream.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_file_monitor.cpp" />
