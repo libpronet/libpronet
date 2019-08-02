@@ -22,6 +22,7 @@
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_time_util.h"
+#include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
 
 #if defined(WIN32)
@@ -195,8 +196,11 @@ int main(int argc, char* argv[])
     }
 
     printf(
-        " pro_service_hub --- [listenPorts : %s] --- ok! \n\n"
+        " pro_service_hub[ver-%d.%d.%d] --- [ports : %s] --- ok! \n\n"
         ,
+        PRO_VER_MAJOR,
+        PRO_VER_MINOR,
+        PRO_VER_PATCH,
         portString.c_str()
         );
     ProSleep(-1);

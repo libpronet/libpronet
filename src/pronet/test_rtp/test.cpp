@@ -28,6 +28,7 @@
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_timer_factory.h"
+#include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
 
 #if defined(WIN32)
@@ -228,8 +229,11 @@ CTest::OnOkSession(IRtpSession* session)
         localPort = m_session->GetLocalPort();
 
         printf(
-            " test_rtp --- [listen on %s:%u] --- ok! \n\n"
+            " test_rtp[ver-%d.%d.%d] --- [listen on %s:%u] --- ok! \n\n"
             ,
+            PRO_VER_MAJOR,
+            PRO_VER_MINOR,
+            PRO_VER_PATCH,
             localIp,
             (unsigned int)localPort
             );

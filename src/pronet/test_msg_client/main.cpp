@@ -25,6 +25,7 @@
 #include "../pro_util/pro_ssl_util.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_time_util.h"
+#include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
 
 #if defined(WIN32)
@@ -265,9 +266,11 @@ int main(int argc, char* argv[])
     }
 
     printf(
-        "\n"
-        " test_msg_client --- [server : %s:%u, mmType : %u] --- connecting... \n"
+        "\n test_msg_client[ver-%d.%d.%d] --- [server : %s:%u, mmType : %u] --- connecting... \n"
         ,
+        PRO_VER_MAJOR,
+        PRO_VER_MINOR,
+        PRO_VER_PATCH,
         configInfo.msgc_server_ip.c_str(),
         (unsigned int)configInfo.msgc_server_port,
         (unsigned int)configInfo.msgc_mm_type

@@ -26,6 +26,7 @@
 #include "../pro_util/pro_ssl_util.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_time_util.h"
+#include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
 
 #if defined(WIN32)
@@ -395,8 +396,11 @@ int main(int argc, char* argv[])
     snprintf_pro(
         s_traceInfo,
         sizeof(s_traceInfo),
-        " rtp_msg_c2s --- [servicePort : %u, server : %s:%u, mmType : %u] --- ok! \n\n"
+        " rtp_msg_c2s[ver-%d.%d.%d] --- [port : %u, server : %s:%u, mmType : %u] --- ok! \n\n"
         ,
+        PRO_VER_MAJOR,
+        PRO_VER_MINOR,
+        PRO_VER_PATCH,
         (unsigned int)configInfo.c2ss_local_hub_port,
         configInfo.c2ss_uplink_ip.c_str(),
         (unsigned int)configInfo.c2ss_uplink_port,

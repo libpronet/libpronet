@@ -27,6 +27,7 @@
 #include "../pro_util/pro_log_file.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_time_util.h"
+#include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
 
 #if defined(WIN32)
@@ -308,8 +309,11 @@ int main(int argc, char* argv[])
     snprintf_pro(
         s_traceInfo,
         sizeof(s_traceInfo),
-        " rtp_msg_server --- [servicePort : %u, mmType : %u] --- ok! \n\n"
+        " rtp_msg_server[ver-%d.%d.%d] --- [port : %u, mmType : %u] --- ok! \n\n"
         ,
+        PRO_VER_MAJOR,
+        PRO_VER_MINOR,
+        PRO_VER_PATCH,
         (unsigned int)configInfo.msgs_hub_port,
         (unsigned int)configInfo.msgs_mm_type
         );

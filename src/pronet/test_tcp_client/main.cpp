@@ -22,6 +22,7 @@
 #include "../pro_util/pro_config_stream.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_time_util.h"
+#include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
 
 #if defined(WIN32)
@@ -283,7 +284,15 @@ int main(int argc, char* argv[])
         goto EXIT;
     }
 
-    printf("\n test_tcp_client --- connecting... \n\n");
+    printf(
+        "\n test_tcp_client[ver-%d.%d.%d] --- [server : %s:%u] --- connecting... \n\n"
+        ,
+        PRO_VER_MAJOR,
+        PRO_VER_MINOR,
+        PRO_VER_PATCH,
+        configInfo.tcpc_server_ip.c_str(),
+        (unsigned int)configInfo.tcpc_server_port
+        );
 
     printf(
         " help               : show this message \n"
