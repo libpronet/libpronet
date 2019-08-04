@@ -952,7 +952,9 @@ ProRtpVersion(unsigned char* major,  /* = NULL */
  * 说明: 调用者应该继续初始化rtp包的头部字段
  *
  *       如果packMode为RTP_EPM_DEFAULT或RTP_EPM_TCP2, 那么payloadSize最多
- *       (1024 * 63)字节
+ *       (1024 * 63)字节;
+ *       如果packMode为RTP_EPM_TCP4, 那么payloadSize最多
+ *       (1024 * 1024 * 96)字节
  */
 PRO_RTP_API
 IRtpPacket*
@@ -975,7 +977,9 @@ CreateRtpPacket(const void*       payloadBuffer,
  *       数据指针,然后直接进行媒体数据的初始化等操作
  *
  *       如果packMode为RTP_EPM_DEFAULT或RTP_EPM_TCP2, 那么payloadSize最多
- *       (1024 * 63)字节
+ *       (1024 * 63)字节;
+ *       如果packMode为RTP_EPM_TCP4, 那么payloadSize最多
+ *       (1024 * 1024 * 96)字节
  */
 PRO_RTP_API
 IRtpPacket*

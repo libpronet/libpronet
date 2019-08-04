@@ -36,7 +36,7 @@
 #define PRO_TCP2_PAYLOAD_SIZE (1024 * 63)
 
 #if !defined(PRO_TCP4_PAYLOAD_SIZE)
-#define PRO_TCP4_PAYLOAD_SIZE (1024 * 1024 * 64)
+#define PRO_TCP4_PAYLOAD_SIZE (1024 * 1024 * 96)
 #endif
 
 struct RTP_EXT
