@@ -329,7 +329,7 @@ CTest::OnTimer(unsigned long timerId,
             m_session->GetInputStat(NULL, &inputBitRate, &inputLossRate, &inputLossCount);
 
             printf(
-                " send : %.1f(kbps)    recv : %.1f(kbps)    recv_loss : %.1f%% [%u] \n\n"
+                " SEND : %9.1f(kbps)\t RECV : %9.1f(kbps)\t LOSS : %4.1f%% [%u] \n\n"
                 ,
                 outputBitRate / 1000,
                 inputBitRate  / 1000,
