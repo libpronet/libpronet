@@ -63,7 +63,7 @@ CProShaper::CalcGreenBits()
         return (m_greenBits);
     }
 
-    m_greenBits += m_maxBitRate * (PRO_UINT32)(tick - m_startTick) / 1000;
+    m_greenBits += m_maxBitRate * (tick - m_startTick) / 1000;
 
     if (m_greenBits < -m_maxBitRate)
     {

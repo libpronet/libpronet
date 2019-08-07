@@ -61,7 +61,7 @@ CRtpFlowStat::PushData(unsigned long frames,
     }
 
     m_inFrames += frames;
-    m_inBits   += (float)bytes * 8;
+    m_inBits   += (double)bytes * 8;
 
     Update();
 }
@@ -76,7 +76,7 @@ CRtpFlowStat::PopData(unsigned long frames,
     }
 
     m_outFrames += frames;
-    m_outBits   += (float)bytes * 8;
+    m_outBits   += (double)bytes * 8;
 
     Update();
 }
@@ -91,19 +91,19 @@ CRtpFlowStat::CalcInfo(float* inFrameRate,  /* = NULL */
 
     if (inFrameRate != NULL)
     {
-        *inFrameRate  = m_inFrameRate;
+        *inFrameRate  = (float)m_inFrameRate;
     }
     if (inBitRate != NULL)
     {
-        *inBitRate    = m_inBitRate;
+        *inBitRate    = (float)m_inBitRate;
     }
     if (outFrameRate != NULL)
     {
-        *outFrameRate = m_outFrameRate;
+        *outFrameRate = (float)m_outFrameRate;
     }
     if (outBitRate != NULL)
     {
-        *outBitRate   = m_outBitRate;
+        *outBitRate   = (float)m_outBitRate;
     }
 }
 
@@ -119,10 +119,10 @@ CRtpFlowStat::Update()
 
     if (tick - m_startTick >= m_timeSpan * 1000)
     {
-        m_inFrameRate  = m_inFrames  * 1000 / (PRO_UINT32)(tick - m_startTick);
-        m_inBitRate    = m_inBits    * 1000 / (PRO_UINT32)(tick - m_startTick);
-        m_outFrameRate = m_outFrames * 1000 / (PRO_UINT32)(tick - m_startTick);
-        m_outBitRate   = m_outBits   * 1000 / (PRO_UINT32)(tick - m_startTick);
+        m_inFrameRate  = m_inFrames  * 1000 / (tick - m_startTick);
+        m_inBitRate    = m_inBits    * 1000 / (tick - m_startTick);
+        m_outFrameRate = m_outFrames * 1000 / (tick - m_startTick);
+        m_outBitRate   = m_outBits   * 1000 / (tick - m_startTick);
 
         m_startTick = tick;
         m_inFrames  = 0;

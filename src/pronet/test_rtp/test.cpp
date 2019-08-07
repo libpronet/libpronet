@@ -229,7 +229,7 @@ CTest::OnOkSession(IRtpSession* session)
         localPort = m_session->GetLocalPort();
 
         printf(
-            " test_rtp[ver-%d.%d.%d] --- [listen on %s:%u] --- ok! \n\n"
+            " test_rtp [ver-%d.%d.%d] --- [listen on %s:%u] --- ok! \n\n"
             ,
             PRO_VER_MAJOR,
             PRO_VER_MINOR,
@@ -244,8 +244,14 @@ CTest::OnOkSession(IRtpSession* session)
         ::SetConsoleTitle(info);
 #endif
 
-        m_sendTimerId = m_reactor->ScheduleMmTimer(this, SEND_TIMER_MS, true);
-        m_recvTimerId = m_reactor->ScheduleTimer  (this, RECV_TIMER_MS, true);
+        if (m_sendTimerId == 0)
+        {
+            m_sendTimerId = m_reactor->ScheduleMmTimer(this, SEND_TIMER_MS, true);
+        }
+        if (m_recvTimerId == 0)
+        {
+            m_recvTimerId = m_reactor->ScheduleTimer(this, RECV_TIMER_MS, true);
+        }
     }
 }
 

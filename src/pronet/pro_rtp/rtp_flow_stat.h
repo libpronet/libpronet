@@ -59,14 +59,14 @@ private:
 
     PRO_INT64 m_timeSpan;
     PRO_INT64 m_startTick;
-    float     m_inFrames;
-    float     m_inFrameRate;
-    float     m_inBits;
-    float     m_inBitRate;
-    float     m_outFrames;
-    float     m_outFrameRate;
-    float     m_outBits;
-    float     m_outBitRate;
+    double    m_inFrames;
+    double    m_inFrameRate;
+    double    m_inBits;
+    double    m_inBitRate;
+    double    m_outFrames;
+    double    m_outFrameRate;
+    double    m_outBits;
+    double    m_outBitRate;
 
     DECLARE_SGI_POOL(0);
 };

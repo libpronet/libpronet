@@ -309,7 +309,7 @@ int main(int argc, char* argv[])
     snprintf_pro(
         s_traceInfo,
         sizeof(s_traceInfo),
-        " rtp_msg_server[ver-%d.%d.%d] --- [port : %u, mmType : %u] --- ok! \n\n"
+        " rtp_msg_server [ver-%d.%d.%d] --- [port : %u, mmType : %u] --- ok! \n\n"
         ,
         PRO_VER_MAJOR,
         PRO_VER_MINOR,

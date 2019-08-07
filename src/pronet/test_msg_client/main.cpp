@@ -266,7 +266,7 @@ int main(int argc, char* argv[])
     }
 
     printf(
-        "\n test_msg_client[ver-%d.%d.%d] --- [server : %s:%u, mmType : %u] --- connecting... \n"
+        "\n test_msg_client [ver-%d.%d.%d] --- [server : %s:%u, mmType : %u] --- connecting... \n"
         ,
         PRO_VER_MAJOR,
         PRO_VER_MINOR,

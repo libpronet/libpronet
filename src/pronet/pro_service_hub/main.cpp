@@ -196,7 +196,7 @@ int main(int argc, char* argv[])
     }
 
     printf(
-        " pro_service_hub[ver-%d.%d.%d] --- [ports : %s] --- ok! \n\n"
+        " pro_service_hub [ver-%d.%d.%d] --- [ports : %s] --- ok! \n\n"
         ,
         PRO_VER_MAJOR,
         PRO_VER_MINOR,

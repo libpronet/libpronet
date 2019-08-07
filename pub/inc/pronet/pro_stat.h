@@ -49,6 +49,7 @@ private:
 
     PRO_INT64 m_timeSpan;
     PRO_INT64 m_startTick;
+    PRO_INT64 m_calcTick;
     double    m_bits;
     double    m_bitRate;
 
@@ -85,6 +86,7 @@ private:
     PRO_INT64  m_timeSpan;
     PRO_INT64  m_maxBrokenDuration;
     PRO_INT64  m_startTick;
+    PRO_INT64  m_calcTick;
     PRO_INT64  m_lastValidTick;
     PRO_UINT16 m_nextSeq;
     double     m_count;
@@ -120,6 +122,7 @@ private:
 
     PRO_INT64 m_timeSpan;
     PRO_INT64 m_startTick;
+    PRO_INT64 m_calcTick;
     double    m_count;
     double    m_sum;
     double    m_avgValue;

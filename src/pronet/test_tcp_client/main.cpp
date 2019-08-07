@@ -285,7 +285,7 @@ int main(int argc, char* argv[])
     }
 
     printf(
-        "\n test_tcp_client[ver-%d.%d.%d] --- [server : %s:%u] --- connecting... \n\n"
+        "\n test_tcp_client [ver-%d.%d.%d] --- [server : %s:%u] --- connecting... \n\n"
         ,
         PRO_VER_MAJOR,
         PRO_VER_MINOR,

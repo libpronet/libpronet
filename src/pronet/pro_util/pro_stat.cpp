@@ -25,9 +25,9 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define MAX_LOSS_COUNT  15000
-#define OVERLAP_PERCENT 50 /* 50% */
-#define TICK_SPAN_MS    1000
+#define MAX_LOSS_COUNT    15000
+#define INIT_TIME_SPAN_MS 3000
+#define TICK_SPAN_MS      500 /* 100 ~ 500 */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -36,6 +36,7 @@ CProStatBitRate::CProStatBitRate()
 {
     m_timeSpan  = 5;
     m_startTick = 0;
+    m_calcTick  = 0;
     m_bits      = 0;
     m_bitRate   = 0;
 }
@@ -57,7 +58,7 @@ CProStatBitRate::PushDataBytes(size_t dataBytes)
 {
     if (m_startTick == 0)
     {
-        m_startTick = ProGetTickCount64() - m_timeSpan * 1000 * OVERLAP_PERCENT / 100;
+        m_startTick = ProGetTickCount64() - INIT_TIME_SPAN_MS;
     }
 
     m_bits += (double)dataBytes * 8;
@@ -70,7 +71,7 @@ CProStatBitRate::PushDataBits(size_t dataBits)
 {
     if (m_startTick == 0)
     {
-        m_startTick = ProGetTickCount64() - m_timeSpan * 1000 * OVERLAP_PERCENT / 100;
+        m_startTick = ProGetTickCount64() - INIT_TIME_SPAN_MS;
     }
 
     m_bits += dataBits;
@@ -96,20 +97,16 @@ CProStatBitRate::Update()
 
     const PRO_INT64 tick = ProGetTickCount64();
 
-    PRO_INT64 tickSpan = TICK_SPAN_MS;
-    if (tickSpan > m_timeSpan * 1000)
+    if (tick - m_calcTick >= TICK_SPAN_MS)
     {
-        tickSpan = m_timeSpan * 1000;
-    }
-    if (tick - m_startTick >= tickSpan)
-    {
-        m_bitRate = m_bits * 1000 / (PRO_UINT32)(tick - m_startTick);
-    }
+        m_calcTick = tick;
+        m_bitRate  = m_bits * 1000 / (tick - m_startTick);
 
-    if (tick - m_startTick >= m_timeSpan * 1000)
-    {
-        m_startTick = tick - m_timeSpan * 1000 * OVERLAP_PERCENT / 100;
-        m_bits      = m_bitRate * (PRO_UINT32)(tick - m_startTick) / 1000;
+        if (tick - m_startTick >= m_timeSpan * 1000)
+        {
+            m_startTick = tick - m_timeSpan * 1000;
+            m_bits      = m_bitRate * (tick - m_startTick) / 1000;
+        }
     }
 }
 
@@ -117,6 +114,7 @@ void
 CProStatBitRate::Reset()
 {
     m_startTick = 0;
+    m_calcTick  = 0;
     m_bits      = 0;
     m_bitRate   = 0;
 }
@@ -129,6 +127,7 @@ CProStatLossRate::CProStatLossRate()
     m_timeSpan          = 5;
     m_maxBrokenDuration = 10;
     m_startTick         = 0;
+    m_calcTick          = 0;
     m_lastValidTick     = 0;
     m_nextSeq           = 0;
     m_count             = 0;
@@ -168,7 +167,7 @@ CProStatLossRate::PushData(PRO_UINT16 dataSeq)
 
     if (m_startTick == 0)
     {
-        m_startTick     = tick - m_timeSpan * 1000 * OVERLAP_PERCENT / 100;
+        m_startTick     = tick - INIT_TIME_SPAN_MS;
         m_lastValidTick = tick;
         m_nextSeq       = dataSeq;
     }
@@ -258,26 +257,19 @@ CProStatLossRate::Update()
 
     const PRO_INT64 tick = ProGetTickCount64();
 
-    PRO_INT64 tickSpan = TICK_SPAN_MS;
-    if (tickSpan > m_timeSpan * 1000)
+    if (tick - m_calcTick >= TICK_SPAN_MS && m_count >= 1) /* double */
     {
-        tickSpan = m_timeSpan * 1000;
-    }
-    if (tick - m_startTick >= tickSpan)
-    {
-        if (m_count >= 1) /* double */
+        m_calcTick = tick;
+        m_lossRate = m_lossCount / m_count;
+
+        if (tick - m_startTick >= m_timeSpan * 1000)
         {
-            m_lossRate = m_lossCount / m_count;
+            const double countRate = m_count * 1000 / (tick - m_startTick);
+
+            m_startTick = tick - m_timeSpan * 1000;
+            m_count     = countRate * (tick - m_startTick) / 1000;
+            m_lossCount = m_count * m_lossRate;
         }
-    }
-
-    if (tick - m_startTick >= m_timeSpan * 1000)
-    {
-        const double countRate = m_count * 1000 / (PRO_UINT32)(tick - m_startTick);
-
-        m_startTick = tick - m_timeSpan * 1000 * OVERLAP_PERCENT / 100;
-        m_count     = countRate * (PRO_UINT32)(tick - m_startTick) / 1000;
-        m_lossCount = m_count * m_lossRate;
     }
 }
 
@@ -285,6 +277,7 @@ void
 CProStatLossRate::Reset()
 {
     m_startTick     = 0;
+    m_calcTick      = 0;
     m_lastValidTick = 0;
     m_nextSeq       = 0;
     m_count         = 0;
@@ -300,6 +293,7 @@ CProStatAvgValue::CProStatAvgValue()
 {
     m_timeSpan  = 5;
     m_startTick = 0;
+    m_calcTick  = 0;
     m_count     = 0;
     m_sum       = 0;
     m_avgValue  = 0;
@@ -322,7 +316,7 @@ CProStatAvgValue::PushData(double dataValue)
 {
     if (m_startTick == 0)
     {
-        m_startTick = ProGetTickCount64() - m_timeSpan * 1000 * OVERLAP_PERCENT / 100;
+        m_startTick = ProGetTickCount64() - INIT_TIME_SPAN_MS;
     }
 
     ++m_count;
@@ -347,26 +341,19 @@ CProStatAvgValue::Update()
 
     const PRO_INT64 tick = ProGetTickCount64();
 
-    PRO_INT64 tickSpan = TICK_SPAN_MS;
-    if (tickSpan > m_timeSpan * 1000)
+    if (tick - m_calcTick >= TICK_SPAN_MS && m_count >= 1) /* double */
     {
-        tickSpan = m_timeSpan * 1000;
-    }
-    if (tick - m_startTick >= tickSpan)
-    {
-        if (m_count >= 1) /* double */
+        m_calcTick = tick;
+        m_avgValue = m_sum / m_count;
+
+        if (tick - m_startTick >= m_timeSpan * 1000)
         {
-            m_avgValue = m_sum / m_count;
+            const double countRate = m_count * 1000 / (tick - m_startTick);
+
+            m_startTick = tick - m_timeSpan * 1000;
+            m_count     = countRate * (tick - m_startTick) / 1000;
+            m_sum       = m_count * m_avgValue;
         }
-    }
-
-    if (tick - m_startTick >= m_timeSpan * 1000)
-    {
-        const double countRate = m_count * 1000 / (PRO_UINT32)(tick - m_startTick);
-
-        m_startTick = tick - m_timeSpan * 1000 * OVERLAP_PERCENT / 100;
-        m_count     = countRate * (PRO_UINT32)(tick - m_startTick) / 1000;
-        m_sum       = m_count * m_avgValue;
     }
 }
 
@@ -374,6 +361,7 @@ void
 CProStatAvgValue::Reset()
 {
     m_startTick = 0;
+    m_calcTick  = 0;
     m_count     = 0;
     m_sum       = 0;
     m_avgValue  = 0;

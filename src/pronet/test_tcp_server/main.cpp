@@ -261,7 +261,7 @@ int main(int argc, char* argv[])
     }
 
     printf(
-        " test_tcp_server[ver-%d.%d.%d] --- [usingHub : %s, port : %u] --- ok! \n\n"
+        " test_tcp_server [ver-%d.%d.%d] --- [usingHub : %s, port : %u] --- ok! \n\n"
         ,
         PRO_VER_MAJOR,
         PRO_VER_MINOR,
