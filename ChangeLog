@@ -1,3 +1,28 @@
+LibProNet-1.1.0, tag-release-1.1.0, 2019-08-08
+====
+
+Features
+  * Add a new c++ class CProChannelTaskPool
+  * Add "reconnect" command for test_msg_client util
+  * Print the program's version
+  * Change VS2013 option to support running on WinXP
+  * Rename src/pro to src/pronet, and rename pub/inc/pro to
+    pub/inc/pronet
+
+Bugfix
+  * Fix an issue with bitrate-statistics
+  * Improve the compatibility of Unix-domain sockets
+  * Remove the old files in xxx/.deps while running autogen.sh
+
+Changes
+  * Improve the CProLogFile class
+  * Improve the method calculating bandwidth(bps/loss/avg)
+  * Rename IRtpReorder::SetMaxPacketCount() to SetGatePacketCount()
+  * Increase the maximum size of the RTP package to 96MB
+  * Improve concurrency of the message server
+  * Add SendMsg2() method for sending composite message
+
+
 LibProNet-1.0.0, tag-release-1.0.0, 2019-06-18
 ====
 
