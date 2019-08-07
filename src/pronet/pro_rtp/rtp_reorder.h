@@ -34,8 +34,8 @@ public:
 
     virtual ~CRtpReorder();
 
-    virtual void PRO_CALLTYPE SetMaxPacketCount(
-        unsigned char maxPacketCount              /* = 5 */
+    virtual void PRO_CALLTYPE SetGatePacketCount(
+        unsigned char gatePacketCount             /* = 5 */
         );
 
     virtual void PRO_CALLTYPE SetMaxWaitingDuration(
@@ -54,7 +54,7 @@ public:
 
 private:
 
-    unsigned long                      m_maxPacketCount;
+    unsigned long                      m_gatePacketCount;
     PRO_INT64                          m_maxWaitingDuration;
     PRO_INT64                          m_maxBrokenDuration;
     PRO_INT64                          m_minSeq64;

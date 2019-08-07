@@ -599,8 +599,8 @@ class IRtpReorder
 {
 public:
 
-    virtual void PRO_CALLTYPE SetMaxPacketCount(
-        unsigned char maxPacketCount              /* = 5 */
+    virtual void PRO_CALLTYPE SetGatePacketCount(
+        unsigned char gatePacketCount             /* = 5 */
         ) = 0;
 
     virtual void PRO_CALLTYPE SetMaxWaitingDuration(

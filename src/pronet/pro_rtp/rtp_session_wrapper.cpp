@@ -109,15 +109,15 @@ CRtpSessionWrapper::CRtpSessionWrapper(const RTP_SESSION_INFO& localInfo)
     {
         if (localInfo.mmType >= RTP_MMT_AUDIO_MIN && localInfo.mmType <= RTP_MMT_AUDIO_MAX)
         {
-            m_reorderInput->SetMaxPacketCount(AUDIO_REORDER_PACKET_COUNT);
+            m_reorderInput->SetGatePacketCount(AUDIO_REORDER_PACKET_COUNT);
         }
         else if (localInfo.mmType >= RTP_MMT_VIDEO_MIN && localInfo.mmType <= RTP_MMT_VIDEO_MAX)
         {
-            m_reorderInput->SetMaxPacketCount(VIDEO_REORDER_PACKET_COUNT);
+            m_reorderInput->SetGatePacketCount(VIDEO_REORDER_PACKET_COUNT);
         }
         else
         {
-            m_reorderInput->SetMaxPacketCount(DEFAULT_REORDER_PACKET_COUNT);
+            m_reorderInput->SetGatePacketCount(DEFAULT_REORDER_PACKET_COUNT);
         }
     }
 }

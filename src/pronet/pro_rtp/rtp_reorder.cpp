@@ -34,7 +34,7 @@
 
 CRtpReorder::CRtpReorder()
 {
-    m_maxPacketCount     = 5;
+    m_gatePacketCount    = 5;
     m_maxWaitingDuration = 1;
     m_maxBrokenDuration  = 10;
     m_minSeq64           = -1;
@@ -48,15 +48,15 @@ CRtpReorder::~CRtpReorder()
 
 void
 PRO_CALLTYPE
-CRtpReorder::SetMaxPacketCount(unsigned char maxPacketCount) /* = 5 */
+CRtpReorder::SetGatePacketCount(unsigned char gatePacketCount) /* = 5 */
 {
-    assert(maxPacketCount > 0);
-    if (maxPacketCount == 0)
+    assert(gatePacketCount > 0);
+    if (gatePacketCount == 0)
     {
         return;
     }
 
-    m_maxPacketCount = maxPacketCount;
+    m_gatePacketCount = gatePacketCount;
 }
 
 void
@@ -231,8 +231,8 @@ CRtpReorder::PopFront()
     const PRO_INT64   seq64  = itr->first;
     IRtpPacket* const packet = itr->second;
 
-    if (seq64 == m_minSeq64                        ||
-        m_seq64ToPacket.size() >= m_maxPacketCount ||
+    if (seq64 == m_minSeq64                         ||
+        m_seq64ToPacket.size() >= m_gatePacketCount ||
         tick - packet->GetTick() >= m_maxWaitingDuration * 1000)
     {
         m_seq64ToPacket.erase(itr);
