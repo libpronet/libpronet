@@ -56,7 +56,6 @@ MakeNonce_i()
     }
 
     std::random_shuffle(p, p + 8);
-    ProSrand();
 
     return (n);
 }

@@ -22,6 +22,7 @@
 #include "pro_stl.h"
 #include "pro_time_util.h"
 #include "pro_z.h"
+#include "../pro_shared/pro_shared.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -273,6 +274,7 @@ pbsd_startup()
 #endif
 
     setlocale(LC_ALL, "");
+    ProSrand();
     ProSleep(1);
 }
 
