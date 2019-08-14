@@ -305,12 +305,19 @@ CRtpMsgClient::Release()
     return (refCount);
 }
 
+RTP_MM_TYPE
+PRO_CALLTYPE
+CRtpMsgClient::GetMmType() const
+{
+    return (m_mmType);
+}
+
 void
 PRO_CALLTYPE
-CRtpMsgClient::GetUser(RTP_MSG_USER* user) const
+CRtpMsgClient::GetUser(RTP_MSG_USER* myUser) const
 {
-    assert(user != NULL);
-    if (user == NULL)
+    assert(myUser != NULL);
+    if (myUser == NULL)
     {
         return;
     }
@@ -318,7 +325,7 @@ CRtpMsgClient::GetUser(RTP_MSG_USER* user) const
     {
         CProThreadMutexGuard mon(m_lock);
 
-        *user = m_userBak;
+        *myUser = m_userBak;
     }
 }
 
@@ -640,6 +647,28 @@ CRtpMsgClient::GetOutputRedline() const
     }
 
     return (redlineBytes);
+}
+
+unsigned long
+PRO_CALLTYPE
+CRtpMsgClient::GetSendingBytes() const
+{
+    unsigned long sendingBytes = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_session != NULL)
+        {
+            m_session->GetFlowctrlInfo(NULL, NULL, NULL, NULL, &sendingBytes, NULL);
+        }
+        if (m_bucket != NULL)
+        {
+            sendingBytes += m_bucket->GetTotalBytes();
+        }
+    }
+
+    return (sendingBytes);
 }
 
 void

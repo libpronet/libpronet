@@ -191,8 +191,8 @@ private:
 
     virtual void PRO_CALLTYPE OnOkC2s(
         IRtpMsgC2s*         msgC2s,
-        const RTP_MSG_USER* c2sUser,
-        const char*         c2sPublicIp
+        const RTP_MSG_USER* myUser,
+        const char*         myPublicIp
         );
 
     virtual void PRO_CALLTYPE OnCloseC2s(

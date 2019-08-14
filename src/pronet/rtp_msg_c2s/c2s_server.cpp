@@ -251,8 +251,8 @@ CC2sServer::Init(IProReactor*                  reactor,
             goto EXIT;
         }
 
-        msgC2s->SetOutputRedlineToServer(configInfo.c2ss_uplink_redline_bytes);
-        msgC2s->SetOutputRedlineToUser  (configInfo.c2ss_local_redline_bytes);
+        msgC2s->SetUplinkOutputRedline(configInfo.c2ss_uplink_redline_bytes);
+        msgC2s->SetLocalOutputRedline(configInfo.c2ss_local_redline_bytes);
 
         m_reactor         = reactor;
         m_configInfo      = configInfo;
@@ -369,14 +369,14 @@ CC2sServer::Reconfig(const C2S_SERVER_CONFIG_INFO& configInfo)
 void
 PRO_CALLTYPE
 CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
-                    const RTP_MSG_USER* c2sUser,
-                    const char*         c2sPublicIp)
+                    const RTP_MSG_USER* myUser,
+                    const char*         myPublicIp)
 {
     assert(msgC2s != NULL);
-    assert(c2sUser != NULL);
-    assert(c2sPublicIp != NULL);
-    assert(c2sPublicIp[0] != '\0');
-    if (msgC2s == NULL || c2sUser == NULL || c2sPublicIp == NULL || c2sPublicIp[0] == '\0')
+    assert(myUser != NULL);
+    assert(myPublicIp != NULL);
+    assert(myPublicIp[0] != '\0');
+    if (msgC2s == NULL || myUser == NULL || myPublicIp == NULL || myPublicIp[0] == '\0')
     {
         return;
     }
@@ -399,12 +399,12 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
 
     {{{
         char suiteName[64] = "";
-        msgC2s->GetC2sSslSuite(suiteName);
+        msgC2s->GetUplinkSslSuite(suiteName);
 
         char           remoteIp[64] = "";
         unsigned short remotePort   = 0;
-        msgC2s->GetC2sRemoteIp(remoteIp);
-        remotePort = msgC2s->GetC2sRemotePort();
+        msgC2s->GetUplinkRemoteIp(remoteIp);
+        remotePort = msgC2s->GetUplinkRemotePort();
 
         char traceInfo[1024] = "";
         snprintf_pro(
@@ -413,10 +413,10 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
             " CC2sServer::OnOkC2s(id : %u-" PRO_PRT64U "-%u, publicIp : %s, sslSuite : %s,"
             " server : %s:%u) \n"
             ,
-            (unsigned int)c2sUser->classId,
-            c2sUser->UserId(),
-            (unsigned int)c2sUser->instId,
-            c2sPublicIp,
+            (unsigned int)myUser->classId,
+            myUser->UserId(),
+            (unsigned int)myUser->instId,
+            myPublicIp,
             suiteName,
             remoteIp,
             (unsigned int)remotePort
@@ -457,13 +457,13 @@ CC2sServer::OnCloseC2s(IRtpMsgC2s* msgC2s,
     }
 
     {{{
-        RTP_MSG_USER c2sUser;
-        msgC2s->GetC2sUser(&c2sUser);
+        RTP_MSG_USER myUser;
+        msgC2s->GetUplinkUser(&myUser);
 
         char           remoteIp[64] = "";
         unsigned short remotePort   = 0;
-        msgC2s->GetC2sRemoteIp(remoteIp);
-        remotePort = msgC2s->GetC2sRemotePort();
+        msgC2s->GetUplinkRemoteIp(remoteIp);
+        remotePort = msgC2s->GetUplinkRemotePort();
 
         char traceInfo[1024] = "";
         snprintf_pro(
@@ -472,9 +472,9 @@ CC2sServer::OnCloseC2s(IRtpMsgC2s* msgC2s,
             " CC2sServer::OnCloseC2s(id : %u-" PRO_PRT64U "-%u,"
             " errorCode : [%d, %d], tcpConnected : %d, server : %s:%u) \n"
             ,
-            (unsigned int)c2sUser.classId,
-            c2sUser.UserId(),
-            (unsigned int)c2sUser.instId,
+            (unsigned int)myUser.classId,
+            myUser.UserId(),
+            (unsigned int)myUser.instId,
             (int)errorCode,
             (int)sslCode,
             (int)tcpConnected,
@@ -518,7 +518,7 @@ CC2sServer::OnOkUser(IRtpMsgC2s*         msgC2s,
 
     {{{
         unsigned long userCount = 0;
-        msgC2s->GetUserCount(NULL, &userCount);
+        msgC2s->GetLocalUserCount(NULL, &userCount);
 
         char traceInfo[1024] = "";
         snprintf_pro(
@@ -566,7 +566,7 @@ CC2sServer::OnCloseUser(IRtpMsgC2s*         msgC2s,
 
     {{{
         unsigned long userCount = 0;
-        msgC2s->GetUserCount(NULL, &userCount);
+        msgC2s->GetLocalUserCount(NULL, &userCount);
 
         char traceInfo[1024] = "";
         snprintf_pro(

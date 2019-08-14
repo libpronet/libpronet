@@ -153,6 +153,15 @@ public:
 
     virtual unsigned long PRO_CALLTYPE Release();
 
+    virtual RTP_MM_TYPE PRO_CALLTYPE GetMmType() const;
+
+    virtual unsigned short PRO_CALLTYPE GetServicePort() const;
+
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
+        const RTP_MSG_USER* user,
+        char                suiteName[64]
+        ) const;
+
     virtual void PRO_CALLTYPE GetUserCount(
         unsigned long* pendingUserCount, /* = NULL */
         unsigned long* baseUserCount,    /* = NULL */
@@ -183,9 +192,11 @@ public:
 
     virtual unsigned long PRO_CALLTYPE GetOutputRedlineToC2s() const;
 
-    virtual void PRO_CALLTYPE SetOutputRedlineToUser(unsigned long redlineBytes);
+    virtual void PRO_CALLTYPE SetOutputRedlineToUsr(unsigned long redlineBytes);
 
-    virtual unsigned long PRO_CALLTYPE GetOutputRedlineToUser() const;
+    virtual unsigned long PRO_CALLTYPE GetOutputRedlineToUsr() const;
+
+    virtual unsigned long PRO_CALLTYPE GetSendingBytes(const RTP_MSG_USER* user) const;
 
 private:
 
@@ -315,11 +326,12 @@ private:
 
     IRtpMsgServerObserver*                      m_observer;
     IProReactor*                                m_reactor;
-    IRtpService*                                m_service;
     CProFunctorCommandTask*                     m_task;
+    IRtpService*                                m_service;
+    unsigned short                              m_serviceHubPort;
     unsigned long                               m_timeoutInSeconds;
     unsigned long                               m_redlineBytesC2s;
-    unsigned long                               m_redlineBytesUser;
+    unsigned long                               m_redlineBytesUsr;
 
     CProStlMap<IRtpSession*, RTP_MSG_LINK_CTX*> m_session2Ctx;
     CProStlMap<RTP_MSG_USER, RTP_MSG_LINK_CTX*> m_user2Ctx;

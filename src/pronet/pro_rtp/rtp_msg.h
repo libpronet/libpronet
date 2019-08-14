@@ -18,22 +18,6 @@
 
 /*         ______________________________________________________
  *        |                                                      |
- *        |                        ProRtp                        |
- *        |______________________________________________________|
- *        |          |                              |            |
- *        |          |             ProNet           |            |
- *        |          |______________________________|            |
- *        |                    |                                 |
- *        |                    |             ProUtil             |
- *        |      MbedTLS       |_________________________________|
- *        |                              |                       |
- *        |                              |       ProShared       |
- *        |______________________________|_______________________|
- *                     Fig.1 module hierarchy diagram
- */
-
-/*         ______________________________________________________
- *        |                                                      |
  *        |                      msg server                      |
  *        |______________________________________________________|
  *                 |             |        |              |
@@ -48,7 +32,7 @@
  *        |  msg  ||  msg  | |  msg  ||  msg  | |  msg  ||  msg  |
  *        | client|| client| | client|| client| | client|| client|
  *        |_______||_______| |_______||_______| |_______||_______|
- *                 Fig.2 structure diagram of msg system
+ *                 Fig.1 structure diagram of msg system
  */
 
 /*
@@ -56,7 +40,7 @@
  * 2) client <-----            rtp(RTP_SESSION_ACK)            <----- server
  * 3) client <-----            tcp4(RTP_MSG_HEADER0)           <----- server
  * 4) client <<====                  tcp4(msg)                 ====>> server
- *                Fig.3 msg system handshake protocol flow chart
+ *                Fig.2 msg system handshake protocol flow chart
  */
 
 /*
@@ -76,19 +60,19 @@ extern "C" {
 ////
 
 /*
- * 消息用户号. 1-2-1, 1-2-2, 1-3-1, 1-3-2, ...; 2-1-1, 2-1-2, 2-2-1, 2-2-2, ...
+ * 消息用户号. 1-2-*, 1-3-*, ...; 2-1-*, 2-2-*, 2-3-*, ...; ...
  *
  * classId : 8bits. 该字段用于标识用户类别,以便于应用程序分类管理.
- *           0无效, 1应用服务器节点, 2~255应用客户端节点
+ * (cid)     0无效, 1应用服务器节点, 2~255应用客户端节点
  *
  * userId  : 40bits. 该字段用于标识用户id(如电话号码),由消息服务器分配或许可.
- *           0动态分配,范围为[0xF000000000 ~ 0xFFFFFFFFFF];
- *           否则静态分配,范围为[1 ~ 0xEFFFFFFFFF]
+ * (uid)     0动态分配,有效范围为[0xF000000000 ~ 0xFFFFFFFFFF];
+ *           否则静态分配,有效范围为[1 ~ 0xEFFFFFFFFF]
  *
  * instId  : 16bits. 该字段用于标识用户实例id(如电话分机号),由消息服务器分配
- *           或许可. 有效范围为[0 ~ 65535]
+ * (iid)     或许可. 有效范围为[0 ~ 65535]
  *
- * 说明    : classId-userId 之 1-1 保留,用于标识消息服务器本身(root)
+ * 说明    : cid-uid-iid 之 1-1-* 保留,用于标识消息服务器本身(root)
  */
 struct RTP_MSG_USER
 {
@@ -261,9 +245,14 @@ public:
     virtual unsigned long PRO_CALLTYPE Release() = 0;
 
     /*
+     * 获取媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
+     */
+    virtual RTP_MM_TYPE PRO_CALLTYPE GetMmType() const = 0;
+
+    /*
      * 获取用户号
      */
-    virtual void PRO_CALLTYPE GetUser(RTP_MSG_USER* user) const = 0;
+    virtual void PRO_CALLTYPE GetUser(RTP_MSG_USER* myUser) const = 0;
 
     /*
      * 获取加密套件
@@ -321,7 +310,7 @@ public:
     /*
      * 设置链路发送红线. 默认(1024 * 1024)字节
      *
-     * 如果redlineBytes的值为0, 则直接返回,什么都不做
+     * 如果redlineBytes为0, 则直接返回,什么都不做
      */
     virtual void PRO_CALLTYPE SetOutputRedline(unsigned long redlineBytes) = 0;
 
@@ -329,6 +318,11 @@ public:
      * 获取链路发送红线. 默认(1024 * 1024)字节
      */
     virtual unsigned long PRO_CALLTYPE GetOutputRedline() const = 0;
+
+    /*
+     * 获取链路缓存的尚未发送的字节数
+     */
+    virtual unsigned long PRO_CALLTYPE GetSendingBytes() const = 0;
 };
 
 /*
@@ -390,6 +384,24 @@ public:
     virtual unsigned long PRO_CALLTYPE Release() = 0;
 
     /*
+     * 获取媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
+     */
+    virtual RTP_MM_TYPE PRO_CALLTYPE GetMmType() const = 0;
+
+    /*
+     * 获取服务端口号
+     */
+    virtual unsigned short PRO_CALLTYPE GetServicePort() const = 0;
+
+    /*
+     * 获取链路加密套件
+     */
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
+        const RTP_MSG_USER* user,
+        char                suiteName[64]
+        ) const = 0;
+
+    /*
      * 获取用户数
      */
     virtual void PRO_CALLTYPE GetUserCount(
@@ -432,28 +444,33 @@ public:
         ) = 0;
 
     /*
-     * 设置server->c2s链路发送红线. 默认(1024 * 1024 * 8)字节
+     * 设置server->c2s链路的发送红线. 默认(1024 * 1024 * 8)字节
      *
-     * 如果redlineBytes的值为0, 则直接返回,什么都不做
+     * 如果redlineBytes为0, 则直接返回,什么都不做
      */
     virtual void PRO_CALLTYPE SetOutputRedlineToC2s(unsigned long redlineBytes) = 0;
 
     /*
-     * 获取server->c2s链路发送红线. 默认(1024 * 1024 * 8)字节
+     * 获取server->c2s链路的发送红线. 默认(1024 * 1024 * 8)字节
      */
     virtual unsigned long PRO_CALLTYPE GetOutputRedlineToC2s() const = 0;
 
     /*
-     * 设置server->user链路发送红线. 默认(1024 * 1024)字节
+     * 设置server->user链路的发送红线. 默认(1024 * 1024)字节
      *
-     * 如果redlineBytes的值为0, 则直接返回,什么都不做
+     * 如果redlineBytes为0, 则直接返回,什么都不做
      */
-    virtual void PRO_CALLTYPE SetOutputRedlineToUser(unsigned long redlineBytes) = 0;
+    virtual void PRO_CALLTYPE SetOutputRedlineToUsr(unsigned long redlineBytes) = 0;
 
     /*
-     * 获取server->user链路发送红线. 默认(1024 * 1024)字节
+     * 获取server->user链路的发送红线. 默认(1024 * 1024)字节
      */
-    virtual unsigned long PRO_CALLTYPE GetOutputRedlineToUser() const = 0;
+    virtual unsigned long PRO_CALLTYPE GetOutputRedlineToUsr() const = 0;
+
+    /*
+     * 获取链路缓存的尚未发送的字节数
+     */
+    virtual unsigned long PRO_CALLTYPE GetSendingBytes(const RTP_MSG_USER* user) const = 0;
 };
 
 /*
@@ -484,8 +501,8 @@ public:
         const RTP_MSG_USER* c2sUser,      /* 经由哪个c2s而来. 可以是NULL */
         const char          hash[32],     /* 用户发来的口令hash值 */
         PRO_UINT64          nonce,        /* 会话随机数. 用于CheckRtpServiceData(...)校验口令hash值 */
-        PRO_UINT64*         userId,       /* 上层分配或许可的用户id */
-        PRO_UINT16*         instId,       /* 上层分配或许可的实例id */
+        PRO_UINT64*         userId,       /* 上层分配或许可的uid */
+        PRO_UINT16*         instId,       /* 上层分配或许可的iid */
         PRO_INT64*          appData,      /* 上层设置的标识数据. 后续的OnOkUser(...)会带回来 */
         bool*               isC2s         /* 上层设置的是否该节点为c2s */
         ) = 0;
@@ -541,71 +558,99 @@ public:
     virtual unsigned long PRO_CALLTYPE Release() = 0;
 
     /*
-     * 获取c2s用户号
+     * 获取媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
      */
-    virtual void PRO_CALLTYPE GetC2sUser(RTP_MSG_USER* c2sUser) const = 0;
+    virtual RTP_MM_TYPE PRO_CALLTYPE GetMmType() const = 0;
+
+    /*
+     * 获取c2s<->server链路的用户号
+     */
+    virtual void PRO_CALLTYPE GetUplinkUser(RTP_MSG_USER* myUser) const = 0;
 
     /*
      * 获取c2s<->server链路的加密套件
      */
-    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetC2sSslSuite(char suiteName[64]) const = 0;
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetUplinkSslSuite(char suiteName[64]) const = 0;
 
     /*
      * 获取c2s<->server链路的本地ip地址
      */
-    virtual const char* PRO_CALLTYPE GetC2sLocalIp(char localIp[64]) const = 0;
+    virtual const char* PRO_CALLTYPE GetUplinkLocalIp(char localIp[64]) const = 0;
 
     /*
      * 获取c2s<->server链路的本地端口号
      */
-    virtual unsigned short PRO_CALLTYPE GetC2sLocalPort() const = 0;
+    virtual unsigned short PRO_CALLTYPE GetUplinkLocalPort() const = 0;
 
     /*
      * 获取c2s<->server链路的远端ip地址
      */
-    virtual const char* PRO_CALLTYPE GetC2sRemoteIp(char remoteIp[64]) const = 0;
+    virtual const char* PRO_CALLTYPE GetUplinkRemoteIp(char remoteIp[64]) const = 0;
 
     /*
      * 获取c2s<->server链路的远端端口号
      */
-    virtual unsigned short PRO_CALLTYPE GetC2sRemotePort() const = 0;
+    virtual unsigned short PRO_CALLTYPE GetUplinkRemotePort() const = 0;
 
     /*
-     * 获取用户数
+     * 设置c2s->server链路的发送红线. 默认(1024 * 1024 * 8)字节
+     *
+     * 如果redlineBytes为0, 则直接返回,什么都不做
      */
-    virtual void PRO_CALLTYPE GetUserCount(
+    virtual void PRO_CALLTYPE SetUplinkOutputRedline(unsigned long redlineBytes) = 0;
+
+    /*
+     * 获取c2s->server链路的发送红线. 默认(1024 * 1024 * 8)字节
+     */
+    virtual unsigned long PRO_CALLTYPE GetUplinkOutputRedline() const = 0;
+
+    /*
+     * 获取c2s->server链路缓存的尚未发送的字节数
+     */
+    virtual unsigned long PRO_CALLTYPE GetUplinkSendingBytes() const = 0;
+
+    /*
+     * 获取本地服务端口号
+     */
+    virtual unsigned short PRO_CALLTYPE GetLocalServicePort() const = 0;
+
+    /*
+     * 获取本地链路加密套件
+     */
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetLocalSslSuite(
+        const RTP_MSG_USER* user,
+        char                suiteName[64]
+        ) const = 0;
+
+    /*
+     * 获取本地用户数
+     */
+    virtual void PRO_CALLTYPE GetLocalUserCount(
         unsigned long* pendingUserCount, /* = NULL */
         unsigned long* userCount         /* = NULL */
         ) const = 0;
 
     /*
-     * 踢出用户
+     * 踢出本地用户
      */
-    virtual void PRO_CALLTYPE KickoutUser(const RTP_MSG_USER* user) = 0;
+    virtual void PRO_CALLTYPE KickoutLocalUser(const RTP_MSG_USER* user) = 0;
 
     /*
-     * 设置c2s->server链路发送红线. 默认(1024 * 1024 * 8)字节
+     * 设置c2s->user链路的发送红线. 默认(1024 * 1024)字节
      *
-     * 如果redlineBytes的值为0, 则直接返回,什么都不做
+     * 如果redlineBytes为0, 则直接返回,什么都不做
      */
-    virtual void PRO_CALLTYPE SetOutputRedlineToServer(unsigned long redlineBytes) = 0;
+    virtual void PRO_CALLTYPE SetLocalOutputRedline(unsigned long redlineBytes) = 0;
 
     /*
-     * 获取c2s->server链路发送红线. 默认(1024 * 1024 * 8)字节
+     * 获取c2s->user链路的发送红线. 默认(1024 * 1024)字节
      */
-    virtual unsigned long PRO_CALLTYPE GetOutputRedlineToServer() const = 0;
+    virtual unsigned long PRO_CALLTYPE GetLocalOutputRedline() const = 0;
 
     /*
-     * 设置c2s->user链路发送红线. 默认(1024 * 1024)字节
-     *
-     * 如果redlineBytes的值为0, 则直接返回,什么都不做
+     * 获取c2s->user链路缓存的尚未发送的字节数
      */
-    virtual void PRO_CALLTYPE SetOutputRedlineToUser(unsigned long redlineBytes) = 0;
-
-    /*
-     * 获取c2s->user链路发送红线. 默认(1024 * 1024)字节
-     */
-    virtual unsigned long PRO_CALLTYPE GetOutputRedlineToUser() const = 0;
+    virtual unsigned long PRO_CALLTYPE GetLocalSendingBytes(const RTP_MSG_USER* user) const = 0;
 };
 
 /*
@@ -626,8 +671,8 @@ public:
      */
     virtual void PRO_CALLTYPE OnOkC2s(
         IRtpMsgC2s*         msgC2s,
-        const RTP_MSG_USER* c2sUser,
-        const char*         c2sPublicIp
+        const RTP_MSG_USER* myUser,
+        const char*         myPublicIp
         ) = 0;
 
     /*
@@ -669,7 +714,7 @@ public:
  * 参数:
  * observer         : 回调目标
  * reactor          : 反应器
- * mmType           : 消息媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
+ * mmType           : 媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
  * sslConfig        : ssl配置. NULL表示明文传输
  * sslSni           : ssl服务名. 如果有效,则参与认证服务端证书
  * remoteIp         : 服务器的ip地址或域名
@@ -719,7 +764,7 @@ DeleteRtpMsgClient(IRtpMsgClient* msgClient);
  * 参数:
  * observer         : 回调目标
  * reactor          : 反应器
- * mmType           : 消息媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
+ * mmType           : 媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
  * sslConfig        : ssl配置. NULL表示明文传输
  * sslForced        : 是否强制使用ssl传输. sslConfig为NULL时该参数忽略
  * serviceHubPort   : 服务hub的端口号
@@ -761,7 +806,7 @@ DeleteRtpMsgServer(IRtpMsgServer* msgServer);
  * 参数:
  * observer               : 回调目标
  * reactor                : 反应器
- * mmType                 : 消息媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
+ * mmType                 : 媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
  * uplinkSslConfig        : 级联的ssl配置. NULL表示c2s<->server之间明文传输
  * uplinkSslSni           : 级联的ssl服务名. 如果有效,则参与认证服务端证书
  * uplinkIp               : 服务器的ip地址或域名

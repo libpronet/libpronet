@@ -83,32 +83,45 @@ public:
 
     virtual unsigned long PRO_CALLTYPE Release();
 
-    virtual void PRO_CALLTYPE GetC2sUser(RTP_MSG_USER* c2sUser) const;
+    virtual RTP_MM_TYPE PRO_CALLTYPE GetMmType() const;
 
-    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetC2sSslSuite(char suiteName[64]) const;
+    virtual void PRO_CALLTYPE GetUplinkUser(RTP_MSG_USER* myUser) const;
 
-    virtual const char* PRO_CALLTYPE GetC2sLocalIp(char localIp[64]) const;
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetUplinkSslSuite(char suiteName[64]) const;
 
-    virtual unsigned short PRO_CALLTYPE GetC2sLocalPort() const;
+    virtual const char* PRO_CALLTYPE GetUplinkLocalIp(char localIp[64]) const;
 
-    virtual const char* PRO_CALLTYPE GetC2sRemoteIp(char remoteIp[64]) const;
+    virtual unsigned short PRO_CALLTYPE GetUplinkLocalPort() const;
 
-    virtual unsigned short PRO_CALLTYPE GetC2sRemotePort() const;
+    virtual const char* PRO_CALLTYPE GetUplinkRemoteIp(char remoteIp[64]) const;
 
-    virtual void PRO_CALLTYPE GetUserCount(
+    virtual unsigned short PRO_CALLTYPE GetUplinkRemotePort() const;
+
+    virtual void PRO_CALLTYPE SetUplinkOutputRedline(unsigned long redlineBytes);
+
+    virtual unsigned long PRO_CALLTYPE GetUplinkOutputRedline() const;
+
+    virtual unsigned long PRO_CALLTYPE GetUplinkSendingBytes() const;
+
+    virtual unsigned short PRO_CALLTYPE GetLocalServicePort() const;
+
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetLocalSslSuite(
+        const RTP_MSG_USER* user,
+        char                suiteName[64]
+        ) const;
+
+    virtual void PRO_CALLTYPE GetLocalUserCount(
         unsigned long* pendingUserCount, /* = NULL */
         unsigned long* userCount         /* = NULL */
         ) const;
 
-    virtual void PRO_CALLTYPE KickoutUser(const RTP_MSG_USER* user);
+    virtual void PRO_CALLTYPE KickoutLocalUser(const RTP_MSG_USER* user);
 
-    virtual void PRO_CALLTYPE SetOutputRedlineToServer(unsigned long redlineBytes);
+    virtual void PRO_CALLTYPE SetLocalOutputRedline(unsigned long redlineBytes);
 
-    virtual unsigned long PRO_CALLTYPE GetOutputRedlineToServer() const;
+    virtual unsigned long PRO_CALLTYPE GetLocalOutputRedline() const;
 
-    virtual void PRO_CALLTYPE SetOutputRedlineToUser(unsigned long redlineBytes);
-
-    virtual unsigned long PRO_CALLTYPE GetOutputRedlineToUser() const;
+    virtual unsigned long PRO_CALLTYPE GetLocalSendingBytes(const RTP_MSG_USER* user) const;
 
 private:
 
@@ -250,7 +263,7 @@ private:
         const CProConfigStream& msgStream
         );
 
-    void AsyncKickoutUser(PRO_INT64* args);
+    void AsyncKickoutLocalUser(PRO_INT64* args);
 
 private:
 
@@ -262,9 +275,10 @@ private:
 
     IRtpMsgC2sObserver*                                     m_observer;
     IProReactor*                                            m_reactor;
-    IRtpService*                                            m_service;
     CProFunctorCommandTask*                                 m_task;
     CRtpMsgClient*                                          m_msgClient;
+    IRtpService*                                            m_service;
+    unsigned short                                          m_serviceHubPort;
     unsigned long                                           m_timerId;
     PRO_INT64                                               m_connectTick;
     CProStlString                                           m_uplinkIp;
@@ -273,11 +287,11 @@ private:
     CProStlString                                           m_uplinkPassword;
     CProStlString                                           m_uplinkLocalIp;
     unsigned long                                           m_uplinkTimeoutInSeconds;
+    unsigned long                                           m_uplinkRedlineBytes;
     unsigned long                                           m_localTimeoutInSeconds;
-    unsigned long                                           m_redlineBytesServer;
-    unsigned long                                           m_redlineBytesUser;
-    RTP_MSG_USER                                            m_c2sUserNow;
-    RTP_MSG_USER                                            m_c2sUserBak;
+    unsigned long                                           m_localRedlineBytes;
+    RTP_MSG_USER                                            m_myUserNow;
+    RTP_MSG_USER                                            m_myUserBak;
 
     CProStlMap<unsigned long, RTP_MSG_AsyncOnAcceptSession> m_timerId2Info;
     CProStlMap<IRtpSession*, RTP_MSG_USER>                  m_session2User;

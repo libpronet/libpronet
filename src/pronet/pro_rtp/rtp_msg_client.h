@@ -88,7 +88,9 @@ public:
 
     virtual unsigned long PRO_CALLTYPE Release();
 
-    virtual void PRO_CALLTYPE GetUser(RTP_MSG_USER* user) const;
+    virtual RTP_MM_TYPE PRO_CALLTYPE GetMmType() const;
+
+    virtual void PRO_CALLTYPE GetUser(RTP_MSG_USER* myUser) const;
 
     virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(char suiteName[64]) const;
 
@@ -121,6 +123,8 @@ public:
     virtual void PRO_CALLTYPE SetOutputRedline(unsigned long redlineBytes);
 
     virtual unsigned long PRO_CALLTYPE GetOutputRedline() const;
+
+    virtual unsigned long PRO_CALLTYPE GetSendingBytes() const;
 
     bool TransferMsg(
         const void*         buf,

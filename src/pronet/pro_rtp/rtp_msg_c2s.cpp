@@ -40,12 +40,12 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define MAX_PENDING_COUNT            5000
-#define DEFAULT_REDLINE_BYTES_SERVER (1024 * 1024 * 8)
-#define DEFAULT_REDLINE_BYTES_USER   (1024 * 1024)
-#define HEARTBEAT_INTERVAL           1
-#define RECONNECT_INTERVAL           10
-#define DEFAULT_TIMEOUT              20
+#define MAX_PENDING_COUNT         5000
+#define DEFAULT_REDLINE_BYTES_SRV (1024 * 1024 * 8)
+#define DEFAULT_REDLINE_BYTES_USR (1024 * 1024)
+#define HEARTBEAT_INTERVAL        1
+#define RECONNECT_INTERVAL        10
+#define DEFAULT_TIMEOUT           20
 
 static const RTP_MSG_USER  ROOT_ID_C2S(1, 1, 65535);                              /* 1-1-65535 */
 static const unsigned char SERVER_CID    = 1;                                     /* 1-... */
@@ -91,9 +91,10 @@ m_localSslForced(localSslForced)
 {
     m_observer               = NULL;
     m_reactor                = NULL;
-    m_service                = NULL;
     m_task                   = NULL;
     m_msgClient              = NULL;
+    m_service                = NULL;
+    m_serviceHubPort         = 0;
     m_timerId                = 0;
     m_connectTick            = 0;
     m_uplinkIp               = "";
@@ -101,9 +102,9 @@ m_localSslForced(localSslForced)
     m_uplinkPassword         = "";
     m_uplinkLocalIp          = "";
     m_uplinkTimeoutInSeconds = DEFAULT_TIMEOUT;
+    m_uplinkRedlineBytes     = DEFAULT_REDLINE_BYTES_SRV;
     m_localTimeoutInSeconds  = DEFAULT_TIMEOUT;
-    m_redlineBytesServer     = DEFAULT_REDLINE_BYTES_SERVER;
-    m_redlineBytesUser       = DEFAULT_REDLINE_BYTES_USER;
+    m_localRedlineBytes      = DEFAULT_REDLINE_BYTES_USR;
 }
 
 CRtpMsgC2s::~CRtpMsgC2s()
@@ -172,33 +173,26 @@ CRtpMsgC2s::Init(IRtpMsgC2sObserver* observer,
         localTimeoutInSeconds  = DEFAULT_TIMEOUT;
     }
 
-    IRtpService*            service   = NULL;
     CProFunctorCommandTask* task      = NULL;
     CRtpMsgClient*          msgClient = NULL;
+    IRtpService*            service   = NULL;
 
     {
         CProThreadMutexGuard mon(m_lock);
 
         assert(m_observer == NULL);
         assert(m_reactor == NULL);
-        assert(m_service == NULL);
         assert(m_task == NULL);
         assert(m_msgClient == NULL);
-        if (m_observer != NULL || m_reactor != NULL ||
-            m_service != NULL || m_task != NULL || m_msgClient != NULL)
+        assert(m_service == NULL);
+        if (m_observer != NULL || m_reactor != NULL || m_task != NULL ||
+            m_msgClient != NULL || m_service != NULL)
         {
             return (false);
         }
 
         task = new CProFunctorCommandTask;
         if (!task->Start())
-        {
-            goto EXIT;
-        }
-
-        service = CreateRtpService(m_localSslConfig, this, reactor,
-            m_mmType, localServiceHubPort, localTimeoutInSeconds);
-        if (service == NULL)
         {
             goto EXIT;
         }
@@ -223,12 +217,20 @@ CRtpMsgC2s::Init(IRtpMsgC2sObserver* observer,
             goto EXIT;
         }
 
+        service = CreateRtpService(m_localSslConfig, this, reactor,
+            m_mmType, localServiceHubPort, localTimeoutInSeconds);
+        if (service == NULL)
+        {
+            goto EXIT;
+        }
+
         observer->AddRef();
         m_observer               = observer;
         m_reactor                = reactor;
-        m_service                = service;
         m_task                   = task;
         m_msgClient              = msgClient;
+        m_service                = service;
+        m_serviceHubPort         = localServiceHubPort;
         m_timerId                = reactor->ScheduleTimer(this, HEARTBEAT_INTERVAL * 1000, true);
         m_connectTick            = ProGetTickCount64();
         m_uplinkIp               = uplinkIpByDNS;
@@ -238,18 +240,14 @@ CRtpMsgC2s::Init(IRtpMsgC2sObserver* observer,
         m_uplinkLocalIp          = uplinkLocalIp  != NULL ? uplinkLocalIp  : "";
         m_uplinkTimeoutInSeconds = uplinkTimeoutInSeconds;
         m_localTimeoutInSeconds  = localTimeoutInSeconds;
-        m_c2sUserBak             = *uplinkUser;
+        m_myUserBak              = *uplinkUser;
     }
 
     return (true);
 
 EXIT:
 
-    if (task != NULL)
-    {
-        task->Stop();
-        delete task;
-    }
+    DeleteRtpService(service);
 
     if (msgClient != NULL)
     {
@@ -257,7 +255,11 @@ EXIT:
         msgClient->Release();
     }
 
-    DeleteRtpService(service);
+    if (task != NULL)
+    {
+        task->Stop();
+        delete task;
+    }
 
     return (false);
 }
@@ -266,15 +268,15 @@ void
 CRtpMsgC2s::Fini()
 {
     IRtpMsgC2sObserver*                    observer  = NULL;
-    IRtpService*                           service   = NULL;
     CProFunctorCommandTask*                task      = NULL;
     CRtpMsgClient*                         msgClient = NULL;
+    IRtpService*                           service   = NULL;
     CProStlMap<IRtpSession*, RTP_MSG_USER> session2User;
 
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_service == NULL || m_task == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_task == NULL || m_service == NULL)
         {
             return;
         }
@@ -306,19 +308,16 @@ CRtpMsgC2s::Fini()
         m_session2User.clear();
         m_user2Session.clear();
 
+        service = m_service;
+        m_service = NULL;
         msgClient = m_msgClient;
         m_msgClient = NULL;
         task = m_task;
         m_task = NULL;
-        service = m_service;
-        m_service = NULL;
         m_reactor = NULL;
         observer = m_observer;
         m_observer = NULL;
     }
-
-    task->Stop();
-    delete task;
 
     CProStlMap<IRtpSession*, RTP_MSG_USER>::const_iterator       itr = session2User.begin();
     CProStlMap<IRtpSession*, RTP_MSG_USER>::const_iterator const end = session2User.end();
@@ -328,13 +327,16 @@ CRtpMsgC2s::Fini()
         DeleteRtpSessionWrapper(itr->first);
     }
 
+    DeleteRtpService(service);
+
     if (msgClient != NULL)
     {
         msgClient->Fini();
         msgClient->Release();
     }
 
-    DeleteRtpService(service);
+    task->Stop();
+    delete task;
     observer->Release();
 }
 
@@ -356,12 +358,19 @@ CRtpMsgC2s::Release()
     return (refCount);
 }
 
+RTP_MM_TYPE
+PRO_CALLTYPE
+CRtpMsgC2s::GetMmType() const
+{
+    return (m_mmType);
+}
+
 void
 PRO_CALLTYPE
-CRtpMsgC2s::GetC2sUser(RTP_MSG_USER* c2sUser) const
+CRtpMsgC2s::GetUplinkUser(RTP_MSG_USER* myUser) const
 {
-    assert(c2sUser != NULL);
-    if (c2sUser == NULL)
+    assert(myUser != NULL);
+    if (myUser == NULL)
     {
         return;
     }
@@ -369,13 +378,13 @@ CRtpMsgC2s::GetC2sUser(RTP_MSG_USER* c2sUser) const
     {
         CProThreadMutexGuard mon(m_lock);
 
-        *c2sUser = m_c2sUserBak;
+        *myUser = m_myUserBak;
     }
 }
 
 PRO_SSL_SUITE_ID
 PRO_CALLTYPE
-CRtpMsgC2s::GetC2sSslSuite(char suiteName[64]) const
+CRtpMsgC2s::GetUplinkSslSuite(char suiteName[64]) const
 {
     strcpy(suiteName, "NONE");
 
@@ -395,7 +404,7 @@ CRtpMsgC2s::GetC2sSslSuite(char suiteName[64]) const
 
 const char*
 PRO_CALLTYPE
-CRtpMsgC2s::GetC2sLocalIp(char localIp[64]) const
+CRtpMsgC2s::GetUplinkLocalIp(char localIp[64]) const
 {
     strcpy(localIp, "0.0.0.0");
 
@@ -413,7 +422,7 @@ CRtpMsgC2s::GetC2sLocalIp(char localIp[64]) const
 
 unsigned short
 PRO_CALLTYPE
-CRtpMsgC2s::GetC2sLocalPort() const
+CRtpMsgC2s::GetUplinkLocalPort() const
 {
     unsigned short localPort = 0;
 
@@ -431,7 +440,7 @@ CRtpMsgC2s::GetC2sLocalPort() const
 
 const char*
 PRO_CALLTYPE
-CRtpMsgC2s::GetC2sRemoteIp(char remoteIp[64]) const
+CRtpMsgC2s::GetUplinkRemoteIp(char remoteIp[64]) const
 {
     {
         CProThreadMutexGuard mon(m_lock);
@@ -444,7 +453,7 @@ CRtpMsgC2s::GetC2sRemoteIp(char remoteIp[64]) const
 
 unsigned short
 PRO_CALLTYPE
-CRtpMsgC2s::GetC2sRemotePort() const
+CRtpMsgC2s::GetUplinkRemotePort() const
 {
     unsigned short remotePort = 0;
 
@@ -459,8 +468,110 @@ CRtpMsgC2s::GetC2sRemotePort() const
 
 void
 PRO_CALLTYPE
-CRtpMsgC2s::GetUserCount(unsigned long* pendingUserCount, /* = NULL */
-                         unsigned long* userCount) const  /* = NULL */
+CRtpMsgC2s::SetUplinkOutputRedline(unsigned long redlineBytes)
+{
+    if (redlineBytes == 0)
+    {
+        return;
+    }
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_observer == NULL || m_reactor == NULL || m_task == NULL || m_service == NULL)
+        {
+            return;
+        }
+
+        m_uplinkRedlineBytes = redlineBytes;
+        if (m_msgClient != NULL)
+        {
+            m_msgClient->SetOutputRedline(redlineBytes);
+        }
+    }
+}
+
+unsigned long
+PRO_CALLTYPE
+CRtpMsgC2s::GetUplinkOutputRedline() const
+{
+    unsigned long redlineBytes = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        redlineBytes = m_uplinkRedlineBytes;
+    }
+
+    return (redlineBytes);
+}
+
+unsigned long
+PRO_CALLTYPE
+CRtpMsgC2s::GetUplinkSendingBytes() const
+{
+    unsigned long sendingBytes = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_msgClient != NULL)
+        {
+            sendingBytes = m_msgClient->GetSendingBytes();
+        }
+    }
+
+    return (sendingBytes);
+}
+
+unsigned short
+PRO_CALLTYPE
+CRtpMsgC2s::GetLocalServicePort() const
+{
+    unsigned short servicePort = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        servicePort = m_serviceHubPort;
+    }
+
+    return (servicePort);
+}
+
+PRO_SSL_SUITE_ID
+PRO_CALLTYPE
+CRtpMsgC2s::GetLocalSslSuite(const RTP_MSG_USER* user,
+                             char                suiteName[64]) const
+{
+    strcpy(suiteName, "NONE");
+
+    PRO_SSL_SUITE_ID suiteId = PRO_SSL_SUITE_NONE;
+
+    assert(user != NULL);
+    if (user == NULL)
+    {
+        return (suiteId);
+    }
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        CProStlMap<RTP_MSG_USER, IRtpSession*>::const_iterator const itr =
+            m_user2Session.find(*user);
+        if (itr != m_user2Session.end())
+        {
+            suiteId = itr->second->GetSslSuite(suiteName);
+        }
+    }
+
+    return (suiteId);
+}
+
+void
+PRO_CALLTYPE
+CRtpMsgC2s::GetLocalUserCount(unsigned long* pendingUserCount, /* = NULL */
+                              unsigned long* userCount) const  /* = NULL */
 {
     {
         CProThreadMutexGuard mon(m_lock);
@@ -478,7 +589,7 @@ CRtpMsgC2s::GetUserCount(unsigned long* pendingUserCount, /* = NULL */
 
 void
 PRO_CALLTYPE
-CRtpMsgC2s::KickoutUser(const RTP_MSG_USER* user)
+CRtpMsgC2s::KickoutLocalUser(const RTP_MSG_USER* user)
 {
     assert(user != NULL);
     if (user == NULL || user->classId == 0 || user->UserId() == 0)
@@ -489,7 +600,7 @@ CRtpMsgC2s::KickoutUser(const RTP_MSG_USER* user)
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_service == NULL || m_task == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_task == NULL || m_service == NULL)
         {
             return;
         }
@@ -497,7 +608,7 @@ CRtpMsgC2s::KickoutUser(const RTP_MSG_USER* user)
         IProFunctorCommand* const command =
             CProFunctorCommand_cpp<CRtpMsgC2s, ACTION>::CreateInstance(
             *this,
-            &CRtpMsgC2s::AsyncKickoutUser,
+            &CRtpMsgC2s::AsyncKickoutLocalUser,
             (PRO_INT64)user->classId,
             (PRO_INT64)user->UserId(),
             (PRO_INT64)user->instId
@@ -507,7 +618,7 @@ CRtpMsgC2s::KickoutUser(const RTP_MSG_USER* user)
 }
 
 void
-CRtpMsgC2s::AsyncKickoutUser(PRO_INT64* args)
+CRtpMsgC2s::AsyncKickoutLocalUser(PRO_INT64* args)
 {{
     CProThreadMutexGuard mon(m_lockUpcall);
 
@@ -521,7 +632,7 @@ CRtpMsgC2s::AsyncKickoutUser(PRO_INT64* args)
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_service == NULL || m_task == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_task == NULL || m_service == NULL)
         {
             return;
         }
@@ -552,7 +663,7 @@ CRtpMsgC2s::AsyncKickoutUser(PRO_INT64* args)
 
 void
 PRO_CALLTYPE
-CRtpMsgC2s::SetOutputRedlineToServer(unsigned long redlineBytes)
+CRtpMsgC2s::SetLocalOutputRedline(unsigned long redlineBytes)
 {
     if (redlineBytes == 0)
     {
@@ -562,68 +673,54 @@ CRtpMsgC2s::SetOutputRedlineToServer(unsigned long redlineBytes)
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_service == NULL || m_task == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_task == NULL || m_service == NULL)
         {
             return;
         }
 
-        m_redlineBytesServer = redlineBytes;
-        if (m_msgClient != NULL)
-        {
-            m_msgClient->SetOutputRedline(redlineBytes);
-        }
+        m_localRedlineBytes = redlineBytes;
     }
 }
 
 unsigned long
 PRO_CALLTYPE
-CRtpMsgC2s::GetOutputRedlineToServer() const
+CRtpMsgC2s::GetLocalOutputRedline() const
 {
     unsigned long redlineBytes = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
 
-        redlineBytes = m_redlineBytesServer;
+        redlineBytes = m_localRedlineBytes;
     }
 
     return (redlineBytes);
-}
-
-void
-PRO_CALLTYPE
-CRtpMsgC2s::SetOutputRedlineToUser(unsigned long redlineBytes)
-{
-    if (redlineBytes == 0)
-    {
-        return;
-    }
-
-    {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactor == NULL || m_service == NULL || m_task == NULL)
-        {
-            return;
-        }
-
-        m_redlineBytesUser = redlineBytes;
-    }
 }
 
 unsigned long
 PRO_CALLTYPE
-CRtpMsgC2s::GetOutputRedlineToUser() const
+CRtpMsgC2s::GetLocalSendingBytes(const RTP_MSG_USER* user) const
 {
-    unsigned long redlineBytes = 0;
+    assert(user != NULL);
+    if (user == NULL)
+    {
+        return (0);
+    }
+
+    unsigned long sendingBytes = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
 
-        redlineBytes = m_redlineBytesUser;
+        CProStlMap<RTP_MSG_USER, IRtpSession*>::const_iterator const itr =
+            m_user2Session.find(*user);
+        if (itr != m_user2Session.end())
+        {
+            itr->second->GetFlowctrlInfo(NULL, NULL, NULL, NULL, &sendingBytes, NULL);
+        }
     }
 
-    return (redlineBytes);
+    return (sendingBytes);
 }
 
 void
@@ -763,7 +860,7 @@ CRtpMsgC2s::AcceptSession(IRtpService*            service,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_service == NULL || m_task == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_task == NULL || m_service == NULL)
         {
             goto EXIT;
         }
@@ -778,8 +875,8 @@ CRtpMsgC2s::AcceptSession(IRtpService*            service,
             goto EXIT;
         }
 
-        if (m_msgClient == NULL || m_c2sUserNow.classId == 0 || m_c2sUserNow.UserId() == 0 ||
-            user == m_c2sUserNow)
+        if (m_msgClient == NULL || m_myUserNow.classId == 0 || m_myUserNow.UserId() == 0 ||
+            user == m_myUserNow)
         {
             goto EXIT;
         }
@@ -892,7 +989,7 @@ CRtpMsgC2s::OnRecvSession(IRtpSession* session,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_service == NULL || m_task == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_task == NULL || m_service == NULL)
         {
             return;
         }
@@ -972,7 +1069,7 @@ CRtpMsgC2s::OnCloseSession(IRtpSession* session,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_service == NULL || m_task == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_task == NULL || m_service == NULL)
         {
             return;
         }
@@ -1026,7 +1123,7 @@ CRtpMsgC2s::OnOkMsg(IRtpMsgClient*      msgClient,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_service == NULL || m_task == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_task == NULL || m_service == NULL)
         {
             return;
         }
@@ -1036,10 +1133,10 @@ CRtpMsgC2s::OnOkMsg(IRtpMsgClient*      msgClient,
             return;
         }
 
-        m_c2sUserNow = *myUser; /* login */
-        m_c2sUserBak = *myUser; /* login */
+        m_myUserNow = *myUser; /* login */
+        m_myUserBak = *myUser; /* login */
 
-        m_msgClient->SetOutputRedline(m_redlineBytesServer);
+        m_msgClient->SetOutputRedline(m_uplinkRedlineBytes);
 
         m_observer->AddRef();
         observer = m_observer;
@@ -1142,7 +1239,7 @@ CRtpMsgC2s::ProcessMsg_client_login_ok(IRtpMsgClient*          msgClient,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_service == NULL || m_task == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_task == NULL || m_service == NULL)
         {
             return;
         }
@@ -1202,7 +1299,7 @@ CRtpMsgC2s::ProcessMsg_client_login_ok(IRtpMsgClient*          msgClient,
             }
             else
             {
-                newSession->SetOutputRedline(m_redlineBytesUser, 0);
+                newSession->SetOutputRedline(m_localRedlineBytes, 0);
 
                 CProStlMap<RTP_MSG_USER, IRtpSession*>::iterator const itr2 =
                     m_user2Session.find(user);
@@ -1263,7 +1360,7 @@ CRtpMsgC2s::ProcessMsg_client_login_error(IRtpMsgClient*          msgClient,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_service == NULL || m_task == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_task == NULL || m_service == NULL)
         {
             return;
         }
@@ -1318,7 +1415,7 @@ CRtpMsgC2s::ProcessMsg_client_kickout(IRtpMsgClient*          msgClient,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_service == NULL || m_task == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_task == NULL || m_service == NULL)
         {
             return;
         }
@@ -1377,7 +1474,7 @@ CRtpMsgC2s::OnTransferMsg(IRtpMsgClient*      msgClient,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_service == NULL || m_task == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_task == NULL || m_service == NULL)
         {
             return;
         }
@@ -1428,7 +1525,7 @@ CRtpMsgC2s::OnCloseMsg(IRtpMsgClient* msgClient,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_service == NULL || m_task == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_task == NULL || m_service == NULL)
         {
             return;
         }
@@ -1456,8 +1553,8 @@ CRtpMsgC2s::OnCloseMsg(IRtpMsgClient* msgClient,
         m_session2User.clear();
         m_user2Session.clear();
 
-        m_c2sUserNow.Zero(); /* logout */
-        m_msgClient = NULL;  /* logout */
+        m_myUserNow.Zero(); /* logout */
+        m_msgClient = NULL; /* logout */
 
         m_observer->AddRef();
         observer = m_observer;
@@ -1493,7 +1590,7 @@ CRtpMsgC2s::OnTimer(unsigned long timerId,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_service == NULL || m_task == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_task == NULL || m_service == NULL)
         {
             return;
         }

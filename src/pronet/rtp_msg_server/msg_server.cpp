@@ -177,8 +177,8 @@ CMsgServer::Init(IProReactor*                  reactor,
             goto EXIT;
         }
 
-        msgServer->SetOutputRedlineToC2s (configInfo.msgs_redline_bytes_c2s);
-        msgServer->SetOutputRedlineToUser(configInfo.msgs_redline_bytes_usr);
+        msgServer->SetOutputRedlineToC2s(configInfo.msgs_redline_bytes_c2s);
+        msgServer->SetOutputRedlineToUsr(configInfo.msgs_redline_bytes_usr);
 
         m_reactor    = reactor;
         m_configInfo = configInfo;
