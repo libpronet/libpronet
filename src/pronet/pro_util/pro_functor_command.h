@@ -40,9 +40,9 @@
  *     CProFunctorCommand_cpp<CTest, ACTION>::CreateInstance(
  *     test,
  *     &CTest::Action,
+ *     0,
  *     1,
- *     2,
- *     3
+ *     2
  *     );
  */
 
@@ -58,9 +58,9 @@
  * IProFunctorCommand* command =
  *     CProFunctorCommand_c<ACTION>::CreateInstance(
  *     &Action,
+ *     0,
  *     1,
- *     2,
- *     3
+ *     2
  *     );
  */
 
@@ -97,6 +97,7 @@ public:
     static CProFunctorCommand_cpp* CreateInstance(
         RECEIVER& receiver,
         ACTION    action,
+        PRO_INT64 arg0 = 0,
         PRO_INT64 arg1 = 0,
         PRO_INT64 arg2 = 0,
         PRO_INT64 arg3 = 0,
@@ -114,7 +115,7 @@ public:
         }
 
         CProFunctorCommand_cpp* const command = new CProFunctorCommand_cpp(
-            receiver, action, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+            receiver, action, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
 
         return (command);
     }
@@ -124,6 +125,7 @@ private:
     CProFunctorCommand_cpp(
         RECEIVER& receiver,
         ACTION    action,
+        PRO_INT64 arg0,
         PRO_INT64 arg1,
         PRO_INT64 arg2,
         PRO_INT64 arg3,
@@ -138,9 +140,9 @@ private:
         m_userData = NULL;
         m_action   = action;
 
-        const PRO_INT64 args[9] = { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 };
+        const PRO_INT64 args[10] = { arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 };
 
-        for (int i = 0; i < 9; ++i)
+        for (int i = 0; i < 10; ++i)
         {
             m_args[i] = args[i];
         }
@@ -175,7 +177,7 @@ private:
     const void* m_userData;
     RECEIVER&   m_receiver;
     ACTION      m_action;
-    PRO_INT64   m_args[9];
+    PRO_INT64   m_args[10];
 
     DECLARE_SGI_POOL(0);
 };
@@ -190,6 +192,7 @@ public:
 
     static CProFunctorCommand_c* CreateInstance(
         ACTION    action,
+        PRO_INT64 arg0 = 0,
         PRO_INT64 arg1 = 0,
         PRO_INT64 arg2 = 0,
         PRO_INT64 arg3 = 0,
@@ -207,7 +210,7 @@ public:
         }
 
         CProFunctorCommand_c* const command = new CProFunctorCommand_c(
-            action, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+            action, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
 
         return (command);
     }
@@ -216,6 +219,7 @@ private:
 
     CProFunctorCommand_c(
         ACTION    action,
+        PRO_INT64 arg0,
         PRO_INT64 arg1,
         PRO_INT64 arg2,
         PRO_INT64 arg3,
@@ -230,9 +234,9 @@ private:
         m_userData = NULL;
         m_action   = action;
 
-        const PRO_INT64 args[9] = { arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 };
+        const PRO_INT64 args[10] = { arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 };
 
-        for (int i = 0; i < 9; ++i)
+        for (int i = 0; i < 10; ++i)
         {
             m_args[i] = args[i];
         }
@@ -266,7 +270,7 @@ private:
 
     const void* m_userData;
     ACTION      m_action;
-    PRO_INT64   m_args[9];
+    PRO_INT64   m_args[10];
 
     DECLARE_SGI_POOL(0);
 };
