@@ -140,13 +140,13 @@ the file "build/DEFINE.txt" for more.
 
    1)Apply patchs that is under the directory of "build/_sp_for_vs6"
 
-   2)Open the workspace file "build/windows-vs6/pro.dsw"
+   2)Open the workspace file "build/windows-vs6/pronet.dsw"
 
 3. VS2010/VS2013 on Windows
 
-   The solution file for VS2010 is "build/windows-vs2010/pro.sln"
+   The solution file for VS2010 is "build/windows-vs2010/pronet.sln"
 
-   The solution file for VS2013 is "build/windows-vs2013/pro.sln"
+   The solution file for VS2013 is "build/windows-vs2013/pronet.sln"
 
 4. Qt Creator on Windows
 
@@ -188,10 +188,10 @@ which we call "${install}".
 
    > ./rtp_msg_server
 
-4) Adjust the config file "${install}/bin/rtp_msg_client.cfg", and
-   start some "${install}/bin/rtp_msg_client" processes
+4) Adjust the config file "${install}/bin/test_msg_client.cfg", and
+   start some "${install}/bin/test_msg_client" processes
 
-   > ./rtp_msg_client
+   > ./test_msg_client
 
 
 How to run the tests on Linux?
@@ -242,10 +242,10 @@ How to run the messaging system on Windows(64bit)?
 
    > rtp_msg_server
 
-4) Adjust the config file "pub_test/vs2010-x86_64-r/rtp_msg_client.cfg",
-   and start some "pub_test/vs2010-x86_64-r/rtp_msg_client.exe" processes
+4) Adjust the config file "pub_test/vs2010-x86_64-r/test_msg_client.cfg",
+   and start some "pub_test/vs2010-x86_64-r/test_msg_client.exe" processes
 
-   > rtp_msg_client
+   > test_msg_client
 
 
 How to run the tests on Windows(64bit)?
