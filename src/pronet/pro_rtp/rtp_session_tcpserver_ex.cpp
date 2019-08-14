@@ -514,7 +514,7 @@ CRtpSessionTcpserverEx::Recv4(CRtpPacket*& packet)
                 break;
             }
 
-            const unsigned long pos = (unsigned long)m_bigPacket->GetTick();
+            const unsigned long pos = (unsigned long)m_bigPacket->GetMagic();
             void* const         buf = (char*)m_bigPacket->GetPayloadBuffer() + pos;
             unsigned long       len = m_bigPacket->GetPayloadSize() - pos;
             if (len > dataSize)
@@ -525,7 +525,7 @@ CRtpSessionTcpserverEx::Recv4(CRtpPacket*& packet)
             recvPool.PeekData(buf, len);
             recvPool.Flush(len);
 
-            m_bigPacket->SetTick(pos + len);
+            m_bigPacket->SetMagic(pos + len);
             if (pos + len < m_bigPacket->GetPayloadSize())
             {
                 continue;

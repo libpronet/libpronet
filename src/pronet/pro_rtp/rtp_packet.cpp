@@ -138,7 +138,7 @@ CRtpPacket::Clone(const IRtpPacket* packet)
     else
     {
         newPacket->m_ssrc         = packet2->m_ssrc;
-        newPacket->m_tick         = packet2->m_tick;
+        newPacket->m_magic        = packet2->m_magic;
         *newPacket->m_packet->ext = *packet2->m_packet->ext;
         *newPacket->m_packet->hdr = *packet2->m_packet->hdr;
     }
@@ -294,7 +294,7 @@ CRtpPacket::CRtpPacket(RTP_EXT_PACK_MODE packMode)
 : m_packMode(packMode)
 {
     m_ssrc   = 0;
-    m_tick   = 0;
+    m_magic  = 0;
     m_packet = NULL;
 }
 
@@ -573,16 +573,16 @@ CRtpPacket::GetPackMode() const
 
 void
 PRO_CALLTYPE
-CRtpPacket::SetTick(PRO_INT64 tick)
+CRtpPacket::SetMagic(PRO_INT64 magic)
 {
-    m_tick = tick;
+    m_magic = magic;
 }
 
 PRO_INT64
 PRO_CALLTYPE
-CRtpPacket::GetTick() const
+CRtpPacket::GetMagic() const
 {
-    return (m_tick);
+    return (m_magic);
 }
 
 const RTP_PACKET&

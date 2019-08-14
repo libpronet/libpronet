@@ -17,16 +17,16 @@
  */
 
 /*         ______________________________________________________
- *        |                                                      |
- *        |                        ProRtp                        |
- *        |______________________________________________________|
- *        |          |                              |            |
- *        |          |             ProNet           |            |
- *        |          |______________________________|            |
+ *        |         |                                  |         |
+ *        |         |              ProRtp              |         |
+ *        |         |__________________________________|         |
+ *        |                                   |                  |
+ *        |               ProNet              |                  |
+ *        |___________________________________|                  |
+ *        |                    |                     ProUtil     |
  *        |                    |                                 |
- *        |                    |             ProUtil             |
- *        |      MbedTLS       |_________________________________|
- *        |                              |                       |
+ *        |                    |_________________________________|
+ *        |      MbedTLS                 |                       |
  *        |                              |       ProShared       |
  *        |______________________________|_______________________|
  *                     Fig.1 module hierarchy diagram
@@ -545,9 +545,9 @@ public:
 
     virtual RTP_EXT_PACK_MODE PRO_CALLTYPE GetPackMode() const = 0;
 
-    virtual void PRO_CALLTYPE SetTick(PRO_INT64 tick) = 0;
+    virtual void PRO_CALLTYPE SetMagic(PRO_INT64 magic) = 0;
 
-    virtual PRO_INT64 PRO_CALLTYPE GetTick() const = 0;
+    virtual PRO_INT64 PRO_CALLTYPE GetMagic() const = 0;
 };
 #endif /* ____IRtpPacket____ */
 
@@ -1204,7 +1204,7 @@ GetRtpStatTimeSpan();
  *
  * 返回值: 无
  *
- * 说明: 某项的值为0时,表示不改变该项的设置
+ * 说明: 某项为0时,表示不改变该项的设置
  */
 PRO_RTP_API
 void
@@ -1246,7 +1246,7 @@ GetRtpUdpSocketParams(RTP_MM_TYPE    mmType,
  *
  * 返回值: 无
  *
- * 说明: 某项的值为0时,表示不改变该项的设置
+ * 说明: 某项为0时,表示不改变该项的设置
  */
 PRO_RTP_API
 void

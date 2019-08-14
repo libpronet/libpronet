@@ -117,7 +117,7 @@ CRtpReorder::PushBack(IRtpPacket* packet)
 
         m_seq64ToPacket.clear();
 
-        packet->SetTick(tick);
+        packet->SetMagic(tick);
         packet->AddRef();
         m_seq64ToPacket[seq16] = packet;
 
@@ -193,7 +193,7 @@ CRtpReorder::PushBack(IRtpPacket* packet)
 
         m_seq64ToPacket.clear();
 
-        packet->SetTick(tick);
+        packet->SetMagic(tick);
         packet->AddRef();
         m_seq64ToPacket[seq16] = packet;
 
@@ -204,7 +204,7 @@ CRtpReorder::PushBack(IRtpPacket* packet)
     {
         if (m_seq64ToPacket.find(seq64) == m_seq64ToPacket.end())
         {
-            packet->SetTick(tick);
+            packet->SetMagic(tick);
             packet->AddRef();
             m_seq64ToPacket[seq64] = packet;
 
@@ -233,7 +233,7 @@ CRtpReorder::PopFront()
 
     if (seq64 == m_minSeq64                         ||
         m_seq64ToPacket.size() >= m_gatePacketCount ||
-        tick - packet->GetTick() >= m_maxWaitingDuration * 1000)
+        tick - packet->GetMagic() >= m_maxWaitingDuration * 1000)
     {
         m_seq64ToPacket.erase(itr);
         m_minSeq64 = seq64 + 1; /* set value */

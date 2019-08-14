@@ -187,9 +187,9 @@ public:
 
     virtual RTP_EXT_PACK_MODE PRO_CALLTYPE GetPackMode() const;
 
-    virtual void PRO_CALLTYPE SetTick(PRO_INT64 tick);
+    virtual void PRO_CALLTYPE SetMagic(PRO_INT64 magic);
 
-    virtual PRO_INT64 PRO_CALLTYPE GetTick() const;
+    virtual PRO_INT64 PRO_CALLTYPE GetMagic() const;
 
     /*
      * Don't use this method unless you know why and how to use it.
@@ -215,8 +215,8 @@ private:
 private:
 
     const RTP_EXT_PACK_MODE m_packMode;
-    PRO_UINT32              m_ssrc;
-    PRO_INT64               m_tick;
+    PRO_UINT32              m_ssrc; /* for RTP_EPM_TCP2, RTP_EPM_TCP4 */
+    PRO_INT64               m_magic;
     RTP_PACKET*             m_packet;
 };
 
