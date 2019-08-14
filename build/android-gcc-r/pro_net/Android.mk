@@ -7,7 +7,6 @@ LOCAL_SRC_FILES := pro_acceptor.cpp        \
                    pro_connector.cpp       \
                    pro_epoll_reactor.cpp   \
                    pro_handler_mgr.cpp     \
-                   pro_mbedtls.cpp         \
                    pro_mcast_transport.cpp \
                    pro_net.cpp             \
                    pro_notify_pipe.cpp     \
@@ -15,6 +14,7 @@ LOCAL_SRC_FILES := pro_acceptor.cpp        \
                    pro_service_host.cpp    \
                    pro_service_hub.cpp     \
                    pro_service_pipe.cpp    \
+                   pro_ssl.cpp             \
                    pro_ssl_handshaker.cpp  \
                    pro_ssl_transport.cpp   \
                    pro_tcp_handshaker.cpp  \

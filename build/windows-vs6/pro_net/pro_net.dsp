@@ -116,10 +116,6 @@ SOURCE=..\..\..\src\pronet\pro_net\pro_handler_mgr.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pronet\pro_net\pro_mbedtls.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\..\src\pronet\pro_net\pro_mcast_transport.cpp
 # End Source File
 # Begin Source File
@@ -149,6 +145,10 @@ SOURCE=..\..\..\src\pronet\pro_net\pro_service_hub.cpp
 # Begin Source File
 
 SOURCE=..\..\..\src\pronet\pro_net\pro_service_pipe.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\pronet\pro_net\pro_ssl.cpp
 # End Source File
 # Begin Source File
 
@@ -204,10 +204,6 @@ SOURCE=..\..\..\src\pronet\pro_net\pro_handler_mgr.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\..\src\pronet\pro_net\pro_mbedtls.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\..\src\pronet\pro_net\pro_mcast_transport.h
 # End Source File
 # Begin Source File
@@ -241,6 +237,10 @@ SOURCE=..\..\..\src\pronet\pro_net\pro_service_hub.h
 # Begin Source File
 
 SOURCE=..\..\..\src\pronet\pro_net\pro_service_pipe.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\pronet\pro_net\pro_ssl.h
 # End Source File
 # Begin Source File
 

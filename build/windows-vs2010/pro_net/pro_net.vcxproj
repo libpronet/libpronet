@@ -326,7 +326,6 @@
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_connector.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_epoll_reactor.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_handler_mgr.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_mbedtls.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_mcast_transport.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_net.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_notify_pipe.cpp" />
@@ -334,6 +333,7 @@
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_service_host.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_service_hub.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_service_pipe.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_ssl.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_ssl_handshaker.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_ssl_transport.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_tcp_handshaker.cpp" />
@@ -348,7 +348,6 @@
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_epoll_reactor.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_event_handler.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_handler_mgr.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_mbedtls.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_mcast_transport.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_net.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_notify_pipe.h" />
@@ -358,6 +357,7 @@
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_service_host.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_service_hub.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_service_pipe.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_ssl.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_ssl_handshaker.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_ssl_transport.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_tcp_handshaker.h" />

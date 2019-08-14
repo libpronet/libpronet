@@ -29,19 +29,19 @@ service cluster system, a multimedia communication system or
 a messaging system.
 
 Please refer to "pro_net.h", "rtp_base.h", and "rtp_msg.h" under the
-directory of "pub/inc/pro" for more.
+directory of "pub/inc/pronet" for more.
 
          ______________________________________________________
-        |                                                      |
-        |                        ProRtp                        |
-        |______________________________________________________|
-        |          |                              |            |
-        |          |             ProNet           |            |
-        |          |______________________________|            |
+        |         |                                  |         |
+        |         |              ProRtp              |         |
+        |         |__________________________________|         |
+        |                                   |                  |
+        |               ProNet              |                  |
+        |___________________________________|                  |
+        |                    |                     ProUtil     |
         |                    |                                 |
-        |                    |             ProUtil             |
-        |      MbedTLS       |_________________________________|
-        |                              |                       |
+        |                    |_________________________________|
+        |      MbedTLS                 |                       |
         |                              |       ProShared       |
         |______________________________|_______________________|
                      Fig.1 module hierarchy diagram

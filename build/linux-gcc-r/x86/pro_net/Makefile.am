@@ -13,7 +13,6 @@ libpro_net_so_SOURCES = ../../../../src/pronet/pro_net/pro_acceptor.cpp        \
                         ../../../../src/pronet/pro_net/pro_connector.cpp       \
                         ../../../../src/pronet/pro_net/pro_epoll_reactor.cpp   \
                         ../../../../src/pronet/pro_net/pro_handler_mgr.cpp     \
-                        ../../../../src/pronet/pro_net/pro_mbedtls.cpp         \
                         ../../../../src/pronet/pro_net/pro_mcast_transport.cpp \
                         ../../../../src/pronet/pro_net/pro_net.cpp             \
                         ../../../../src/pronet/pro_net/pro_notify_pipe.cpp     \
@@ -21,6 +20,7 @@ libpro_net_so_SOURCES = ../../../../src/pronet/pro_net/pro_acceptor.cpp        \
                         ../../../../src/pronet/pro_net/pro_service_host.cpp    \
                         ../../../../src/pronet/pro_net/pro_service_hub.cpp     \
                         ../../../../src/pronet/pro_net/pro_service_pipe.cpp    \
+                        ../../../../src/pronet/pro_net/pro_ssl.cpp             \
                         ../../../../src/pronet/pro_net/pro_ssl_handshaker.cpp  \
                         ../../../../src/pronet/pro_net/pro_ssl_transport.cpp   \
                         ../../../../src/pronet/pro_net/pro_tcp_handshaker.cpp  \

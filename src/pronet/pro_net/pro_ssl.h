@@ -16,8 +16,8 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(____PRO_MBEDTLS_H____)
-#define ____PRO_MBEDTLS_H____
+#if !defined(____PRO_SSL_H____)
+#define ____PRO_SSL_H____
 
 #if !defined(____PRO_NET_H____)
 #error You must include "pro_net.h" first.
@@ -593,4 +593,4 @@ ProSslCtx_GetAlpn(PRO_SSL_CTX* ctx);
 }
 #endif
 
-#endif /* ____PRO_MBEDTLS_H____ */
+#endif /* ____PRO_SSL_H____ */

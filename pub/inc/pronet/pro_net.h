@@ -17,11 +17,11 @@
  */
 
 /*         ______________________________________________________
- *        |                                                      |
- *        |                        ProNet                        |
- *        |______________________________________________________|
+ *        |                                   |                  |
+ *        |               ProNet              |                  |
+ *        |___________________________________|                  |
+ *        |                    |                     ProUtil     |
  *        |                    |                                 |
- *        |                    |             ProUtil             |
  *        |                    |_________________________________|
  *        |      MbedTLS                 |                       |
  *        |                              |       ProShared       |
@@ -209,7 +209,7 @@ extern "C" {
 #define PRO_NET_API PRO_IMPORT
 #endif
 
-#include "pro_mbedtls.h"
+#include "pro_ssl.h"
 
 class  IProAcceptor;      /* 接受器 */
 class  IProConnector;     /* 连接器 */

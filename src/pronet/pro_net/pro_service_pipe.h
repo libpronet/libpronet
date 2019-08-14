@@ -119,8 +119,8 @@ struct PRO_SERVICE_PACKET
     bool CheckMagic() const
     {
         return (
-            strncmp(magic1, SERVICE_MAGIC, sizeof(magic1)) == 0 &&
-            strncmp(magic2, SERVICE_MAGIC, sizeof(magic2)) == 0
+            memcmp(magic1, SERVICE_MAGIC, sizeof(magic1)) == 0 &&
+            memcmp(magic2, SERVICE_MAGIC, sizeof(magic2)) == 0
             );
     }
 
