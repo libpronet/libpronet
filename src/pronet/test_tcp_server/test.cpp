@@ -289,7 +289,7 @@ CTest::SetHeartbeatDataSize(unsigned long size) /* 0 ~ 1024 */
     }
 
     {
-        CProThreadMutexGuard mon(m_lock);
+        CProThreadMutexGuard mon(m_lock2); /* lock2 */
 
         m_heartbeatData[0] = pbsd_hton16((PRO_UINT16)(size - sizeof(PRO_UINT16)));
         m_heartbeatSize    = size;
@@ -302,7 +302,7 @@ CTest::GetHeartbeatDataSize() const
     unsigned long size = 0;
 
     {
-        CProThreadMutexGuard mon(m_lock);
+        CProThreadMutexGuard mon(m_lock2); /* lock2 */
 
         size = m_heartbeatSize;
     }
@@ -741,6 +741,7 @@ CTest::OnRecv(IProTransport*          trans,
         unsigned long size = 0;
 
         {
+#if 0
             CProThreadMutexGuard mon(m_lock);
 
             if (m_reactor == NULL)
@@ -752,7 +753,7 @@ CTest::OnRecv(IProTransport*          trans,
             {
                 return;
             }
-
+#endif
             IProRecvPool&       recvPool = *trans->GetRecvPool();
             const unsigned long dataSize = recvPool.PeekDataSize();
 
@@ -883,17 +884,7 @@ CTest::OnHeartbeat(IProTransport* trans)
     }
 
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_reactor == NULL)
-        {
-            return;
-        }
-
-        if (m_transports.find(trans) == m_transports.end())
-        {
-            return;
-        }
+        CProThreadMutexGuard mon(m_lock2); /* lock2 */
 
         trans->SendData(m_heartbeatData, m_heartbeatSize);
     }

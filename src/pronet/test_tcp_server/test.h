@@ -216,14 +216,14 @@ private:
     PRO_SSL_SERVER_CONFIG*                     m_sslConfig;
     IProAcceptor*                              m_acceptor;
     IProServiceHost*                           m_service;
-
     CProStlMap<IProTcpHandshaker*, PRO_UINT64> m_tcpHandshaker2Nonce;
     CProStlMap<IProSslHandshaker*, PRO_UINT64> m_sslHandshaker2Nonce;
     CProStlSet<IProTransport*>                 m_transports;
+    mutable CProThreadMutex                    m_lock;
+
     PRO_UINT16                                 m_heartbeatData[512];
     unsigned long                              m_heartbeatSize; /* 0 ~ 1024 */
-
-    mutable CProThreadMutex                    m_lock;
+    mutable CProThreadMutex                    m_lock2;
 
     DECLARE_SGI_POOL(0);
 };

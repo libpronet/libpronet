@@ -233,15 +233,15 @@ private:
     TCP_CLIENT_CONFIG_INFO         m_configInfo;
     PRO_SSL_CLIENT_CONFIG*         m_sslConfig;
     unsigned long                  m_timerId;
-
     CProStlSet<IProConnector*>     m_connectors;
     CProStlSet<IProTcpHandshaker*> m_tcpHandshakers;
     CProStlSet<IProSslHandshaker*> m_sslHandshakers;
     CProStlSet<IProTransport*>     m_transports;
+    CProThreadMutex                m_lock;
+
     PRO_UINT16                     m_heartbeatData[512];
     unsigned long                  m_heartbeatSize; /* 0 ~ 1024 */
-
-    mutable CProThreadMutex        m_lock;
+    mutable CProThreadMutex        m_lock2;
 
     DECLARE_SGI_POOL(0);
 };

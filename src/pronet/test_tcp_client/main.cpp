@@ -54,8 +54,10 @@ int main(int argc, char* argv[])
     {
         local_ip    = argv[3];
     }
+
     if (server_port < 0 || server_port > 65535)
     {
+        server_ip   = NULL;
         server_port = 0;
     }
 
