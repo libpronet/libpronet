@@ -522,6 +522,9 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
         RtpMsgUser2String(c2sUser, c2sIdString);
     }
 
+    char suiteName[64] = "";
+    msgServer->GetSslSuite(user, suiteName);
+
     {
         CProThreadMutexGuard mon(m_lock);
 
@@ -540,7 +543,7 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
 
         if (!m_configInfo.msgs_db_readonly)
         {
-            AddMsgOnlineRow(m_db, *user, userPublicIp, c2sIdString);
+            AddMsgOnlineRow(m_db, *user, userPublicIp, c2sIdString, suiteName);
         }
     }
 
@@ -554,13 +557,14 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
             traceInfo,
             sizeof(traceInfo),
             " CMsgServer::OnOkUser(id : %u-" PRO_PRT64U "-%u,"
-            " fromIp : %s, fromC2s : %s, users : %u+%u) \n\n"
+            " fromIp : %s, fromC2s : %s, sslSuite : %s, users : %u+%u) \n\n"
             ,
             (unsigned int)user->classId,
             user->UserId(),
             (unsigned int)user->instId,
             userPublicIp,
             c2sIdString,
+            suiteName,
             (unsigned int)baseUserCount,
             (unsigned int)subUserCount
             );

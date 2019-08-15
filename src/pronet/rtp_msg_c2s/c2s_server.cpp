@@ -398,11 +398,10 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
     }
 
     {{{
-        char suiteName[64] = "";
+        char           suiteName[64] = "";
+        char           remoteIp[64]  = "";
+        unsigned short remotePort    = 0;
         msgC2s->GetUplinkSslSuite(suiteName);
-
-        char           remoteIp[64] = "";
-        unsigned short remotePort   = 0;
         msgC2s->GetUplinkRemoteIp(remoteIp);
         remotePort = msgC2s->GetUplinkRemotePort();
 
@@ -517,19 +516,23 @@ CC2sServer::OnOkUser(IRtpMsgC2s*         msgC2s,
     }
 
     {{{
-        unsigned long userCount = 0;
+        char          suiteName[64] = "";
+        unsigned long userCount     = 0;
+        msgC2s->GetLocalSslSuite(user, suiteName);
         msgC2s->GetLocalUserCount(NULL, &userCount);
 
         char traceInfo[1024] = "";
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-            " CC2sServer::OnOkUser(id : %u-" PRO_PRT64U "-%u, fromIp : %s, users : %u) \n\n"
+            " CC2sServer::OnOkUser(id : %u-" PRO_PRT64U "-%u, fromIp : %s, sslSuite : %s,"
+            " users : %u) \n\n"
             ,
             (unsigned int)user->classId,
             user->UserId(),
             (unsigned int)user->instId,
             userPublicIp,
+            suiteName,
             (unsigned int)userCount
             );
         m_logFile.Log(traceInfo, m_configInfo.c2ss_log_level_userin);

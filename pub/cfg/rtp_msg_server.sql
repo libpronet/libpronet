@@ -22,6 +22,7 @@ CREATE TABLE [tbl_msg03_online] (
   [_iid_] SMALLINT NOT NULL,
   [_fromip_] VARCHAR(64),
   [_fromc2s_] VARCHAR(64),
+  [_sslsuite_] VARCHAR(64),
   [_logontime_] DATETIME,
   CHECK(_cid_>0 AND _cid_<=255 AND _uid_>0 AND _iid_>0 AND _iid_<=65535),
   CONSTRAINT [sqlite_autoindex_tbl_msg03_online_1] PRIMARY KEY ([_cid_], [_uid_], [_iid_]));

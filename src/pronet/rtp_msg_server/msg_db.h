@@ -133,7 +133,8 @@ PRO_CALLTYPE
 AddMsgOnlineRow(CDbConnection&      db,
                 const RTP_MSG_USER& user,
                 CProStlString       userPublicIp,
-                CProStlString       c2sIdString);
+                CProStlString       c2sIdString,
+                CProStlString       sslSuiteName);
 
 void
 PRO_CALLTYPE
