@@ -6,7 +6,7 @@ proincdir = ${prefix}/libpronet/include/pronet
 prolib_PROGRAMS = libpro_net.so
 
 proinc_HEADERS = ../../../../src/pronet/pro_net/pro_net.h \
-                 ../../../../src/pronet/pro_net/pro_mbedtls.h
+                 ../../../../src/pronet/pro_net/pro_ssl.h
 
 libpro_net_so_SOURCES = ../../../../src/pronet/pro_net/pro_acceptor.cpp        \
                         ../../../../src/pronet/pro_net/pro_base_reactor.cpp    \
