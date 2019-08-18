@@ -94,8 +94,9 @@ int main(int argc, char* argv[])
             configFile.Write(configs);
 
             printf(
+                "\n"
                 " pro_service_hub --- warning! can't read the config file. \n"
-                " [ %s ] \n\n"
+                " [ %s ] \n"
                 ,
                 configFileName.c_str()
                 );
@@ -143,7 +144,7 @@ int main(int argc, char* argv[])
 
     if (configInfo.hubs_listen_ports.size() == 0)
     {
-        printf(" pro_service_hub --- error! \"hubs_listen_port\" is not found. \n\n");
+        printf("\n pro_service_hub --- error! \"hubs_listen_port\" is not found. \n");
 
         goto EXIT;
     }
@@ -151,7 +152,7 @@ int main(int argc, char* argv[])
     reactor = ProCreateReactor(configInfo.hubs_thread_count);
     if (reactor == NULL)
     {
-        printf(" pro_service_hub --- error! can't create reactor. \n\n");
+        printf("\n pro_service_hub --- error! can't create reactor. \n");
 
         goto EXIT;
     }
@@ -168,8 +169,9 @@ int main(int argc, char* argv[])
             if (hub == NULL)
             {
                 printf(
+                    "\n"
                     " pro_service_hub --- error! can't create service hub on the port %u. \n"
-                    " [ maybe the port %u or the file \"/tmp/libpronet_127001_%u\" is busy. ] \n\n"
+                    " [ maybe the port %u or the file \"/tmp/libpronet_127001_%u\" is busy. ] \n"
                     ,
                     configInfo.hubs_listen_ports[i],
                     configInfo.hubs_listen_ports[i],
@@ -196,7 +198,7 @@ int main(int argc, char* argv[])
     }
 
     printf(
-        " pro_service_hub [ver-%d.%d.%d] --- [ports : %s] --- ok! \n\n"
+        "\n pro_service_hub [ver-%d.%d.%d] --- [ports : %s] --- ok! \n"
         ,
         PRO_VER_MAJOR,
         PRO_VER_MINOR,

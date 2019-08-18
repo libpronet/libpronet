@@ -860,8 +860,7 @@ CTest::OnClose(IProTransport* trans,
         trans->GetRemoteIp(remoteIp);
 
         printf(
-            "\n"
-            " CTest::OnClose(errorCode : [%d, %d], peer : %s:%u) \n"
+            "\n CTest::OnClose(errorCode : [%d, %d], peer : %s:%u) \n"
             ,
             (int)errorCode,
             (int)sslCode,

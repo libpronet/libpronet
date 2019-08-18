@@ -180,17 +180,33 @@ CProLogFile::Log(const char* text,
                  long        level,    /* = 0 */
                  bool        showTime) /* = true */
 {
-    CProStlString totalText = "";
+    CProStlString totalString = "";
 
     if (showTime)
     {
-        ProGetLocalTimeString(totalText);
-        totalText += "\n";
+        CProStlString timeString = "";
+        ProGetLocalTimeString(timeString);
+
+        totalString += '\n';
+        totalString += timeString;
+        totalString += ' ';
+
+        if (text == NULL || text[0] == '\0')
+        {
+            totalString += '\n';
+        }
+        else if (text[0] != '\r' && text[0] != '\n')
+        {
+            totalString += '\n';
+        }
+        else
+        {
+        }
     }
 
     if (text != NULL)
     {
-        totalText += text;
+        totalString += text;
     }
 
     {
@@ -206,7 +222,7 @@ CProLogFile::Log(const char* text,
                 fseek(m_file, 0, SEEK_SET);
             }
 
-            fwrite(totalText.c_str(), 1, totalText.length(), m_file);
+            fwrite(totalString.c_str(), 1, totalString.length(), m_file);
             fflush(m_file);
         }
     }

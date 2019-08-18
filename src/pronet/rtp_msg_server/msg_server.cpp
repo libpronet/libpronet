@@ -257,7 +257,8 @@ CMsgServer::KickoutUsers(const CProStlSet<RTP_MSG_USER>& users)
             return;
         }
 
-        traceInfo =  " CMsgServer::KickoutUsers(...) \n";
+        traceInfo += '\n';
+        traceInfo += " CMsgServer::KickoutUsers(...) \n";
         traceInfo += " [[[ begin \n";
 
         CProStlSet<RTP_MSG_USER>::const_iterator       itr = users.begin();
@@ -280,7 +281,7 @@ CMsgServer::KickoutUsers(const CProStlSet<RTP_MSG_USER>& users)
             traceInfo += " \n";
         }
 
-        traceInfo += " ]]] end \n\n";
+        traceInfo += " ]]] end \n";
     }
 
     {{{
@@ -314,7 +315,7 @@ CMsgServer::Reconfig(const MSG_SERVER_CONFIG_INFO& configInfo)
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-            " CMsgServer::Reconfig(%u, %d, %d, %d, %d) \n"
+            "\n CMsgServer::Reconfig(%u, %d, %d, %d, %d) \n"
             ,
             configInfo.msgs_log_loop_bytes,
             configInfo.msgs_log_level_green,
@@ -322,8 +323,7 @@ CMsgServer::Reconfig(const MSG_SERVER_CONFIG_INFO& configInfo)
             configInfo.msgs_log_level_userin,
             configInfo.msgs_log_level_userout
             );
-        printf("\n%s", traceInfo);
-        strcat(traceInfo, "\n");
+        printf("%s", traceInfo);
         m_logFile.Log(traceInfo, configInfo.msgs_log_level_green); /* green */
     }}}
 }
@@ -467,8 +467,8 @@ EXIT:
             snprintf_pro(
                 traceInfo,
                 sizeof(traceInfo),
-                " CMsgServer::OnCheckUser(id : %u-" PRO_PRT64U "-%u,"
-                " fromIp : %s, fromC2s : %s) ok! \n\n"
+                "\n CMsgServer::OnCheckUser(id : %u-" PRO_PRT64U "-%u,"
+                " fromIp : %s, fromC2s : %s) ok! \n"
                 ,
                 (unsigned int)user->classId,
                 user->UserId(),
@@ -482,8 +482,8 @@ EXIT:
             snprintf_pro(
                 traceInfo,
                 sizeof(traceInfo),
-                " CMsgServer::OnCheckUser(id : %u-" PRO_PRT64U "-%u,"
-                " fromIp : %s, fromC2s : %s) failed! [%s] \n\n"
+                "\n CMsgServer::OnCheckUser(id : %u-" PRO_PRT64U "-%u,"
+                " fromIp : %s, fromC2s : %s) failed! [%s] \n"
                 ,
                 (unsigned int)user->classId,
                 user->UserId(),
@@ -556,8 +556,8 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-            " CMsgServer::OnOkUser(id : %u-" PRO_PRT64U "-%u,"
-            " fromIp : %s, fromC2s : %s, sslSuite : %s, users : %u+%u) \n\n"
+            "\n CMsgServer::OnOkUser(id : %u-" PRO_PRT64U "-%u,"
+            " fromIp : %s, fromC2s : %s, sslSuite : %s, users : %u+%u) \n"
             ,
             (unsigned int)user->classId,
             user->UserId(),
@@ -628,8 +628,8 @@ CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-            " CMsgServer::OnCloseUser(id : %u-" PRO_PRT64U "-%u,"
-            " errorCode : [%d, %d], users : %u+%u) \n\n"
+            "\n CMsgServer::OnCloseUser(id : %u-" PRO_PRT64U "-%u,"
+            " errorCode : [%d, %d], users : %u+%u) \n"
             ,
             (unsigned int)user->classId,
             user->UserId(),

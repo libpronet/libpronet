@@ -39,6 +39,17 @@
 
 int main(int argc, char* argv[])
 {
+    printf(
+        "\n"
+        " usage: \n"
+        " test_tcp_client [ <server_ip> <server_port> [local_ip] ] \n"
+        "\n"
+        " for example: \n"
+        " test_tcp_client \n"
+        " test_tcp_client 192.168.0.101 3000 \n"
+        " test_tcp_client 192.168.0.101 3000 192.168.0.102 \n"
+        );
+
     ProNetInit();
 
     const char*            server_ip   = NULL;
@@ -256,9 +267,10 @@ int main(int argc, char* argv[])
             configInfo.tcpc_server_ip   = server_ip;
             configInfo.tcpc_server_port = server_port;
         }
+
         if (local_ip != NULL)
         {
-            configInfo.tcpc_local_ip    = local_ip;
+            configInfo.tcpc_local_ip = local_ip;
         }
     }
 
@@ -286,7 +298,7 @@ int main(int argc, char* argv[])
     }
 
     printf(
-        "\n test_tcp_client [ver-%d.%d.%d] --- [server : %s:%u] --- connecting... \n\n"
+        "\n test_tcp_client [ver-%d.%d.%d] --- [server : %s:%u] --- connecting... \n"
         ,
         PRO_VER_MAJOR,
         PRO_VER_MINOR,
@@ -296,16 +308,16 @@ int main(int argc, char* argv[])
         );
 
     printf(
+        "\n"
         " help               : show this message \n"
         " htbttime <seconds> : set new heartbeat interval in seconds. \n"
         "                      for example, \"htbttime 200\" \n"
         " htbtsize <bytes>   : set new heartbeat data size in bytes. [0 ~ 1024] \n"
         "                      for example, \"htbtsize 0\" \n"
-        "\n"
         );
 
     reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
-    printf("%s", s_traceInfo);
+    printf("\n%s\n", s_traceInfo);
     printf(" [ HTBT Size ] : %u \n", (unsigned int)tester->GetHeartbeatDataSize());
 
     while (1)
@@ -352,7 +364,7 @@ int main(int argc, char* argv[])
         if (p[0] == '\0')
         {
             reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
-            printf("%s", s_traceInfo);
+            printf("\n%s\n", s_traceInfo);
             printf(" [ HTBT Size ] : %u \n", (unsigned int)tester->GetHeartbeatDataSize());
             continue;
         }
@@ -367,7 +379,6 @@ int main(int argc, char* argv[])
                 "                      for example, \"htbttime 200\" \n"
                 " htbtsize <bytes>   : set new heartbeat data size in bytes. [0 ~ 1024] \n"
                 "                      for example, \"htbtsize 0\" \n"
-                "\n"
                 );
         }
         else if (strnicmp(p, "htbttime ", 9) == 0)
@@ -381,10 +392,10 @@ int main(int argc, char* argv[])
             }
 
             reactor->UpdateHeartbeatTimers(seconds);
-            printf("\n htbttime... \n\n");
+            printf("\n htbttime... \n");
 
             reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
-            printf("%s", s_traceInfo);
+            printf("\n%s\n", s_traceInfo);
             printf(" [ HTBT Size ] : %u \n", (unsigned int)tester->GetHeartbeatDataSize());
         }
         else if (strnicmp(p, "htbtsize ", 9) == 0)
@@ -398,10 +409,10 @@ int main(int argc, char* argv[])
             }
 
             tester->SetHeartbeatDataSize(bytes);
-            printf("\n htbtsize... \n\n");
+            printf("\n htbtsize... \n");
 
             reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
-            printf("%s", s_traceInfo);
+            printf("\n%s\n", s_traceInfo);
             printf(" [ HTBT Size ] : %u \n", (unsigned int)tester->GetHeartbeatDataSize());
         }
         else

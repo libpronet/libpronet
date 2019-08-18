@@ -81,8 +81,9 @@ int main(int argc, char* argv[])
             configFile.Write(configs);
 
             printf(
+                "\n"
                 " rtp_msg_server --- warning! can't read the config file. \n"
-                " [ %s ] \n\n"
+                " [ %s ] \n"
                 ,
                 configFileName.c_str()
                 );
@@ -274,7 +275,7 @@ int main(int argc, char* argv[])
 
     if (!db->Open(dbFileName.c_str()))
     {
-        strcpy(s_traceInfo, " rtp_msg_server --- error! can't open the database. \n\n");
+        strcpy(s_traceInfo, "\n rtp_msg_server --- error! can't open the database. \n");
         printf("%s", s_traceInfo);
         logFile->Log(s_traceInfo);
 
@@ -289,7 +290,7 @@ int main(int argc, char* argv[])
     reactor = ProCreateReactor(configInfo.msgs_thread_count);
     if (reactor == NULL)
     {
-        strcpy(s_traceInfo, " rtp_msg_server --- error! can't create reactor. \n\n");
+        strcpy(s_traceInfo, "\n rtp_msg_server --- error! can't create reactor. \n");
         printf("%s", s_traceInfo);
         logFile->Log(s_traceInfo);
 
@@ -299,7 +300,7 @@ int main(int argc, char* argv[])
     server = CMsgServer::CreateInstance(*logFile, *db);
     if (server == NULL || !server->Init(reactor, configInfo))
     {
-        strcpy(s_traceInfo, " rtp_msg_server --- error! can't create server. \n\n");
+        strcpy(s_traceInfo, "\n rtp_msg_server --- error! can't create server. \n");
         printf("%s", s_traceInfo);
         logFile->Log(s_traceInfo);
 
@@ -309,7 +310,7 @@ int main(int argc, char* argv[])
     snprintf_pro(
         s_traceInfo,
         sizeof(s_traceInfo),
-        " rtp_msg_server [ver-%d.%d.%d] --- [port : %u, mmType : %u] --- ok! \n\n"
+        "\n rtp_msg_server [ver-%d.%d.%d] --- [port : %u, mmType : %u] --- ok! \n"
         ,
         PRO_VER_MAJOR,
         PRO_VER_MINOR,
@@ -321,6 +322,7 @@ int main(int argc, char* argv[])
     logFile->Log(s_traceInfo);
 
     printf(
+        "\n"
         " help                      : show this message \n"
         " kickout                   : kick out users listed in the table \"tbl_msg02_kickout\" \n"
         " kickout <id1>[, id2, ...] : kick out users listed in the command line. \n"
@@ -524,9 +526,8 @@ int main(int argc, char* argv[])
         }
         else if (stricmp(p, "exit") == 0)
         {
-            strcpy(s_traceInfo, " exiting... \n");
-            printf("\n%s", s_traceInfo);
-            strcat(s_traceInfo, "\n");
+            strcpy(s_traceInfo, "\n exiting... \n");
+            printf("%s", s_traceInfo);
             logFile->Log(s_traceInfo);
             break;
         }

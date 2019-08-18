@@ -43,6 +43,17 @@
 
 int main(int argc, char* argv[])
 {
+    printf(
+        "\n"
+        " usage: \n"
+        " test_msg_client [ <server_ip> <server_port> [local_ip] ] \n"
+        "\n"
+        " for example: \n"
+        " test_msg_client \n"
+        " test_msg_client 192.168.0.101 3000 \n"
+        " test_msg_client 192.168.0.101 3000 192.168.0.102 \n"
+        );
+
     ProNetInit();
     ProRtpInit();
 
@@ -232,9 +243,10 @@ int main(int argc, char* argv[])
             configInfo.msgc_server_ip   = server_ip;
             configInfo.msgc_server_port = server_port;
         }
+
         if (local_ip != NULL)
         {
-            configInfo.msgc_local_ip    = local_ip;
+            configInfo.msgc_local_ip = local_ip;
         }
     }
 

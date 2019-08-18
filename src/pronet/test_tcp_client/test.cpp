@@ -386,8 +386,7 @@ CTest::OnConnectOk(IProConnector* connector,
     if (0)
     {{{
         printf(
-            "\n"
-            " CTest::OnConnectOk(server : %s:%u) \n"
+            "\n CTest::OnConnectOk(server : %s:%u) \n"
             ,
             remoteIp,
             (unsigned int)remotePort
@@ -496,8 +495,7 @@ CTest::OnConnectError(IProConnector* connector,
     if (1)
     {{{
         printf(
-            "\n"
-            " CTest::OnConnectError(server : %s:%u) \n"
+            "\n CTest::OnConnectError(server : %s:%u) \n"
             ,
             remoteIp,
             (unsigned int)remotePort
@@ -602,8 +600,7 @@ CTest::OnHandshakeError(IProTcpHandshaker* handshaker,
     if (1)
     {{{
         printf(
-            "\n"
-            " CTest::OnHandshakeError(errorCode : %d) [tcp] \n"
+            "\n CTest::OnHandshakeError(errorCode : %d) [tcp] \n"
             ,
             (int)errorCode
             );
@@ -715,8 +712,7 @@ CTest::OnHandshakeError(IProSslHandshaker* handshaker,
     if (1)
     {{{
         printf(
-            "\n"
-            " CTest::OnHandshakeError(errorCode : [%d, %d]) [ssl] \n"
+            "\n CTest::OnHandshakeError(errorCode : [%d, %d]) [ssl] \n"
             ,
             (int)errorCode,
             (int)sslCode
@@ -862,8 +858,7 @@ CTest::OnClose(IProTransport* trans,
         trans->GetRemoteIp(remoteIp);
 
         printf(
-            "\n"
-            " CTest::OnClose(errorCode : [%d, %d], server : %s:%u, me : %s:%u) \n"
+            "\n CTest::OnClose(errorCode : [%d, %d], server : %s:%u, me : %s:%u) \n"
             ,
             (int)errorCode,
             (int)sslCode,

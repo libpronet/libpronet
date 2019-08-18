@@ -462,8 +462,7 @@ CTest::OnOkMsg(IRtpMsgClient*      msgClient,
         msgClient->GetSslSuite(suiteName);
 
         printf(
-            "\n"
-            " CTest::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s, sslSuite : %s,"
+            "\n CTest::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s, sslSuite : %s,"
             " server : %s:%u) \n"
             ,
             (unsigned int)myUser->classId,
@@ -567,8 +566,7 @@ CTest::OnCloseMsg(IRtpMsgClient* msgClient,
         msgClient->GetUser(&myUser);
 
         printf(
-            "\n"
-            " CTest::OnCloseMsg(id : %u-" PRO_PRT64U "-%u,"
+            "\n CTest::OnCloseMsg(id : %u-" PRO_PRT64U "-%u,"
             " errorCode : [%d, %d], tcpConnected : %d, server : %s:%u) \n"
             ,
             (unsigned int)myUser.classId,

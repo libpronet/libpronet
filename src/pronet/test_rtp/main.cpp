@@ -33,6 +33,24 @@
 
 int main(int argc, char* argv[])
 {
+    printf(
+        "\n"
+        " usage: \n"
+        " test_rtp <remote_ip> <remote_port> <local_ip> <local_port> <kbps> \n"
+        "\n"
+        " for example [server-side]: \n"
+        " test_rtp 0.0.0.0       0    0.0.0.0       4000 1024 \n"
+        " test_rtp 0.0.0.0       0    192.168.0.102 4000 1024 \n"
+        " test_rtp 0.0.0.0       0    0.0.0.0       4000 0    \n"
+        " test_rtp 0.0.0.0       0    192.168.0.102 4000 0    \n"
+        "\n"
+        " for example [client-side]: \n"
+        " test_rtp 192.168.0.101 4000 0.0.0.0       4000 1024 \n"
+        " test_rtp 192.168.0.101 4000 192.168.0.102 4000 1024 \n"
+        " test_rtp 192.168.0.101 4000 0.0.0.0       0    1024 \n"
+        " test_rtp 192.168.0.101 4000 192.168.0.102 0    1024 \n"
+        );
+
     ProNetInit();
     ProRtpInit();
 
@@ -46,20 +64,7 @@ int main(int argc, char* argv[])
 
     if (argc < 6)
     {
-        printf(
-            " test_rtp --- error! too few arguments. \n"
-            "\n"
-            " usage: \n"
-            " test_rtp <remote_ip> <remote_port> <local_ip> <local_port> <kbps> \n"
-            "\n"
-            " for example: \n"
-            " test_rtp 192.168.0.101 4000 0.0.0.0       4000 1024 \n"
-            " test_rtp 192.168.0.101 4000 192.168.0.102 4000 1024 \n"
-            " test_rtp 192.168.0.101 4000 0.0.0.0       0    1024 \n"
-            " test_rtp 192.168.0.101 4000 192.168.0.102 0    1024 \n"
-            " test_rtp 0.0.0.0       0    0.0.0.0       0    0   \n"
-            "\n"
-            );
+        printf("\n test_rtp --- error! too few arguments. \n");
 
         goto EXIT;
     }
@@ -77,20 +82,7 @@ int main(int argc, char* argv[])
     assert(remote_port <= 65535);
     if (remote_port < 0 || remote_port > 65535)
     {
-        printf(
-            " test_rtp --- error! invalid argument <remote_port>. \n"
-            "\n"
-            " usage: \n"
-            " test_rtp <remote_ip> <remote_port> <local_ip> <local_port> <kbps> \n"
-            "\n"
-            " for example: \n"
-            " test_rtp 192.168.0.101 4000 0.0.0.0       4000 1024 \n"
-            " test_rtp 192.168.0.101 4000 192.168.0.102 4000 1024 \n"
-            " test_rtp 192.168.0.101 4000 0.0.0.0       0    1024 \n"
-            " test_rtp 192.168.0.101 4000 192.168.0.102 0    1024 \n"
-            " test_rtp 0.0.0.0       0    0.0.0.0       0    0   \n"
-            "\n"
-            );
+        printf("\n test_rtp --- error! invalid argument <remote_port>. \n");
 
         goto EXIT;
     }
@@ -102,20 +94,7 @@ int main(int argc, char* argv[])
     assert(local_port <= 65535);
     if (local_port < 0 || local_port > 65535)
     {
-        printf(
-            " test_rtp --- error! invalid argument <local_port>. \n"
-            "\n"
-            " usage: \n"
-            " test_rtp <remote_ip> <remote_port> <local_ip> <local_port> <kbps> \n"
-            "\n"
-            " for example: \n"
-            " test_rtp 192.168.0.101 4000 0.0.0.0       4000 1024 \n"
-            " test_rtp 192.168.0.101 4000 192.168.0.102 4000 1024 \n"
-            " test_rtp 192.168.0.101 4000 0.0.0.0       0    1024 \n"
-            " test_rtp 192.168.0.101 4000 192.168.0.102 0    1024 \n"
-            " test_rtp 0.0.0.0       0    0.0.0.0       0    0   \n"
-            "\n"
-            );
+        printf("\n test_rtp --- error! invalid argument <local_port>. \n");
 
         goto EXIT;
     }
@@ -135,7 +114,7 @@ int main(int argc, char* argv[])
     reactor = ProCreateReactor(THREAD_COUNT);
     if (reactor == NULL)
     {
-        printf(" test_rtp --- error! can't create reactor. \n\n");
+        printf("\n test_rtp --- error! can't create reactor. \n");
 
         goto EXIT;
     }
@@ -143,7 +122,7 @@ int main(int argc, char* argv[])
     tester = CTest::CreateInstance();
     if (tester == NULL)
     {
-        printf(" test_rtp --- error! can't create tester. \n\n");
+        printf("\n test_rtp --- error! can't create tester. \n");
 
         goto EXIT;
     }
@@ -156,7 +135,7 @@ int main(int argc, char* argv[])
         kbps * 1000
         ))
     {
-        printf(" test_rtp --- error! can't init tester. \n\n");
+        printf("\n test_rtp --- error! can't init tester. \n");
 
         goto EXIT;
     }

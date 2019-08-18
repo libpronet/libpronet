@@ -229,7 +229,7 @@ CTest::OnOkSession(IRtpSession* session)
         localPort = m_session->GetLocalPort();
 
         printf(
-            " test_rtp [ver-%d.%d.%d] --- [listen on %s:%u] --- ok! \n\n"
+            "\n test_rtp [ver-%d.%d.%d] --- [listen on %s:%u] --- ok! \n"
             ,
             PRO_VER_MAJOR,
             PRO_VER_MINOR,
@@ -335,7 +335,7 @@ CTest::OnTimer(unsigned long timerId,
             m_session->GetInputStat(NULL, &inputBitRate, &inputLossRate, &inputLossCount);
 
             printf(
-                " SEND : %9.1f(kbps)\t RECV : %9.1f(kbps)\t LOSS : %4.1f%% [%u] \n\n"
+                "\n SEND : %9.1f(kbps)\t RECV : %9.1f(kbps)\t LOSS : %4.1f%% [%u] \n"
                 ,
                 outputBitRate / 1000,
                 inputBitRate  / 1000,

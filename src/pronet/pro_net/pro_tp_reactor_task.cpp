@@ -498,24 +498,25 @@ CProTpReactorTask::GetTraceInfo(char*  buf,
 
         CProStlString theInfo     = "";
         char          theBuf[256] = "";
-        int           value       = 0;
+        int           theValue    = 0;
 
         for (int i = 0; i < (int)m_ioThreadCount; ++i)
         {
-            value += (int)m_ioReactors[i]->GetHandlerCount();
-            --value; /* exclude the signal socket */
+            theValue += (int)m_ioReactors[i]->GetHandlerCount();
+            --theValue; /* exclude the signal socket */
         }
 
         sprintf(
             theBuf,
             " [I/O Threads] : %d \n"
             " [I/O Sockets] : %d \n"
-            " %d "
             ,
             (int)m_ioThreadCount,
-            value,
-            (int)m_ioReactors[0]->GetHandlerCount() - 1
+            theValue
             );
+        theInfo += theBuf;
+
+        sprintf(theBuf, " %d ", (int)m_ioReactors[0]->GetHandlerCount() - 1);
         theInfo += theBuf;
 
         for (int j = 1; j < (int)m_ioThreadCount; ++j)
@@ -524,18 +525,18 @@ CProTpReactorTask::GetTraceInfo(char*  buf,
             theInfo += theBuf;
         }
 
-        theInfo += "\n";
+        theInfo += '\n';
 
-        value = (int)m_timerFactory.GetTimerCount();
-        sprintf(theBuf, " [ ST Timers ] : %d \n", value);
+        theValue = (int)m_timerFactory.GetTimerCount();
+        sprintf(theBuf, " [ ST Timers ] : %d \n", theValue);
         theInfo += theBuf;
 
-        value = (int)m_mmTimerFactory.GetTimerCount();
-        sprintf(theBuf, " [ MM Timers ] : %d \n", value);
+        theValue = (int)m_mmTimerFactory.GetTimerCount();
+        sprintf(theBuf, " [ MM Timers ] : %d \n", theValue);
         theInfo += theBuf;
 
-        value = (int)m_timerFactory.GetHeartbeatInterval();
-        sprintf(theBuf, " [ HTBT Time ] : %d \n", value);
+        theValue = (int)m_timerFactory.GetHeartbeatInterval();
+        sprintf(theBuf, " [ HTBT Time ] : %d ", theValue);
         theInfo += theBuf;
 
         strncpy_pro(buf, size, theInfo.c_str());
