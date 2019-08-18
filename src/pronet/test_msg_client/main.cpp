@@ -46,31 +46,30 @@ int main(int argc, char* argv[])
     ProNetInit();
     ProRtpInit();
 
-    const char* server_ip   = NULL;
-    int         server_port = 0;
-    const char* local_ip    = NULL;
+    const char*            server_ip      = NULL;
+    int                    server_port    = 0;
+    const char*            local_ip       = NULL;
+    IProReactor*           reactor        = NULL;
+    CTest*                 tester         = NULL;
+    char                   bindString[64] = "";
+    RTP_MSG_USER           bindUser;
+    MSG_CLIENT_CONFIG_INFO configInfo;
 
     if (argc >= 3)
     {
         server_ip   = argv[1];
         server_port = atoi(argv[2]);
     }
-    if (argc >= 4)
-    {
-        local_ip    = argv[3];
-    }
-
     if (server_port < 0 || server_port > 65535)
     {
         server_ip   = NULL;
         server_port = 0;
     }
 
-    IProReactor*           reactor        = NULL;
-    CTest*                 tester         = NULL;
-    char                   bindString[64] = "";
-    RTP_MSG_USER           bindUser;
-    MSG_CLIENT_CONFIG_INFO configInfo;
+    if (argc >= 4)
+    {
+        local_ip = argv[3];
+    }
 
     char exeRoot[1024] = "";
     ProGetExeDir_(exeRoot);
