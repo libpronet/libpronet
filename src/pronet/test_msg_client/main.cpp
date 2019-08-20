@@ -241,7 +241,7 @@ int main(int argc, char* argv[])
         if (server_ip != NULL && server_port > 0)
         {
             configInfo.msgc_server_ip   = server_ip;
-            configInfo.msgc_server_port = server_port;
+            configInfo.msgc_server_port = (unsigned short)server_port;
         }
 
         if (local_ip != NULL)
