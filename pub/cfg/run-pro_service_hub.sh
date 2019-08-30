@@ -8,7 +8,7 @@ THIS_DIR=$(dirname "${THIS_MOD}")
 while [ 1 ]
 do
 
-"${THIS_DIR}/pro_service_hub"
+  "${THIS_DIR}/pro_service_hub"
+  sleep 1
 
-sleep 1
 done
