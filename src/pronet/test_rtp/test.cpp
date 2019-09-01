@@ -142,7 +142,8 @@ CTest::Init(IProReactor*   reactor,
         const PRO_INT64 sockId = m_session->GetSockId();
         if (sockId != -1)
         {
-            int option = RECV_BUF_SIZE;
+            int option;
+            option = RECV_BUF_SIZE;
             pbsd_setsockopt(sockId, SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
             option = SEND_BUF_SIZE;
             pbsd_setsockopt(sockId, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));

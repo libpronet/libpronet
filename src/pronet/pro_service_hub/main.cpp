@@ -21,6 +21,7 @@
 #include "../pro_util/pro_config_stream.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_stl.h"
+#include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
@@ -64,6 +65,64 @@ struct SERVICE_HUB_CONFIG_INFO
 
     DECLARE_SGI_POOL(0);
 };
+
+static CProThreadMutexCondition g_s_cond;
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
+#if !defined(WIN32) && !defined(_WIN32_WCE)
+
+static
+void
+SignalHandler_i(int sig)
+{
+    switch (sig)
+    {
+    case SIGHUP:
+        {
+            printf("\n pro_service_hub --- SIGHUP, exiting... \n");
+            g_s_cond.Signal();
+            break;
+        }
+    case SIGINT:
+        {
+            printf("\n pro_service_hub --- SIGINT, exiting... \n");
+            g_s_cond.Signal();
+            break;
+        }
+    case SIGQUIT:
+        {
+            printf("\n pro_service_hub --- SIGQUIT, exiting... \n");
+            g_s_cond.Signal();
+            break;
+        }
+    case SIGTERM:
+        {
+            printf("\n pro_service_hub --- SIGTERM, exiting... \n");
+            g_s_cond.Signal();
+            break;
+        }
+    }
+}
+
+static
+void
+PRO_CALLTYPE
+SetupSignalHandlers_i()
+{
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(struct sigaction));
+    sa.sa_handler = &SignalHandler_i;
+    sigemptyset(&sa.sa_mask);
+
+    sigaction(SIGHUP , &sa, NULL);
+    sigaction(SIGINT , &sa, NULL);
+    sigaction(SIGQUIT, &sa, NULL);
+    sigaction(SIGTERM, &sa, NULL);
+}
+
+#endif /* WIN32, _WIN32_WCE */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -157,6 +216,10 @@ int main(int argc, char* argv[])
         goto EXIT;
     }
 
+#if !defined(WIN32) && !defined(_WIN32_WCE)
+    SetupSignalHandlers_i();
+#endif
+
     {
         int       i = 0;
         const int c = (int)configInfo.hubs_listen_ports.size();
@@ -205,7 +268,7 @@ int main(int argc, char* argv[])
         PRO_VER_PATCH,
         portString.c_str()
         );
-    ProSleep(-1);
+    g_s_cond.Wait(NULL);
 
 EXIT:
 
