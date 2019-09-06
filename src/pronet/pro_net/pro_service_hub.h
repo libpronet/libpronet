@@ -21,6 +21,7 @@
 
 #include "pro_service_pipe.h"
 #include "../pro_net/pro_net.h"
+#include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
@@ -115,6 +116,8 @@ private:
     CProStlSet<PRO_SERVICE_SOCK>                m_expireSocks;
 
     CProThreadMutex                             m_lock;
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

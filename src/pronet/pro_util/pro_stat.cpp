@@ -20,6 +20,7 @@
 #include "pro_stat.h"
 #include "pro_memory_pool.h"
 #include "pro_time_util.h"
+#include "pro_z.h"
 #include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////

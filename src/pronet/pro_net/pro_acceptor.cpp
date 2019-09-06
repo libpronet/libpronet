@@ -22,6 +22,7 @@
 #include "pro_tp_reactor_task.h"
 #include "../pro_shared/pro_shared.h"
 #include "../pro_util/pro_bsd_wrapper.h"
+#include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_z.h"

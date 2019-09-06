@@ -30,6 +30,7 @@
 #include "pro_event_handler.h"
 #include "pro_net.h"
 #include "../pro_util/pro_bsd_wrapper.h"
+#include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
 
@@ -105,6 +106,8 @@ private:
     CProStlMap<IProTcpHandshaker*, PRO_UINT64> m_handshaker2Nonce;
 
     mutable CProThreadMutex                    m_lock;
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

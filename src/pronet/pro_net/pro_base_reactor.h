@@ -22,6 +22,7 @@
 #include "pro_event_handler.h"
 #include "pro_handler_mgr.h"
 #include "../pro_util/pro_bsd_wrapper.h"
+#include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_thread_mutex.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -80,6 +81,8 @@ protected:
     CProHandlerMgr          m_handlerMgr;
     CProNotifyPipe*         m_notifyPipe;
     mutable CProThreadMutex m_lock;
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

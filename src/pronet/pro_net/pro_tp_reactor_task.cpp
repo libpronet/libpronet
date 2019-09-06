@@ -22,6 +22,7 @@
 #include "pro_event_handler.h"
 #include "pro_net.h"
 #include "pro_select_reactor.h"
+#include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread.h"
 #include "../pro_util/pro_thread_mutex.h"

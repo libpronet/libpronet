@@ -56,6 +56,8 @@ private:
     virtual ~CRtpSessionSslserverEx()
     {
     }
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

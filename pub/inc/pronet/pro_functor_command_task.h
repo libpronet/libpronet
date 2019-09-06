@@ -24,6 +24,7 @@
 #define ____PRO_FUNCTOR_COMMAND_TASK_H____
 
 #include "pro_a.h"
+#include "pro_memory_pool.h"
 #include "pro_stl.h"
 #include "pro_thread.h"
 #include "pro_thread_mutex.h"
@@ -77,6 +78,8 @@ private:
     CProThreadMutexCondition          m_initCond;
     mutable CProThreadMutex           m_lock;
     CProThreadMutex                   m_lockAtom;
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

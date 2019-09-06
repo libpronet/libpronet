@@ -21,6 +21,7 @@
 
 #include "rtp_base.h"
 #include "../pro_net/pro_net.h"
+#include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
@@ -116,6 +117,8 @@ private:
     CProStlMap<IProSslHandshaker*, PRO_UINT64> m_sslHandshaker2Nonce;
 
     CProThreadMutex                            m_lock;
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

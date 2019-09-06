@@ -28,6 +28,7 @@
 #include "../pro_util/pro_config_stream.h"
 #include "../pro_util/pro_functor_command.h"
 #include "../pro_util/pro_functor_command_task.h"
+#include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_ssl_util.h"
 #include "../pro_util/pro_stl.h"
@@ -915,8 +916,8 @@ CRtpMsgC2s::AcceptSession(IRtpService*            service,
         CProStlString theString = "";
         msgStream.ToString(theString);
 
-        if (!m_msgClient->SendMsg(theString.c_str(), (unsigned long)theString.length(),
-            0, &ROOT_ID_C2S, 1))
+        if (!m_msgClient->SendMsg(
+            theString.c_str(), (unsigned long)theString.length(), 0, &ROOT_ID_C2S, 1))
         {
             m_reactor->CancelTimer(timerId);
 
@@ -1762,6 +1763,6 @@ CRtpMsgC2s::ReportLogout(IRtpMsgClient*      msgClient,
     CProStlString theString = "";
     msgStream.ToString(theString);
 
-    msgClient->SendMsg(theString.c_str(), (unsigned long)theString.length(),
-        0, &ROOT_ID_C2S, 1);
+    msgClient->SendMsg(
+        theString.c_str(), (unsigned long)theString.length(), 0, &ROOT_ID_C2S, 1);
 }

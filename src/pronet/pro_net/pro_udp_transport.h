@@ -23,7 +23,9 @@
 #include "pro_net.h"
 #include "pro_recv_pool.h"
 #include "../pro_util/pro_bsd_wrapper.h"
+#include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_thread_mutex.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -141,6 +143,8 @@ private:
 
     bool                    m_canUpcall;
     CProThreadMutex         m_lockUpcall;
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

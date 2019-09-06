@@ -102,6 +102,8 @@ public:
     }
 
     virtual bool PRO_CALLTYPE PushBackAddRef(IRtpPacket* packet);
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

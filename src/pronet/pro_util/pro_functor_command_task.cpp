@@ -19,6 +19,7 @@
 #include "pro_a.h"
 #include "pro_functor_command_task.h"
 #include "pro_functor_command.h"
+#include "pro_memory_pool.h"
 #include "pro_stl.h"
 #include "pro_thread.h"
 #include "pro_thread_mutex.h"

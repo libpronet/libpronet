@@ -31,6 +31,7 @@
 #include "rtp_msg.h"
 #include "rtp_msg_client.h"
 #include "rtp_msg_server.h"
+#include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
@@ -299,6 +300,8 @@ private:
 
     mutable CProThreadMutex                                 m_lock;
     CProThreadMutex                                         m_lockUpcall;
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

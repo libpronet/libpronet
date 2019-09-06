@@ -20,6 +20,7 @@
 #define PRO_SSL_TRANSPORT_H
 
 #include "pro_tcp_transport.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -65,6 +66,8 @@ private:
     PRO_SSL_CTX*     m_ctx;
     PRO_SSL_SUITE_ID m_suiteId;
     char             m_suiteName[64];
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

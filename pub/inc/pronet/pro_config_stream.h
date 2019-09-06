@@ -31,6 +31,7 @@
 #include "pro_config_file.h"
 #include "pro_memory_pool.h"
 #include "pro_stl.h"
+#include "pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////

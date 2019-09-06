@@ -22,7 +22,9 @@
 #include "pro_event_handler.h"
 #include "pro_recv_pool.h"
 #include "pro_send_pool.h"
+#include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_thread_mutex.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -93,6 +95,8 @@ private:
     CProSendPool               m_sendPool;
     unsigned long              m_timerId;
     CProThreadMutex            m_lock;
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

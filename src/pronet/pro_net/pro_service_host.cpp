@@ -21,6 +21,7 @@
 #include "pro_service_pipe.h"
 #include "../pro_net/pro_net.h"
 #include "../pro_util/pro_bsd_wrapper.h"
+#include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_thread.h"
 #include "../pro_util/pro_thread_mutex.h"

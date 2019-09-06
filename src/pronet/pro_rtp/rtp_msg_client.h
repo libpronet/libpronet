@@ -29,6 +29,7 @@
 
 #include "rtp_base.h"
 #include "rtp_msg.h"
+#include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
@@ -215,6 +216,8 @@ private:
 
     bool                               m_canUpcall;
     CProThreadMutex                    m_lockUpcall;
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

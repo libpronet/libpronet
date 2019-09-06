@@ -340,8 +340,8 @@ CTest::SendMsg(const char* msg)
             dstUsers.push_back(*itr);
         }
 
-        m_msgClient->SendMsg(msg, (unsigned long)strlen(msg),
-            0, &dstUsers[0], (unsigned char)dstUsers.size());
+        m_msgClient->SendMsg(
+            msg, (unsigned long)strlen(msg), 0, &dstUsers[0], (unsigned char)dstUsers.size());
     }
 }
 

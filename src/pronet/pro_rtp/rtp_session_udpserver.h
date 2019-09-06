@@ -37,6 +37,8 @@ private:
     virtual ~CRtpSessionUdpserver()
     {
     }
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

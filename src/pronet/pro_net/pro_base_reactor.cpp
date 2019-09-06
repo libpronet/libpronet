@@ -21,6 +21,7 @@
 #include "pro_handler_mgr.h"
 #include "pro_notify_pipe.h"
 #include "../pro_util/pro_bsd_wrapper.h"
+#include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_thread_mutex.h"
 
 /////////////////////////////////////////////////////////////////////////////

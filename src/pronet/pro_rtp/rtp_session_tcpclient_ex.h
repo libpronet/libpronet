@@ -149,6 +149,8 @@ private:
     IProConnector*                     m_connector;
     IProTcpHandshaker*                 m_tcpHandshaker;
     IProSslHandshaker*                 m_sslHandshaker;
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

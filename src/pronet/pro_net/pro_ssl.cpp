@@ -168,6 +168,8 @@ struct PRO_SSL_AUTH_ITEM
     CProStlVector<mbedtls_x509_crt*>   certs;
     CProStlVector<mbedtls_pk_context*> keys;
     PRO_SSL_AUTH_LEVEL                 level;
+
+    DECLARE_SGI_POOL(0);
 };
 
 struct PRO_SSL_SUITE_LIST
@@ -191,6 +193,8 @@ struct PRO_SSL_SUITE_LIST
     }
 
     CProStlVector<int>* suites;
+
+    DECLARE_SGI_POOL(0);
 };
 
 struct PRO_SSL_ALPN_LIST
@@ -227,6 +231,8 @@ struct PRO_SSL_ALPN_LIST
     }
 
     CProStlVector<char*>* alpns;
+
+    DECLARE_SGI_POOL(0);
 };
 
 struct PRO_SSL_SERVER_CONFIG : public mbedtls_ssl_config

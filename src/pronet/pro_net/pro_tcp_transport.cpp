@@ -24,6 +24,7 @@
 #include "pro_service_pipe.h"
 #include "pro_tp_reactor_task.h"
 #include "../pro_util/pro_bsd_wrapper.h"
+#include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_z.h"
 #include <cassert>

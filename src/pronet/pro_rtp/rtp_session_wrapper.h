@@ -24,6 +24,7 @@
 #define RTP_SESSION_WRAPPER_H
 
 #include "rtp_base.h"
+#include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_stat.h"
 #include "../pro_util/pro_stl.h"
@@ -207,6 +208,8 @@ private:
     mutable CProStatLossRate  m_statLossRateOutput;
 
     mutable CProThreadMutex   m_lock;
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

@@ -218,6 +218,8 @@ private:
     PRO_UINT32              m_ssrc; /* for RTP_EPM_TCP2, RTP_EPM_TCP4 */
     PRO_INT64               m_magic;
     RTP_PACKET*             m_packet;
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

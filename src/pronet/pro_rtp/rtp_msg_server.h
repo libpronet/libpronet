@@ -337,6 +337,8 @@ private:
     CProStlMap<RTP_MSG_USER, RTP_MSG_LINK_CTX*> m_user2Ctx;
 
     mutable CProThreadMutex                     m_lock;
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

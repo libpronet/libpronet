@@ -256,6 +256,8 @@ private:
     CProStlDeque<PRO_SERVICE_PACKET> m_packets;
     CProStlDeque<PRO_SERVICE_PACKET> m_fdPackets;
     CProThreadMutex                  m_lock;
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

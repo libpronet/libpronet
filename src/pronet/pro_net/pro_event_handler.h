@@ -19,6 +19,7 @@
 #if !defined(PRO_EVENT_HANDLER_H)
 #define PRO_EVENT_HANDLER_H
 
+#include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_timer_factory.h"
 #include "../pro_util/pro_z.h"
@@ -127,6 +128,8 @@ private:
 
     CProBaseReactor* m_reactor;
     unsigned long    m_mask;
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

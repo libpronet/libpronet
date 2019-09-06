@@ -56,6 +56,8 @@ private:
         IProTransport*          trans,
         const pbsd_sockaddr_in* remoteAddr
         );
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

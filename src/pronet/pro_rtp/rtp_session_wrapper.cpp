@@ -22,6 +22,7 @@
 #include "rtp_session_a.h"
 #include "../pro_net/pro_net.h"
 #include "../pro_util/pro_file_monitor.h"
+#include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_ssl_util.h"
 #include "../pro_util/pro_stat.h"

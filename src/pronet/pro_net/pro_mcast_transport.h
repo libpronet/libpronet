@@ -20,6 +20,7 @@
 #define PRO_MCAST_TRANSPORT_H
 
 #include "pro_udp_transport.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -53,6 +54,8 @@ private:
     CProMcastTransport(size_t recvPoolSize); /* = 0 */
 
     virtual ~CProMcastTransport();
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////

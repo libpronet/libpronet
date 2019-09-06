@@ -63,6 +63,8 @@ class CProNullMutex : public CProThreadMutex
 public:
 
     CProNullMutex();
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -72,6 +74,7 @@ public:
 
 class CProRecursiveThreadMutex : public CProThreadMutex
 {
+    DECLARE_SGI_POOL(0);
 };
 
 #else  /* WIN32, _WIN32_WCE */

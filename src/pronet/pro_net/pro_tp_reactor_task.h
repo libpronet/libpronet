@@ -24,10 +24,12 @@
 #define PRO_TP_REACTOR_TASK_H
 
 #include "pro_net.h"
+#include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_timer_factory.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -113,6 +115,8 @@ private:
     CProThreadMutexCondition        m_initCond;
     mutable CProThreadMutex         m_lock;
     CProThreadMutex                 m_lockAtom;
+
+    DECLARE_SGI_POOL(0);
 };
 
 /////////////////////////////////////////////////////////////////////////////
