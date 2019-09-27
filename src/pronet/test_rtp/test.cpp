@@ -133,7 +133,8 @@ CTest::Init(IProReactor*   reactor,
         strncpy_pro(initArgs.udpclient.localIp,
             sizeof(initArgs.udpclient.localIp), theLocalIp.c_str());
 
-        m_session = CreateRtpSessionWrapper(RTP_ST_UDPCLIENT, &initArgs, &localInfo);
+        m_session = CreateRtpSessionWrapper(
+            RTP_ST_UDPCLIENT, &initArgs, &localInfo);
         if (m_session == NULL)
         {
             return (false);
@@ -144,9 +145,11 @@ CTest::Init(IProReactor*   reactor,
         {
             int option;
             option = RECV_BUF_SIZE;
-            pbsd_setsockopt(sockId, SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
+            pbsd_setsockopt(
+                sockId, SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
             option = SEND_BUF_SIZE;
-            pbsd_setsockopt(sockId, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
+            pbsd_setsockopt(
+                sockId, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
         }
 
         m_reactor = reactor;
@@ -241,7 +244,8 @@ CTest::OnOkSession(IRtpSession* session)
 
 #if defined(WIN32)
         char info[256] = "";
-        sprintf(info, "test_rtp --- listen on %s:%u", localIp, (unsigned int)localPort);
+        sprintf(info,
+            "test_rtp --- listen on %s:%u", localIp, (unsigned int)localPort);
         ::SetConsoleTitle(info);
 #endif
 
@@ -301,7 +305,8 @@ CTest::OnTimer(unsigned long timerId,
                     marker = true;
                 }
 
-                IRtpPacket* const packet = CreateRtpPacketSpace((unsigned long)packetSize);
+                IRtpPacket* const packet =
+                    CreateRtpPacketSpace((unsigned long)packetSize);
                 if (packet == NULL)
                 {
                     break;
@@ -333,7 +338,8 @@ CTest::OnTimer(unsigned long timerId,
             float inputLossRate  = 0;
             float inputLossCount = 0;
             m_session->GetOutputStat(NULL, &outputBitRate, NULL, NULL);
-            m_session->GetInputStat(NULL, &inputBitRate, &inputLossRate, &inputLossCount);
+            m_session->GetInputStat(
+                NULL, &inputBitRate, &inputLossRate, &inputLossCount);
 
             printf(
                 "\n SEND : %9.1f(kbps)\t RECV : %9.1f(kbps)\t LOSS : %4.1f%% [%u] \n"

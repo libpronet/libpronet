@@ -81,7 +81,7 @@ int main(int argc, char* argv[])
             printf(
                 "\n"
                 " rtp_msg_c2s --- warning! can't read the config file. \n"
-                " [ %s ] \n"
+                " [%s] \n"
                 ,
                 configFileName.c_str()
                 );
@@ -112,7 +112,8 @@ int main(int argc, char* argv[])
             else if (stricmp(configName.c_str(), "c2ss_mm_type") == 0)
             {
                 const int value = atoi(configValue.c_str());
-                if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
+                if (value >= (int)RTP_MMT_MSG_MIN &&
+                    value <= (int)RTP_MMT_MSG_MAX)
                 {
                     configInfo.c2ss_mm_type = (RTP_MM_TYPE)value;
                 }
@@ -139,8 +140,9 @@ int main(int argc, char* argv[])
                     RTP_MSG_USER uplinkId;
                     RtpMsgString2User(configValue.c_str(), &uplinkId);
 
-                    if (uplinkId.classId == SERVER_CID &&
-                        uplinkId.UserId() >= NODE_UID_MIN && uplinkId.UserId() <= NODE_UID_MAXX)
+                    if (uplinkId.classId  == SERVER_CID   &&
+                        uplinkId.UserId() >= NODE_UID_MIN &&
+                        uplinkId.UserId() <= NODE_UID_MAXX)
                     {
                         configInfo.c2ss_uplink_id = uplinkId;
                     }
@@ -390,7 +392,9 @@ int main(int argc, char* argv[])
     if (!configInfo.c2ss_uplink_password.empty())
     {
         ProZeroMemory(
-            &configInfo.c2ss_uplink_password[0], configInfo.c2ss_uplink_password.length());
+            &configInfo.c2ss_uplink_password[0],
+            configInfo.c2ss_uplink_password.length()
+            );
         configInfo.c2ss_uplink_password = "";
     }
 

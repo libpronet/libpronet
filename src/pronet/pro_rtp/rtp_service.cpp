@@ -93,7 +93,8 @@ CRtpService::Init(IRtpServiceObserver* observer,
             return (false);
         }
 
-        m_serviceHost = ProCreateServiceHost(this, reactor, serviceHubPort, m_mmType);
+        m_serviceHost = ProCreateServiceHost(
+            this, reactor, serviceHubPort, m_mmType);
         if (m_serviceHost == NULL)
         {
             return (false);
@@ -192,7 +193,8 @@ CRtpService::OnServiceAccept(IProServiceHost* serviceHost,
     assert(sockId != -1);
     assert(remoteIp != NULL);
     assert(serviceId > 0);
-    if (serviceHost == NULL || sockId == -1 || remoteIp == NULL || serviceId == 0)
+    if (serviceHost == NULL || sockId == -1 || remoteIp == NULL ||
+        serviceId == 0)
     {
         return;
     }
@@ -219,7 +221,8 @@ CRtpService::OnServiceAccept(IProServiceHost* serviceHost,
         /*
          * ddos?
          */
-        if (m_tcpHandshaker2Nonce.size() + m_sslHandshaker2Nonce.size() >= MAX_PENDING_COUNT)
+        if (m_tcpHandshaker2Nonce.size() + m_sslHandshaker2Nonce.size() >=
+            MAX_PENDING_COUNT)
         {
             ProCloseSockId(sockId);
 
@@ -257,7 +260,8 @@ CRtpService::OnServiceAccept(IProServiceHost* serviceHost,
                 return;
             }
 
-            PRO_SSL_CTX* const sslCtx = ProSslCtx_Creates(m_sslConfig, sockId, nonce);
+            PRO_SSL_CTX* const sslCtx =
+                ProSslCtx_Creates(m_sslConfig, sockId, nonce);
             if (sslCtx == NULL)
             {
                 ProCloseSockId(sockId);
@@ -335,9 +339,11 @@ CRtpService::OnHandshakeOk(IProTcpHandshaker* handshaker,
         }
 
         assert(buf != NULL);
-        assert(size == sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_SESSION_INFO));
+        assert(size == sizeof(RTP_EXT) + sizeof(RTP_HEADER) +
+            sizeof(RTP_SESSION_INFO));
         if (buf == NULL ||
-            size != sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_SESSION_INFO))
+            size != sizeof(RTP_EXT) + sizeof(RTP_HEADER) +
+            sizeof(RTP_SESSION_INFO))
         {
             ProCloseSockId(sockId);
             sockId = -1;
@@ -496,9 +502,11 @@ CRtpService::OnHandshakeOk(IProSslHandshaker* handshaker,
 
         assert(ctx != NULL);
         assert(buf != NULL);
-        assert(size == sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_SESSION_INFO));
+        assert(size == sizeof(RTP_EXT) + sizeof(RTP_HEADER) +
+            sizeof(RTP_SESSION_INFO));
         if (ctx == NULL || buf == NULL ||
-            size != sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_SESSION_INFO))
+            size != sizeof(RTP_EXT) + sizeof(RTP_HEADER) +
+            sizeof(RTP_SESSION_INFO))
         {
             ProSslCtx_Delete(ctx);
             ProCloseSockId(sockId);

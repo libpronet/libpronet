@@ -128,13 +128,13 @@ private:
 ////
 
 #if defined(WIN32) || defined(_WIN32_WCE)
-#define PBSD_EINTR     WSAEINTR    /* 10004 */
-#define PBSD_EINVAL    WSAEINVAL   /* 10022 */
-#define PBSD_ENOTSOCK  WSAENOTSOCK /* 10038 */
+#define PBSD_EINTR    WSAEINTR    /* 10004 */
+#define PBSD_EINVAL   WSAEINVAL   /* 10022 */
+#define PBSD_ENOTSOCK WSAENOTSOCK /* 10038 */
 #else
-#define PBSD_EINTR     EINTR       /*  4 */
-#define PBSD_EINVAL    EINVAL      /* 22 */
-#define PBSD_ENOTSOCK  ENOTSOCK    /*  8 */
+#define PBSD_EINTR    EINTR       /*  4 */
+#define PBSD_EINVAL   EINVAL      /* 22 */
+#define PBSD_ENOTSOCK ENOTSOCK    /*  8 */
 #endif
 
 #if defined(WIN32) || defined(_WIN32_WCE)
@@ -257,14 +257,8 @@ pbsd_errno_i()
 static
 int
 PRO_CALLTYPE
-pbsd_ioctl_closexec_i(PRO_INT64 fd,
-                      long      on = true)
+pbsd_ioctl_closexec_i(PRO_INT64 fd)
 {
-    if (on != 0)
-    {
-        on = (long)((unsigned long)-1 >> 1);
-    }
-
     int retc = -1;
 
 #if !defined(WIN32) && !defined(_WIN32_WCE)
@@ -277,15 +271,7 @@ pbsd_ioctl_closexec_i(PRO_INT64 fd,
 
     if (retc >= 0)
     {
-        int flags = retc;
-        if (on != 0)
-        {
-            flags |= FD_CLOEXEC;
-        }
-        else
-        {
-            flags &= ~FD_CLOEXEC;
-        }
+        const int flags = retc | FD_CLOEXEC;
 
         do
         {
@@ -1103,70 +1089,80 @@ ProGetSgiPoolInfo(void*         freeList[64],
     case 0:
         {
             g_s_lock0.Lock();
-            g_s_allocator0.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
+            g_s_allocator0.get_info(
+                freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock0.Unlock();
             break;
         }
     case 1:
         {
             g_s_lock1.Lock();
-            g_s_allocator1.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
+            g_s_allocator1.get_info(
+                freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock1.Unlock();
             break;
         }
     case 2:
         {
             g_s_lock2.Lock();
-            g_s_allocator2.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
+            g_s_allocator2.get_info(
+                freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock2.Unlock();
             break;
         }
     case 3:
         {
             g_s_lock3.Lock();
-            g_s_allocator3.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
+            g_s_allocator3.get_info(
+                freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock3.Unlock();
             break;
         }
     case 4:
         {
             g_s_lock4.Lock();
-            g_s_allocator4.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
+            g_s_allocator4.get_info(
+                freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock4.Unlock();
             break;
         }
     case 5:
         {
             g_s_lock5.Lock();
-            g_s_allocator5.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
+            g_s_allocator5.get_info(
+                freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock5.Unlock();
             break;
         }
     case 6:
         {
             g_s_lock6.Lock();
-            g_s_allocator6.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
+            g_s_allocator6.get_info(
+                freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock6.Unlock();
             break;
         }
     case 7:
         {
             g_s_lock7.Lock();
-            g_s_allocator7.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
+            g_s_allocator7.get_info(
+                freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock7.Unlock();
             break;
         }
     case 8:
         {
             g_s_lock8.Lock();
-            g_s_allocator8.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
+            g_s_allocator8.get_info(
+                freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock8.Unlock();
             break;
         }
     case 9:
         {
             g_s_lock9.Lock();
-            g_s_allocator9.get_info(freeList, objSize, busyObjNum, totalObjNum, heapBytes);
+            g_s_allocator9.get_info(
+                freeList, objSize, busyObjNum, totalObjNum, heapBytes);
             g_s_lock9.Unlock();
             break;
         }

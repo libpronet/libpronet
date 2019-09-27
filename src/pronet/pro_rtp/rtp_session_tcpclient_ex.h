@@ -46,7 +46,9 @@ public CRtpSessionBase
 {
 public:
 
-    static CRtpSessionTcpclientEx* CreateInstance(const RTP_SESSION_INFO* localInfo);
+    static CRtpSessionTcpclientEx* CreateInstance(
+        const RTP_SESSION_INFO* localInfo
+        );
 
     bool Init(
         IRtpSessionObserver* observer,

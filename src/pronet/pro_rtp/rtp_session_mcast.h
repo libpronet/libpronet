@@ -32,7 +32,9 @@ class CRtpSessionMcast : public CRtpSessionBase
 {
 public:
 
-    static CRtpSessionMcast* CreateInstance(const RTP_SESSION_INFO* localInfo);
+    static CRtpSessionMcast* CreateInstance(
+        const RTP_SESSION_INFO* localInfo
+        );
 
     bool Init(
         IRtpSessionObserver* observer,

@@ -230,7 +230,7 @@ ProCalcPasswordHash(PRO_UINT64  nonce,
  *
  * 返回值: 无
  *
- * 说明: 该函数速度较慢,只用于口令等敏感数据的擦除
+ * 说明: 该函数速度较慢, 只用于口令等敏感数据的擦除
  */
 void
 PRO_CALLTYPE

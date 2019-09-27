@@ -136,8 +136,8 @@ ProCreateAcceptor(IProAcceptorObserver* observer,
         return (NULL);
     }
 
-    if (!acceptor->Init(observer, (CProTpReactorTask*)reactor,
-        localIp, localPort, 0))
+    if (!acceptor->Init(
+        observer, (CProTpReactorTask*)reactor, localIp, localPort, 0))
     {
         acceptor->Release();
 
@@ -252,8 +252,8 @@ ProCreateConnectorEx(bool                   enableUnixSocket,
 {
     ProNetInit();
 
-    CProConnector* const connector =
-        CProConnector::CreateInstance(enableUnixSocket, true, serviceId, serviceOpt);
+    CProConnector* const connector = CProConnector::CreateInstance(
+        enableUnixSocket, true, serviceId, serviceOpt);
     if (connector == NULL)
     {
         return (NULL);
@@ -306,8 +306,9 @@ ProCreateTcpHandshaker(IProTcpHandshakerObserver* observer,
         return (NULL);
     }
 
-    if (!handshaker->Init(observer, (CProTpReactorTask*)reactor, sockId, unixSocket,
-        sendData, sendDataSize, recvDataSize, recvFirst, timeoutInSeconds))
+    if (!handshaker->Init(observer, (CProTpReactorTask*)reactor,
+        sockId, unixSocket, sendData, sendDataSize, recvDataSize,
+        recvFirst, timeoutInSeconds))
     {
         handshaker->Release();
 
@@ -354,8 +355,9 @@ ProCreateSslHandshaker(IProSslHandshakerObserver* observer,
         return (NULL);
     }
 
-    if (!handshaker->Init(observer, (CProTpReactorTask*)reactor, ctx, sockId, unixSocket,
-        sendData, sendDataSize, recvDataSize, recvFirst, timeoutInSeconds))
+    if (!handshaker->Init(observer, (CProTpReactorTask*)reactor,
+        ctx, sockId, unixSocket, sendData, sendDataSize, recvDataSize,
+        recvFirst, timeoutInSeconds))
     {
         handshaker->Release();
 
@@ -393,7 +395,8 @@ ProCreateTcpTransport(IProTransportObserver* observer,
 {
     ProNetInit();
 
-    CProTcpTransport* const trans = CProTcpTransport::CreateInstance(false, recvPoolSize);
+    CProTcpTransport* const trans =
+        CProTcpTransport::CreateInstance(false, recvPoolSize);
     if (trans == NULL)
     {
         return (NULL);
@@ -425,14 +428,16 @@ ProCreateUdpTransport(IProTransportObserver* observer,
 {
     ProNetInit();
 
-    CProUdpTransport* const trans = CProUdpTransport::CreateInstance(recvPoolSize);
+    CProUdpTransport* const trans =
+        CProUdpTransport::CreateInstance(recvPoolSize);
     if (trans == NULL)
     {
         return (NULL);
     }
 
-    if (!trans->Init(observer, (CProTpReactorTask*)reactor, localIp, localPort,
-        defaultRemoteIp, defaultRemotePort, sockBufSizeRecv, sockBufSizeSend))
+    if (!trans->Init(observer, (CProTpReactorTask*)reactor,
+        localIp, localPort, defaultRemoteIp, defaultRemotePort,
+        sockBufSizeRecv, sockBufSizeSend))
     {
         trans->Release();
 
@@ -456,14 +461,15 @@ ProCreateMcastTransport(IProTransportObserver* observer,
 {
     ProNetInit();
 
-    CProMcastTransport* const trans = CProMcastTransport::CreateInstance(recvPoolSize);
+    CProMcastTransport* const trans =
+        CProMcastTransport::CreateInstance(recvPoolSize);
     if (trans == NULL)
     {
         return (NULL);
     }
 
-    if (!trans->Init(observer, (CProTpReactorTask*)reactor, mcastIp, mcastPort,
-        localBindIp, sockBufSizeRecv, sockBufSizeSend))
+    if (!trans->Init(observer, (CProTpReactorTask*)reactor,
+        mcastIp, mcastPort, localBindIp, sockBufSizeRecv, sockBufSizeSend))
     {
         trans->Release();
 
@@ -487,7 +493,8 @@ ProCreateSslTransport(IProTransportObserver* observer,
 {
     ProNetInit();
 
-    CProSslTransport* const trans = CProSslTransport::CreateInstance(recvPoolSize);
+    CProSslTransport* const trans =
+        CProSslTransport::CreateInstance(recvPoolSize);
     if (trans == NULL)
     {
         return (NULL);

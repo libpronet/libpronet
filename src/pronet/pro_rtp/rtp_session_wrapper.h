@@ -43,7 +43,9 @@ public CProRefCount
 {
 public:
 
-    static CRtpSessionWrapper* CreateInstance(const RTP_SESSION_INFO* localInfo);
+    static CRtpSessionWrapper* CreateInstance(
+        const RTP_SESSION_INFO* localInfo
+        );
 
     bool Init(
         RTP_SESSION_TYPE     sessionType,
@@ -64,7 +66,9 @@ private:
 
     virtual void PRO_CALLTYPE GetInfo(RTP_SESSION_INFO* info) const;
 
-    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(char suiteName[64]) const;
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
+        char suiteName[64]
+        ) const;
 
     virtual PRO_INT64 PRO_CALLTYPE GetSockId() const;
 

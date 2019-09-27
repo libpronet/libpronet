@@ -108,6 +108,7 @@ class IRtpSessionObserver; /* rtp会话回调目标 */
  */
 #if !defined(____RTP_MM_TYPE____)
 #define ____RTP_MM_TYPE____
+
 typedef unsigned char RTP_MM_TYPE;
 
 static const RTP_MM_TYPE RTP_MMT_MSG       = 11; /* 消息[11 ~ 20] */
@@ -125,6 +126,7 @@ static const RTP_MM_TYPE RTP_MMT_VIDEO_MAX = 40;
 static const RTP_MM_TYPE RTP_MMT_CTRL      = 41; /* 控制[41 ~ 50] */
 static const RTP_MM_TYPE RTP_MMT_CTRL_MIN  = 41;
 static const RTP_MM_TYPE RTP_MMT_CTRL_MAX  = 50;
+
 #endif /* ____RTP_MM_TYPE____ */
 /*
  * ]]]]
@@ -135,11 +137,13 @@ static const RTP_MM_TYPE RTP_MMT_CTRL_MAX  = 50;
  */
 #if !defined(____RTP_EXT_PACK_MODE____)
 #define ____RTP_EXT_PACK_MODE____
+
 typedef unsigned char RTP_EXT_PACK_MODE;
 
 static const RTP_EXT_PACK_MODE RTP_EPM_DEFAULT = 0; /* ext8 + rfc12 + payload */
 static const RTP_EXT_PACK_MODE RTP_EPM_TCP2    = 2; /* len2 + payload */
 static const RTP_EXT_PACK_MODE RTP_EPM_TCP4    = 4; /* len4 + payload */
+
 #endif /* ____RTP_EXT_PACK_MODE____ */
 /*
  * ]]]]
@@ -180,7 +184,7 @@ struct RTP_SESSION_INFO
     char              passwordHash[32]; /* 口令hash值===[c无需设置, s必须设置>, for tcp_ex, ssl_ex */
     char              reserved2[40];
 
-    PRO_UINT32        someId;           /* 某种id. 比如房间id, 目标节点id等,由上层定义 */
+    PRO_UINT32        someId;           /* 某种id. 比如房间id, 目标节点id等, 由上层定义 */
     PRO_UINT32        mmId;             /* 节点id */
     PRO_UINT32        inSrcMmId;        /* 输入媒体流的源节点id. 可以为0 */
     PRO_UINT32        outSrcMmId;       /* 输出媒体流的源节点id. 可以为0 */
@@ -356,7 +360,7 @@ struct RTP_INIT_TCPSERVER_EX
  * observer         : 回调目标
  * reactor          : 反应器
  * sslConfig        : ssl配置
- * sslSni           : ssl服务名. 如果有效,则参与认证服务端证书
+ * sslSni           : ssl服务名. 如果有效, 则参与认证服务端证书
  * remoteIp         : 远端的ip地址或域名
  * remotePort       : 远端的端口号
  * password         : 会话口令
@@ -390,7 +394,7 @@ struct RTP_INIT_SSLCLIENT_EX
  * unixSocket : 是否unix套接字
  * bucket     : 流控桶. 如果为NULL, 系统将自动分配一个
  *
- * 说明: 如果创建成功,会话将成为(sslCtx, sockId)的属主;否则,调用者应该
+ * 说明: 如果创建成功, 会话将成为(sslCtx, sockId)的属主; 否则, 调用者应该
  *       释放(sslCtx, sockId)对应的资源
  */
 struct RTP_INIT_SSLSERVER_EX
@@ -463,24 +467,21 @@ struct RTP_INIT_COMMON
 /*
  * rtp会话初始化参数集合
  */
-struct RTP_INIT_ARGS
+union RTP_INIT_ARGS
 {
-    union
-    {
-        RTP_INIT_UDPCLIENT       udpclient;
-        RTP_INIT_UDPSERVER       udpserver;
-        RTP_INIT_TCPCLIENT       tcpclient;
-        RTP_INIT_TCPSERVER       tcpserver;
-        RTP_INIT_UDPCLIENT_EX    udpclientEx;
-        RTP_INIT_UDPSERVER_EX    udpserverEx;
-        RTP_INIT_TCPCLIENT_EX    tcpclientEx;
-        RTP_INIT_TCPSERVER_EX    tcpserverEx;
-        RTP_INIT_SSLCLIENT_EX    sslclientEx;
-        RTP_INIT_SSLSERVER_EX    sslserverEx;
-        RTP_INIT_MCAST           mcast;
-        RTP_INIT_MCAST_EX        mcastEx;
-        RTP_INIT_COMMON          comm;
-    };
+    RTP_INIT_UDPCLIENT           udpclient;
+    RTP_INIT_UDPSERVER           udpserver;
+    RTP_INIT_TCPCLIENT           tcpclient;
+    RTP_INIT_TCPSERVER           tcpserver;
+    RTP_INIT_UDPCLIENT_EX        udpclientEx;
+    RTP_INIT_UDPSERVER_EX        udpserverEx;
+    RTP_INIT_TCPCLIENT_EX        tcpclientEx;
+    RTP_INIT_TCPSERVER_EX        tcpserverEx;
+    RTP_INIT_SSLCLIENT_EX        sslclientEx;
+    RTP_INIT_SSLSERVER_EX        sslserverEx;
+    RTP_INIT_MCAST               mcast;
+    RTP_INIT_MCAST_EX            mcastEx;
+    RTP_INIT_COMMON              comm;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -635,9 +636,9 @@ public:
     virtual unsigned long PRO_CALLTYPE Release() = 0;
 
     /*
-     * 有tcp会话进入时,该函数将被回调
+     * 有tcp会话进入时, 该函数将被回调
      *
-     * 上层应该调用CheckRtpServiceData(...)进行校验,之后,根据remoteInfo,
+     * 上层应该调用CheckRtpServiceData(...)进行校验, 之后, 根据remoteInfo,
      * 把sockId包装成RTP_ST_TCPSERVER_EX类型的IRtpSession对象,
      * 或释放sockId对应的资源
      */
@@ -652,9 +653,9 @@ public:
         ) = 0;
 
     /*
-     * 有ssl会话进入时,该函数将被回调
+     * 有ssl会话进入时, 该函数将被回调
      *
-     * 上层应该调用CheckRtpServiceData(...)进行校验,之后,根据remoteInfo,
+     * 上层应该调用CheckRtpServiceData(...)进行校验, 之后, 根据remoteInfo,
      * 把(sslCtx, sockId)包装成RTP_ST_SSLSERVER_EX类型的IRtpSession对象,
      * 或释放(sslCtx, sockId)对应的资源
      */
@@ -694,12 +695,14 @@ public:
      *
      * 仅用于RTP_ST_SSLCLIENT_EX, RTP_ST_SSLSERVER_EX类型的会话
      */
-    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(char suiteName[64]) const = 0;
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
+        char suiteName[64]
+        ) const = 0;
 
     /*
      * 获取会话的套接字id
      *
-     * 如非必需,最好不要直接操作底层的套接字
+     * 如非必需, 最好不要直接操作底层的套接字
      */
     virtual PRO_INT64 PRO_CALLTYPE GetSockId() const = 0;
 
@@ -748,7 +751,7 @@ public:
     /*
      * 直接发送rtp包
      *
-     * 如果返回false, 表示发送池已满,上层应该缓冲数据以待
+     * 如果返回false, 表示发送池已满, 上层应该缓冲数据以待
      * OnSendSession(...)回调拉取
      */
     virtual bool PRO_CALLTYPE SendPacket(IRtpPacket* packet) = 0;
@@ -766,7 +769,7 @@ public:
     /*
      * 获取会话的发送时间信息
      *
-     * 用于粗略地判断tcp链路的发送延迟,判断tcp链路是否老化
+     * 用于粗略地判断tcp链路的发送延迟, 判断tcp链路是否老化
      */
     virtual void PRO_CALLTYPE GetSendOnSendTick(
         PRO_INT64* sendTick,  /* = NULL */
@@ -872,12 +875,12 @@ public:
     virtual unsigned long PRO_CALLTYPE Release() = 0;
 
     /*
-     * 握手完成时,该函数将被回调
+     * 握手完成时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnOkSession(IRtpSession* session) = 0;
 
     /*
-     * rtp包到来时,该函数将被回调
+     * rtp包到来时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnRecvSession(
         IRtpSession* session,
@@ -885,7 +888,7 @@ public:
         ) = 0;
 
     /*
-     * 发送能力空闲时,该函数将被回调
+     * 发送能力空闲时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnSendSession(
         IRtpSession* session,
@@ -893,7 +896,7 @@ public:
         ) = 0;
 
     /*
-     * 网络错误或超时时,该函数将被回调
+     * 网络错误或超时时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnCloseSession(
         IRtpSession* session,
@@ -973,8 +976,8 @@ CreateRtpPacket(const void*       payloadBuffer,
  * 返回值: rtp包对象或NULL
  *
  * 说明: 该版本主要用于减少内存拷贝次数.
- *       例如,视频编码器可以通过IRtpPacket::GetPayloadBuffer(...)得到媒体
- *       数据指针,然后直接进行媒体数据的初始化等操作
+ *       例如, 视频编码器可以通过IRtpPacket::GetPayloadBuffer(...)得到媒体
+ *       数据指针, 然后直接进行媒体数据的初始化等操作
  *
  *       如果packMode为RTP_EPM_DEFAULT或RTP_EPM_TCP2, 那么payloadSize最多
  *       (1024 * 63)字节;
@@ -1085,7 +1088,7 @@ GetRtpPortRange(unsigned short* minUdpPort,  /* = NULL */
  *
  * 返回值: udp端口号. [偶数]
  *
- * 说明: 返回的端口号不一定空闲,应该多次分配尝试
+ * 说明: 返回的端口号不一定空闲, 应该多次分配尝试
  */
 PRO_RTP_API
 unsigned short
@@ -1099,7 +1102,7 @@ AllocRtpUdpPort();
  *
  * 返回值: tcp端口号. [偶数]
  *
- * 说明: 返回的端口号不一定空闲,应该多次分配尝试
+ * 说明: 返回的端口号不一定空闲, 应该多次分配尝试
  */
 PRO_RTP_API
 unsigned short
@@ -1204,7 +1207,7 @@ GetRtpStatTimeSpan();
  *
  * 返回值: 无
  *
- * 说明: 某项为0时,表示不改变该项的设置
+ * 说明: 某项为0时, 表示不改变该项的设置
  */
 PRO_RTP_API
 void
@@ -1246,7 +1249,7 @@ GetRtpUdpSocketParams(RTP_MM_TYPE    mmType,
  *
  * 返回值: 无
  *
- * 说明: 某项为0时,表示不改变该项的设置
+ * 说明: 某项为0时, 表示不改变该项的设置
  */
 PRO_RTP_API
 void

@@ -897,7 +897,7 @@ int mbedtls_x509_key_size_helper( char *buf, size_t buf_size, const char *name )
  * Set the time structure to the current time.
  * Return 0 on success, non-zero on failure.
  */
-#if defined(_MSC_VER) && (_MSC_VER <= 1200) //// 1200 is 6.0
+#if defined(_MSC_VER) && ( _MSC_VER <= 1200 ) //// 1200 is 6.0
 static int x509_get_current_time( mbedtls_x509_time *now )
 {
     SYSTEMTIME st;

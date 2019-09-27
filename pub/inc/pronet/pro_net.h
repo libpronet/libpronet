@@ -262,8 +262,8 @@ public:
 /*
  * 反应器
  *
- * 这里只暴露了定时器相关的接口,目的是为了在使用反应器的时候,可以方便地
- * 使用其内部的定时器功能,免得还要创建额外的CProTimerFactory对象
+ * 这里只暴露了定时器相关的接口, 目的是为了在使用反应器的时候, 可以方便地
+ * 使用其内部的定时器功能, 免得还要创建额外的CProTimerFactory对象
  */
 class IProReactor
 {
@@ -284,8 +284,8 @@ public:
     /*
      * 创建一个用于链路心跳的普通定时器(心跳定时器)
      *
-     * 各个心跳定时器的心跳时间点由内部算法决定,内部会进行均匀化处理.
-     * 心跳事件发生时,上层可以在OnTimer(...)回调里发送心跳数据包
+     * 各个心跳定时器的心跳时间点由内部算法决定, 内部会进行均匀化处理.
+     * 心跳事件发生时, 上层可以在OnTimer(...)回调里发送心跳数据包
      *
      * 返回值为定时器id. 0无效
      */
@@ -297,9 +297,11 @@ public:
     /*
      * 更新全体心跳定时器的心跳周期
      *
-     * 默认的心跳周期为25秒
+     * 默认的心跳周期为20秒
      */
-    virtual bool PRO_CALLTYPE UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds) = 0;
+    virtual bool PRO_CALLTYPE UpdateHeartbeatTimers(
+        unsigned long htbtIntervalInSeconds
+        ) = 0;
 
     /*
      * 删除一个普通定时器
@@ -326,7 +328,10 @@ public:
     /*
      * 获取状态信息字符串
      */
-    virtual void PRO_CALLTYPE GetTraceInfo(char* buf, size_t size) const = 0;
+    virtual void PRO_CALLTYPE GetTraceInfo(
+        char*  buf,
+        size_t size
+        ) const = 0;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -346,7 +351,7 @@ public:
     virtual unsigned long PRO_CALLTYPE Release() = 0;
 
     /*
-     * 有连接进入时,该函数将被回调
+     * 有连接进入时, 该函数将被回调
      *
      * 使用者负责sockId的资源维护
      */
@@ -356,9 +361,9 @@ public:
         bool           unixSocket, /* 是否unix套接字 */
         const char*    remoteIp,   /* 远端的ip地址. != NULL */
         unsigned short remotePort, /* 远端的端口号. > 0 */
-        unsigned char  serviceId,  /* 允许服务扩展时,远端请求的服务id */
-        unsigned char  serviceOpt, /* 允许服务扩展时,远端请求的服务选项 */
-        PRO_UINT64     nonce       /* 允许服务扩展时,会话随机数 */
+        unsigned char  serviceId,  /* 允许服务扩展时, 远端请求的服务id */
+        unsigned char  serviceOpt, /* 允许服务扩展时, 远端请求的服务选项 */
+        PRO_UINT64     nonce       /* 允许服务扩展时, 会话随机数 */
         ) = 0;
 };
 
@@ -376,7 +381,7 @@ public:
     virtual unsigned long PRO_CALLTYPE Release() = 0;
 
     /*
-     * 有连接进入时,该函数将被回调
+     * 有连接进入时, 该函数将被回调
      *
      * 使用者负责sockId的资源维护
      */
@@ -409,7 +414,7 @@ public:
     virtual unsigned long PRO_CALLTYPE Release() = 0;
 
     /*
-     * 连接成功时,该函数将被回调
+     * 连接成功时, 该函数将被回调
      *
      * 使用者负责sockId的资源维护
      */
@@ -419,20 +424,20 @@ public:
         bool           unixSocket, /* 是否unix套接字 */
         const char*    remoteIp,   /* 远端的ip地址. != NULL */
         unsigned short remotePort, /* 远端的端口号. > 0 */
-        unsigned char  serviceId,  /* 允许服务扩展时,请求的服务id */
-        unsigned char  serviceOpt, /* 允许服务扩展时,请求的服务选项 */
-        PRO_UINT64     nonce       /* 允许服务扩展时,会话随机数 */
+        unsigned char  serviceId,  /* 允许服务扩展时, 请求的服务id */
+        unsigned char  serviceOpt, /* 允许服务扩展时, 请求的服务选项 */
+        PRO_UINT64     nonce       /* 允许服务扩展时, 会话随机数 */
         ) = 0;
 
     /*
-     * 连接出错或超时时,该函数将被回调
+     * 连接出错或超时时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnConnectError(
         IProConnector* connector,
         const char*    remoteIp,   /* 远端的ip地址. != NULL */
         unsigned short remotePort, /* 远端的端口号. > 0 */
-        unsigned char  serviceId,  /* 允许服务扩展时,请求的服务id */
-        unsigned char  serviceOpt, /* 允许服务扩展时,请求的服务选项 */
+        unsigned char  serviceId,  /* 允许服务扩展时, 请求的服务id */
+        unsigned char  serviceOpt, /* 允许服务扩展时, 请求的服务选项 */
         bool           timeout     /* 是否连接超时 */
         ) = 0;
 };
@@ -454,10 +459,10 @@ public:
     virtual unsigned long PRO_CALLTYPE Release() = 0;
 
     /*
-     * 握手成功时,该函数将被回调
+     * 握手成功时, 该函数将被回调
      *
      * 使用者负责sockId的资源维护.
-     * 握手完成后,上层应该把sockId包装成IProTransport,
+     * 握手完成后, 上层应该把sockId包装成IProTransport,
      * 或释放sockId对应的资源
      */
     virtual void PRO_CALLTYPE OnHandshakeOk(
@@ -469,7 +474,7 @@ public:
         ) = 0;
 
     /*
-     * 握手出错或超时时,该函数将被回调
+     * 握手出错或超时时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnHandshakeError(
         IProTcpHandshaker* handshaker,
@@ -491,10 +496,10 @@ public:
     virtual unsigned long PRO_CALLTYPE Release() = 0;
 
     /*
-     * 握手成功时,该函数将被回调
+     * 握手成功时, 该函数将被回调
      *
      * 使用者负责(ctx, sockId)的资源维护.
-     * 握手完成后,上层应该把(ctx, sockId)包装成IProTransport,
+     * 握手完成后, 上层应该把(ctx, sockId)包装成IProTransport,
      * 或释放(ctx, sockId)对应的资源
      *
      * 调用ProSslCtx_GetSuite(...)可以获知当前使用的加密套件
@@ -509,7 +514,7 @@ public:
         ) = 0;
 
     /*
-     * 握手出错或超时时,该函数将被回调
+     * 握手出错或超时时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnHandshakeError(
         IProSslHandshaker* handshaker,
@@ -524,18 +529,18 @@ public:
 /*
  * 接收池
  *
- * 必须在IProTransportObserver::OnRecv(...)的线程上下文里使用,否则不安全
+ * 必须在IProTransportObserver::OnRecv(...)的线程上下文里使用, 否则不安全
  *
- * 对于tcp/ssl传输器,使用环型接收池.
- * 由于tcp是流式工作的,收端动力数与发端动力数不一定相同,所以,在OnRecv(...)
- * 里应该尽量取走接收池内的数据. 如果没有新的数据到来,反应器不会再次报告接收
+ * 对于tcp/ssl传输器, 使用环型接收池.
+ * 由于tcp是流式工作的, 收端动力数与发端动力数不一定相同, 所以, 在OnRecv(...)
+ * 里应该尽量取走接收池内的数据. 如果没有新的数据到来, 反应器不会再次报告接收
  * 池内还有剩余数据这件事
  *
- * 对于udp/mcast传输器,使用线性接收池.
- * 为防止接收池空间不足导致EMSGSIZE错误,在OnRecv(...)里应该收完全部数据
+ * 对于udp/mcast传输器, 使用线性接收池.
+ * 为防止接收池空间不足导致EMSGSIZE错误, 在OnRecv(...)里应该收完全部数据
  *
- * 另外,当反应器报告套接字内有数据可读时,如果接收池已经<<满了>>,那么该套接字
- * 将被关闭!!! 这说明收端和发端的配合逻辑有问题!!!
+ * 另外, 当反应器报告套接字内有数据可读时, 如果接收池已经<<满了>>, 那么该套接
+ * 字将被关闭!!! 这说明收端和发端的配合逻辑有问题!!!
  */
 class IProRecvPool
 {
@@ -549,12 +554,15 @@ public:
     /*
      * 读取接收池内的数据
      */
-    virtual void PRO_CALLTYPE PeekData(void* buf, size_t size) const = 0;
+    virtual void PRO_CALLTYPE PeekData(
+        void*  buf,
+        size_t size
+        ) const = 0;
 
     /*
      * 刷掉已经读取的数据
      *
-     * 腾出空间,以便容纳新的数据
+     * 腾出空间, 以便容纳新的数据
      */
     virtual void PRO_CALLTYPE Flush(size_t size) = 0;
 
@@ -585,12 +593,14 @@ public:
      *
      * 仅用于PRO_TRANS_SSL类型的传输器
      */
-    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(char suiteName[64]) const = 0;
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
+        char suiteName[64]
+        ) const = 0;
 
     /*
      * 获取底层的套接字id
      *
-     * 如非必需,最好不要直接操作底层的套接字
+     * 如非必需, 最好不要直接操作底层的套接字
      */
     virtual PRO_INT64 PRO_CALLTYPE GetSockId() const = 0;
 
@@ -630,12 +640,12 @@ public:
     /*
      * 发送数据
      *
-     * 对于tcp, 数据将放到发送池里,忽略remoteAddr参数;
-     * 对于udp, 数据将直接发送,如果remoteAddr参数无效,则使用默认的远端地址;
-     * actionId是上层分配的一个值,用于标识这次发送动作, OnSend(...)回调时
-     * 会带回该值
+     * 对于tcp, 数据将放到发送池里, 忽略remoteAddr参数;
+     * 对于udp, 数据将直接发送, 如果remoteAddr参数无效, 则使用默认的远端地址;
+     * actionId是上层分配的一个值, 用于标识这次发送动作, OnSend(...)回调时会
+     * 带回该值
      *
-     * 如果返回false, 表示发送忙,上层应该缓冲数据以待OnSend(...)回调拉取
+     * 如果返回false, 表示发送忙, 上层应该缓冲数据以待OnSend(...)回调拉取
      */
     virtual bool PRO_CALLTYPE SendData(
         const void*             buf,
@@ -698,18 +708,18 @@ public:
     virtual unsigned long PRO_CALLTYPE Release() = 0;
 
     /*
-     * 数据抵达套接字的接收缓冲区时,该函数将被回调
+     * 数据抵达套接字的接收缓冲区时, 该函数将被回调
      *
-     * 对于tcp/ssl传输器,使用环型接收池.
-     * 由于tcp是流式工作的,收端动力数与发端动力数不一定相同,所以,在OnRecv(...)
-     * 里应该尽量取走接收池内的数据. 如果没有新的数据到来,反应器不会再次报告接收
+     * 对于tcp/ssl传输器, 使用环型接收池.
+     * 由于tcp是流式工作的, 收端动力数与发端动力数不一定相同, 所以, 在OnRecv(...)
+     * 里应该尽量取走接收池内的数据. 如果没有新的数据到来, 反应器不会再次报告接收
      * 池内还有剩余数据这件事
      *
-     * 对于udp/mcast传输器,使用线性接收池.
-     * 为防止接收池空间不足导致EMSGSIZE错误,在OnRecv(...)里应该收完全部数据
+     * 对于udp/mcast传输器, 使用线性接收池.
+     * 为防止接收池空间不足导致EMSGSIZE错误, 在OnRecv(...)里应该收完全部数据
      *
-     * 另外,当反应器报告套接字内有数据可读时,如果接收池已经<<满了>>,那么该套接字
-     * 将被关闭!!! 这说明收端和发端的配合逻辑有问题!!!
+     * 另外, 当反应器报告套接字内有数据可读时, 如果接收池已经<<满了>>, 那么该套接
+     * 字将被关闭!!! 这说明收端和发端的配合逻辑有问题!!!
      */
     virtual void PRO_CALLTYPE OnRecv(
         IProTransport*          trans,
@@ -717,10 +727,10 @@ public:
         ) = 0;
 
     /*
-     * 数据被成功送入套接字的发送缓冲区时,或上层调用过RequestOnSend(...),
+     * 数据被成功送入套接字的发送缓冲区时, 或上层调用过RequestOnSend(...),
      * 该函数将被回调
      *
-     * 如果回调是RequestOnSend(...)触发的,则actionId为0
+     * 如果回调是RequestOnSend(...)触发的, 则actionId为0
      */
     virtual void PRO_CALLTYPE OnSend(
         IProTransport* trans,
@@ -728,7 +738,7 @@ public:
         ) = 0;
 
     /*
-     * 套接字出现错误时,该函数将被回调
+     * 套接字出现错误时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnClose(
         IProTransport* trans,
@@ -737,7 +747,7 @@ public:
         ) = 0;
 
     /*
-     * 心跳事件发生时,该函数将被回调
+     * 心跳事件发生时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnHeartbeat(IProTransport* trans) = 0;
 };
@@ -787,9 +797,9 @@ ProNetVersion(unsigned char* major,  /* = NULL */
  *
  * 返回值: 反应器对象或NULL
  *
- * 说明: ioThreadPriority可能对一些特殊的应用场景有用处. 比如多媒体通信
- *       中,可以将视频链路和音频链路放到不同的reactor中,并将音频reactor
- *       的ioThreadPriority略微调高,这样在数据密集时可以改善音频的处理
+ * 说明: ioThreadPriority可能对一些特殊的应用场景有用处. 比如多媒体通信中,
+ *       可以将视频链路和音频链路放到不同的reactor中, 并将音频reactor的
+ *       ioThreadPriority略微调高, 这样在数据密集时可以改善音频的处理
  */
 PRO_NET_API
 IProReactor*
@@ -805,9 +815,9 @@ ProCreateReactor(unsigned long ioThreadCount,
  *
  * 返回值: 无
  *
- * 说明: 反应器是主动对象,内部包含回调线程池. 该函数将保持阻塞,直到所有的
+ * 说明: 反应器是主动对象, 内部包含回调线程池. 该函数将保持阻塞, 直到所有的
  *       回调线程都结束运行. 上层要确保删除动作由回调线程池之外的线程发起,
- *       并在锁外执行,否则会发生死锁
+ *       并在锁外执行, 否则会发生死锁
  */
 PRO_NET_API
 void
@@ -849,8 +859,8 @@ ProCreateAcceptor(IProAcceptorObserver* observer,
  *
  * 说明: 可以使用ProGetAcceptorPort(...)获取实际的端口号
  *
- *       扩展协议握手期间,服务id用于服务端在握手初期识别客户端.
- *       服务端发送nonce给客户端,客户端发送(serviceId, serviceOpt)给服务端,
+ *       扩展协议握手期间, 服务id用于服务端在握手初期识别客户端.
+ *       服务端发送nonce给客户端, 客户端发送(serviceId, serviceOpt)给服务端,
  *       服务端根据客户端请求的服务id, 将该连接派发给对应的处理者或服务进程
  */
 PRO_NET_API
@@ -935,8 +945,8 @@ ProCreateConnector(bool                   enableUnixSocket,
  *
  * 返回值: 连接器对象或NULL
  *
- * 说明: 扩展协议握手期间,服务id用于服务端在握手初期识别客户端.
- *       服务端发送nonce给客户端,客户端发送(serviceId, serviceOpt)给服务端,
+ * 说明: 扩展协议握手期间, 服务id用于服务端在握手初期识别客户端.
+ *       服务端发送nonce给客户端, 客户端发送(serviceId, serviceOpt)给服务端,
  *       服务端根据客户端请求的服务id, 将该连接派发给对应的处理者或服务进程
  */
 PRO_NET_API
@@ -1030,8 +1040,8 @@ ProDeleteTcpHandshaker(IProTcpHandshaker* handshaker);
  *
  * 返回值: 握手器对象或NULL
  *
- * 说明: 如果ctx尚未完成ssl/tls协议的握手过程,则握手器首先完成ssl/tls
- *       协议的握手过程,在此基础上进一步执行收发用户数据的高层握手动作.
+ * 说明: 如果ctx尚未完成ssl/tls协议的握手过程, 则握手器首先完成ssl/tls
+ *       协议的握手过程, 在此基础上进一步执行收发用户数据的高层握手动作.
  *       如果recvFirst为true, 则高层握手数据先接收后发送
  */
 PRO_NET_API
@@ -1210,7 +1220,7 @@ ProDeleteTransport(IProTransport* trans);
  *
  * 说明: 服务hub可以将不同服务id的连接请求派发给对应的服务host,
  *       并允许跨越进程边界(WinCE不能跨进程)!!!
- *       服务hub与服务host配合,可以将接受器的功能延伸到不同的位置
+ *       服务hub与服务host配合, 可以将接受器的功能延伸到不同的位置
  */
 PRO_NET_API
 IProServiceHub*
@@ -1313,8 +1323,8 @@ ProOpenUdpSockId(const char*    localIp, /* = NULL */
  *
  * 返回值: 无
  *
- * 说明: OnAccept(...)或OnConnectOk(...)会产生套接字,当产生的套接字没有成功
- *       包装成IProTransport时,应该使用该函数释放sockId对应的套接字资源
+ * 说明: OnAccept(...)或OnConnectOk(...)会产生套接字, 当产生的套接字没有成功
+ *       包装成IProTransport时, 应该使用该函数释放sockId对应的套接字资源
  */
 PRO_NET_API
 void

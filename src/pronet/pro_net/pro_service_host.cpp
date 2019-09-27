@@ -81,7 +81,8 @@ CProServiceHost::Init(IProServiceHostObserver* observer,
     assert(reactor != NULL);
     assert(servicePort > 0);
     assert(serviceId > 0);
-    if (observer == NULL || reactor == NULL || servicePort == 0 || serviceId == 0)
+    if (observer == NULL || reactor == NULL || servicePort == 0 ||
+        serviceId == 0)
     {
         return (false);
     }
@@ -93,7 +94,8 @@ CProServiceHost::Init(IProServiceHostObserver* observer,
         assert(m_reactor == NULL);
         assert(m_connector == NULL);
         assert(m_pipe == NULL);
-        if (m_observer != NULL || m_reactor != NULL || m_connector != NULL || m_pipe != NULL)
+        if (m_observer != NULL || m_reactor != NULL || m_connector != NULL ||
+            m_pipe != NULL)
         {
             return (false);
         }

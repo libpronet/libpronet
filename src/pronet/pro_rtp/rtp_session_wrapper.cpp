@@ -45,7 +45,7 @@
 #define DEFAULT_REORDER_PACKET_COUNT 1
 #define AUDIO_REORDER_PACKET_COUNT   2
 #define VIDEO_REORDER_PACKET_COUNT   5
-#define TRACE_INTERVAL               25
+#define TRACE_INTERVAL               20
 #define HEARTBEAT_INTERVAL           1
 
 #if defined(__cplusplus)
@@ -73,7 +73,8 @@ CRtpSessionWrapper::CreateInstance(const RTP_SESSION_INFO* localInfo)
         return (NULL);
     }
 
-    CRtpSessionWrapper* const sessionWrapper = new CRtpSessionWrapper(*localInfo);
+    CRtpSessionWrapper* const sessionWrapper =
+        new CRtpSessionWrapper(*localInfo);
     if (sessionWrapper->m_reorderInput == NULL)
     {
         delete sessionWrapper;
@@ -108,11 +109,15 @@ CRtpSessionWrapper::CRtpSessionWrapper(const RTP_SESSION_INFO& localInfo)
 
     if (m_reorderInput != NULL)
     {
-        if (localInfo.mmType >= RTP_MMT_AUDIO_MIN && localInfo.mmType <= RTP_MMT_AUDIO_MAX)
+        if (localInfo.mmType >= RTP_MMT_AUDIO_MIN &&
+            localInfo.mmType <= RTP_MMT_AUDIO_MAX)
         {
             m_reorderInput->SetGatePacketCount(AUDIO_REORDER_PACKET_COUNT);
         }
-        else if (localInfo.mmType >= RTP_MMT_VIDEO_MIN && localInfo.mmType <= RTP_MMT_VIDEO_MAX)
+        else if (
+            localInfo.mmType >= RTP_MMT_VIDEO_MIN &&
+            localInfo.mmType <= RTP_MMT_VIDEO_MAX
+            )
         {
             m_reorderInput->SetGatePacketCount(VIDEO_REORDER_PACKET_COUNT);
         }
@@ -138,7 +143,8 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
     assert(initArgs != NULL);
     assert(initArgs->comm.observer != NULL);
     assert(initArgs->comm.reactor != NULL);
-    if (initArgs == NULL || initArgs->comm.observer == NULL || initArgs->comm.reactor == NULL)
+    if (initArgs == NULL ||
+        initArgs->comm.observer == NULL || initArgs->comm.reactor == NULL)
     {
         return (false);
     }
@@ -229,7 +235,8 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
         assert(m_reactor == NULL);
         assert(m_session == NULL);
         assert(m_bucket == NULL);
-        if (m_observer != NULL || m_reactor != NULL || m_session != NULL || m_bucket != NULL)
+        if (m_observer != NULL || m_reactor != NULL || m_session != NULL ||
+            m_bucket != NULL)
         {
             return (false);
         }
@@ -411,7 +418,9 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                     initArgs2.tcpclientEx.timeoutInSeconds
                     );
                 ProZeroMemory(
-                    initArgs2.tcpclientEx.password, sizeof(initArgs2.tcpclientEx.password));
+                    initArgs2.tcpclientEx.password,
+                    sizeof(initArgs2.tcpclientEx.password)
+                    );
                 if (m_session == NULL)
                 {
                     break;
@@ -468,7 +477,9 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                     initArgs2.sslclientEx.timeoutInSeconds
                     );
                 ProZeroMemory(
-                    initArgs2.sslclientEx.password, sizeof(initArgs2.sslclientEx.password));
+                    initArgs2.sslclientEx.password,
+                    sizeof(initArgs2.sslclientEx.password)
+                    );
                 if (m_session == NULL)
                 {
                     break;
@@ -603,15 +614,23 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
 
 #if !defined(_WIN32_WCE)
         bool enableTrace = false;
-        if (m_info.mmType >= RTP_MMT_MSG_MIN   && m_info.mmType <= RTP_MMT_MSG_MAX   ||
-            m_info.mmType >= RTP_MMT_AUDIO_MIN && m_info.mmType <= RTP_MMT_AUDIO_MAX ||
-            m_info.mmType >= RTP_MMT_VIDEO_MIN && m_info.mmType <= RTP_MMT_VIDEO_MAX)
+        if (
+            (m_info.mmType >= RTP_MMT_MSG_MIN &&
+             m_info.mmType <= RTP_MMT_MSG_MAX)
+            ||
+            (m_info.mmType >= RTP_MMT_AUDIO_MIN &&
+             m_info.mmType <= RTP_MMT_AUDIO_MAX)
+            ||
+            (m_info.mmType >= RTP_MMT_VIDEO_MIN &&
+             m_info.mmType <= RTP_MMT_VIDEO_MAX)
+           )
         {
             enableTrace = g_fileMonitor.QueryFileExist();
         }
         if (enableTrace)
         {
-            m_timerId = m_reactor->ScheduleTimer(this, HEARTBEAT_INTERVAL * 1000, true);
+            m_timerId = m_reactor->ScheduleTimer(
+                this, HEARTBEAT_INTERVAL * 1000, true);
         }
 #endif
     }
@@ -630,7 +649,8 @@ CRtpSessionWrapper::Fini()
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return;
         }
@@ -818,7 +838,8 @@ CRtpSessionWrapper::SetRemoteIpAndPort(const char*    remoteIp,   /* = NULL */
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return;
         }
@@ -878,7 +899,8 @@ CRtpSessionWrapper::SendPacket(IRtpPacket* packet)
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return (false);
         }
@@ -908,7 +930,8 @@ CRtpSessionWrapper::SendPacketByTimer(IRtpPacket*   packet,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return (false);
         }
@@ -965,7 +988,8 @@ CRtpSessionWrapper::SendPacketUnlock(IRtpPacket* packet)
         {
             if (packet2->GetMarker()
                 ||
-                m_info.mmType < RTP_MMT_VIDEO_MIN || m_info.mmType > RTP_MMT_VIDEO_MAX) /* non-video */
+                m_info.mmType < RTP_MMT_VIDEO_MIN ||
+                m_info.mmType > RTP_MMT_VIDEO_MAX) /* non-video */
             {
                 m_statFrameRateOutput.PushDataBits(1);
             }
@@ -999,7 +1023,8 @@ CRtpSessionWrapper::SendPacketUnlock()
         {
             if (packet->GetMarker()
                 ||
-                m_info.mmType < RTP_MMT_VIDEO_MIN || m_info.mmType > RTP_MMT_VIDEO_MAX) /* non-video */
+                m_info.mmType < RTP_MMT_VIDEO_MIN ||
+                m_info.mmType > RTP_MMT_VIDEO_MAX) /* non-video */
             {
                 m_statFrameRateOutput.PushDataBits(1);
             }
@@ -1044,7 +1069,8 @@ CRtpSessionWrapper::RequestOnSend()
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return;
         }
@@ -1060,7 +1086,8 @@ CRtpSessionWrapper::SuspendRecv()
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return;
         }
@@ -1076,7 +1103,8 @@ CRtpSessionWrapper::ResumeRecv()
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return;
         }
@@ -1094,7 +1122,8 @@ CRtpSessionWrapper::AddMcastReceiver(const char* mcastIp)
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return (false);
         }
@@ -1112,7 +1141,8 @@ CRtpSessionWrapper::RemoveMcastReceiver(const char* mcastIp)
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return;
         }
@@ -1130,7 +1160,8 @@ CRtpSessionWrapper::EnableInput(bool enable)
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return;
         }
@@ -1161,7 +1192,8 @@ CRtpSessionWrapper::EnableOutput(bool enable)
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return;
         }
@@ -1205,7 +1237,8 @@ CRtpSessionWrapper::SetOutputRedline(unsigned long redlineBytes,  /* = 0 */
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return;
         }
@@ -1296,7 +1329,8 @@ CRtpSessionWrapper::ResetFlowctrlInfo()
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return;
         }
@@ -1370,7 +1404,8 @@ CRtpSessionWrapper::ResetInputStat()
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return;
         }
@@ -1388,7 +1423,8 @@ CRtpSessionWrapper::ResetOutputStat()
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return;
         }
@@ -1414,7 +1450,8 @@ CRtpSessionWrapper::OnOkSession(IRtpSession* session)
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return;
         }
@@ -1455,7 +1492,8 @@ CRtpSessionWrapper::OnRecvSession(IRtpSession* session,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return;
         }
@@ -1470,22 +1508,28 @@ CRtpSessionWrapper::OnRecvSession(IRtpSession* session,
             return;
         }
 
-        if (m_info.sessionType == RTP_ST_TCPCLIENT    ||
+        if (
+            m_info.sessionType == RTP_ST_TCPCLIENT    ||
             m_info.sessionType == RTP_ST_TCPSERVER    ||
             m_info.sessionType == RTP_ST_TCPCLIENT_EX ||
             m_info.sessionType == RTP_ST_TCPSERVER_EX ||
             m_info.sessionType == RTP_ST_SSLCLIENT_EX ||
             m_info.sessionType == RTP_ST_SSLSERVER_EX
             ||
-            (m_info.mmType < RTP_MMT_AUDIO_MIN || m_info.mmType > RTP_MMT_AUDIO_MAX) &&     /* non-audio */
-            (m_info.mmType < RTP_MMT_VIDEO_MIN || m_info.mmType > RTP_MMT_VIDEO_MAX))       /* non-video */
+            ((m_info.mmType < RTP_MMT_AUDIO_MIN ||
+              m_info.mmType > RTP_MMT_AUDIO_MAX)       /* non-audio */
+             &&
+             (m_info.mmType < RTP_MMT_VIDEO_MIN ||
+              m_info.mmType > RTP_MMT_VIDEO_MAX))      /* non-video */
+           )
         {
             packet->AddRef();
             packets.push_back(packet);
 
             if (packet->GetMarker()
                 ||
-                m_info.mmType < RTP_MMT_VIDEO_MIN || m_info.mmType > RTP_MMT_VIDEO_MAX)     /* non-video */
+                m_info.mmType < RTP_MMT_VIDEO_MIN ||
+                m_info.mmType > RTP_MMT_VIDEO_MAX)     /* non-video */
             {
                 m_statFrameRateInput.PushDataBits(1);
             }
@@ -1508,7 +1552,8 @@ CRtpSessionWrapper::OnRecvSession(IRtpSession* session,
 
                 if (packet2->GetMarker()
                     ||
-                    m_info.mmType < RTP_MMT_VIDEO_MIN || m_info.mmType > RTP_MMT_VIDEO_MAX) /* non-video */
+                    m_info.mmType < RTP_MMT_VIDEO_MIN ||
+                    m_info.mmType > RTP_MMT_VIDEO_MAX) /* non-video */
                 {
                     m_statFrameRateInput.PushDataBits(1);
                 }
@@ -1550,7 +1595,8 @@ CRtpSessionWrapper::OnSendSession(IRtpSession* session,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return;
         }
@@ -1605,7 +1651,8 @@ CRtpSessionWrapper::OnCloseSession(IRtpSession* session,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return;
         }
@@ -1640,7 +1687,8 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
         {
             return;
         }
@@ -1664,7 +1712,8 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
 
                 char traceInfo[2048] = "";
 
-                if (m_info.mmType >= RTP_MMT_MSG_MIN && m_info.mmType <= RTP_MMT_MSG_MAX)
+                if (m_info.mmType >= RTP_MMT_MSG_MIN &&
+                    m_info.mmType <= RTP_MMT_MSG_MAX)
                 {
                     snprintf_pro(
                         traceInfo,
@@ -1709,7 +1758,10 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                     printf("%s", traceInfo);
 #endif
                 }
-                else if (m_info.mmType >= RTP_MMT_AUDIO_MIN && m_info.mmType <= RTP_MMT_AUDIO_MAX)
+                else if (
+                    m_info.mmType >= RTP_MMT_AUDIO_MIN &&
+                    m_info.mmType <= RTP_MMT_AUDIO_MAX
+                    )
                 {
                     snprintf_pro(
                         traceInfo,
@@ -1754,7 +1806,10 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                     printf("%s", traceInfo);
 #endif
                 }
-                else if (m_info.mmType >= RTP_MMT_VIDEO_MIN && m_info.mmType <= RTP_MMT_VIDEO_MAX)
+                else if (
+                    m_info.mmType >= RTP_MMT_VIDEO_MIN &&
+                    m_info.mmType <= RTP_MMT_VIDEO_MAX
+                    )
                 {
                     snprintf_pro(
                         traceInfo,
@@ -1814,7 +1869,8 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                 sendDurationMs = 1;
             }
 
-            PRO_INT64 maxSendCount = (m_pushPackets.size() + sendDurationMs / 2) / sendDurationMs; /* rounded */
+            PRO_INT64 maxSendCount =
+                (m_pushPackets.size() + sendDurationMs / 2) / sendDurationMs; /* rounded */
             if (maxSendCount < 1)
             {
                 maxSendCount = 1;

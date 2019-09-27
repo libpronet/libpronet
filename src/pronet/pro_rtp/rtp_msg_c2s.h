@@ -88,17 +88,25 @@ public:
 
     virtual void PRO_CALLTYPE GetUplinkUser(RTP_MSG_USER* myUser) const;
 
-    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetUplinkSslSuite(char suiteName[64]) const;
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetUplinkSslSuite(
+        char suiteName[64]
+        ) const;
 
-    virtual const char* PRO_CALLTYPE GetUplinkLocalIp(char localIp[64]) const;
+    virtual const char* PRO_CALLTYPE GetUplinkLocalIp(
+        char localIp[64]
+        ) const;
 
     virtual unsigned short PRO_CALLTYPE GetUplinkLocalPort() const;
 
-    virtual const char* PRO_CALLTYPE GetUplinkRemoteIp(char remoteIp[64]) const;
+    virtual const char* PRO_CALLTYPE GetUplinkRemoteIp(
+        char remoteIp[64]
+        ) const;
 
     virtual unsigned short PRO_CALLTYPE GetUplinkRemotePort() const;
 
-    virtual void PRO_CALLTYPE SetUplinkOutputRedline(unsigned long redlineBytes);
+    virtual void PRO_CALLTYPE SetUplinkOutputRedline(
+        unsigned long redlineBytes
+        );
 
     virtual unsigned long PRO_CALLTYPE GetUplinkOutputRedline() const;
 
@@ -118,11 +126,15 @@ public:
 
     virtual void PRO_CALLTYPE KickoutLocalUser(const RTP_MSG_USER* user);
 
-    virtual void PRO_CALLTYPE SetLocalOutputRedline(unsigned long redlineBytes);
+    virtual void PRO_CALLTYPE SetLocalOutputRedline(
+        unsigned long redlineBytes
+        );
 
     virtual unsigned long PRO_CALLTYPE GetLocalOutputRedline() const;
 
-    virtual unsigned long PRO_CALLTYPE GetLocalSendingBytes(const RTP_MSG_USER* user) const;
+    virtual unsigned long PRO_CALLTYPE GetLocalSendingBytes(
+        const RTP_MSG_USER* user
+        ) const;
 
 private:
 

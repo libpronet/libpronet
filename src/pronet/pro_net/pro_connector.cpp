@@ -48,8 +48,8 @@ CProConnector::CreateInstance(bool          enableUnixSocket,
     enableUnixSocket = false;
 #endif
 
-    CProConnector* const connector =
-        new CProConnector(enableUnixSocket, enableServiceExt, serviceId, serviceOpt);
+    CProConnector* const connector = new CProConnector(
+        enableUnixSocket, enableServiceExt, serviceId, serviceOpt);
 
     return (connector);
 }
@@ -128,7 +128,8 @@ CProConnector::Init(IProConnectorObserver* observer,
     remoteAddr.sin_addr.s_addr = pbsd_inet_aton(remoteIp); /* DNS */
 
     if (localAddr.sin_addr.s_addr  == (PRO_UINT32)-1 ||
-        remoteAddr.sin_addr.s_addr == (PRO_UINT32)-1 || remoteAddr.sin_addr.s_addr == 0)
+        remoteAddr.sin_addr.s_addr == (PRO_UINT32)-1 ||
+        remoteAddr.sin_addr.s_addr == 0)
     {
         return (false);
     }
@@ -139,7 +140,8 @@ CProConnector::Init(IProConnectorObserver* observer,
         assert(m_observer == NULL);
         assert(m_reactorTask == NULL);
         assert(m_handshaker == NULL);
-        if (m_observer != NULL || m_reactorTask != NULL || m_handshaker != NULL)
+        if (m_observer != NULL || m_reactorTask != NULL ||
+            m_handshaker != NULL)
         {
             return (false);
         }
@@ -408,7 +410,8 @@ CProConnector::OnHandshakeOk(IProTcpHandshaker* handshaker,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactorTask == NULL || m_handshaker == NULL)
+        if (m_observer == NULL || m_reactorTask == NULL ||
+            m_handshaker == NULL)
         {
             ProCloseSockId(sockId);
 
@@ -493,7 +496,8 @@ CProConnector::OnHandshakeError(IProTcpHandshaker* handshaker,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactorTask == NULL || m_handshaker == NULL)
+        if (m_observer == NULL || m_reactorTask == NULL ||
+            m_handshaker == NULL)
         {
             return;
         }
@@ -582,13 +586,16 @@ CProConnector::OnTimer(unsigned long timerId,
 
             int option;
             option = DEFAULT_RECV_BUF_SIZE;
-            pbsd_setsockopt(m_sockId, SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
+            pbsd_setsockopt(
+                m_sockId, SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
             option = DEFAULT_SEND_BUF_SIZE;
-            pbsd_setsockopt(m_sockId, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
+            pbsd_setsockopt(
+                m_sockId, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
             if (!m_unixSocket)
             {
                 option = 1;
-                pbsd_setsockopt(m_sockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
+                pbsd_setsockopt(
+                    m_sockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
             }
 
 #if !defined(WIN32) && !defined(_WIN32_WCE)
@@ -597,8 +604,8 @@ CProConnector::OnTimer(unsigned long timerId,
                 pbsd_sockaddr_un remoteAddrUn;
                 memset(&remoteAddrUn, 0, sizeof(pbsd_sockaddr_un));
                 remoteAddrUn.sun_family = AF_LOCAL;
-                sprintf(remoteAddrUn.sun_path,
-                    "/tmp/libpronet_127001_%u", (unsigned int)pbsd_ntoh16(m_remoteAddr.sin_port));
+                sprintf(remoteAddrUn.sun_path, "/tmp/libpronet_127001_%u",
+                    (unsigned int)pbsd_ntoh16(m_remoteAddr.sin_port));
 
                 if (pbsd_connect_un(m_sockId, &remoteAddrUn) != 0 &&
                     pbsd_errno((void*)&pbsd_connect_un) != PBSD_EINPROGRESS)

@@ -123,7 +123,8 @@ MdUpdate_i(void*       ctx,
         return;
     }
 
-    mbedtls_md_update((mbedtls_md_context_t*)ctx, (unsigned char*)buf, size);
+    mbedtls_md_update(
+        (mbedtls_md_context_t*)ctx, (unsigned char*)buf, size);
 }
 
 static
@@ -139,7 +140,8 @@ MdFinish_i(void* ctx,
         return;
     }
 
-    mbedtls_md_finish((mbedtls_md_context_t*)ctx, (unsigned char*)hashValue);
+    mbedtls_md_finish(
+        (mbedtls_md_context_t*)ctx, (unsigned char*)hashValue);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -633,8 +635,8 @@ ProRsaDecrypt(void*                ctx,
     for (int i = 0; i < (int)blockCount; ++i)
     {
         size_t olen = 0;
-        if (mbedtls_rsa_pkcs1_decrypt(
-            ctx2, &Rand_i, NULL, MBEDTLS_RSA_PRIVATE, &olen, p, q, ctx2->len - 11) != 0 ||
+        if (mbedtls_rsa_pkcs1_decrypt(ctx2, &Rand_i, NULL,
+            MBEDTLS_RSA_PRIVATE, &olen, p, q, ctx2->len - 11) != 0 ||
             olen == 0 || olen > ctx2->len - 11)
         {
             outputBuffer.clear();
@@ -770,7 +772,8 @@ ProCalcPasswordHash(PRO_UINT64  nonce,
     CProStlString passwordString = nonceString;
     passwordString += password != NULL ? password : "";
 
-    ProSha256All(passwordString.c_str(), passwordString.length(), passwordHash);
+    ProSha256All(
+        passwordString.c_str(), passwordString.length(), passwordHash);
 
     ProZeroMemory(&passwordString[0], passwordString.length());
 }

@@ -45,7 +45,8 @@ CRtpSessionUdpserverEx::CreateInstance(const RTP_SESSION_INFO* localInfo)
         return (NULL);
     }
 
-    CRtpSessionUdpserverEx* const session = new CRtpSessionUdpserverEx(*localInfo);
+    CRtpSessionUdpserverEx* const session =
+        new CRtpSessionUdpserverEx(*localInfo);
 
     return (session);
 }
@@ -113,7 +114,8 @@ CRtpSessionUdpserverEx::Init(IRtpSessionObserver* observer,
                 localPort2 = AllocRtpUdpPort();
             }
 
-            m_trans = ProCreateUdpTransport(this, reactor, localIp, localPort2,
+            m_trans = ProCreateUdpTransport(
+                this, reactor, localIp, localPort2,
                 sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
             if (m_trans != NULL)
             {
@@ -235,8 +237,10 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
 
             if (!m_handshakeOk)
             {
-                assert(ext.hdrAndPayloadSize == sizeof(RTP_HEADER) + UDP_HANDSHAKE_BYTES);
-                if (ext.hdrAndPayloadSize != sizeof(RTP_HEADER) + UDP_HANDSHAKE_BYTES)
+                assert(ext.hdrAndPayloadSize ==
+                    sizeof(RTP_HEADER) + UDP_HANDSHAKE_BYTES);
+                if (ext.hdrAndPayloadSize !=
+                    sizeof(RTP_HEADER) + UDP_HANDSHAKE_BYTES)
                 {
                     recvPool.Flush(dataSize);
                     break;
@@ -285,10 +289,14 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                 else
                 {
                     recvPool.PeekData(
-                        packet->GetPayloadBuffer(), sizeof(RTP_EXT) + ext.hdrAndPayloadSize);
+                        packet->GetPayloadBuffer(),
+                        sizeof(RTP_EXT) + ext.hdrAndPayloadSize
+                        );
 
                     if (!CRtpPacket::ParseExtBuffer(
-                        (char*)packet->GetPayloadBuffer(), packet->GetPayloadSize16()))
+                        (char*)packet->GetPayloadBuffer(),
+                        packet->GetPayloadSize16()
+                        ))
                     {
                         packet->Release();
                         packet = NULL;
@@ -303,11 +311,17 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                     magicPacket.ext = (RTP_EXT*)packet->GetPayloadBuffer();
                     magicPacket.hdr = (RTP_HEADER*)(magicPacket.ext + 1);
 
-                    assert(m_info.inSrcMmId == 0 || packet->GetMmId() == m_info.inSrcMmId);
+                    assert(
+                        m_info.inSrcMmId  == 0 ||
+                        packet->GetMmId() == m_info.inSrcMmId
+                        );
                     assert(packet->GetMmType() == m_info.mmType);
-                    if (m_info.inSrcMmId != 0 && packet->GetMmId() != m_info.inSrcMmId
+                    if (
+                        (m_info.inSrcMmId  != 0 &&
+                         packet->GetMmId() != m_info.inSrcMmId)
                         ||
-                        packet->GetMmType() != m_info.mmType)
+                        packet->GetMmType() != m_info.mmType /* drop this packet */
+                       )
                     {
                         packet->Release();
                         packet = NULL;

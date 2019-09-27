@@ -71,7 +71,8 @@ ProUnicodeToAnsi(CProStlString&        dst,
     p[0]       = '\0';
     p[len - 1] = '\0';
 
-    ::WideCharToMultiByte(CP_ACP, 0, src.c_str(), -1, p, (int)len, NULL, NULL);
+    ::WideCharToMultiByte(
+        CP_ACP, 0, src.c_str(), -1, p, (int)len, NULL, NULL);
 }
 
 void
@@ -115,7 +116,8 @@ ProUnicodeToUtf8(CProStlString&        dst,
     p[0]       = '\0';
     p[len - 1] = '\0';
 
-    ::WideCharToMultiByte(CP_UTF8, 0, src.c_str(), -1, p, (int)len, NULL, NULL);
+    ::WideCharToMultiByte(
+        CP_UTF8, 0, src.c_str(), -1, p, (int)len, NULL, NULL);
 }
 
 void

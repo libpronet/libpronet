@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
             printf(
                 "\n"
                 " test_tcp_server --- warning! can't read the config file. \n"
-                " [ %s ] \n"
+                " [%s] \n"
                 ,
                 configFileName.c_str()
                 );
@@ -281,7 +281,8 @@ int main(int argc, char* argv[])
 
     reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
     printf("\n%s\n", s_traceInfo);
-    printf(" [ HTBT Size ] : %u \n", (unsigned int)tester->GetHeartbeatDataSize());
+    printf(" [ HTBT Size ] : %u \n",
+        (unsigned int)tester->GetHeartbeatDataSize());
 
     while (1)
     {
@@ -325,7 +326,8 @@ int main(int argc, char* argv[])
         {
             reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
             printf("\n%s\n", s_traceInfo);
-            printf(" [ HTBT Size ] : %u \n", (unsigned int)tester->GetHeartbeatDataSize());
+            printf(" [ HTBT Size ] : %u \n",
+                (unsigned int)tester->GetHeartbeatDataSize());
             continue;
         }
 
@@ -356,7 +358,8 @@ int main(int argc, char* argv[])
 
             reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
             printf("\n%s\n", s_traceInfo);
-            printf(" [ HTBT Size ] : %u \n", (unsigned int)tester->GetHeartbeatDataSize());
+            printf(" [ HTBT Size ] : %u \n",
+                (unsigned int)tester->GetHeartbeatDataSize());
         }
         else if (strnicmp(p, "htbtsize ", 9) == 0)
         {
@@ -373,13 +376,15 @@ int main(int argc, char* argv[])
 
             reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
             printf("\n%s\n", s_traceInfo);
-            printf(" [ HTBT Size ] : %u \n", (unsigned int)tester->GetHeartbeatDataSize());
+            printf(" [ HTBT Size ] : %u \n",
+                (unsigned int)tester->GetHeartbeatDataSize());
         }
         else
         {
             reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
             printf("\n%s\n", s_traceInfo);
-            printf(" [ HTBT Size ] : %u \n", (unsigned int)tester->GetHeartbeatDataSize());
+            printf(" [ HTBT Size ] : %u \n",
+                (unsigned int)tester->GetHeartbeatDataSize());
         }
     } /* end of while (...) */
 

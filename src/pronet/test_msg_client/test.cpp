@@ -76,7 +76,8 @@ CTest::Init(IProReactor*                  reactor,
      * DNS, for reconnecting
      */
     {
-        const PRO_UINT32 serverIp = pbsd_inet_aton(configInfo.msgc_server_ip.c_str());
+        const PRO_UINT32 serverIp =
+            pbsd_inet_aton(configInfo.msgc_server_ip.c_str());
         if (serverIp == (PRO_UINT32)-1 || serverIp == 0)
         {
             return (false);
@@ -148,7 +149,8 @@ CTest::Init(IProReactor*                  reactor,
                     goto EXIT;
                 }
 
-                ProSslClientConfig_EnableSha1Cert(sslConfig, configInfo.msgc_ssl_enable_sha1cert);
+                ProSslClientConfig_EnableSha1Cert(
+                    sslConfig, configInfo.msgc_ssl_enable_sha1cert);
 
                 if (!ProSslClientConfig_SetCaList(
                     sslConfig,
@@ -161,7 +163,11 @@ CTest::Init(IProReactor*                  reactor,
                     goto EXIT;
                 }
 
-                if (!ProSslClientConfig_SetSuiteList(sslConfig, &suites[0], suites.size()))
+                if (!ProSslClientConfig_SetSuiteList(
+                    sslConfig,
+                    &suites[0],
+                    suites.size()
+                    ))
                 {
                     goto EXIT;
                 }
@@ -340,8 +346,8 @@ CTest::SendMsg(const char* msg)
             dstUsers.push_back(*itr);
         }
 
-        m_msgClient->SendMsg(
-            msg, (unsigned long)strlen(msg), 0, &dstUsers[0], (unsigned char)dstUsers.size());
+        m_msgClient->SendMsg(msg, (unsigned long)strlen(msg), 0,
+            &dstUsers[0], (unsigned char)dstUsers.size());
     }
 }
 
@@ -438,7 +444,8 @@ CTest::OnOkMsg(IRtpMsgClient*      msgClient,
     assert(myUser != NULL);
     assert(myPublicIp != NULL);
     assert(myPublicIp[0] != '\0');
-    if (msgClient == NULL || myUser == NULL || myPublicIp == NULL || myPublicIp[0] == '\0')
+    if (msgClient == NULL || myUser == NULL || myPublicIp == NULL ||
+        myPublicIp[0] == '\0')
     {
         return;
     }
@@ -462,8 +469,8 @@ CTest::OnOkMsg(IRtpMsgClient*      msgClient,
         msgClient->GetSslSuite(suiteName);
 
         printf(
-            "\n CTest::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s, sslSuite : %s,"
-            " server : %s:%u) \n"
+            "\n CTest::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s,"
+            " sslSuite : %s, server : %s:%u) \n"
             ,
             (unsigned int)myUser->classId,
             myUser->UserId(),
@@ -520,7 +527,8 @@ CTest::OnRecvMsg(IRtpMsgClient*      msgClient,
 
         printf(
             "\n"
-            " CTest::OnRecvMsg(from : %u-" PRO_PRT64U "-%u, me : %u-" PRO_PRT64U "-%u) \n"
+            " CTest::OnRecvMsg(from : %u-" PRO_PRT64U "-%u,"
+            " me : %u-" PRO_PRT64U "-%u) \n"
             "\t %s \n"
             ,
             (unsigned int)srcUser->classId,

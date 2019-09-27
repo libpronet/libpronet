@@ -35,7 +35,10 @@ public:
 
     ~CProLogFile();
 
-    void Init(const char* fileName, bool append = false);
+    void Init(
+        const char* fileName,
+        bool        append = false
+        );
 
     void SetGreenLevel(long level);
 
@@ -49,7 +52,11 @@ public:
 
     void Rewind();
 
-    void Log(const char* text, long level = 0, bool showTime = true);
+    void Log(
+        const char* text,
+        long        level    = 0,
+        bool        showTime = true
+        );
 
 private:
 

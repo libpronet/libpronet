@@ -83,7 +83,7 @@ int main(int argc, char* argv[])
             printf(
                 "\n"
                 " rtp_msg_server --- warning! can't read the config file. \n"
-                " [ %s ] \n"
+                " [%s] \n"
                 ,
                 configFileName.c_str()
                 );
@@ -112,7 +112,8 @@ int main(int argc, char* argv[])
             else if (stricmp(configName.c_str(), "msgs_mm_type") == 0)
             {
                 const int value = atoi(configValue.c_str());
-                if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
+                if (value >= (int)RTP_MMT_MSG_MIN &&
+                    value <= (int)RTP_MMT_MSG_MAX)
                 {
                     configInfo.msgs_mm_type = (RTP_MM_TYPE)value;
                 }

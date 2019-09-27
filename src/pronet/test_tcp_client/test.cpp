@@ -128,7 +128,8 @@ CTest::Init(IProReactor*                  reactor,
                     goto EXIT;
                 }
 
-                ProSslClientConfig_EnableSha1Cert(sslConfig, configInfo.tcpc_ssl_enable_sha1cert);
+                ProSslClientConfig_EnableSha1Cert(
+                    sslConfig, configInfo.tcpc_ssl_enable_sha1cert);
 
                 if (!ProSslClientConfig_SetCaList(
                     sslConfig,
@@ -141,7 +142,11 @@ CTest::Init(IProReactor*                  reactor,
                     goto EXIT;
                 }
 
-                if (!ProSslClientConfig_SetSuiteList(sslConfig, &suites[0], suites.size()))
+                if (!ProSslClientConfig_SetSuiteList(
+                    sslConfig,
+                    &suites[0],
+                    suites.size()
+                    ))
                 {
                     goto EXIT;
                 }
@@ -858,7 +863,8 @@ CTest::OnClose(IProTransport* trans,
         trans->GetRemoteIp(remoteIp);
 
         printf(
-            "\n CTest::OnClose(errorCode : [%d, %d], server : %s:%u, me : %s:%u) \n"
+            "\n CTest::OnClose(errorCode : [%d, %d], server : %s:%u,"
+            " me : %s:%u) \n"
             ,
             (int)errorCode,
             (int)sslCode,
@@ -915,14 +921,15 @@ CTest::OnTimer(unsigned long timerId,
 
         while (1)
         {
-            if (m_connectors.size() + m_tcpHandshakers.size() + m_sslHandshakers.size() >=
-                m_configInfo.tcpc_max_pending_count)
+            if (m_connectors.size() + m_tcpHandshakers.size() +
+                m_sslHandshakers.size() >= m_configInfo.tcpc_max_pending_count)
             {
                 break;
             }
 
-            if (m_connectors.size() + m_tcpHandshakers.size() + m_sslHandshakers.size() +
-                m_transports.size() >= m_configInfo.tcpc_connection_count)
+            if (m_connectors.size() + m_tcpHandshakers.size() +
+                m_sslHandshakers.size() + m_transports.size() >=
+                m_configInfo.tcpc_connection_count)
             {
             	break;
             }

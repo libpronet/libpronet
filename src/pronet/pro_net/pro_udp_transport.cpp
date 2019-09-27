@@ -200,7 +200,8 @@ CProUdpTransport::Fini()
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(
+            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
 
         m_reactorTask = NULL;
         observer = m_observer;
@@ -515,8 +516,8 @@ CProUdpTransport::OnInput(PRO_INT64 sockId)
             goto EXIT;
         }
 
-        recvSize = pbsd_recvfrom(
-            m_sockId, m_recvPool.ContinuousIdleBuf(), (int)idleSize, 0, &remoteAddr);
+        recvSize = pbsd_recvfrom(m_sockId,
+            m_recvPool.ContinuousIdleBuf(), (int)idleSize, 0, &remoteAddr);
         assert(recvSize <= (int)idleSize);
 
         if (recvSize > (int)idleSize)
@@ -598,41 +599,41 @@ CProUdpTransport::OnOutput(PRO_INT64 sockId)
             return;
         }
 
-        if (m_pendingWr || m_requestOnSend)
+        if (!m_pendingWr && !m_requestOnSend)
         {
-            actionId = m_actionId;
-
-            m_pendingWr     = false;
-            m_requestOnSend = false;
-            m_actionId      = 0;
-
-            m_observer->AddRef();
-            observer = m_observer;
+            return;
         }
+
+        actionId = m_actionId;
+
+        m_pendingWr     = false;
+        m_requestOnSend = false;
+        m_actionId      = 0;
+
+        m_observer->AddRef();
+        observer = m_observer;
     }
 
-    if (observer != NULL)
+    if (m_canUpcall)
     {
-        if (m_canUpcall)
+        observer->OnSend(this, actionId);
+
         {
-            observer->OnSend(this, actionId);
+            CProThreadMutexGuard mon(m_lock);
 
+            if (m_observer != NULL && m_reactorTask != NULL)
             {
-                CProThreadMutexGuard mon(m_lock);
-
-                if (m_observer != NULL && m_reactorTask != NULL)
+                if (m_onWr && !m_pendingWr && !m_requestOnSend)
                 {
-                    if (m_onWr && !m_pendingWr && !m_requestOnSend)
-                    {
-                        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE);
-                        m_onWr = false;
-                    }
+                    m_reactorTask->RemoveHandler(
+                        m_sockId, this, PRO_MASK_WRITE);
+                    m_onWr = false;
                 }
             }
         }
-
-        observer->Release();
     }
+
+    observer->Release();
 }}
 
 void

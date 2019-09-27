@@ -226,7 +226,7 @@ CreateRtpSessionTcpserverEx(IRtpSessionObserver*    observer,
  * reactor          : 反应器
  * localInfo        : 会话信息
  * sslConfig        : ssl配置
- * sslSni           : ssl服务名. 如果有效,则参与认证服务端证书
+ * sslSni           : ssl服务名. 如果有效, 则参与认证服务端证书
  * remoteIp         : 远端的ip地址或域名
  * remotePort       : 远端的端口号
  * password         : 会话口令
@@ -263,7 +263,7 @@ CreateRtpSessionSslclientEx(IRtpSessionObserver*         observer,
  *
  * 返回值: 会话对象或NULL
  *
- * 说明: 如果创建成功,会话将成为(sslCtx, sockId)的属主;否则,调用者应该
+ * 说明: 如果创建成功, 会话将成为(sslCtx, sockId)的属主; 否则, 调用者应该
  *       释放(sslCtx, sockId)对应的资源
  */
 IRtpSession*

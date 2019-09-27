@@ -48,15 +48,15 @@ CreateRtpMsgClient(IRtpMsgClientObserver*       observer,
 {
     ProRtpInit();
 
-    CRtpMsgClient* const msgClient = CRtpMsgClient::CreateInstance(
-        false, mmType, sslConfig, sslSni);
+    CRtpMsgClient* const msgClient =
+        CRtpMsgClient::CreateInstance(false, mmType, sslConfig, sslSni);
     if (msgClient == NULL)
     {
         return (NULL);
     }
 
-    if (!msgClient->Init(observer, reactor, remoteIp, remotePort,
-        user, password, localIp, timeoutInSeconds))
+    if (!msgClient->Init(observer, reactor,
+        remoteIp, remotePort, user, password, localIp, timeoutInSeconds))
     {
         msgClient->Release();
 
@@ -94,7 +94,8 @@ CreateRtpMsgServer(IRtpMsgServerObserver*       observer,
 {
     ProRtpInit();
 
-    CRtpMsgServer* const msgServer = CRtpMsgServer::CreateInstance(mmType, sslConfig, sslForced);
+    CRtpMsgServer* const msgServer =
+        CRtpMsgServer::CreateInstance(mmType, sslConfig, sslForced);
     if (msgServer == NULL)
     {
         return (NULL);
@@ -146,15 +147,16 @@ CreateRtpMsgC2s(IRtpMsgC2sObserver*          observer,
 {
     ProRtpInit();
 
-    CRtpMsgC2s* const msgC2s = CRtpMsgC2s::CreateInstance(
-        mmType, uplinkSslConfig, uplinkSslSni, localSslConfig, localSslForced);
+    CRtpMsgC2s* const msgC2s = CRtpMsgC2s::CreateInstance(mmType,
+        uplinkSslConfig, uplinkSslSni, localSslConfig, localSslForced);
     if (msgC2s == NULL)
     {
         return (NULL);
     }
 
-    if (!msgC2s->Init(observer, reactor, uplinkIp, uplinkPort, uplinkUser, uplinkPassword,
-        uplinkLocalIp, uplinkTimeoutInSeconds, localServiceHubPort, localTimeoutInSeconds))
+    if (!msgC2s->Init(observer, reactor, uplinkIp, uplinkPort,
+        uplinkUser, uplinkPassword, uplinkLocalIp, uplinkTimeoutInSeconds,
+        localServiceHubPort, localTimeoutInSeconds))
     {
         msgC2s->Release();
 

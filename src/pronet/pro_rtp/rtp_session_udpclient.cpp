@@ -114,7 +114,8 @@ CRtpSessionUdpclient::Init(IRtpSessionObserver* observer,
                 }
             }
 
-            m_trans = ProCreateUdpTransport(this, reactor, localIp, localPort2,
+            m_trans = ProCreateUdpTransport(
+                this, reactor, localIp, localPort2,
                 sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
             if (m_trans != NULL)
             {
@@ -244,10 +245,10 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
             if (m_remoteAddr.sin_addr.s_addr != 0
                 &&
                 (remoteAddr->sin_addr.s_addr != m_remoteAddr.sin_addr.s_addr ||
-                remoteAddr->sin_port         != m_remoteAddr.sin_port)
+                 remoteAddr->sin_port        != m_remoteAddr.sin_port)
                 &&
                 (remoteAddr->sin_addr.s_addr != m_remoteAddrConfig.sin_addr.s_addr ||
-                remoteAddr->sin_port         != m_remoteAddrConfig.sin_port)) /* check */
+                 remoteAddr->sin_port        != m_remoteAddrConfig.sin_port)) /* check */
             {
                 recvPool.Flush(dataSize);
                 break;

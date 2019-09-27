@@ -263,6 +263,7 @@ struct PRO_SSL_SERVER_CONFIG : public mbedtls_ssl_config
         mbedtls_ctr_drbg_init(&rng);
         mbedtls_ssl_config_init(this);
 
+        sha0Profile = mbedtls_x509_crt_profile_default;
         sha1Profile = mbedtls_x509_crt_profile_default;
         sha1Profile.allowed_mds |= MBEDTLS_X509_ID_FLAG(MBEDTLS_MD_SHA1);
 
@@ -295,6 +296,7 @@ struct PRO_SSL_SERVER_CONFIG : public mbedtls_ssl_config
     CProStlMap<CProStlString, PRO_SSL_AUTH_ITEM> sni2Auth;
     PRO_SSL_SUITE_LIST                           suites;
     PRO_SSL_ALPN_LIST                            alpns;
+    mbedtls_x509_crt_profile                     sha0Profile;
     mbedtls_x509_crt_profile                     sha1Profile;
 
     DECLARE_SGI_POOL(0);
@@ -328,6 +330,7 @@ struct PRO_SSL_CLIENT_CONFIG : public mbedtls_ssl_config
         mbedtls_ctr_drbg_init(&rng);
         mbedtls_ssl_config_init(this);
 
+        sha0Profile = mbedtls_x509_crt_profile_default;
         sha1Profile = mbedtls_x509_crt_profile_default;
         sha1Profile.allowed_mds |= MBEDTLS_X509_ID_FLAG(MBEDTLS_MD_SHA1);
 
@@ -349,6 +352,7 @@ struct PRO_SSL_CLIENT_CONFIG : public mbedtls_ssl_config
     PRO_SSL_AUTH_ITEM        auth;
     PRO_SSL_SUITE_LIST       suites;
     PRO_SSL_ALPN_LIST        alpns;
+    mbedtls_x509_crt_profile sha0Profile;
     mbedtls_x509_crt_profile sha1Profile;
 
     DECLARE_SGI_POOL(0);
@@ -356,8 +360,13 @@ struct PRO_SSL_CLIENT_CONFIG : public mbedtls_ssl_config
 
 struct PRO_SSL_CTX : public mbedtls_ssl_context
 {
-    PRO_SSL_CTX(PRO_INT64 theSockId, PRO_UINT64 theNonce)
-        : sockId(theSockId), nonce(pbsd_hton64(theNonce))
+    PRO_SSL_CTX(
+        PRO_INT64  __sockId,
+        PRO_UINT64 __nonce
+        )
+        :
+    sockId(__sockId),
+    nonce(pbsd_hton64(__nonce))
     {
         sentBytes = 0;
         recvBytes = 0;
@@ -896,7 +905,8 @@ ProSslServerConfig_SetAlpnList(PRO_SSL_SERVER_CONFIG* config,
         return (false);
     }
 
-    if (mbedtls_ssl_conf_alpn_protocols(config, (const char**)&(*alpns2.alpns)[0]) != 0)
+    if (mbedtls_ssl_conf_alpn_protocols(
+        config, (const char**)&(*alpns2.alpns)[0]) != 0)
     {
         alpns2.Fini();
 
@@ -927,7 +937,7 @@ ProSslServerConfig_EnableSha1Cert(PRO_SSL_SERVER_CONFIG* config,
     }
     else
     {
-        mbedtls_ssl_conf_cert_profile(config, &mbedtls_x509_crt_profile_default);
+        mbedtls_ssl_conf_cert_profile(config, &config->sha0Profile);
     }
 }
 
@@ -1100,11 +1110,13 @@ ProSslServerConfig_SetAuthLevel(PRO_SSL_SERVER_CONFIG* config,
         level == PRO_SSL_AUTHLV_OPTIONAL ||
         level == PRO_SSL_AUTHLV_REQUIRED
         );
-    if (config == NULL
+    if (
+        config == NULL
         ||
-        level != PRO_SSL_AUTHLV_NONE     &&
-        level != PRO_SSL_AUTHLV_OPTIONAL &&
-        level != PRO_SSL_AUTHLV_REQUIRED)
+        (level != PRO_SSL_AUTHLV_NONE     &&
+         level != PRO_SSL_AUTHLV_OPTIONAL &&
+         level != PRO_SSL_AUTHLV_REQUIRED)
+       )
     {
         return (false);
     }
@@ -1284,7 +1296,8 @@ ProSslServerConfig_AppendSniCertChain(PRO_SSL_SERVER_CONFIG* config,
     assert(keyFile != NULL);
     assert(keyFile[0] != '\0');
     if (config == NULL || sniName == NULL || sniName[0] == '\0' ||
-        certFiles == NULL || certFileCount == 0 || keyFile == NULL || keyFile[0] == '\0')
+        certFiles == NULL || certFileCount == 0 || keyFile == NULL ||
+        keyFile[0] == '\0')
     {
         return (false);
     }
@@ -1359,11 +1372,13 @@ ProSslServerConfig_SetSniAuthLevel(PRO_SSL_SERVER_CONFIG* config,
         level == PRO_SSL_AUTHLV_OPTIONAL ||
         level == PRO_SSL_AUTHLV_REQUIRED
         );
-    if (config == NULL || sniName == NULL || sniName[0] == '\0'
+    if (
+        config == NULL || sniName == NULL || sniName[0] == '\0'
         ||
-        level != PRO_SSL_AUTHLV_NONE     &&
-        level != PRO_SSL_AUTHLV_OPTIONAL &&
-        level != PRO_SSL_AUTHLV_REQUIRED)
+        (level != PRO_SSL_AUTHLV_NONE     &&
+         level != PRO_SSL_AUTHLV_OPTIONAL &&
+         level != PRO_SSL_AUTHLV_REQUIRED)
+       )
     {
         return (false);
     }
@@ -1552,7 +1567,8 @@ ProSslClientConfig_SetAlpnList(PRO_SSL_CLIENT_CONFIG* config,
         return (false);
     }
 
-    if (mbedtls_ssl_conf_alpn_protocols(config, (const char**)&(*alpns2.alpns)[0]) != 0)
+    if (mbedtls_ssl_conf_alpn_protocols(
+        config, (const char**)&(*alpns2.alpns)[0]) != 0)
     {
         alpns2.Fini();
 
@@ -1583,7 +1599,7 @@ ProSslClientConfig_EnableSha1Cert(PRO_SSL_CLIENT_CONFIG* config,
     }
     else
     {
-        mbedtls_ssl_conf_cert_profile(config, &mbedtls_x509_crt_profile_default);
+        mbedtls_ssl_conf_cert_profile(config, &config->sha0Profile);
     }
 }
 
@@ -1762,11 +1778,13 @@ ProSslClientConfig_SetAuthLevel(PRO_SSL_CLIENT_CONFIG* config,
         level == PRO_SSL_AUTHLV_OPTIONAL ||
         level == PRO_SSL_AUTHLV_REQUIRED
         );
-    if (config == NULL
+    if (
+        config == NULL
         ||
-        level != PRO_SSL_AUTHLV_NONE     &&
-        level != PRO_SSL_AUTHLV_OPTIONAL &&
-        level != PRO_SSL_AUTHLV_REQUIRED)
+        (level != PRO_SSL_AUTHLV_NONE     &&
+         level != PRO_SSL_AUTHLV_OPTIONAL &&
+         level != PRO_SSL_AUTHLV_REQUIRED)
+       )
     {
         return (false);
     }

@@ -39,8 +39,14 @@ CRtpPacket::CreateInstance(const void*       payloadBuffer,
         return (NULL);
     }
 
-    assert(packMode == RTP_EPM_DEFAULT || packMode == RTP_EPM_TCP2 || packMode == RTP_EPM_TCP4);
-    if (packMode != RTP_EPM_DEFAULT && packMode != RTP_EPM_TCP2 && packMode != RTP_EPM_TCP4)
+    assert(
+        packMode == RTP_EPM_DEFAULT ||
+        packMode == RTP_EPM_TCP2    ||
+        packMode == RTP_EPM_TCP4
+        );
+    if (packMode != RTP_EPM_DEFAULT &&
+        packMode != RTP_EPM_TCP2    &&
+        packMode != RTP_EPM_TCP4)
     {
         return (NULL);
     }
@@ -83,8 +89,14 @@ CRtpPacket::CreateInstance(unsigned long     payloadSize,
         return (NULL);
     }
 
-    assert(packMode == RTP_EPM_DEFAULT || packMode == RTP_EPM_TCP2 || packMode == RTP_EPM_TCP4);
-    if (packMode != RTP_EPM_DEFAULT && packMode != RTP_EPM_TCP2 && packMode != RTP_EPM_TCP4)
+    assert(
+        packMode == RTP_EPM_DEFAULT ||
+        packMode == RTP_EPM_TCP2    ||
+        packMode == RTP_EPM_TCP4
+        );
+    if (packMode != RTP_EPM_DEFAULT &&
+        packMode != RTP_EPM_TCP2    &&
+        packMode != RTP_EPM_TCP4)
     {
         return (NULL);
     }

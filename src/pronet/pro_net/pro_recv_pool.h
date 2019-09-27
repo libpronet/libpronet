@@ -83,7 +83,10 @@ public:
         return ((unsigned long)m_dataSize);
     }
 
-    virtual void PRO_CALLTYPE PeekData(void* buf, size_t size) const
+    virtual void PRO_CALLTYPE PeekData(
+        void*  buf,
+        size_t size
+        ) const
     {
         if (buf == NULL || size == 0 || size > m_dataSize)
         {
@@ -94,7 +97,8 @@ public:
         if (size > continuousSize)
         {
             memcpy(buf, m_data, continuousSize);
-            memcpy((char*)buf + continuousSize, m_begin, size - continuousSize);
+            memcpy((char*)buf + continuousSize, m_begin,
+                size - continuousSize);
         }
         else
         {

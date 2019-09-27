@@ -74,7 +74,8 @@ CRtpSessionMcast::Init(IRtpSessionObserver* observer,
     assert(reactor != NULL);
     assert(mcastIp != NULL);
     assert(mcastIp[0] != '\0');
-    if (observer == NULL || reactor == NULL || mcastIp == NULL || mcastIp[0] == '\0')
+    if (observer == NULL || reactor == NULL || mcastIp == NULL ||
+        mcastIp[0] == '\0')
     {
         return (false);
     }
@@ -119,7 +120,8 @@ CRtpSessionMcast::Init(IRtpSessionObserver* observer,
                 }
             }
 
-            m_trans = ProCreateMcastTransport(this, reactor, mcastIp, mcastPort2, localIp,
+            m_trans = ProCreateMcastTransport(
+                this, reactor, mcastIp, mcastPort2, localIp,
                 sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
             if (m_trans != NULL)
             {

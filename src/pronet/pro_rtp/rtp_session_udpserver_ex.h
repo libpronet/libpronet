@@ -28,7 +28,9 @@ class CRtpSessionUdpserverEx : public CRtpSessionBase
 {
 public:
 
-    static CRtpSessionUdpserverEx* CreateInstance(const RTP_SESSION_INFO* localInfo);
+    static CRtpSessionUdpserverEx* CreateInstance(
+        const RTP_SESSION_INFO* localInfo
+        );
 
     bool Init(
         IRtpSessionObserver* observer,

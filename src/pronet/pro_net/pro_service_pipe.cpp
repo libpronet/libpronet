@@ -346,7 +346,8 @@ CProServicePipe::OnSend(IProTransport* trans,
         if (m_packets.size() > 0)
         {
             const PRO_SERVICE_PACKET& packet = m_packets.front();
-            if (m_trans->SendData(&packet, sizeof(PRO_SERVICE_PACKET), 0, NULL))
+            if (m_trans->SendData(
+                &packet, sizeof(PRO_SERVICE_PACKET), 0, NULL))
             {
                 m_packets.pop_front();
             }

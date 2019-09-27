@@ -74,7 +74,8 @@ CRtpSessionMcastEx::Init(IRtpSessionObserver* observer,
     assert(reactor != NULL);
     assert(mcastIp != NULL);
     assert(mcastIp[0] != '\0');
-    if (observer == NULL || reactor == NULL || mcastIp == NULL || mcastIp[0] == '\0')
+    if (observer == NULL || reactor == NULL || mcastIp == NULL ||
+        mcastIp[0] == '\0')
     {
         return (false);
     }
@@ -110,7 +111,8 @@ CRtpSessionMcastEx::Init(IRtpSessionObserver* observer,
                 mcastPort2 = AllocRtpUdpPort();
             }
 
-            m_trans = ProCreateMcastTransport(this, reactor, mcastIp, mcastPort2, localIp,
+            m_trans = ProCreateMcastTransport(
+                this, reactor, mcastIp, mcastPort2, localIp,
                 sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
             if (m_trans != NULL)
             {
@@ -272,10 +274,14 @@ CRtpSessionMcastEx::OnRecv(IProTransport*          trans,
             else
             {
                 recvPool.PeekData(
-                    packet->GetPayloadBuffer(), sizeof(RTP_EXT) + ext.hdrAndPayloadSize);
+                    packet->GetPayloadBuffer(),
+                    sizeof(RTP_EXT) + ext.hdrAndPayloadSize
+                    );
 
                 if (!CRtpPacket::ParseExtBuffer(
-                    (char*)packet->GetPayloadBuffer(), packet->GetPayloadSize16()))
+                    (char*)packet->GetPayloadBuffer(),
+                    packet->GetPayloadSize16()
+                    ))
                 {
                     packet->Release();
                     packet = NULL;
@@ -290,11 +296,17 @@ CRtpSessionMcastEx::OnRecv(IProTransport*          trans,
                 magicPacket.ext = (RTP_EXT*)packet->GetPayloadBuffer();
                 magicPacket.hdr = (RTP_HEADER*)(magicPacket.ext + 1);
 
-                assert(m_info.inSrcMmId == 0 || packet->GetMmId() == m_info.inSrcMmId);
+                assert(
+                    m_info.inSrcMmId  == 0 ||
+                    packet->GetMmId() == m_info.inSrcMmId
+                    );
                 assert(packet->GetMmType() == m_info.mmType);
-                if (m_info.inSrcMmId != 0 && packet->GetMmId() != m_info.inSrcMmId
+                if (
+                    (m_info.inSrcMmId  != 0 &&
+                     packet->GetMmId() != m_info.inSrcMmId)
                     ||
-                    packet->GetMmType() != m_info.mmType)
+                    packet->GetMmType() != m_info.mmType /* drop this packet */
+                   )
                 {
                     packet->Release();
                     packet = NULL;

@@ -23,11 +23,11 @@
 ////
 
 /*
- * 1.2.0
+ * 1.2.1
  */
 #define PRO_VER_MAJOR 1
 #define PRO_VER_MINOR 2
-#define PRO_VER_PATCH 0
+#define PRO_VER_PATCH 1
 
 /////////////////////////////////////////////////////////////////////////////
 ////

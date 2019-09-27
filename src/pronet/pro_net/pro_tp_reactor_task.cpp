@@ -69,10 +69,18 @@ CProTpReactorTask::Start(unsigned long ioThreadCount,
     CProThreadMutexGuard mon(m_lockAtom);
 
     assert(ioThreadCount > 0);
-    assert(ioThreadPriority == 0 || ioThreadPriority == 1 || ioThreadPriority == 2);
-    if (ioThreadCount == 0
+    assert(
+        ioThreadPriority == 0 ||
+        ioThreadPriority == 1 ||
+        ioThreadPriority == 2
+        );
+    if (
+        ioThreadCount == 0
         ||
-        ioThreadPriority != 0 && ioThreadPriority != 1 && ioThreadPriority != 2)
+        (ioThreadPriority != 0 &&
+         ioThreadPriority != 1 &&
+         ioThreadPriority != 2)
+       )
     {
         return (false);
     }
@@ -255,8 +263,9 @@ CProTpReactorTask::AddHandler(PRO_INT64         sockId,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_acceptThreadCount + m_ioThreadCount == 0 ||
-            m_curThreadCount != m_acceptThreadCount + m_ioThreadCount || m_wantExit)
+        if (m_acceptThreadCount + m_ioThreadCount == 0                ||
+            m_curThreadCount != m_acceptThreadCount + m_ioThreadCount ||
+            m_wantExit)
         {
             return (false);
         }
@@ -271,7 +280,8 @@ CProTpReactorTask::AddHandler(PRO_INT64         sockId,
 
             for (; i < c; ++i)
             {
-                if (m_ioReactors[i]->GetHandlerCount() < reactor->GetHandlerCount())
+                if (m_ioReactors[i]->GetHandlerCount() <
+                    reactor->GetHandlerCount())
                 {
                     reactor = m_ioReactors[i];
                 }
@@ -280,7 +290,8 @@ CProTpReactorTask::AddHandler(PRO_INT64         sockId,
 
         if (PRO_BIT_ENABLED(mask, PRO_MASK_ACCEPT))
         {
-            ret = m_acceptReactor->AddHandler(sockId, handler, PRO_MASK_ACCEPT);
+            ret = m_acceptReactor->AddHandler(
+                sockId, handler, PRO_MASK_ACCEPT);
         }
         else
         {
@@ -363,13 +374,15 @@ CProTpReactorTask::ScheduleTimer(IProOnTimer* onTimer,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_acceptThreadCount + m_ioThreadCount == 0 ||
-            m_curThreadCount != m_acceptThreadCount + m_ioThreadCount || m_wantExit)
+        if (m_acceptThreadCount + m_ioThreadCount == 0                ||
+            m_curThreadCount != m_acceptThreadCount + m_ioThreadCount ||
+            m_wantExit)
         {
             return (0);
         }
 
-        timerId = m_timerFactory.ScheduleTimer(onTimer, timeSpan, recurring, userData);
+        timerId = m_timerFactory.ScheduleTimer(
+            onTimer, timeSpan, recurring, userData);
     }
 
     return (timerId);
@@ -385,8 +398,9 @@ CProTpReactorTask::ScheduleHeartbeatTimer(IProOnTimer* onTimer,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_acceptThreadCount + m_ioThreadCount == 0 ||
-            m_curThreadCount != m_acceptThreadCount + m_ioThreadCount || m_wantExit)
+        if (m_acceptThreadCount + m_ioThreadCount == 0                ||
+            m_curThreadCount != m_acceptThreadCount + m_ioThreadCount ||
+            m_wantExit)
         {
             return (0);
         }
@@ -406,8 +420,9 @@ CProTpReactorTask::UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds)
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_acceptThreadCount + m_ioThreadCount == 0 ||
-            m_curThreadCount != m_acceptThreadCount + m_ioThreadCount || m_wantExit)
+        if (m_acceptThreadCount + m_ioThreadCount == 0                ||
+            m_curThreadCount != m_acceptThreadCount + m_ioThreadCount ||
+            m_wantExit)
         {
             return (false);
         }
@@ -447,13 +462,15 @@ CProTpReactorTask::ScheduleMmTimer(IProOnTimer* onTimer,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_acceptThreadCount + m_ioThreadCount == 0 ||
-            m_curThreadCount != m_acceptThreadCount + m_ioThreadCount || m_wantExit)
+        if (m_acceptThreadCount + m_ioThreadCount == 0                ||
+            m_curThreadCount != m_acceptThreadCount + m_ioThreadCount ||
+            m_wantExit)
         {
             return (0);
         }
 
-        timerId = m_mmTimerFactory.ScheduleTimer(onTimer, timeSpan, recurring, userData);
+        timerId = m_mmTimerFactory.ScheduleTimer(
+            onTimer, timeSpan, recurring, userData);
     }
 
     return (timerId);
@@ -491,8 +508,9 @@ CProTpReactorTask::GetTraceInfo(char*  buf,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_acceptThreadCount + m_ioThreadCount == 0 ||
-            m_curThreadCount != m_acceptThreadCount + m_ioThreadCount || m_wantExit)
+        if (m_acceptThreadCount + m_ioThreadCount == 0                ||
+            m_curThreadCount != m_acceptThreadCount + m_ioThreadCount ||
+            m_wantExit)
         {
             return;
         }
@@ -522,7 +540,8 @@ CProTpReactorTask::GetTraceInfo(char*  buf,
 
         for (int j = 1; j < (int)m_ioThreadCount; ++j)
         {
-            sprintf(theBuf, "+ %d ", (int)m_ioReactors[j]->GetHandlerCount() - 1);
+            sprintf(theBuf, "+ %d ",
+                (int)m_ioReactors[j]->GetHandlerCount() - 1);
             theInfo += theBuf;
         }
 

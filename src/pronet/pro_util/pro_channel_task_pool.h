@@ -54,7 +54,10 @@ public:
 
     void RemoveChannel(PRO_UINT64 channelId);
 
-    bool Put(PRO_UINT64 channelId, IProFunctorCommand* command);
+    bool Put(
+        PRO_UINT64          channelId,
+        IProFunctorCommand* command
+        );
 
     unsigned long GetSize() const;
 

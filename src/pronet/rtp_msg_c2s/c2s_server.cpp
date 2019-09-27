@@ -79,8 +79,8 @@ CC2sServer::Init(IProReactor*                  reactor,
         assert(m_uplinkSslConfig == NULL);
         assert(m_localSslConfig == NULL);
         assert(m_msgC2s == NULL);
-        if (m_reactor != NULL ||
-            m_uplinkSslConfig != NULL || m_localSslConfig != NULL || m_msgC2s != NULL)
+        if (m_reactor != NULL || m_uplinkSslConfig != NULL ||
+            m_localSslConfig != NULL || m_msgC2s != NULL)
         {
             return (false);
         }
@@ -98,7 +98,8 @@ CC2sServer::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.c2ss_ssl_uplink_cafiles[i].empty())
                 {
-                    caFiles.push_back(&configInfo.c2ss_ssl_uplink_cafiles[i][0]);
+                    caFiles.push_back(
+                        &configInfo.c2ss_ssl_uplink_cafiles[i][0]);
                 }
             }
 
@@ -109,7 +110,8 @@ CC2sServer::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.c2ss_ssl_uplink_crlfiles[i].empty())
                 {
-                    crlFiles.push_back(&configInfo.c2ss_ssl_uplink_crlfiles[i][0]);
+                    crlFiles.push_back(
+                        &configInfo.c2ss_ssl_uplink_crlfiles[i][0]);
                 }
             }
 
@@ -148,7 +150,11 @@ CC2sServer::Init(IProReactor*                  reactor,
                     goto EXIT;
                 }
 
-                if (!ProSslClientConfig_SetSuiteList(uplinkSslConfig, &suites[0], suites.size()))
+                if (!ProSslClientConfig_SetSuiteList(
+                    uplinkSslConfig,
+                    &suites[0],
+                    suites.size()
+                    ))
                 {
                     goto EXIT;
                 }
@@ -168,7 +174,8 @@ CC2sServer::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.c2ss_ssl_local_cafiles[i].empty())
                 {
-                    caFiles.push_back(&configInfo.c2ss_ssl_local_cafiles[i][0]);
+                    caFiles.push_back(
+                        &configInfo.c2ss_ssl_local_cafiles[i][0]);
                 }
             }
 
@@ -179,7 +186,8 @@ CC2sServer::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.c2ss_ssl_local_crlfiles[i].empty())
                 {
-                    crlFiles.push_back(&configInfo.c2ss_ssl_local_crlfiles[i][0]);
+                    crlFiles.push_back(
+                        &configInfo.c2ss_ssl_local_crlfiles[i][0]);
                 }
             }
 
@@ -190,7 +198,8 @@ CC2sServer::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.c2ss_ssl_local_certfiles[i].empty())
                 {
-                    certFiles.push_back(&configInfo.c2ss_ssl_local_certfiles[i][0]);
+                    certFiles.push_back(
+                        &configInfo.c2ss_ssl_local_certfiles[i][0]);
                 }
             }
 
@@ -262,8 +271,10 @@ CC2sServer::Init(IProReactor*                  reactor,
 
         if (!m_configInfo.c2ss_uplink_password.empty())
         {
-            ProZeroMemory(&m_configInfo.c2ss_uplink_password[0],
-                m_configInfo.c2ss_uplink_password.length());
+            ProZeroMemory(
+                &m_configInfo.c2ss_uplink_password[0],
+                m_configInfo.c2ss_uplink_password.length()
+                );
             m_configInfo.c2ss_uplink_password = "";
         }
     }
@@ -375,7 +386,8 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
     assert(myUser != NULL);
     assert(myPublicIp != NULL);
     assert(myPublicIp[0] != '\0');
-    if (msgC2s == NULL || myUser == NULL || myPublicIp == NULL || myPublicIp[0] == '\0')
+    if (msgC2s == NULL || myUser == NULL || myPublicIp == NULL ||
+        myPublicIp[0] == '\0')
     {
         return;
     }
@@ -408,8 +420,8 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-            "\n CC2sServer::OnOkC2s(id : %u-" PRO_PRT64U "-%u, publicIp : %s, sslSuite : %s,"
-            " server : %s:%u) \n"
+            "\n CC2sServer::OnOkC2s(id : %u-" PRO_PRT64U "-%u, publicIp : %s,"
+            " sslSuite : %s, server : %s:%u) \n"
             ,
             (unsigned int)myUser->classId,
             myUser->UserId(),
@@ -493,7 +505,8 @@ CC2sServer::OnOkUser(IRtpMsgC2s*         msgC2s,
     assert(user != NULL);
     assert(userPublicIp != NULL);
     assert(userPublicIp[0] != '\0');
-    if (msgC2s == NULL || user == NULL || userPublicIp == NULL || userPublicIp[0] == '\0')
+    if (msgC2s == NULL || user == NULL || userPublicIp == NULL ||
+        userPublicIp[0] == '\0')
     {
         return;
     }
@@ -522,8 +535,8 @@ CC2sServer::OnOkUser(IRtpMsgC2s*         msgC2s,
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-            "\n CC2sServer::OnOkUser(id : %u-" PRO_PRT64U "-%u, fromIp : %s, sslSuite : %s,"
-            " users : %u) \n"
+            "\n CC2sServer::OnOkUser(id : %u-" PRO_PRT64U "-%u, fromIp : %s,"
+            " sslSuite : %s, users : %u) \n"
             ,
             (unsigned int)user->classId,
             user->UserId(),

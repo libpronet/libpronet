@@ -220,7 +220,8 @@ IRtpPacket*
 PRO_CALLTYPE
 CRtpReorder::PopFront()
 {
-    CProStlMap<PRO_INT64, IRtpPacket*>::iterator const itr = m_seq64ToPacket.begin();
+    CProStlMap<PRO_INT64, IRtpPacket*>::iterator const itr =
+        m_seq64ToPacket.begin();
     if (itr == m_seq64ToPacket.end())
     {
         return (NULL);

@@ -264,7 +264,8 @@ CProFunctorCommandTask::Svc()
 
         command->Execute();
 
-        CProThreadMutexCondition* const cond = (CProThreadMutexCondition*)command->GetUserData();
+        CProThreadMutexCondition* const cond =
+            (CProThreadMutexCondition*)command->GetUserData();
         if (cond != NULL)
         {
             cond->Signal();
@@ -281,7 +282,8 @@ CProFunctorCommandTask::Svc()
         IProFunctorCommand* const command = commands[i];
         command->Execute();
 
-        CProThreadMutexCondition* const cond = (CProThreadMutexCondition*)command->GetUserData();
+        CProThreadMutexCondition* const cond =
+            (CProThreadMutexCondition*)command->GetUserData();
         if (cond != NULL)
         {
             cond->Signal();

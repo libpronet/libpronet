@@ -62,17 +62,17 @@ extern "C" {
 /*
  * 消息用户号. 1-2-*, 1-3-*, ...; 2-1-*, 2-2-*, 2-3-*, ...; ...
  *
- * classId : 8bits. 该字段用于标识用户类别,以便于应用程序分类管理.
+ * classId : 8bits. 该字段用于标识用户类别, 以便于应用程序分类管理.
  * (cid)     0无效, 1应用服务器节点, 2~255应用客户端节点
  *
- * userId  : 40bits. 该字段用于标识用户id(如电话号码),由消息服务器分配或许可.
- * (uid)     0动态分配,有效范围为[0xF000000000 ~ 0xFFFFFFFFFF];
- *           否则静态分配,有效范围为[1 ~ 0xEFFFFFFFFF]
+ * userId  : 40bits. 该字段用于标识用户id(如电话号码), 由消息服务器分配或许可.
+ * (uid)     0动态分配, 有效范围为[0xF000000000 ~ 0xFFFFFFFFFF];
+ *           否则静态分配, 有效范围为[1 ~ 0xEFFFFFFFFF]
  *
- * instId  : 16bits. 该字段用于标识用户实例id(如电话分机号),由消息服务器分配
+ * instId  : 16bits. 该字段用于标识用户实例id(如电话分机号), 由消息服务器分配
  * (iid)     或许可. 有效范围为[0 ~ 65535]
  *
- * 说明    : cid-uid-iid 之 1-1-* 保留,用于标识消息服务器本身(root)
+ * 说明    : cid-uid-iid 之 1-1-* 保留, 用于标识消息服务器本身(root)
  */
 struct RTP_MSG_USER
 {
@@ -82,27 +82,27 @@ struct RTP_MSG_USER
     }
 
     RTP_MSG_USER(
-        unsigned char classId,
-        PRO_UINT64    userId,
-        PRO_UINT16    instId
+        unsigned char __classId,
+        PRO_UINT64    __userId,
+        PRO_UINT16    __instId
         )
     {
-        this->classId = classId;
-        UserId(userId);
-        this->instId  = instId;
+        classId = __classId;
+        UserId(__userId);
+        instId  = __instId;
     }
 
     void UserId(PRO_UINT64 userId)
     {
-        userId5 = (unsigned char)userId;
+        userId5 =  (unsigned char)userId;
         userId >>= 8;
-        userId4 = (unsigned char)userId;
+        userId4 =  (unsigned char)userId;
         userId >>= 8;
-        userId3 = (unsigned char)userId;
+        userId3 =  (unsigned char)userId;
         userId >>= 8;
-        userId2 = (unsigned char)userId;
+        userId2 =  (unsigned char)userId;
         userId >>= 8;
-        userId1 = (unsigned char)userId;
+        userId1 =  (unsigned char)userId;
     }
 
     /*
@@ -112,13 +112,13 @@ struct RTP_MSG_USER
     {
         PRO_UINT64 userId = userId1;
         userId <<= 8;
-        userId |= userId2;
+        userId |=  userId2;
         userId <<= 8;
-        userId |= userId3;
+        userId |=  userId3;
         userId <<= 8;
-        userId |= userId4;
+        userId |=  userId4;
         userId <<= 8;
-        userId |= userId5;
+        userId |=  userId5;
 
         return (userId);
     }
@@ -257,7 +257,9 @@ public:
     /*
      * 获取加密套件
      */
-    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(char suiteName[64]) const = 0;
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
+        char suiteName[64]
+        ) const = 0;
 
     /*
      * 获取本地ip地址
@@ -310,7 +312,7 @@ public:
     /*
      * 设置链路发送红线. 默认(1024 * 1024)字节
      *
-     * 如果redlineBytes为0, 则直接返回,什么都不做
+     * 如果redlineBytes为0, 则直接返回, 什么都不做
      */
     virtual void PRO_CALLTYPE SetOutputRedline(unsigned long redlineBytes) = 0;
 
@@ -339,7 +341,7 @@ public:
     virtual unsigned long PRO_CALLTYPE Release() = 0;
 
     /*
-     * 登录成功时,该函数将被回调
+     * 登录成功时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnOkMsg(
         IRtpMsgClient*      msgClient,
@@ -348,7 +350,7 @@ public:
         ) = 0;
 
     /*
-     * 消息到来时,该函数将被回调
+     * 消息到来时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnRecvMsg(
         IRtpMsgClient*      msgClient,
@@ -359,7 +361,7 @@ public:
         ) = 0;
 
     /*
-     * 网络错误或超时时,该函数将被回调
+     * 网络错误或超时时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnCloseMsg(
         IRtpMsgClient* msgClient,
@@ -446,9 +448,11 @@ public:
     /*
      * 设置server->c2s链路的发送红线. 默认(1024 * 1024 * 8)字节
      *
-     * 如果redlineBytes为0, 则直接返回,什么都不做
+     * 如果redlineBytes为0, 则直接返回, 什么都不做
      */
-    virtual void PRO_CALLTYPE SetOutputRedlineToC2s(unsigned long redlineBytes) = 0;
+    virtual void PRO_CALLTYPE SetOutputRedlineToC2s(
+        unsigned long redlineBytes
+        ) = 0;
 
     /*
      * 获取server->c2s链路的发送红线. 默认(1024 * 1024 * 8)字节
@@ -458,9 +462,11 @@ public:
     /*
      * 设置server->user链路的发送红线. 默认(1024 * 1024)字节
      *
-     * 如果redlineBytes为0, 则直接返回,什么都不做
+     * 如果redlineBytes为0, 则直接返回, 什么都不做
      */
-    virtual void PRO_CALLTYPE SetOutputRedlineToUsr(unsigned long redlineBytes) = 0;
+    virtual void PRO_CALLTYPE SetOutputRedlineToUsr(
+        unsigned long redlineBytes
+        ) = 0;
 
     /*
      * 获取server->user链路的发送红线. 默认(1024 * 1024)字节
@@ -470,7 +476,9 @@ public:
     /*
      * 获取链路缓存的尚未发送的字节数
      */
-    virtual unsigned long PRO_CALLTYPE GetSendingBytes(const RTP_MSG_USER* user) const = 0;
+    virtual unsigned long PRO_CALLTYPE GetSendingBytes(
+        const RTP_MSG_USER* user
+        ) const = 0;
 };
 
 /*
@@ -487,9 +495,9 @@ public:
     virtual unsigned long PRO_CALLTYPE Release() = 0;
 
     /*
-     * 用户请求登录时,该函数将被回调
+     * 用户请求登录时, 该函数将被回调
      *
-     * 上层应该根据用户号,找到匹配的用户口令,然后调用CheckRtpServiceData(...)
+     * 上层应该根据用户号, 找到匹配的用户口令, 然后调用CheckRtpServiceData(...)
      * 进行校验
      *
      * 返回值表示是否允许该用户登录
@@ -508,7 +516,7 @@ public:
         ) = 0;
 
     /*
-     * 用户登录成功时,该函数将被回调
+     * 用户登录成功时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnOkUser(
         IRtpMsgServer*      msgServer,
@@ -519,7 +527,7 @@ public:
         ) = 0;
 
     /*
-     * 用户网络错误或超时时,该函数将被回调
+     * 用户网络错误或超时时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnCloseUser(
         IRtpMsgServer*      msgServer,
@@ -529,7 +537,7 @@ public:
         ) = 0;
 
     /*
-     * 消息到来时,该函数将被回调
+     * 消息到来时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnRecvMsg(
         IRtpMsgServer*      msgServer,
@@ -546,7 +554,7 @@ public:
 /*
  * 消息c2s
  *
- * c2s位于client与server之间,它可以分散server的负载,还可以隐藏server的位置.
+ * c2s位于client与server之间, 它可以分散server的负载, 还可以隐藏server的位置.
  * 对于client而言, c2s是透明的, client无法区分它连接的是server还是c2s
  */
 class IRtpMsgC2s
@@ -570,12 +578,16 @@ public:
     /*
      * 获取c2s<->server链路的加密套件
      */
-    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetUplinkSslSuite(char suiteName[64]) const = 0;
+    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetUplinkSslSuite(
+        char suiteName[64]
+        ) const = 0;
 
     /*
      * 获取c2s<->server链路的本地ip地址
      */
-    virtual const char* PRO_CALLTYPE GetUplinkLocalIp(char localIp[64]) const = 0;
+    virtual const char* PRO_CALLTYPE GetUplinkLocalIp(
+        char localIp[64]
+        ) const = 0;
 
     /*
      * 获取c2s<->server链路的本地端口号
@@ -585,7 +597,9 @@ public:
     /*
      * 获取c2s<->server链路的远端ip地址
      */
-    virtual const char* PRO_CALLTYPE GetUplinkRemoteIp(char remoteIp[64]) const = 0;
+    virtual const char* PRO_CALLTYPE GetUplinkRemoteIp(
+        char remoteIp[64]
+        ) const = 0;
 
     /*
      * 获取c2s<->server链路的远端端口号
@@ -595,9 +609,11 @@ public:
     /*
      * 设置c2s->server链路的发送红线. 默认(1024 * 1024 * 8)字节
      *
-     * 如果redlineBytes为0, 则直接返回,什么都不做
+     * 如果redlineBytes为0, 则直接返回, 什么都不做
      */
-    virtual void PRO_CALLTYPE SetUplinkOutputRedline(unsigned long redlineBytes) = 0;
+    virtual void PRO_CALLTYPE SetUplinkOutputRedline(
+        unsigned long redlineBytes
+        ) = 0;
 
     /*
      * 获取c2s->server链路的发送红线. 默认(1024 * 1024 * 8)字节
@@ -638,9 +654,11 @@ public:
     /*
      * 设置c2s->user链路的发送红线. 默认(1024 * 1024)字节
      *
-     * 如果redlineBytes为0, 则直接返回,什么都不做
+     * 如果redlineBytes为0, 则直接返回, 什么都不做
      */
-    virtual void PRO_CALLTYPE SetLocalOutputRedline(unsigned long redlineBytes) = 0;
+    virtual void PRO_CALLTYPE SetLocalOutputRedline(
+        unsigned long redlineBytes
+        ) = 0;
 
     /*
      * 获取c2s->user链路的发送红线. 默认(1024 * 1024)字节
@@ -650,7 +668,9 @@ public:
     /*
      * 获取c2s->user链路缓存的尚未发送的字节数
      */
-    virtual unsigned long PRO_CALLTYPE GetLocalSendingBytes(const RTP_MSG_USER* user) const = 0;
+    virtual unsigned long PRO_CALLTYPE GetLocalSendingBytes(
+        const RTP_MSG_USER* user
+        ) const = 0;
 };
 
 /*
@@ -667,7 +687,7 @@ public:
     virtual unsigned long PRO_CALLTYPE Release() = 0;
 
     /*
-     * c2s登录成功时,该函数将被回调
+     * c2s登录成功时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnOkC2s(
         IRtpMsgC2s*         msgC2s,
@@ -676,7 +696,7 @@ public:
         ) = 0;
 
     /*
-     * c2s网络错误或超时时,该函数将被回调
+     * c2s网络错误或超时时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnCloseC2s(
         IRtpMsgC2s* msgC2s,
@@ -686,7 +706,7 @@ public:
         ) = 0;
 
     /*
-     * 用户登录成功时,该函数将被回调
+     * 用户登录成功时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnOkUser(
         IRtpMsgC2s*         msgC2s,
@@ -695,7 +715,7 @@ public:
         ) = 0;
 
     /*
-     * 用户网络错误或超时时,该函数将被回调
+     * 用户网络错误或超时时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnCloseUser(
         IRtpMsgC2s*         msgC2s,
@@ -716,7 +736,7 @@ public:
  * reactor          : 反应器
  * mmType           : 媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
  * sslConfig        : ssl配置. NULL表示明文传输
- * sslSni           : ssl服务名. 如果有效,则参与认证服务端证书
+ * sslSni           : ssl服务名. 如果有效, 则参与认证服务端证书
  * remoteIp         : 服务器的ip地址或域名
  * remotePort       : 服务器的端口号
  * user             : 用户号
@@ -808,7 +828,7 @@ DeleteRtpMsgServer(IRtpMsgServer* msgServer);
  * reactor                : 反应器
  * mmType                 : 媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
  * uplinkSslConfig        : 级联的ssl配置. NULL表示c2s<->server之间明文传输
- * uplinkSslSni           : 级联的ssl服务名. 如果有效,则参与认证服务端证书
+ * uplinkSslSni           : 级联的ssl服务名. 如果有效, 则参与认证服务端证书
  * uplinkIp               : 服务器的ip地址或域名
  * uplinkPort             : 服务器的端口号
  * uplinkUser             : c2s的用户号

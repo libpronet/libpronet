@@ -49,7 +49,7 @@
 #define PRO_TIMER_UPCALL_COUNT     1000
 #endif
 
-#define DEFAULT_HEARTBEAT_INTERVAL 25
+#define DEFAULT_HEARTBEAT_INTERVAL 20
 
 typedef void (CProTimerFactory::* ACTION)(PRO_INT64*);
 
@@ -196,9 +196,11 @@ CProTimerFactory::ScheduleTimer(IProOnTimer* onTimer,
 
     assert(onTimer != NULL);
     assert(timeSpan2 > 0 || !recurring);
-    if (onTimer == NULL
+    if (
+        onTimer == NULL
         ||
-        timeSpan2 == 0 && recurring)
+        (timeSpan2 == 0 && recurring)
+       )
     {
         return (0);
     }
@@ -517,7 +519,8 @@ CProTimerFactory::WorkerRun(PRO_INT64* args)
 
                     if (node.heartbeat)
                     {
-                        const PRO_INT64 offset = node.expireTick % node.timeSpan;
+                        const PRO_INT64 offset =
+                            node.expireTick % node.timeSpan;
                         node.expireTick = (tick + node.timeSpan - 1) /
                             node.timeSpan * node.timeSpan + offset;
                         if (node.expireTick == tick)

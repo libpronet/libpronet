@@ -137,7 +137,8 @@ CMsgServer::Init(IProReactor*                  reactor,
                     goto EXIT;
                 }
 
-                ProSslServerConfig_EnableSha1Cert(sslConfig, configInfo.msgs_ssl_enable_sha1cert);
+                ProSslServerConfig_EnableSha1Cert(
+                    sslConfig, configInfo.msgs_ssl_enable_sha1cert);
 
                 if (!ProSslServerConfig_SetCaList(
                     sslConfig,
@@ -351,7 +352,8 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
     assert(instId != NULL);
     assert(appData != NULL);
     assert(isC2s != NULL);
-    if (msgServer == NULL || user == NULL || user->classId == 0 || user->UserId() == 0 ||
+    if (msgServer == NULL || user == NULL ||
+        user->classId == 0 || user->UserId() == 0 ||
         userPublicIp == NULL || userPublicIp[0] == '\0' ||
         userId == NULL || instId == NULL || appData == NULL || isC2s == NULL)
     {
@@ -413,7 +415,8 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
             }
             else
             {
-                const PRO_UINT32 bindedIp = pbsd_inet_aton(userRow._bindedip_.c_str());
+                const PRO_UINT32 bindedIp =
+                    pbsd_inet_aton(userRow._bindedip_.c_str());
                 if (bindedIp != (PRO_UINT32)-1 && bindedIp != 0 &&
                     pbsd_inet_aton(userPublicIp) != bindedIp)
                 {
@@ -511,7 +514,8 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
     assert(user != NULL);
     assert(userPublicIp != NULL);
     assert(userPublicIp[0] != '\0');
-    if (msgServer == NULL || user == NULL || userPublicIp == NULL || userPublicIp[0] == '\0')
+    if (msgServer == NULL || user == NULL || userPublicIp == NULL ||
+        userPublicIp[0] == '\0')
     {
         return;
     }

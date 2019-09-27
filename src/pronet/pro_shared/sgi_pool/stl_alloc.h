@@ -16,7 +16,7 @@
 
 // This implements some standard node allocators.  These are
 // NOT the same as the allocators in the C++ draft standard or in
-// in the original STL.  They do not encapsulate different pointer
+// the original STL.  They do not encapsulate different pointer
 // types; indeed we assume that there is only one pointer type.
 // The allocation primitives are intended to allocate individual objects,
 // not larger arenas as with the original STL allocators.
@@ -131,9 +131,13 @@ private:
 
     // Returns an object of size __n, and optionally adds to size __n free list.
     static void* _S_refill(size_t __n);
+
     // Allocates a chunk for __nobjs of size __size.  __nobjs may be reduced
     // if it is inconvenient to allocate the requested number.
-    static char* _S_chunk_alloc(size_t __size, int& __nobjs);
+    static char* _S_chunk_alloc(
+        size_t __size,
+        int&   __nobjs
+        );
 
     // Chunk allocation state.
     static char*  _S_start_free;
@@ -182,7 +186,10 @@ public:
     }
 
     // __p may not be 0
-    static void deallocate(void* __p, size_t __n)
+    static void deallocate(
+        void*  __p,
+        size_t __n
+        )
     {
         if (__p == 0 || __n == 0)
         {
@@ -206,7 +213,11 @@ public:
         }
     }
 
-    static void* reallocate(void* __p, size_t __old_sz, size_t __new_sz)
+    static void* reallocate(
+        void*  __p,
+        size_t __old_sz,
+        size_t __new_sz
+        )
     {
         if (__p == 0 || __old_sz == 0)
         {
@@ -220,7 +231,8 @@ public:
             return (0);
         }
 
-        if (__old_sz > (size_t)_MAX_OBJ_BYTES && __new_sz > (size_t)_MAX_OBJ_BYTES)
+        if (__old_sz > (size_t)_MAX_OBJ_BYTES &&
+            __new_sz > (size_t)_MAX_OBJ_BYTES)
         {
             return (realloc(__p, __new_sz));
         }

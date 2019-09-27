@@ -28,7 +28,9 @@ class CRtpSessionMcastEx : public CRtpSessionBase
 {
 public:
 
-    static CRtpSessionMcastEx* CreateInstance(const RTP_SESSION_INFO* localInfo);
+    static CRtpSessionMcastEx* CreateInstance(
+        const RTP_SESSION_INFO* localInfo
+        );
 
     bool Init(
         IRtpSessionObserver* observer,

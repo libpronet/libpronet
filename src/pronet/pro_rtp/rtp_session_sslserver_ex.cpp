@@ -48,7 +48,8 @@ CRtpSessionSslserverEx::CreateInstance(const RTP_SESSION_INFO* localInfo,
         return (NULL);
     }
 
-    CRtpSessionSslserverEx* const session = new CRtpSessionSslserverEx(*localInfo, sslCtx);
+    CRtpSessionSslserverEx* const session =
+        new CRtpSessionSslserverEx(*localInfo, sslCtx);
 
     return (session);
 }

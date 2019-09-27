@@ -249,7 +249,10 @@ CProConfigStream::StringToConfigs(const CProStlString&            str,
         return (true);
     }
 
-    return (BufToConfigs(&str[0], str.length(), configs, aroundCharL, aroundCharR));
+    const bool ret = BufToConfigs(
+        &str[0], str.length(), configs, aroundCharL, aroundCharR);
+
+    return (ret);
 }
 
 void

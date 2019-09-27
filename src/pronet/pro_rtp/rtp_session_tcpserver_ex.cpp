@@ -50,7 +50,8 @@ CRtpSessionTcpserverEx::CreateInstance(const RTP_SESSION_INFO* localInfo)
         return (NULL);
     }
 
-    CRtpSessionTcpserverEx* const session = new CRtpSessionTcpserverEx(*localInfo, NULL);
+    CRtpSessionTcpserverEx* const session =
+        new CRtpSessionTcpserverEx(*localInfo, NULL);
 
     return (session);
 }
@@ -106,7 +107,8 @@ CRtpSessionTcpserverEx::Init(IRtpSessionObserver* observer,
 
         if (m_sslCtx != NULL)
         {
-            m_trans = ProCreateSslTransport(this, reactor, m_sslCtx, sockId, unixSocket,
+            m_trans = ProCreateSslTransport(
+                this, reactor, m_sslCtx, sockId, unixSocket,
                 sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
             if (m_trans != NULL)
             {
@@ -115,7 +117,8 @@ CRtpSessionTcpserverEx::Init(IRtpSessionObserver* observer,
         }
         else
         {
-            m_trans = ProCreateTcpTransport(this, reactor, sockId, unixSocket,
+            m_trans = ProCreateTcpTransport(
+                this, reactor, sockId, unixSocket,
                 sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
         }
         if (m_trans == NULL)
@@ -337,7 +340,9 @@ CRtpSessionTcpserverEx::Recv0(CRtpPacket*& packet)
         }
 
         recvPool.PeekData(
-            packet->GetPayloadBuffer(), sizeof(RTP_EXT) + ext.hdrAndPayloadSize);
+            packet->GetPayloadBuffer(),
+            sizeof(RTP_EXT) + ext.hdrAndPayloadSize
+            );
         recvPool.Flush(sizeof(RTP_EXT) + ext.hdrAndPayloadSize);
 
         if (!CRtpPacket::ParseExtBuffer(
@@ -357,9 +362,11 @@ CRtpSessionTcpserverEx::Recv0(CRtpPacket*& packet)
 
         assert(m_info.inSrcMmId == 0 || packet->GetMmId() == m_info.inSrcMmId);
         assert(packet->GetMmType() == m_info.mmType);
-        if (m_info.inSrcMmId != 0 && packet->GetMmId() != m_info.inSrcMmId
+        if (
+            (m_info.inSrcMmId != 0 && packet->GetMmId() != m_info.inSrcMmId)
             ||
-            packet->GetMmType() != m_info.mmType) /* drop this packet */
+            packet->GetMmType() != m_info.mmType /* drop this packet */
+           )
         {
             packet->Release();
             packet = NULL;
@@ -469,7 +476,8 @@ CRtpSessionTcpserverEx::Recv4(CRtpPacket*& packet)
 
             if (dataSize + freeSize < sizeof(PRO_UINT32) + packetSize) /* a big-packet */
             {
-                m_bigPacket = CRtpPacket::CreateInstance(packetSize, m_info.packMode);
+                m_bigPacket = CRtpPacket::CreateInstance(
+                    packetSize, m_info.packMode);
                 if (m_bigPacket == NULL)
                 {
                     ret = false;
@@ -488,7 +496,8 @@ CRtpSessionTcpserverEx::Recv4(CRtpPacket*& packet)
             }
             else
             {
-                packet = CRtpPacket::CreateInstance(packetSize, m_info.packMode);
+                packet = CRtpPacket::CreateInstance(
+                    packetSize, m_info.packMode);
                 if (packet == NULL)
                 {
                     ret = false;

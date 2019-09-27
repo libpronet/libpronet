@@ -57,7 +57,8 @@ CRtpSessionTcpclientEx::CreateInstance(const RTP_SESSION_INFO* localInfo)
         return (NULL);
     }
 
-    CRtpSessionTcpclientEx* const session = new CRtpSessionTcpclientEx(*localInfo, NULL, NULL);
+    CRtpSessionTcpclientEx* const session =
+        new CRtpSessionTcpclientEx(*localInfo, NULL, NULL);
 
     return (session);
 }
@@ -122,7 +123,8 @@ CRtpSessionTcpclientEx::Init(IRtpSessionObserver* observer,
         assert(m_tcpHandshaker == NULL);
         assert(m_sslHandshaker == NULL);
         if (m_observer != NULL || m_reactor != NULL || m_trans != NULL ||
-            m_connector != NULL || m_tcpHandshaker != NULL || m_sslHandshaker != NULL)
+            m_connector != NULL || m_tcpHandshaker != NULL ||
+            m_sslHandshaker != NULL)
         {
             return (false);
         }
@@ -381,9 +383,11 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProTcpHandshaker* handshaker,
         assert(m_trans == NULL);
 
         assert(buf != NULL);
-        assert(size == sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_SESSION_ACK));
+        assert(size == sizeof(RTP_EXT) + sizeof(RTP_HEADER) +
+            sizeof(RTP_SESSION_ACK));
         if (buf == NULL ||
-            size != sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_SESSION_ACK))
+            size != sizeof(RTP_EXT) + sizeof(RTP_HEADER) +
+            sizeof(RTP_SESSION_ACK))
         {
             ProCloseSockId(sockId);
             sockId = -1;
@@ -407,7 +411,8 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProTcpHandshaker* handshaker,
 
                 m_info.remoteVersion = ack.version;
 
-                m_trans = ProCreateTcpTransport(this, m_reactor, sockId, unixSocket,
+                m_trans = ProCreateTcpTransport(
+                    this, m_reactor, sockId, unixSocket,
                     sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
                 if (m_trans == NULL)
                 {
@@ -559,9 +564,11 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProSslHandshaker* handshaker,
 
         assert(ctx != NULL);
         assert(buf != NULL);
-        assert(size == sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_SESSION_ACK));
+        assert(size == sizeof(RTP_EXT) + sizeof(RTP_HEADER) +
+            sizeof(RTP_SESSION_ACK));
         if (ctx == NULL || buf == NULL ||
-            size != sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_SESSION_ACK))
+            size != sizeof(RTP_EXT) + sizeof(RTP_HEADER) +
+            sizeof(RTP_SESSION_ACK))
         {
             ProSslCtx_Delete(ctx);
             ProCloseSockId(sockId);
@@ -589,7 +596,8 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProSslHandshaker* handshaker,
 
                 m_info.remoteVersion = ack.version;
 
-                m_trans = ProCreateSslTransport(this, m_reactor, ctx, sockId, unixSocket,
+                m_trans = ProCreateSslTransport(
+                    this, m_reactor, ctx, sockId, unixSocket,
                     sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
                 if (m_trans == NULL)
                 {
@@ -824,7 +832,9 @@ CRtpSessionTcpclientEx::Recv0(CRtpPacket*& packet)
         }
 
         recvPool.PeekData(
-            packet->GetPayloadBuffer(), sizeof(RTP_EXT) + ext.hdrAndPayloadSize);
+            packet->GetPayloadBuffer(),
+            sizeof(RTP_EXT) + ext.hdrAndPayloadSize
+            );
         recvPool.Flush(sizeof(RTP_EXT) + ext.hdrAndPayloadSize);
 
         if (!CRtpPacket::ParseExtBuffer(
@@ -844,9 +854,11 @@ CRtpSessionTcpclientEx::Recv0(CRtpPacket*& packet)
 
         assert(m_info.inSrcMmId == 0 || packet->GetMmId() == m_info.inSrcMmId);
         assert(packet->GetMmType() == m_info.mmType);
-        if (m_info.inSrcMmId != 0 && packet->GetMmId() != m_info.inSrcMmId
+        if (
+            (m_info.inSrcMmId != 0 && packet->GetMmId() != m_info.inSrcMmId)
             ||
-            packet->GetMmType() != m_info.mmType) /* drop this packet */
+            packet->GetMmType() != m_info.mmType /* drop this packet */
+           )
         {
             packet->Release();
             packet = NULL;
@@ -956,7 +968,8 @@ CRtpSessionTcpclientEx::Recv4(CRtpPacket*& packet)
 
             if (dataSize + freeSize < sizeof(PRO_UINT32) + packetSize) /* a big-packet */
             {
-                m_bigPacket = CRtpPacket::CreateInstance(packetSize, m_info.packMode);
+                m_bigPacket = CRtpPacket::CreateInstance(
+                    packetSize, m_info.packMode);
                 if (m_bigPacket == NULL)
                 {
                     ret = false;
@@ -975,7 +988,8 @@ CRtpSessionTcpclientEx::Recv4(CRtpPacket*& packet)
             }
             else
             {
-                packet = CRtpPacket::CreateInstance(packetSize, m_info.packMode);
+                packet = CRtpPacket::CreateInstance(
+                    packetSize, m_info.packMode);
                 if (packet == NULL)
                 {
                     ret = false;
@@ -1055,7 +1069,8 @@ CRtpSessionTcpclientEx::DoHandshake(PRO_INT64  sockId,
         m_password = "";
     }
 
-    IRtpPacket* const packet = CreateRtpPacket(&localInfo, sizeof(RTP_SESSION_INFO));
+    IRtpPacket* const packet =
+        CreateRtpPacket(&localInfo, sizeof(RTP_SESSION_INFO));
     if (packet == NULL)
     {
         return (false);

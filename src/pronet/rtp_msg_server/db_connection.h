@@ -49,7 +49,10 @@ public:
 
     void RollbackTransaction();
 
-    bool DoSelect(const char* sql, DB_ROW_SET& rows);
+    bool DoSelect(
+        const char* sql,
+        DB_ROW_SET& rows
+        );
 
     bool DoOther(const char* sql);
 

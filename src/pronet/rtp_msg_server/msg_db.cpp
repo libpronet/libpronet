@@ -83,7 +83,8 @@ GetMsgUserRow(CDbConnection&      db,
         DB_ROW_UNIT& dbrow = dbrows.rows_out[i];
         if (!dbrow.cells[4].txt.empty())
         {
-            ProZeroMemory(&dbrow.cells[4].txt[0], dbrow.cells[4].txt.length());
+            ProZeroMemory(
+                &dbrow.cells[4].txt[0], dbrow.cells[4].txt.length());
             dbrow.cells[4].txt = "";
         }
     }
@@ -100,7 +101,8 @@ GetMsgKickoutRows(CDbConnection&                      db,
 {
     rows.clear();
 
-    const char* const sql = " SELECT _cid_, _uid_, _iid_ FROM tbl_msg02_kickout ";
+    const char* const sql =
+        " SELECT _cid_, _uid_, _iid_ FROM tbl_msg02_kickout ";
 
     DB_ROW_SET dbrows;
     dbrows.types_in.push_back(DB_CT_I64); /* _cid_ */
@@ -173,7 +175,8 @@ AddMsgOnlineRow(CDbConnection&      db,
             sql,
             sizeof(sql),
             " UPDATE tbl_msg03_online "
-            " SET _fromip_='%s', _fromc2s_='%s', _sslsuite_='%s', _logontime_='%s' "
+            " SET _fromip_='%s', _fromc2s_='%s', "
+            " _sslsuite_='%s', _logontime_='%s' "
             " WHERE _cid_=%u AND _uid_=" PRO_PRT64U " AND _iid_=%u ",
             userPublicIp.c_str(),
             c2sIdString.c_str(),
@@ -190,7 +193,8 @@ AddMsgOnlineRow(CDbConnection&      db,
             sql,
             sizeof(sql),
             " INSERT INTO tbl_msg03_online "
-            " (_cid_, _uid_, _iid_, _fromip_, _fromc2s_, _sslsuite_, _logontime_) "
+            " (_cid_, _uid_, _iid_, "
+            " _fromip_, _fromc2s_, _sslsuite_, _logontime_) "
             " VALUES (%u, " PRO_PRT64U ", %u, '%s', '%s', '%s', '%s') ",
             (unsigned int)user.classId,
             user.UserId(),

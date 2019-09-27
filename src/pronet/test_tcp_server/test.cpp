@@ -77,7 +77,8 @@ CTest::Init(IProReactor*                  reactor,
         assert(m_sslConfig == NULL);
         assert(m_acceptor == NULL);
         assert(m_service == NULL);
-        if (m_reactor != NULL || m_sslConfig != NULL || m_acceptor != NULL || m_service != NULL)
+        if (m_reactor != NULL || m_sslConfig != NULL || m_acceptor != NULL ||
+            m_service != NULL)
         {
             return (false);
         }
@@ -129,7 +130,8 @@ CTest::Init(IProReactor*                  reactor,
                     goto EXIT;
                 }
 
-                ProSslServerConfig_EnableSha1Cert(sslConfig, configInfo.tcps_ssl_enable_sha1cert);
+                ProSslServerConfig_EnableSha1Cert(
+                    sslConfig, configInfo.tcps_ssl_enable_sha1cert);
 
                 if (!ProSslServerConfig_SetCaList(
                     sslConfig,
@@ -162,8 +164,8 @@ CTest::Init(IProReactor*                  reactor,
         }
         else
         {
-            acceptor = ProCreateAcceptorEx(this, reactor,
-                "0.0.0.0", configInfo.tcps_port, configInfo.tcps_handshake_timeout);
+            acceptor = ProCreateAcceptorEx(this, reactor, "0.0.0.0",
+                configInfo.tcps_port, configInfo.tcps_handshake_timeout);
         }
         if (acceptor == NULL && service == NULL)
         {
@@ -398,7 +400,8 @@ CTest::OnAccept(IProAcceptor*  acceptor,
                 return;
             }
 
-            PRO_SSL_CTX* const sslCtx = ProSslCtx_Creates(m_sslConfig, sockId, nonce);
+            PRO_SSL_CTX* const sslCtx =
+                ProSslCtx_Creates(m_sslConfig, sockId, nonce);
             if (sslCtx == NULL)
             {
                 ProCloseSockId(sockId);
@@ -446,7 +449,8 @@ CTest::OnServiceAccept(IProServiceHost* serviceHost,
     assert(sockId != -1);
     assert(remoteIp != NULL);
     assert(serviceId > 0);
-    if (serviceHost == NULL || sockId == -1 || remoteIp == NULL || serviceId == 0)
+    if (serviceHost == NULL || sockId == -1 || remoteIp == NULL ||
+        serviceId == 0)
     {
         return;
     }
@@ -499,7 +503,8 @@ CTest::OnServiceAccept(IProServiceHost* serviceHost,
                 return;
             }
 
-            PRO_SSL_CTX* const sslCtx = ProSslCtx_Creates(m_sslConfig, sockId, nonce);
+            PRO_SSL_CTX* const sslCtx =
+                ProSslCtx_Creates(m_sslConfig, sockId, nonce);
             if (sslCtx == NULL)
             {
                 ProCloseSockId(sockId);

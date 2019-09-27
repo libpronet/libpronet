@@ -31,7 +31,7 @@
 #include "mbedtls/platform_util.h"
 
 #if defined(MBEDTLS_PLATFORM_MEMORY) && \
-    (!defined(MBEDTLS_PLATFORM_CALLOC_MACRO) || !defined(MBEDTLS_PLATFORM_FREE_MACRO)) ////
+    ( !defined(MBEDTLS_PLATFORM_CALLOC_MACRO) || !defined(MBEDTLS_PLATFORM_FREE_MACRO) ) ////
 #if !defined(MBEDTLS_PLATFORM_STD_CALLOC)
 static void *platform_calloc_uninit( size_t n, size_t size )
 {

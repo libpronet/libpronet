@@ -119,7 +119,8 @@ CProThreadBase::Spawn(bool realtime)
 #endif
 
             pthread_t threadId = 0;
-            retc = pthread_create(&threadId, &attr, &CProThreadBase::SvcRun, this);
+            retc = pthread_create(
+                &threadId, &attr, &CProThreadBase::SvcRun, this);
             pthread_attr_destroy(&attr);
 
             if (retc == 0)

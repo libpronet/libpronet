@@ -176,7 +176,8 @@ CProSslTransport::Init(IProTransportObserver* observer,
             return (false);
         }
 
-        if (!reactorTask->AddHandler(sockId, this, PRO_MASK_WRITE | PRO_MASK_READ))
+        if (!reactorTask->AddHandler(
+            sockId, this, PRO_MASK_WRITE | PRO_MASK_READ))
         {
             return (false);
         }
@@ -214,7 +215,8 @@ CProSslTransport::Fini()
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(
+            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
 
         m_reactorTask = NULL;
         observer = m_observer;
@@ -324,7 +326,8 @@ CProSslTransport::DoRecv(PRO_INT64 sockId)
             else if (recvSize > 0)
             {
                 m_recvPool.Fill(recvSize);
-                msgSize = mbedtls_ssl_get_bytes_avail((mbedtls_ssl_context*)m_ctx); /* remaining message */
+                msgSize = mbedtls_ssl_get_bytes_avail( /* remaining message */
+                    (mbedtls_ssl_context*)m_ctx);
             }
             else if (recvSize == 0)
             {
@@ -435,7 +438,8 @@ CProSslTransport::DoSend(PRO_INT64 sockId)
             {
                 if (m_onWr)
                 {
-                    m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE);
+                    m_reactorTask->RemoveHandler(
+                        m_sockId, this, PRO_MASK_WRITE);
                     m_onWr = false;
                 }
 
@@ -472,7 +476,8 @@ CProSslTransport::DoSend(PRO_INT64 sockId)
             {
                 if (m_onWr)
                 {
-                    m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE);
+                    m_reactorTask->RemoveHandler(
+                        m_sockId, this, PRO_MASK_WRITE);
                     m_onWr = false;
                 }
             }
@@ -509,11 +514,13 @@ CProSslTransport::DoSend(PRO_INT64 sockId)
             {
                 CProThreadMutexGuard mon(m_lock);
 
-                if (m_observer != NULL && m_reactorTask != NULL && m_ctx != NULL)
+                if (m_observer != NULL && m_reactorTask != NULL &&
+                    m_ctx != NULL)
                 {
                     if (m_onWr && !m_pendingWr && !m_requestOnSend)
                     {
-                        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE);
+                        m_reactorTask->RemoveHandler(
+                            m_sockId, this, PRO_MASK_WRITE);
                         m_onWr = false;
                     }
                 }

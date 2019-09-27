@@ -363,8 +363,8 @@ int mbedtls_gcm_update( mbedtls_gcm_context *ctx,
     /* Total length is restricted to 2^39 - 256 bits, ie 2^36 - 2^5 bytes
      * Also check for possible overflow */
     if( ctx->len + length < ctx->len ||
-#if defined(_MSC_VER) && (_MSC_VER <= 1200) //// 1200 is 6.0
-        (uint64_t) ctx->len + length > (((uint64_t)0x0F << 32) | 0xFFFFFFE0) )
+#if defined(_MSC_VER) && ( _MSC_VER <= 1200 ) //// 1200 is 6.0
+        (uint64_t) ctx->len + length > ( ( (uint64_t) 0x0F << 32 ) | 0xFFFFFFE0 ) )
 #else
         (uint64_t) ctx->len + length > 0xFFFFFFFE0ull )
 #endif

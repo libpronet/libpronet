@@ -43,7 +43,8 @@ CreateRtpSessionUdpclient(IRtpSessionObserver*    observer,
                           const char*             localIp,   /* = NULL */
                           unsigned short          localPort) /* = 0 */
 {
-    CRtpSessionUdpclient* const session = CRtpSessionUdpclient::CreateInstance(localInfo);
+    CRtpSessionUdpclient* const session =
+        CRtpSessionUdpclient::CreateInstance(localInfo);
     if (session == NULL)
     {
         return (NULL);
@@ -67,7 +68,8 @@ CreateRtpSessionUdpserver(IRtpSessionObserver*    observer,
                           const char*             localIp,   /* = NULL */
                           unsigned short          localPort) /* = 0 */
 {
-    CRtpSessionUdpserver* const session = CRtpSessionUdpserver::CreateInstance(localInfo);
+    CRtpSessionUdpserver* const session =
+        CRtpSessionUdpserver::CreateInstance(localInfo);
     if (session == NULL)
     {
         return (NULL);
@@ -93,13 +95,15 @@ CreateRtpSessionTcpclient(IRtpSessionObserver*    observer,
                           const char*             localIp,          /* = NULL */
                           unsigned long           timeoutInSeconds) /* = 0 */
 {
-    CRtpSessionTcpclient* const session = CRtpSessionTcpclient::CreateInstance(localInfo);
+    CRtpSessionTcpclient* const session =
+        CRtpSessionTcpclient::CreateInstance(localInfo);
     if (session == NULL)
     {
         return (NULL);
     }
 
-    if (!session->Init(observer, reactor, remoteIp, remotePort, localIp, timeoutInSeconds))
+    if (!session->Init(
+        observer, reactor, remoteIp, remotePort, localIp, timeoutInSeconds))
     {
         session->Release();
 
@@ -118,13 +122,15 @@ CreateRtpSessionTcpserver(IRtpSessionObserver*    observer,
                           unsigned short          localPort,        /* = 0 */
                           unsigned long           timeoutInSeconds) /* = 0 */
 {
-    CRtpSessionTcpserver* const session = CRtpSessionTcpserver::CreateInstance(localInfo);
+    CRtpSessionTcpserver* const session =
+        CRtpSessionTcpserver::CreateInstance(localInfo);
     if (session == NULL)
     {
         return (NULL);
     }
 
-    if (!session->Init(observer, reactor, localIp, localPort, timeoutInSeconds))
+    if (!session->Init(
+        observer, reactor, localIp, localPort, timeoutInSeconds))
     {
         session->Release();
 
@@ -144,13 +150,15 @@ CreateRtpSessionUdpclientEx(IRtpSessionObserver*    observer,
                             const char*             localIp,          /* = NULL */
                             unsigned long           timeoutInSeconds) /* = 0 */
 {
-    CRtpSessionUdpclientEx* const session = CRtpSessionUdpclientEx::CreateInstance(localInfo);
+    CRtpSessionUdpclientEx* const session =
+        CRtpSessionUdpclientEx::CreateInstance(localInfo);
     if (session == NULL)
     {
         return (NULL);
     }
 
-    if (!session->Init(observer, reactor, remoteIp, remotePort, localIp, timeoutInSeconds))
+    if (!session->Init(
+        observer, reactor, remoteIp, remotePort, localIp, timeoutInSeconds))
     {
         session->Release();
 
@@ -169,13 +177,15 @@ CreateRtpSessionUdpserverEx(IRtpSessionObserver*    observer,
                             unsigned short          localPort,        /* = 0 */
                             unsigned long           timeoutInSeconds) /* = 0 */
 {
-    CRtpSessionUdpserverEx* const session = CRtpSessionUdpserverEx::CreateInstance(localInfo);
+    CRtpSessionUdpserverEx* const session =
+        CRtpSessionUdpserverEx::CreateInstance(localInfo);
     if (session == NULL)
     {
         return (NULL);
     }
 
-    if (!session->Init(observer, reactor, localIp, localPort, timeoutInSeconds))
+    if (!session->Init(
+        observer, reactor, localIp, localPort, timeoutInSeconds))
     {
         session->Release();
 
@@ -196,14 +206,15 @@ CreateRtpSessionTcpclientEx(IRtpSessionObserver*    observer,
                             const char*             localIp,          /* = NULL */
                             unsigned long           timeoutInSeconds) /* = 0 */
 {
-    CRtpSessionTcpclientEx* const session = CRtpSessionTcpclientEx::CreateInstance(localInfo);
+    CRtpSessionTcpclientEx* const session =
+        CRtpSessionTcpclientEx::CreateInstance(localInfo);
     if (session == NULL)
     {
         return (NULL);
     }
 
-    if (!session->Init(observer, reactor, remoteIp, remotePort, password, localIp,
-        timeoutInSeconds))
+    if (!session->Init(observer, reactor,
+        remoteIp, remotePort, password, localIp, timeoutInSeconds))
     {
         session->Release();
 
@@ -221,7 +232,8 @@ CreateRtpSessionTcpserverEx(IRtpSessionObserver*    observer,
                             PRO_INT64               sockId,
                             bool                    unixSocket)
 {
-    CRtpSessionTcpserverEx* const session = CRtpSessionTcpserverEx::CreateInstance(localInfo);
+    CRtpSessionTcpserverEx* const session =
+        CRtpSessionTcpserverEx::CreateInstance(localInfo);
     if (session == NULL)
     {
         return (NULL);
@@ -257,8 +269,8 @@ CreateRtpSessionSslclientEx(IRtpSessionObserver*         observer,
         return (NULL);
     }
 
-    if (!session->Init(observer, reactor, remoteIp, remotePort, password, localIp,
-        timeoutInSeconds))
+    if (!session->Init(observer, reactor,
+        remoteIp, remotePort, password, localIp, timeoutInSeconds))
     {
         session->Release();
 
@@ -303,7 +315,8 @@ CreateRtpSessionMcast(IRtpSessionObserver*    observer,
                       unsigned short          mcastPort, /* = 0 */
                       const char*             localIp)   /* = NULL */
 {
-    CRtpSessionMcast* const session = CRtpSessionMcast::CreateInstance(localInfo);
+    CRtpSessionMcast* const session =
+        CRtpSessionMcast::CreateInstance(localInfo);
     if (session == NULL)
     {
         return (NULL);
@@ -328,7 +341,8 @@ CreateRtpSessionMcastEx(IRtpSessionObserver*    observer,
                         unsigned short          mcastPort, /* = 0 */
                         const char*             localIp)   /* = NULL */
 {
-    CRtpSessionMcastEx* const session = CRtpSessionMcastEx::CreateInstance(localInfo);
+    CRtpSessionMcastEx* const session =
+        CRtpSessionMcastEx::CreateInstance(localInfo);
     if (session == NULL)
     {
         return (NULL);

@@ -68,7 +68,8 @@ CProMcastTransport::Init(IProTransportObserver* observer,
     assert(reactorTask != NULL);
     assert(mcastIp != NULL);
     assert(mcastIp[0] != '\0');
-    if (observer == NULL || reactorTask == NULL || mcastIp == NULL || mcastIp[0] == '\0')
+    if (observer == NULL || reactorTask == NULL || mcastIp == NULL ||
+        mcastIp[0] == '\0')
     {
         return (false);
     }
@@ -168,8 +169,8 @@ CProMcastTransport::Init(IProTransportObserver* observer,
         mreq.imr_multiaddr.s_addr = remoteAddr.sin_addr.s_addr;
         mreq.imr_interface.s_addr = localAddr.sin_addr.s_addr;
 
-        if (pbsd_setsockopt(
-            sockId, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(struct ip_mreq)) != 0)
+        if (pbsd_setsockopt(sockId,
+            IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(struct ip_mreq)) != 0)
         {
             ProCloseSockId(sockId);
 
@@ -177,14 +178,16 @@ CProMcastTransport::Init(IProTransportObserver* observer,
         }
 
         option = MULTICAST_TTL;
-        pbsd_setsockopt(sockId, IPPROTO_IP, IP_MULTICAST_TTL, &option, sizeof(int));
+        pbsd_setsockopt(
+            sockId, IPPROTO_IP, IP_MULTICAST_TTL, &option, sizeof(int));
         option = 0;
-        pbsd_setsockopt(sockId, IPPROTO_IP, IP_MULTICAST_LOOP, &option, sizeof(int));
+        pbsd_setsockopt(
+            sockId, IPPROTO_IP, IP_MULTICAST_LOOP, &option, sizeof(int));
 
         if (!reactorTask->AddHandler(sockId, this, PRO_MASK_READ))
         {
-            pbsd_setsockopt(
-                sockId, IPPROTO_IP, IP_DROP_MEMBERSHIP, &mreq, sizeof(struct ip_mreq));
+            pbsd_setsockopt(sockId,
+                IPPROTO_IP, IP_DROP_MEMBERSHIP, &mreq, sizeof(struct ip_mreq));
             ProCloseSockId(sockId);
 
             return (false);
@@ -217,15 +220,16 @@ CProMcastTransport::Fini()
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(
+            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
 
         struct ip_mreq mreq;
         memset(&mreq, 0, sizeof(struct ip_mreq));
         mreq.imr_multiaddr.s_addr = m_defaultRemoteAddr.sin_addr.s_addr;
         mreq.imr_interface.s_addr = m_localAddr.sin_addr.s_addr;
 
-        pbsd_setsockopt(
-            m_sockId, IPPROTO_IP, IP_DROP_MEMBERSHIP, &mreq, sizeof(struct ip_mreq));
+        pbsd_setsockopt(m_sockId,
+            IPPROTO_IP, IP_DROP_MEMBERSHIP, &mreq, sizeof(struct ip_mreq));
 
         m_reactorTask = NULL;
         observer = m_observer;
@@ -283,8 +287,8 @@ CProMcastTransport::AddMcastReceiver(const char* mcastIp)
         mreq.imr_multiaddr.s_addr = mcastIp2;
         mreq.imr_interface.s_addr = m_localAddr.sin_addr.s_addr;
 
-        pbsd_setsockopt(
-            m_sockId, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(struct ip_mreq));
+        pbsd_setsockopt(m_sockId,
+            IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(struct ip_mreq));
     }
 
     return (true);
@@ -318,7 +322,7 @@ CProMcastTransport::RemoveMcastReceiver(const char* mcastIp)
         mreq.imr_multiaddr.s_addr = mcastIp2;
         mreq.imr_interface.s_addr = m_localAddr.sin_addr.s_addr;
 
-        pbsd_setsockopt(
-            m_sockId, IPPROTO_IP, IP_DROP_MEMBERSHIP, &mreq, sizeof(struct ip_mreq));
+        pbsd_setsockopt(m_sockId,
+            IPPROTO_IP, IP_DROP_MEMBERSHIP, &mreq, sizeof(struct ip_mreq));
     }
 }

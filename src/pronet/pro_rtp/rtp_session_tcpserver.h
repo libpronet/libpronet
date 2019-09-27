@@ -28,11 +28,16 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-class CRtpSessionTcpserver : public IProAcceptorObserver, public CRtpSessionBase
+class CRtpSessionTcpserver
+:
+public IProAcceptorObserver,
+public CRtpSessionBase
 {
 public:
 
-    static CRtpSessionTcpserver* CreateInstance(const RTP_SESSION_INFO* localInfo);
+    static CRtpSessionTcpserver* CreateInstance(
+        const RTP_SESSION_INFO* localInfo
+        );
 
     bool Init(
         IRtpSessionObserver* observer,

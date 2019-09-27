@@ -296,8 +296,8 @@ CProServiceHub::OnAcceptOther(PRO_INT64     sockId,
 #if defined(_WIN32_WCE)
         sp.pipe->SendData(s2cPacket);
 #elif defined(WIN32)
-        if (::WSADuplicateSocket(
-            (SOCKET)sockId, (unsigned long)sp.processId, &s2cPacket.s2c.protocolInfo) != 0)
+        if (::WSADuplicateSocket((SOCKET)sockId,
+            (unsigned long)sp.processId, &s2cPacket.s2c.protocolInfo) != 0)
         {
             ProCloseSockId(sockId);
 
@@ -347,7 +347,8 @@ CProServiceHub::OnRecv(CProServicePipe*          pipe,
 
         if (sp.pending)
         {
-            if (m_serviceId2Pipe.find(packet.c2s.serviceId) != m_serviceId2Pipe.end())
+            if (m_serviceId2Pipe.find(packet.c2s.serviceId) !=
+                m_serviceId2Pipe.end())
             {
                 return;
             }
@@ -371,7 +372,8 @@ CProServiceHub::OnRecv(CProServicePipe*          pipe,
         {
             assert(packet.c2s.serviceId == sp.serviceId);
             assert(packet.c2s.processId == sp.processId);
-            if (packet.c2s.serviceId != sp.serviceId || packet.c2s.processId != sp.processId)
+            if (packet.c2s.serviceId != sp.serviceId ||
+                packet.c2s.processId != sp.processId)
             {
                 return;
             }
@@ -506,7 +508,8 @@ CProServiceHub::OnTimer(unsigned long timerId,
 
                     CProStlMap<unsigned char, PRO_SERVICE_PIPE>::iterator const itr2 =
                         m_serviceId2Pipe.find(sp.serviceId);
-                    if (itr2 != m_serviceId2Pipe.end() && itr2->second.pipe == sp.pipe)
+                    if (itr2 != m_serviceId2Pipe.end() &&
+                        itr2->second.pipe == sp.pipe)
                     {
                         m_serviceId2Pipe.erase(itr2);
                     }

@@ -144,7 +144,10 @@ public:
 
     CProThreadMutexGuard(CProRecursiveThreadMutex& rcmutex);
 
-    CProThreadMutexGuard(CProRwThreadMutex& rwmutex, bool readonly);
+    CProThreadMutexGuard(
+        CProRwThreadMutex& rwmutex,
+        bool               readonly
+        );
 
     ~CProThreadMutexGuard();
 

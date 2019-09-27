@@ -155,7 +155,7 @@ int main(int argc, char* argv[])
             printf(
                 "\n"
                 " pro_service_hub --- warning! can't read the config file. \n"
-                " [ %s ] \n"
+                " [%s] \n"
                 ,
                 configFileName.c_str()
                 );
@@ -234,7 +234,7 @@ int main(int argc, char* argv[])
                 printf(
                     "\n"
                     " pro_service_hub --- error! can't create service hub on the port %u. \n"
-                    " [ maybe the port %u or the file \"/tmp/libpronet_127001_%u\" is busy. ] \n"
+                    " [maybe the port %u or the file \"/tmp/libpronet_127001_%u\" is busy.] \n"
                     ,
                     configInfo.hubs_listen_ports[i],
                     configInfo.hubs_listen_ports[i],

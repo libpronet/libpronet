@@ -93,7 +93,8 @@ CRtpSessionTcpclient::Init(IRtpSessionObserver* observer,
         assert(m_reactor == NULL);
         assert(m_trans == NULL);
         assert(m_connector == NULL);
-        if (m_observer != NULL || m_reactor != NULL || m_trans != NULL || m_connector != NULL)
+        if (m_observer != NULL || m_reactor != NULL || m_trans != NULL ||
+            m_connector != NULL)
         {
             return (false);
         }
@@ -215,7 +216,8 @@ CRtpSessionTcpclient::OnConnectOk(IProConnector* connector,
         m_tcpConnected = true;
         assert(m_trans == NULL);
 
-        m_trans = ProCreateTcpTransport(this, m_reactor, sockId, unixSocket,
+        m_trans = ProCreateTcpTransport(
+            this, m_reactor, sockId, unixSocket,
             sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
         if (m_trans == NULL)
         {

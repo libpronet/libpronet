@@ -486,7 +486,8 @@ void
 PRO_CALLTYPE
 CRtpVideoBucket::PopFrontRelease(IRtpPacket* packet)
 {
-    if (packet == NULL || m_sendingFrame == NULL || packet != m_sendingFrame->bucket.GetFront())
+    if (packet == NULL || m_sendingFrame == NULL ||
+        packet != m_sendingFrame->bucket.GetFront())
     {
         return;
     }

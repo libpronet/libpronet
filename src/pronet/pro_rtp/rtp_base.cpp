@@ -141,7 +141,8 @@ PRO_CALLTYPE
 CreateRtpPacketSpace(unsigned long     payloadSize,
                      RTP_EXT_PACK_MODE packMode) /* = RTP_EPM_DEFAULT */
 {
-    CRtpPacket* const packet = CRtpPacket::CreateInstance(payloadSize, packMode);
+    CRtpPacket* const packet =
+        CRtpPacket::CreateInstance(payloadSize, packMode);
 
     return (packet);
 }
@@ -183,8 +184,8 @@ ParseRtpStreamToPacket(const void* streamBuffer,
     hdr.x  = 0;
     hdr.cc = 0;
 
-    IRtpPacket* const packet =
-        CRtpPacket::CreateInstance(payloadBuffer, payloadSize, RTP_EPM_DEFAULT);
+    IRtpPacket* const packet = CRtpPacket::CreateInstance(
+        payloadBuffer, payloadSize, RTP_EPM_DEFAULT);
     if (packet == NULL)
     {
         return (NULL);
@@ -460,7 +461,8 @@ CreateRtpService(const PRO_SSL_SERVER_CONFIG* sslConfig,        /* = NULL */
 {
     ProRtpInit();
 
-    CRtpService* const service = CRtpService::CreateInstance(sslConfig, mmType);
+    CRtpService* const service =
+        CRtpService::CreateInstance(sslConfig, mmType);
     if (service == NULL)
     {
         return (NULL);
@@ -513,7 +515,8 @@ CreateRtpSessionWrapper(RTP_SESSION_TYPE        sessionType,
 {
     ProRtpInit();
 
-    CRtpSessionWrapper* const sessionWrapper = CRtpSessionWrapper::CreateInstance(localInfo);
+    CRtpSessionWrapper* const sessionWrapper =
+        CRtpSessionWrapper::CreateInstance(localInfo);
     if (sessionWrapper == NULL)
     {
         return (NULL);

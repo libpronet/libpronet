@@ -101,7 +101,7 @@ int main(int argc, char* argv[])
             printf(
                 "\n"
                 " test_msg_client --- warning! can't read the config file. \n"
-                " [ %s ] \n"
+                " [%s] \n"
                 ,
                 configFileName.c_str()
                 );
@@ -121,7 +121,8 @@ int main(int argc, char* argv[])
             if (stricmp(configName.c_str(), "msgc_mm_type") == 0)
             {
                 const int value = atoi(configValue.c_str());
-                if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
+                if (value >= (int)RTP_MMT_MSG_MIN &&
+                    value <= (int)RTP_MMT_MSG_MAX)
                 {
                     configInfo.msgc_mm_type = (RTP_MM_TYPE)value;
                 }
@@ -268,7 +269,8 @@ int main(int argc, char* argv[])
 
     if (!configInfo.msgc_password.empty())
     {
-        ProZeroMemory(&configInfo.msgc_password[0], configInfo.msgc_password.length());
+        ProZeroMemory(
+            &configInfo.msgc_password[0], configInfo.msgc_password.length());
         configInfo.msgc_password = "";
     }
 

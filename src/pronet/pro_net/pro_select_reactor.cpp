@@ -194,7 +194,8 @@ CProSelectReactor::AddHandler(PRO_INT64         sockId,
     if (PRO_BIT_ENABLED(mask, PRO_MASK_CONNECT))
     {
         PRO_CLR_BITS(mask, PRO_MASK_CONNECT);
-        PRO_SET_BITS(mask, PRO_MASK_WRITE | PRO_MASK_READ | PRO_MASK_EXCEPTION);
+        PRO_SET_BITS(mask,
+            PRO_MASK_WRITE | PRO_MASK_READ | PRO_MASK_EXCEPTION);
     }
 
     {
@@ -293,7 +294,8 @@ CProSelectReactor::RemoveHandler(PRO_INT64     sockId,
     if (PRO_BIT_ENABLED(mask, PRO_MASK_CONNECT))
     {
         PRO_CLR_BITS(mask, PRO_MASK_CONNECT);
-        PRO_SET_BITS(mask, PRO_MASK_WRITE | PRO_MASK_READ | PRO_MASK_EXCEPTION);
+        PRO_SET_BITS(mask,
+            PRO_MASK_WRITE | PRO_MASK_READ | PRO_MASK_EXCEPTION);
     }
 
     {
@@ -367,7 +369,8 @@ CProSelectReactor::WorkerRun()
         /*
          * select(...)
          */
-        int retc = pbsd_select(maxSockId + 1, &m_fdsRd[1], &m_fdsWr[1], &m_fdsEx[1], NULL);
+        int retc = pbsd_select(
+            maxSockId + 1, &m_fdsRd[1], &m_fdsWr[1], &m_fdsEx[1], NULL);
         if (retc == 0)
         {
             ProSleep(1);
@@ -613,9 +616,11 @@ CProSelectReactor::OnInput(PRO_INT64 sockId)
     }
 
     const int recvSize = pbsd_recv(sockId, g_s_buffer, sizeof(g_s_buffer), 0); /* connected */
-    if (recvSize > 0 && recvSize <= (int)sizeof(g_s_buffer)
+    if (
+        (recvSize > 0 && recvSize <= (int)sizeof(g_s_buffer))
         ||
-        recvSize < 0 && pbsd_errno((void*)&pbsd_recv) == PBSD_EWOULDBLOCK)
+        (recvSize < 0 && pbsd_errno((void*)&pbsd_recv) == PBSD_EWOULDBLOCK)
+       )
     {
         m_notifyPipe->EnableNotify();
     }

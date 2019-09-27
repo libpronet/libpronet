@@ -186,7 +186,8 @@ CProEpollReactor::AddHandler(PRO_INT64         sockId,
     if (PRO_BIT_ENABLED(mask, PRO_MASK_CONNECT))
     {
         PRO_CLR_BITS(mask, PRO_MASK_CONNECT);
-        PRO_SET_BITS(mask, PRO_MASK_WRITE | PRO_MASK_READ | PRO_MASK_EXCEPTION);
+        PRO_SET_BITS(mask,
+            PRO_MASK_WRITE | PRO_MASK_READ | PRO_MASK_EXCEPTION);
     }
 
     {
@@ -304,7 +305,8 @@ CProEpollReactor::RemoveHandler(PRO_INT64     sockId,
     if (PRO_BIT_ENABLED(mask, PRO_MASK_CONNECT))
     {
         PRO_CLR_BITS(mask, PRO_MASK_CONNECT);
-        PRO_SET_BITS(mask, PRO_MASK_WRITE | PRO_MASK_READ | PRO_MASK_EXCEPTION);
+        PRO_SET_BITS(mask,
+            PRO_MASK_WRITE | PRO_MASK_READ | PRO_MASK_EXCEPTION);
     }
 
     {
@@ -402,7 +404,8 @@ CProEpollReactor::WorkerRun()
         /*
          * epoll_wait(...)
          */
-        const int retc = pbsd_epoll_wait(m_epfd, m_events, PRO_EPOLLFD_GETSIZE, -1);
+        const int retc = pbsd_epoll_wait(
+            m_epfd, m_events, PRO_EPOLLFD_GETSIZE, -1);
         if (retc <= 0)
         {
             ProSleep(1);
@@ -427,7 +430,8 @@ CProEpollReactor::WorkerRun()
                     continue;
                 }
 
-                const PRO_HANDLER_INFO info = m_handlerMgr.FindHandler(ev.data.fd);
+                const PRO_HANDLER_INFO info =
+                    m_handlerMgr.FindHandler(ev.data.fd);
                 if (info.handler == NULL)
                 {
                     continue;
@@ -515,9 +519,11 @@ CProEpollReactor::OnInput(PRO_INT64 sockId)
     }
 
     const int recvSize = pbsd_recv(sockId, g_s_buffer, sizeof(g_s_buffer), 0); /* connected */
-    if (recvSize > 0 && recvSize <= (int)sizeof(g_s_buffer)
+    if (
+        (recvSize > 0 && recvSize <= (int)sizeof(g_s_buffer))
         ||
-        recvSize < 0 && pbsd_errno((void*)&pbsd_recv) == PBSD_EWOULDBLOCK)
+        (recvSize < 0 && pbsd_errno((void*)&pbsd_recv) == PBSD_EWOULDBLOCK)
+       )
     {
         m_notifyPipe->EnableNotify();
     }
@@ -541,7 +547,8 @@ CProEpollReactor::OnError(PRO_INT64 sockId,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_epfd == -1 || m_wantExit || sockId != m_notifyPipe->GetReaderSockId())
+        if (m_epfd == -1 || m_wantExit ||
+            sockId != m_notifyPipe->GetReaderSockId())
         {
             return;
         }

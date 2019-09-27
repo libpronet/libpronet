@@ -32,7 +32,9 @@ class CRtpSessionUdpclient : public CRtpSessionBase
 {
 public:
 
-    static CRtpSessionUdpclient* CreateInstance(const RTP_SESSION_INFO* localInfo);
+    static CRtpSessionUdpclient* CreateInstance(
+        const RTP_SESSION_INFO* localInfo
+        );
 
     bool Init(
         IRtpSessionObserver* observer,

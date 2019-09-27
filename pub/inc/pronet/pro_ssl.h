@@ -45,8 +45,9 @@ static const PRO_SSL_AUTH_LEVEL PRO_SSL_AUTHLV_REQUIRED = (PRO_SSL_AUTH_LEVEL)2;
 /*
  * [[[[ SSL/TLS suites
  *
- * 这里都是基于证书的AEAD加密套件,并且,我们只推荐前向安全(PFS)的加密套件. 如果
- * 需要预主密钥(PSK)机制或更加丰富的加密套件,使用者可以直接引用mbedtls库的定义
+ * 这里都是基于证书的AEAD加密套件, 并且, 我们只推荐前向安全(PFS)的加密套件.
+ * 如果需要预主密钥(PSK)机制或更加丰富的加密套件, 使用者可以直接引用mbedtls
+ * 库的定义
  *
  * please refer to "mbedtls/ssl_ciphersuites.h"
  */
@@ -90,7 +91,7 @@ struct PRO_SSL_SERVER_CONFIG; /* derived from mbedtls_ssl_config */
  *
  * 返回值: SSL配置对象或NULL
  *
- * 说明: PRO_SSL_SERVER_CONFIG继承自mbedtls_ssl_config. 如果需要,可以通过
+ * 说明: PRO_SSL_SERVER_CONFIG继承自mbedtls_ssl_config. 如果需要, 可以通过
  *       mbedtls库操纵该对象
  */
 PRO_NET_API
@@ -123,7 +124,7 @@ ProSslServerConfig_Delete(PRO_SSL_SERVER_CONFIG* config);
  *
  * 返回值: true成功, false失败
  *
- * 说明: 如果需要,可以通过mbedtls库设置更加丰富的加密套件
+ * 说明: 如果需要, 可以通过mbedtls库设置更加丰富的加密套件
  */
 PRO_NET_API
 bool
@@ -182,7 +183,7 @@ ProSslServerConfig_EnableSha1Cert(PRO_SSL_SERVER_CONFIG* config,
  *
  * 说明: caFiles可以包含两类证书,
  *       1)可信的CA证书;
- *       2)可信的自签名终端用户证书. 此时,证书的CA标志位可以不设置
+ *       2)可信的自签名终端用户证书. 此时, 证书的CA标志位可以不设置
  */
 PRO_NET_API
 bool
@@ -282,7 +283,7 @@ ProSslServerConfig_RemoveSni(PRO_SSL_SERVER_CONFIG* config,
  *
  * 说明: caFiles可以包含两类证书,
  *       1)可信的CA证书;
- *       2)可信的自签名终端用户证书. 此时,证书的CA标志位可以不设置
+ *       2)可信的自签名终端用户证书. 此时, 证书的CA标志位可以不设置
  */
 PRO_NET_API
 bool
@@ -346,7 +347,7 @@ ProSslServerConfig_SetSniAuthLevel(PRO_SSL_SERVER_CONFIG* config,
  *
  * 返回值: SSL配置对象或NULL
  *
- * 说明: PRO_SSL_CLIENT_CONFIG继承自mbedtls_ssl_config. 如果需要,可以通过
+ * 说明: PRO_SSL_CLIENT_CONFIG继承自mbedtls_ssl_config. 如果需要, 可以通过
  *       mbedtls库操纵该对象
  */
 PRO_NET_API
@@ -379,7 +380,7 @@ ProSslClientConfig_Delete(PRO_SSL_CLIENT_CONFIG* config);
  *
  * 返回值: true成功, false失败
  *
- * 说明: 如果需要,可以通过mbedtls库设置更加丰富的加密套件
+ * 说明: 如果需要, 可以通过mbedtls库设置更加丰富的加密套件
  */
 PRO_NET_API
 bool
@@ -438,7 +439,7 @@ ProSslClientConfig_EnableSha1Cert(PRO_SSL_CLIENT_CONFIG* config,
  *
  * 说明: caFiles可以包含两类证书,
  *       1)可信的CA证书;
- *       2)可信的自签名终端用户证书. 此时,证书的CA标志位可以不设置
+ *       2)可信的自签名终端用户证书. 此时, 证书的CA标志位可以不设置
  */
 PRO_NET_API
 bool
@@ -501,11 +502,11 @@ ProSslClientConfig_SetAuthLevel(PRO_SSL_CLIENT_CONFIG* config,
  *
  * 返回值: SSL上下文对象或NULL
  *
- * 说明: PRO_SSL_CTX继承自mbedtls_ssl_context. 如果需要,可以通过mbedtls库
+ * 说明: PRO_SSL_CTX继承自mbedtls_ssl_context. 如果需要, 可以通过mbedtls库
  *       操纵该对象
  *
- *       nonce用于为初期握手流量添加扰动,主要用于防止握手初期的明文证书被
- *       过滤拦截. c/s两端必须一致,一般来源于OnAccept(...)或OnConnectOk(...)
+ *       nonce用于为初期握手流量添加扰动, 主要用于防止握手初期的明文证书被
+ *       过滤拦截. c/s两端必须一致, 一般来源于OnAccept(...)或OnConnectOk(...)
  */
 PRO_NET_API
 PRO_SSL_CTX*
@@ -519,17 +520,17 @@ ProSslCtx_Creates(const PRO_SSL_SERVER_CONFIG* config,
  *
  * 参数:
  * config         : SSL配置对象
- * serverHostName : server主机名. 如果有效,则参与认证server证书
+ * serverHostName : server主机名. 如果有效, 则参与认证server证书
  * sockId         : 套接字id
  * nonce          : 扰动随机数. 0表示无扰动
  *
  * 返回值: SSL上下文对象或NULL
  *
- * 说明: PRO_SSL_CTX继承自mbedtls_ssl_context. 如果需要,可以通过mbedtls库
+ * 说明: PRO_SSL_CTX继承自mbedtls_ssl_context. 如果需要, 可以通过mbedtls库
  *       操纵该对象
  *
- *       nonce用于为初期握手流量添加扰动,主要用于防止握手初期的明文证书被
- *       过滤拦截. c/s两端必须一致,一般来源于OnAccept(...)或OnConnectOk(...)
+ *       nonce用于为初期握手流量添加扰动, 主要用于防止握手初期的明文证书被
+ *       过滤拦截. c/s两端必须一致, 一般来源于OnAccept(...)或OnConnectOk(...)
  */
 PRO_NET_API
 PRO_SSL_CTX*

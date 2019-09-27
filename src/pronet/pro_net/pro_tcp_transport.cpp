@@ -57,7 +57,8 @@ CProTcpTransport::CreateInstance(bool   recvFdMode,
     recvFdMode = false;
 #endif
 
-    CProTcpTransport* const trans = new CProTcpTransport(recvFdMode, recvPoolSize);
+    CProTcpTransport* const trans =
+        new CProTcpTransport(recvFdMode, recvPoolSize);
 
     return (trans);
 }
@@ -225,7 +226,8 @@ CProTcpTransport::Fini()
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(
+            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
 
         m_reactorTask = NULL;
         observer = m_observer;
@@ -585,7 +587,8 @@ CProTcpTransport::OnInputData(PRO_INT64 sockId)
             goto EXIT;
         }
 
-        recvSize = pbsd_recv(m_sockId, m_recvPool.ContinuousIdleBuf(), (int)idleSize, 0);
+        recvSize = pbsd_recv(
+            m_sockId, m_recvPool.ContinuousIdleBuf(), (int)idleSize, 0);
         assert(recvSize <= (int)idleSize);
 
         if (recvSize > (int)idleSize)
@@ -619,7 +622,7 @@ EXIT:
             assert(m_recvPool.ContinuousIdleSize() > 0);
         }
         else if (
-            recvSize < 0 && errorCode != PBSD_EWOULDBLOCK
+            (recvSize < 0 && errorCode != PBSD_EWOULDBLOCK)
             ||
             recvSize == 0
             )
@@ -717,7 +720,8 @@ CProTcpTransport::OnInputFd(PRO_INT64 sockId)
     {
         if (fd != -1)
         {
-            observer->OnRecvFd(this, fd, s2cPacket.s2c.oldSock.unixSocket, s2cPacket);
+            observer->OnRecvFd(
+                this, fd, s2cPacket.s2c.oldSock.unixSocket, s2cPacket);
             fd = -1;
         }
         else
@@ -782,7 +786,8 @@ CProTcpTransport::OnOutput(PRO_INT64 sockId)
             {
                 if (m_onWr)
                 {
-                    m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE);
+                    m_reactorTask->RemoveHandler(
+                        m_sockId, this, PRO_MASK_WRITE);
                     m_onWr = false;
                 }
 
@@ -882,7 +887,8 @@ CProTcpTransport::OnOutput(PRO_INT64 sockId)
                 {
                     if (m_onWr && !m_pendingWr && !m_requestOnSend)
                     {
-                        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE);
+                        m_reactorTask->RemoveHandler(
+                            m_sockId, this, PRO_MASK_WRITE);
                         m_onWr = false;
                     }
                 }

@@ -115,7 +115,8 @@ public:
         }
 
         CProFunctorCommand_cpp* const command = new CProFunctorCommand_cpp(
-            receiver, action, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+            receiver, action,
+            arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
 
         return (command);
     }
@@ -140,7 +141,8 @@ private:
         m_userData = NULL;
         m_action   = action;
 
-        const PRO_INT64 args[10] = { arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 };
+        const PRO_INT64 args[10] =
+        { arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 };
 
         for (int i = 0; i < 10; ++i)
         {
@@ -210,7 +212,8 @@ public:
         }
 
         CProFunctorCommand_c* const command = new CProFunctorCommand_c(
-            action, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+            action,
+            arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
 
         return (command);
     }
@@ -234,7 +237,8 @@ private:
         m_userData = NULL;
         m_action   = action;
 
-        const PRO_INT64 args[10] = { arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 };
+        const PRO_INT64 args[10] =
+        { arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 };
 
         for (int i = 0; i < 10; ++i)
         {

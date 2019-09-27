@@ -188,15 +188,21 @@ public:
         unsigned char       dstUserCount
         );
 
-    virtual void PRO_CALLTYPE SetOutputRedlineToC2s(unsigned long redlineBytes);
+    virtual void PRO_CALLTYPE SetOutputRedlineToC2s(
+        unsigned long redlineBytes
+        );
 
     virtual unsigned long PRO_CALLTYPE GetOutputRedlineToC2s() const;
 
-    virtual void PRO_CALLTYPE SetOutputRedlineToUsr(unsigned long redlineBytes);
+    virtual void PRO_CALLTYPE SetOutputRedlineToUsr(
+        unsigned long redlineBytes
+        );
 
     virtual unsigned long PRO_CALLTYPE GetOutputRedlineToUsr() const;
 
-    virtual unsigned long PRO_CALLTYPE GetSendingBytes(const RTP_MSG_USER* user) const;
+    virtual unsigned long PRO_CALLTYPE GetSendingBytes(
+        const RTP_MSG_USER* user
+        ) const;
 
 private:
 

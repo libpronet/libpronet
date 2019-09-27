@@ -215,9 +215,11 @@ CProLogFile::Log(const char* text,
         if (m_file != NULL && level >= m_greenLevel)
         {
             const PRO_INT32 pos = (PRO_INT32)ftell(m_file);
-            if (pos < 0
+            if (
+                pos < 0
                 ||
-                m_maxSize > 0 && pos >= m_maxSize)
+                (m_maxSize > 0 && pos >= m_maxSize)
+               )
             {
                 fseek(m_file, 0, SEEK_SET);
             }

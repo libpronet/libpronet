@@ -115,9 +115,11 @@ CProNotifyPipe::Init()
     {
         int option;
         option = RECV_BUF_SIZE;
-        pbsd_setsockopt(m_sockIds[i], SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
+        pbsd_setsockopt(
+            m_sockIds[i], SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
         option = SEND_BUF_SIZE;
-        pbsd_setsockopt(m_sockIds[i], SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
+        pbsd_setsockopt(
+            m_sockIds[i], SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
     }
 }
 

@@ -81,7 +81,8 @@ struct C2S_SERVER_CONFIG_INFO
     {
         if (!c2ss_uplink_password.empty())
         {
-            ProZeroMemory(&c2ss_uplink_password[0], c2ss_uplink_password.length());
+            ProZeroMemory(
+                &c2ss_uplink_password[0], c2ss_uplink_password.length());
             c2ss_uplink_password = "";
         }
     }

@@ -112,7 +112,7 @@
  * disabled by defining MBEDTLS_NO_UDBL_DIVISION.
  */
 #if !defined(MBEDTLS_HAVE_INT32)
-    #if defined(_MSC_VER) && (defined(_M_AMD64) || defined(_M_X64)) ////
+    #if defined(_MSC_VER) && ( defined(_M_AMD64) || defined(_M_X64) ) ////
         /* Always choose 64-bit when using MSC */
         #if !defined(MBEDTLS_HAVE_INT64)
             #define MBEDTLS_HAVE_INT64

@@ -164,7 +164,8 @@ CProAcceptor::Init(IProAcceptorObserver* observer,
         option = DEFAULT_SEND_BUF_SIZE;
         pbsd_setsockopt(sockId, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
         option = 1;
-        pbsd_setsockopt(sockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
+        pbsd_setsockopt(
+            sockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
 
 #if defined(WIN32) || defined(_WIN32_WCE)
         if (pbsd_bind(sockId, &localAddr, false) != 0)
@@ -204,8 +205,8 @@ CProAcceptor::Init(IProAcceptorObserver* observer,
         pbsd_setsockopt(sockIdUn, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
 
         localAddrUn.sun_family = AF_LOCAL;
-        sprintf(localAddrUn.sun_path,
-            "/tmp/libpronet_127001_%u", (unsigned int)pbsd_ntoh16(localAddr.sin_port));
+        sprintf(localAddrUn.sun_path, "/tmp/libpronet_127001_%u",
+            (unsigned int)pbsd_ntoh16(localAddr.sin_port));
 
         if (access(localAddrUn.sun_path, F_OK) == 0)
         {
@@ -379,13 +380,16 @@ CProAcceptor::OnInput(PRO_INT64 sockId)
 
         int option;
         option = DEFAULT_RECV_BUF_SIZE;
-        pbsd_setsockopt(newSockId, SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
+        pbsd_setsockopt(
+            newSockId, SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
         option = DEFAULT_SEND_BUF_SIZE;
-        pbsd_setsockopt(newSockId, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
+        pbsd_setsockopt(
+            newSockId, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
         if (!unixSocket)
         {
             option = 1;
-            pbsd_setsockopt(newSockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
+            pbsd_setsockopt(
+                newSockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
         }
 
         /*

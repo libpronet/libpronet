@@ -79,7 +79,9 @@ public:
         PRO_INT64    userData /* = 0 */
         );
 
-    virtual bool PRO_CALLTYPE UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds);
+    virtual bool PRO_CALLTYPE UpdateHeartbeatTimers(
+        unsigned long htbtIntervalInSeconds
+        );
 
     virtual void PRO_CALLTYPE CancelTimer(unsigned long timerId);
 
@@ -92,7 +94,10 @@ public:
 
     virtual void PRO_CALLTYPE CancelMmTimer(unsigned long timerId);
 
-    virtual void PRO_CALLTYPE GetTraceInfo(char* buf, size_t size) const;
+    virtual void PRO_CALLTYPE GetTraceInfo(
+        char*  buf,
+        size_t size
+        ) const;
 
 private:
 

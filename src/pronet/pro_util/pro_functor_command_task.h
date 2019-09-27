@@ -52,7 +52,10 @@ public:
 
     void Stop();
 
-    bool Put(IProFunctorCommand* command, bool blocking = false);
+    bool Put(
+        IProFunctorCommand* command,
+        bool                blocking = false
+        );
 
     unsigned long GetSize() const;
 

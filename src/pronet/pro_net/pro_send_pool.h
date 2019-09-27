@@ -50,7 +50,11 @@ public:
         m_pendingPos = NULL;
     }
 
-    void Fill(const void* buf, size_t size, PRO_UINT64 actionId = 0)
+    void Fill(
+        const void* buf,
+        size_t      size,
+        PRO_UINT64  actionId = 0
+        )
     {
         if (buf == NULL || size == 0)
         {
@@ -85,7 +89,8 @@ public:
         }
 
         CProBuffer* const buf = m_bufs.front();
-        size = (unsigned long)((char*)buf->Data() + buf->Size() - m_pendingPos);
+        size = (unsigned long)(
+            (char*)buf->Data() + buf->Size() - m_pendingPos);
         if (size == 0)
         {
             return (NULL);

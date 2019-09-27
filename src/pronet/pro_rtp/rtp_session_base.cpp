@@ -199,7 +199,8 @@ CRtpSessionBase::GetRemoteIp(char remoteIp[64]) const
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_info.sessionType == RTP_ST_UDPCLIENT || m_info.sessionType == RTP_ST_UDPSERVER)
+        if (m_info.sessionType == RTP_ST_UDPCLIENT ||
+            m_info.sessionType == RTP_ST_UDPSERVER)
         {
             if (m_remoteAddr.sin_addr.s_addr != 0)
             {
@@ -228,7 +229,8 @@ CRtpSessionBase::GetRemotePort() const
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_info.sessionType == RTP_ST_UDPCLIENT || m_info.sessionType == RTP_ST_UDPSERVER)
+        if (m_info.sessionType == RTP_ST_UDPCLIENT ||
+            m_info.sessionType == RTP_ST_UDPSERVER)
         {
             if (m_remoteAddr.sin_addr.s_addr != 0)
             {
@@ -354,16 +356,22 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet)
             return (false);
         }
 
-        assert(m_info.outSrcMmId == 0 || packet->GetMmId() == m_info.outSrcMmId);
+        assert(
+            m_info.outSrcMmId == 0 ||
+            packet->GetMmId() == m_info.outSrcMmId
+            );
         assert(packet->GetMmType() == m_info.mmType);
-        if (m_info.outSrcMmId != 0 && packet->GetMmId() != m_info.outSrcMmId
+        if (
+            (m_info.outSrcMmId != 0 && packet->GetMmId() != m_info.outSrcMmId)
             ||
-            packet->GetMmType() != m_info.mmType)
+            packet->GetMmType() != m_info.mmType
+           )
         {
             return (false);
         }
 
-        if (m_info.sessionType == RTP_ST_UDPCLIENT || m_info.sessionType == RTP_ST_UDPSERVER)
+        if (m_info.sessionType == RTP_ST_UDPCLIENT ||
+            m_info.sessionType == RTP_ST_UDPSERVER)
         {
             if (m_remoteAddr.sin_addr.s_addr != 0)
             {
@@ -600,9 +608,16 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
 {{
 #if !defined(_WIN32_WCE)
     bool enableTrace = false;
-    if (m_info.mmType >= RTP_MMT_MSG_MIN   && m_info.mmType <= RTP_MMT_MSG_MAX   ||
-        m_info.mmType >= RTP_MMT_AUDIO_MIN && m_info.mmType <= RTP_MMT_AUDIO_MAX ||
-        m_info.mmType >= RTP_MMT_VIDEO_MIN && m_info.mmType <= RTP_MMT_VIDEO_MAX)
+    if (
+        (m_info.mmType >= RTP_MMT_MSG_MIN &&
+         m_info.mmType <= RTP_MMT_MSG_MAX)
+        ||
+        (m_info.mmType >= RTP_MMT_AUDIO_MIN &&
+         m_info.mmType <= RTP_MMT_AUDIO_MAX)
+        ||
+        (m_info.mmType >= RTP_MMT_VIDEO_MIN &&
+         m_info.mmType <= RTP_MMT_VIDEO_MAX)
+       )
     {
         enableTrace = g_fileMonitor.QueryFileExist();
     }
@@ -660,7 +675,8 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
 
             buffer[0] = '\0';
 
-            if (m_info.mmType >= RTP_MMT_MSG_MIN && m_info.mmType <= RTP_MMT_MSG_MAX)
+            if (m_info.mmType >= RTP_MMT_MSG_MIN &&
+                m_info.mmType <= RTP_MMT_MSG_MAX)
             {
                 snprintf_pro(
                     buffer,
@@ -728,7 +744,10 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                 printf("%s", buffer);
 #endif
             }
-            else if (m_info.mmType >= RTP_MMT_AUDIO_MIN && m_info.mmType <= RTP_MMT_AUDIO_MAX)
+            else if (
+                m_info.mmType >= RTP_MMT_AUDIO_MIN &&
+                m_info.mmType <= RTP_MMT_AUDIO_MAX
+                )
             {
                 snprintf_pro(
                     buffer,
@@ -796,7 +815,10 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                 printf("%s", buffer);
 #endif
             }
-            else if (m_info.mmType >= RTP_MMT_VIDEO_MIN && m_info.mmType <= RTP_MMT_VIDEO_MAX)
+            else if (
+                m_info.mmType >= RTP_MMT_VIDEO_MIN &&
+                m_info.mmType <= RTP_MMT_VIDEO_MAX
+                )
             {
                 snprintf_pro(
                     buffer,
@@ -875,7 +897,8 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
             size_t heapBytes;
 
             {
-                ProGetSgiPoolInfo(freeList, objSize, busyObjNum, totalObjNum, &heapBytes, 0);
+                ProGetSgiPoolInfo(
+                    freeList, objSize, busyObjNum, totalObjNum, &heapBytes, 0);
                 snprintf_pro(
                     buffer,
                     size,
@@ -1086,7 +1109,8 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
         /*
          * a timeout occured?
          */
-        if (tick - m_peerAliveTick < (PRO_INT64)GetRtpKeepaliveTimeout() * 1000)
+        if (tick - m_peerAliveTick <
+            (PRO_INT64)GetRtpKeepaliveTimeout() * 1000)
         {
             return;
         }

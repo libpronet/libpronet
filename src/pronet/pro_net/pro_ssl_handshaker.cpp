@@ -117,7 +117,8 @@ CProSslHandshaker::Init(IProSslHandshakerObserver* observer,
             return (false);
         }
 
-        if (!reactorTask->AddHandler(sockId, this, PRO_MASK_WRITE | PRO_MASK_READ))
+        if (!reactorTask->AddHandler(
+            sockId, this, PRO_MASK_WRITE | PRO_MASK_READ))
         {
             return (false);
         }
@@ -158,7 +159,8 @@ CProSslHandshaker::Fini()
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(
+            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
 
         m_reactorTask = NULL;
         observer = m_observer;
@@ -281,7 +283,8 @@ CProSslHandshaker::DoRecv(PRO_INT64 sockId)
             else if (recvSize > 0)
             {
                 m_recvPool.Fill(recvSize);
-                msgSize = mbedtls_ssl_get_bytes_avail((mbedtls_ssl_context*)m_ctx); /* remaining message */
+                msgSize = mbedtls_ssl_get_bytes_avail( /* remaining message */
+                    (mbedtls_ssl_context*)m_ctx);
 
                 if (m_recvPool.ContinuousIdleSize() > 0)
                 {
@@ -344,7 +347,8 @@ EXIT:
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(
+            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
 
         m_reactorTask = NULL;
         observer = m_observer;
@@ -401,7 +405,8 @@ CProSslHandshaker::DoSend(PRO_INT64 sockId)
             {
                 if (m_onWr)
                 {
-                    m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE);
+                    m_reactorTask->RemoveHandler(
+                        m_sockId, this, PRO_MASK_WRITE);
                     m_onWr = false;
                 }
 
@@ -466,7 +471,8 @@ CProSslHandshaker::DoSend(PRO_INT64 sockId)
             {
                 if (m_onWr)
                 {
-                    m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE);
+                    m_reactorTask->RemoveHandler(
+                        m_sockId, this, PRO_MASK_WRITE);
                     m_onWr = false;
                 }
             }
@@ -518,7 +524,8 @@ EXIT:
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(
+            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
         if (!error)
         {
             ctx = m_ctx;
@@ -533,7 +540,8 @@ EXIT:
 
     if (error)
     {
-        observer->OnHandshakeError((IProSslHandshaker*)this, errorCode, sslCode);
+        observer->OnHandshakeError(
+            (IProSslHandshaker*)this, errorCode, sslCode);
     }
     else
     {
@@ -575,7 +583,8 @@ CProSslHandshaker::OnError(PRO_INT64 sockId,
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(
+            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
 
         m_reactorTask = NULL;
         observer = m_observer;
@@ -617,7 +626,8 @@ CProSslHandshaker::OnTimer(unsigned long timerId,
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(
+            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
 
         m_reactorTask = NULL;
         observer = m_observer;

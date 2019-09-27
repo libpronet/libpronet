@@ -142,8 +142,8 @@ CDbConnection::Open(const char* fileName) /* UTF-8 */
             s_flag = true;
         }
 
-        err = sqlite3_open_v2(
-            fileName, &m_db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_FULLMUTEX, NULL);
+        err = sqlite3_open_v2(fileName, &m_db,
+            SQLITE_OPEN_READWRITE | SQLITE_OPEN_FULLMUTEX, NULL);
         if (err != SQLITE_OK)
         {
             sqlite3_close_v2(m_db);
@@ -168,7 +168,8 @@ CDbConnection::Close()
         if (m_transacting)
         {
             sqlite3_stmt* stmt = NULL;
-            const int err = sqlite3_prepare_v2_i(m_db, "ROLLBACK", -1, &stmt, NULL);
+            const int err =
+                sqlite3_prepare_v2_i(m_db, "ROLLBACK", -1, &stmt, NULL);
             if (err == SQLITE_OK)
             {
                 assert(stmt != NULL);
@@ -272,7 +273,8 @@ CDbConnection::RollbackTransaction()
         if (m_transacting)
         {
             sqlite3_stmt* stmt = NULL;
-            const int err = sqlite3_prepare_v2_i(m_db, "ROLLBACK", -1, &stmt, NULL);
+            const int err =
+                sqlite3_prepare_v2_i(m_db, "ROLLBACK", -1, &stmt, NULL);
             if (err == SQLITE_OK)
             {
                 assert(stmt != NULL);
@@ -367,7 +369,8 @@ CDbConnection::DoSelect(const char* sql,
                     }
                     else
                     {
-                        const char* const txt = (char*)sqlite3_column_text(stmt, j);
+                        const char* const txt =
+                            (char*)sqlite3_column_text(stmt, j);
                         row.cells[j].txt = txt != NULL ? txt : "";
                     }
                 }
