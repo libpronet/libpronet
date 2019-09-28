@@ -34,6 +34,64 @@
 
 #define CONFIG_FILE_NAME "test_tcp_server.cfg"
 
+static CTest* g_s_tester = NULL;
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
+#if !defined(WIN32) && !defined(_WIN32_WCE)
+
+static
+void
+SignalHandler_i(int sig)
+{
+    switch (sig)
+    {
+    case SIGHUP:
+        {
+            printf("\n test_tcp_server --- SIGHUP, exiting... \n");
+            g_s_tester->Fini();
+            _exit(0);
+        }
+    case SIGINT:
+        {
+            printf("\n test_tcp_server --- SIGINT, exiting... \n");
+            g_s_tester->Fini();
+            _exit(0);
+        }
+    case SIGQUIT:
+        {
+            printf("\n test_tcp_server --- SIGQUIT, exiting... \n");
+            g_s_tester->Fini();
+            _exit(0);
+        }
+    case SIGTERM:
+        {
+            printf("\n test_tcp_server --- SIGTERM, exiting... \n");
+            g_s_tester->Fini();
+            _exit(0);
+        }
+    }
+}
+
+static
+void
+PRO_CALLTYPE
+SetupSignalHandlers_i()
+{
+    struct sigaction sa;
+    memset(&sa, 0, sizeof(struct sigaction));
+    sa.sa_handler = &SignalHandler_i;
+    sigemptyset(&sa.sa_mask);
+
+    sigaction(SIGHUP , &sa, NULL);
+    sigaction(SIGINT , &sa, NULL);
+    sigaction(SIGQUIT, &sa, NULL);
+    sigaction(SIGTERM, &sa, NULL);
+}
+
+#endif /* WIN32, _WIN32_WCE */
+
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -42,7 +100,6 @@ int main(int argc, char* argv[])
     ProNetInit();
 
     IProReactor*           reactor = NULL;
-    CTest*                 tester  = NULL;
     TCP_SERVER_CONFIG_INFO configInfo;
 
     char exeRoot[1024] = "";
@@ -248,11 +305,26 @@ int main(int argc, char* argv[])
         reactor->UpdateHeartbeatTimers(configInfo.tcps_heartbeat_interval);
     }
 
-    tester = CTest::CreateInstance();
-    if (tester == NULL || !tester->Init(reactor, configInfo))
+    g_s_tester = CTest::CreateInstance();
+    if (g_s_tester == NULL)
     {
         printf(
             "\n test_tcp_server --- error! can't create tester on port %u. \n"
+            ,
+            (unsigned int)configInfo.tcps_port
+            );
+
+        goto EXIT;
+    }
+
+#if !defined(WIN32) && !defined(_WIN32_WCE)
+    SetupSignalHandlers_i();
+#endif
+
+    if (!g_s_tester->Init(reactor, configInfo))
+    {
+        printf(
+            "\n test_tcp_server --- error! can't init tester on port %u. \n"
             ,
             (unsigned int)configInfo.tcps_port
             );
@@ -282,7 +354,7 @@ int main(int argc, char* argv[])
     reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
     printf("\n%s\n", s_traceInfo);
     printf(" [ HTBT Size ] : %u \n",
-        (unsigned int)tester->GetHeartbeatDataSize());
+        (unsigned int)g_s_tester->GetHeartbeatDataSize());
 
     while (1)
     {
@@ -327,7 +399,7 @@ int main(int argc, char* argv[])
             reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
             printf("\n%s\n", s_traceInfo);
             printf(" [ HTBT Size ] : %u \n",
-                (unsigned int)tester->GetHeartbeatDataSize());
+                (unsigned int)g_s_tester->GetHeartbeatDataSize());
             continue;
         }
 
@@ -359,7 +431,7 @@ int main(int argc, char* argv[])
             reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
             printf("\n%s\n", s_traceInfo);
             printf(" [ HTBT Size ] : %u \n",
-                (unsigned int)tester->GetHeartbeatDataSize());
+                (unsigned int)g_s_tester->GetHeartbeatDataSize());
         }
         else if (strnicmp(p, "htbtsize ", 9) == 0)
         {
@@ -371,29 +443,29 @@ int main(int argc, char* argv[])
                 continue;
             }
 
-            tester->SetHeartbeatDataSize(bytes);
+            g_s_tester->SetHeartbeatDataSize(bytes);
             printf("\n htbtsize... \n");
 
             reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
             printf("\n%s\n", s_traceInfo);
             printf(" [ HTBT Size ] : %u \n",
-                (unsigned int)tester->GetHeartbeatDataSize());
+                (unsigned int)g_s_tester->GetHeartbeatDataSize());
         }
         else
         {
             reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
             printf("\n%s\n", s_traceInfo);
             printf(" [ HTBT Size ] : %u \n",
-                (unsigned int)tester->GetHeartbeatDataSize());
+                (unsigned int)g_s_tester->GetHeartbeatDataSize());
         }
     } /* end of while (...) */
 
 EXIT:
 
-    if (tester != NULL)
+    if (g_s_tester != NULL)
     {
-        tester->Fini();
-        tester->Release();
+        g_s_tester->Fini();
+        g_s_tester->Release();
     }
 
     ProDeleteReactor(reactor);
