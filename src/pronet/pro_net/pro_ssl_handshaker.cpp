@@ -324,7 +324,15 @@ CProSslHandshaker::DoRecv(PRO_INT64 sockId)
             unsigned long     theSize = 0;
             const void* const theBuf  = m_sendPool.PreSend(theSize);
 
-            if (!m_onWr && (regWr || theBuf != NULL && theSize > 0))
+            if (
+                !m_onWr
+                &&
+                (
+                 regWr
+                 ||
+                 (theBuf != NULL && theSize > 0)
+                )
+               )
             {
                 if (m_reactorTask->AddHandler(m_sockId, this, PRO_MASK_WRITE)) /* !!! */
                 {
