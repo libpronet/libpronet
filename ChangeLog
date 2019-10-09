@@ -1,3 +1,22 @@
+LibProNet-1.2.1, tag-release-1.2.1, 2019-10-08
+====
+
+Bugfix
+  * Add signal handlers to release Unix-domain socket files such as
+    /tmp/libpronet_127001_3000
+  * Improve scripts to support paths with spaces
+
+Changes
+  * Call ProSrand() at initialization time
+  * Rename pro_mbedtls.h/.cpp to pro_ssl.h/.cpp
+  * Rename IRtpPacket::SetTick()/GetTick() to SetMagic()/GetMagic()
+  * Add a parameter "arg0" for IProFunctorCommand
+  * Add some methods to the messaging system interface
+  * Add "_sslsuite_" field to the rtp_msg_server.db file
+  * Add some more printing information to utilities
+  * Code refine
+
+
 LibProNet-1.1.0, tag-release-1.1.0, 2019-08-08
 ====
 
