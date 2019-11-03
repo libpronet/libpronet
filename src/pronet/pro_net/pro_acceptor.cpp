@@ -32,7 +32,7 @@
 ////
 
 #if !defined(PRO_ACCEPTOR_LENGTH)
-#define PRO_ACCEPTOR_LENGTH     5000
+#define PRO_ACCEPTOR_LENGTH     10000
 #endif
 
 #define SERVICE_HANDSHAKE_BYTES 4 /* serviceId + serviceOpt + (r) + (r+1) */
@@ -44,21 +44,16 @@
 ////
 
 static
-PRO_UINT64
+void
 PRO_CALLTYPE
-MakeNonce_i()
+MakeNonce_i(PRO_NONCE& nonce)
 {
-    PRO_UINT64           n = 0;
-    unsigned char* const p = (unsigned char*)&n;
-
-    for (int i = 0; i < 8; ++i)
+    for (int i = 0; i < (int)sizeof(nonce.nonce); ++i)
     {
-        p[i] = (unsigned char)(ProRand_0_1() * 254 + 1); /* 1 ~ 255 */
+        nonce.nonce[i] = (char)(ProRand_0_1() * 255);
     }
 
-    std::random_shuffle(p, p + 8);
-
-    return (n);
+    std::random_shuffle(nonce.nonce, nonce.nonce + sizeof(nonce.nonce));
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -269,8 +264,8 @@ EXIT:
 void
 CProAcceptor::Fini()
 {
-    IProAcceptorObserver*                      observer = NULL;
-    CProStlMap<IProTcpHandshaker*, PRO_UINT64> handshaker2Nonce;
+    IProAcceptorObserver*                     observer = NULL;
+    CProStlMap<IProTcpHandshaker*, PRO_NONCE> handshaker2Nonce;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -290,8 +285,8 @@ CProAcceptor::Fini()
         m_observer = NULL;
     }
 
-    CProStlMap<IProTcpHandshaker*, PRO_UINT64>::const_iterator       itr = handshaker2Nonce.begin();
-    CProStlMap<IProTcpHandshaker*, PRO_UINT64>::const_iterator const end = handshaker2Nonce.end();
+    CProStlMap<IProTcpHandshaker*, PRO_NONCE>::const_iterator       itr = handshaker2Nonce.begin();
+    CProStlMap<IProTcpHandshaker*, PRO_NONCE>::const_iterator const end = handshaker2Nonce.end();
 
     for (; itr != end; ++itr)
     {
@@ -404,7 +399,8 @@ CProAcceptor::OnInput(PRO_INT64 sockId)
 
         if (m_enableServiceExt)
         {
-            const PRO_UINT64 nonce = pbsd_hton64(MakeNonce_i());
+            PRO_NONCE nonce;
+            MakeNonce_i(nonce);
 
             handshaker = ProCreateTcpHandshaker(
                 this,
@@ -412,14 +408,14 @@ CProAcceptor::OnInput(PRO_INT64 sockId)
                 newSockId,
                 unixSocket,
                 &nonce,                  /* sendData */
-                sizeof(PRO_UINT64),      /* sendDataSize */
+                sizeof(PRO_NONCE),       /* sendDataSize */
                 SERVICE_HANDSHAKE_BYTES, /* recvDataSize = serviceId + serviceOpt + (r) + (r+1) */
                 false,                   /* recvFirst is false */
                 m_timeoutInSeconds
                 );
             if (handshaker != NULL)
             {
-                m_handshaker2Nonce[handshaker] = pbsd_ntoh64(nonce);
+                m_handshaker2Nonce[handshaker] = nonce;
             }
             else
             {
@@ -447,9 +443,9 @@ CProAcceptor::OnInput(PRO_INT64 sockId)
         unixSocket,
         remoteIp,
         remotePort,
-        0, /* serviceId */
-        0, /* serviceOpt */
-        0  /* nonce */
+        0,   /* serviceId */
+        0,   /* serviceOpt */
+        NULL /* nonce */
         );
     observer->Release();
 }
@@ -472,7 +468,7 @@ CProAcceptor::OnHandshakeOk(IProTcpHandshaker* handshaker,
     const unsigned char* const serviceData = (unsigned char*)buf;
 
     IProAcceptorObserver* observer = NULL;
-    PRO_UINT64            nonce    = 0;
+    PRO_NONCE             nonce;
     pbsd_sockaddr_in      remoteAddr;
 
     {
@@ -485,7 +481,7 @@ CProAcceptor::OnHandshakeOk(IProTcpHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProTcpHandshaker*, PRO_UINT64>::iterator const itr =
+        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator const itr =
             m_handshaker2Nonce.find(handshaker);
         if (itr == m_handshaker2Nonce.end())
         {
@@ -544,7 +540,7 @@ CProAcceptor::OnHandshakeOk(IProTcpHandshaker* handshaker,
         remotePort,
         serviceId,
         serviceOpt,
-        nonce
+        &nonce
         );
     observer->Release();
 }
@@ -568,7 +564,7 @@ CProAcceptor::OnHandshakeError(IProTcpHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProTcpHandshaker*, PRO_UINT64>::iterator const itr =
+        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator const itr =
             m_handshaker2Nonce.find(handshaker);
         if (itr == m_handshaker2Nonce.end())
         {

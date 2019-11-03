@@ -33,7 +33,8 @@
 ////
 
 CRtpSessionTcpclient*
-CRtpSessionTcpclient::CreateInstance(const RTP_SESSION_INFO* localInfo)
+CRtpSessionTcpclient::CreateInstance(const RTP_SESSION_INFO* localInfo,
+                                     bool                    suspendRecv)
 {
     assert(localInfo != NULL);
     assert(localInfo->mmType != 0);
@@ -42,12 +43,16 @@ CRtpSessionTcpclient::CreateInstance(const RTP_SESSION_INFO* localInfo)
         return (NULL);
     }
 
-    CRtpSessionTcpclient* const session = new CRtpSessionTcpclient(*localInfo);
+    CRtpSessionTcpclient* const session =
+        new CRtpSessionTcpclient(*localInfo, suspendRecv);
 
     return (session);
 }
 
-CRtpSessionTcpclient::CRtpSessionTcpclient(const RTP_SESSION_INFO& localInfo)
+CRtpSessionTcpclient::CRtpSessionTcpclient(const RTP_SESSION_INFO& localInfo,
+                                           bool                    suspendRecv)
+                                           :
+CRtpSessionBase(suspendRecv)
 {
     m_info               = localInfo;
     m_info.localVersion  = 0;
@@ -81,10 +86,39 @@ CRtpSessionTcpclient::Init(IRtpSessionObserver* observer,
         return (false);
     }
 
+    const char* const anyIp = "0.0.0.0";
+    if (localIp == NULL || localIp[0] == '\0')
+    {
+        localIp = anyIp;
+    }
+
     if (timeoutInSeconds == 0)
     {
         timeoutInSeconds = DEFAULT_TIMEOUT;
     }
+
+    pbsd_sockaddr_in localAddr;
+    memset(&localAddr, 0, sizeof(pbsd_sockaddr_in));
+    localAddr.sin_family      = AF_INET;
+    localAddr.sin_addr.s_addr = pbsd_inet_aton(localIp);
+
+    pbsd_sockaddr_in remoteAddr;
+    memset(&remoteAddr, 0, sizeof(pbsd_sockaddr_in));
+    remoteAddr.sin_family      = AF_INET;
+    remoteAddr.sin_port        = pbsd_hton16(remotePort);
+    remoteAddr.sin_addr.s_addr = pbsd_inet_aton(remoteIp); /* DNS */
+
+    if (localAddr.sin_addr.s_addr  == (PRO_UINT32)-1 ||
+        remoteAddr.sin_addr.s_addr == (PRO_UINT32)-1 ||
+        remoteAddr.sin_addr.s_addr == 0)
+    {
+        return (false);
+    }
+
+    char localIp2[64]  = "";
+    char remoteIp2[64] = "";
+    pbsd_inet_ntoa(localAddr.sin_addr.s_addr , localIp2);
+    pbsd_inet_ntoa(remoteAddr.sin_addr.s_addr, remoteIp2);
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -103,9 +137,9 @@ CRtpSessionTcpclient::Init(IRtpSessionObserver* observer,
             true, /* enable unixSocket */
             this,
             reactor,
-            remoteIp,
+            remoteIp2,
             remotePort,
-            localIp,
+            localIp2,
             timeoutInSeconds
             );
         if (m_connector == NULL)
@@ -114,8 +148,10 @@ CRtpSessionTcpclient::Init(IRtpSessionObserver* observer,
         }
 
         observer->AddRef();
-        m_observer = observer;
-        m_reactor  = reactor;
+        m_observer   = observer;
+        m_reactor    = reactor;
+        m_localAddr  = localAddr;
+        m_remoteAddr = remoteAddr;
     }
 
     return (true);
@@ -170,14 +206,14 @@ CRtpSessionTcpclient::Release()
 
 void
 PRO_CALLTYPE
-CRtpSessionTcpclient::OnConnectOk(IProConnector* connector,
-                                  PRO_INT64      sockId,
-                                  bool           unixSocket,
-                                  const char*    remoteIp,
-                                  unsigned short remotePort,
-                                  unsigned char  serviceId,
-                                  unsigned char  serviceOpt,
-                                  PRO_UINT64     nonce)
+CRtpSessionTcpclient::OnConnectOk(IProConnector*   connector,
+                                  PRO_INT64        sockId,
+                                  bool             unixSocket,
+                                  const char*      remoteIp,
+                                  unsigned short   remotePort,
+                                  unsigned char    serviceId,
+                                  unsigned char    serviceOpt,
+                                  const PRO_NONCE* nonce)
 {{
     CProThreadMutexGuard mon(m_lockUpcall);
 
@@ -217,8 +253,8 @@ CRtpSessionTcpclient::OnConnectOk(IProConnector* connector,
         assert(m_trans == NULL);
 
         m_trans = ProCreateTcpTransport(
-            this, m_reactor, sockId, unixSocket,
-            sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
+            this, m_reactor, sockId, unixSocket, sockBufSizeRecv,
+            sockBufSizeSend, recvPoolSize, m_suspendRecv);
         if (m_trans == NULL)
         {
             ProCloseSockId(sockId);

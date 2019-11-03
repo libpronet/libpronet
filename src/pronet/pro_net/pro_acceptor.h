@@ -16,14 +16,6 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-/*
- * 1) client ----->                connect()                -----> server
- * 2) client <-----                 accept()                <----- server
- * 3) client <-----                  nonce                  <----- server
- * 4) client ----->  serviceId + serviceOpt + (r) + (r+1)   -----> server
- *          acceptor_ex/connector_ex handshake protocol flow chart
- */
-
 #if !defined(PRO_ACCEPTOR_H)
 #define PRO_ACCEPTOR_H
 
@@ -94,18 +86,18 @@ private:
 
 private:
 
-    const bool                                 m_enableServiceExt;
-    IProAcceptorObserver*                      m_observer;
-    CProTpReactorTask*                         m_reactorTask;
-    PRO_INT64                                  m_sockId;
-    PRO_INT64                                  m_sockIdUn;
-    pbsd_sockaddr_in                           m_localAddr;
-    pbsd_sockaddr_un                           m_localAddrUn;
-    unsigned long                              m_timeoutInSeconds;
+    const bool                                m_enableServiceExt;
+    IProAcceptorObserver*                     m_observer;
+    CProTpReactorTask*                        m_reactorTask;
+    PRO_INT64                                 m_sockId;
+    PRO_INT64                                 m_sockIdUn;
+    pbsd_sockaddr_in                          m_localAddr;
+    pbsd_sockaddr_un                          m_localAddrUn;
+    unsigned long                             m_timeoutInSeconds;
 
-    CProStlMap<IProTcpHandshaker*, PRO_UINT64> m_handshaker2Nonce;
+    CProStlMap<IProTcpHandshaker*, PRO_NONCE> m_handshaker2Nonce;
 
-    mutable CProThreadMutex                    m_lock;
+    mutable CProThreadMutex                   m_lock;
 
     DECLARE_SGI_POOL(0);
 };

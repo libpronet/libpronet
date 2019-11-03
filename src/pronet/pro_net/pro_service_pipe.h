@@ -90,8 +90,8 @@ struct PRO_SERVICE_PACKET_S2C
     {
         serviceId  = 0;
         serviceOpt = 0;
-        nonce      = 0;
 
+        memset(&nonce, 0, sizeof(PRO_NONCE));
 #if defined(WIN32) && !defined(_WIN32_WCE)
         memset(&protocolInfo, 0, sizeof(WSAPROTOCOL_INFO));
 #endif
@@ -99,7 +99,7 @@ struct PRO_SERVICE_PACKET_S2C
 
     unsigned char    serviceId;
     unsigned char    serviceOpt;
-    PRO_UINT64       nonce;
+    PRO_NONCE        nonce;
 #if defined(WIN32) && !defined(_WIN32_WCE)
     WSAPROTOCOL_INFO protocolInfo;
 #endif

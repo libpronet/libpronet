@@ -118,7 +118,7 @@ CProTimerFactory::Start(bool mmTimer)
 
         for (; i < c; ++i)
         {
-            m_htbtCounts[i] = 0;
+            m_htbtCounts[i] = 0; /* clean all steps */
         }
 
         IProFunctorCommand* const command =
@@ -273,6 +273,9 @@ CProTimerFactory::ScheduleHeartbeatTimer(IProOnTimer* onTimer,
             }
         }
 
+        /*
+         * put it into the step
+         */
         ++m_htbtCounts[index];
 
         const PRO_INT64 step = m_htbtTimeSpan / c;
@@ -417,7 +420,6 @@ CProTimerFactory::UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds)
             }
         }
 
-        int             index = 0;
         const int       steps = (int)m_htbtCounts.size();
         const PRO_INT64 step  = m_htbtTimeSpan / steps;
         const PRO_INT64 tick  = ProGetTickCount64();
@@ -427,21 +429,24 @@ CProTimerFactory::UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds)
 
         for (; i < c; ++i)
         {
-            if (index < steps)
+            /*
+             * put it into the step
+             */
+            if (i < steps)
             {
-                m_htbtCounts[index] = 1;
+                m_htbtCounts[i] = 1;
             }
             else
             {
-                ++m_htbtCounts[index % steps];
+                ++m_htbtCounts[i % steps];
             }
 
             PRO_TIMER_NODE& node = timers[i];
             node.expireTick =  (tick + m_htbtTimeSpan - 1) / m_htbtTimeSpan * m_htbtTimeSpan;
-            node.expireTick += step * index;
+            node.expireTick += step * (i % steps);
             node.expireTick += (PRO_INT64)(ProRand_0_1() * (step - 1));
             node.timeSpan   =  m_htbtTimeSpan;
-            node.htbtIndex  =  index++;
+            node.htbtIndex  =  i % steps;
 
             m_timers.insert(node);
             m_timerId2ExpireTick[node.timerId] = node.expireTick;

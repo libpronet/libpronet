@@ -16,14 +16,6 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-/*
- * 1) client -----> rtp(RTP_SESSION_INFO with RTP_MSG_HEADER0) -----> server
- * 2) client <-----            rtp(RTP_SESSION_ACK)            <----- server
- * 3) client <-----            tcp4(RTP_MSG_HEADER0)           <----- server
- * 4) client <<====                  tcp4(msg)                 ====>> server
- *                   msg system handshake protocol flow chart
- */
-
 #if !defined(RTP_MSG_C2S_H)
 #define RTP_MSG_C2S_H
 
@@ -155,7 +147,7 @@ private:
         const char*             remoteIp,
         unsigned short          remotePort,
         const RTP_SESSION_INFO* remoteInfo,
-        PRO_UINT64              nonce
+        const PRO_NONCE*        nonce
         );
 
     virtual void PRO_CALLTYPE OnAcceptSession(
@@ -166,7 +158,7 @@ private:
         const char*             remoteIp,
         unsigned short          remotePort,
         const RTP_SESSION_INFO* remoteInfo,
-        PRO_UINT64              nonce
+        const PRO_NONCE*        nonce
         );
 
     virtual void PRO_CALLTYPE OnOkSession(IRtpSession* session)
@@ -211,7 +203,7 @@ private:
         const void*         buf,
         unsigned long       size,
         PRO_UINT16          charset,
-        const RTP_MSG_USER* srcUser,
+        const RTP_MSG_USER& srcUser,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount
         );
@@ -230,20 +222,13 @@ private:
 
     void AcceptSession(
         IRtpService*            service,
-        PRO_SSL_CTX*            sslCtx,
+        PRO_SSL_CTX*            sslCtx, /* = NULL */
         PRO_INT64               sockId,
         bool                    unixSocket,
         const char*             remoteIp,
         unsigned short          remotePort,
-        const RTP_SESSION_INFO* remoteInfo,
-        PRO_UINT64              nonce
-        );
-
-    static bool SendAckToDownlink(
-        RTP_MM_TYPE         mmType,
-        IRtpSession*        session,
-        const RTP_MSG_USER* user,
-        const char*         publicIp
+        const RTP_SESSION_INFO& remoteInfo,
+        const PRO_NONCE&        nonce
         );
 
     static bool SendMsgToDownlink(
@@ -253,7 +238,7 @@ private:
         const void*         buf,
         unsigned long       size,
         PRO_UINT16          charset,
-        const RTP_MSG_USER* srcUser
+        const RTP_MSG_USER& srcUser
         );
 
     static void ReportLogout(

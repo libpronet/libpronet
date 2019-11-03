@@ -138,7 +138,7 @@ CProStatLossRate::CProStatLossRate()
 }
 
 void
-CProStatLossRate::SetTimeSpan(unsigned long timeSpanInSeconds) /* = 5 */
+CProStatLossRate::SetTimeSpan(unsigned long timeSpanInSeconds)                /* = 5 */
 {
     assert(timeSpanInSeconds > 0);
     if (timeSpanInSeconds == 0)
@@ -150,15 +150,15 @@ CProStatLossRate::SetTimeSpan(unsigned long timeSpanInSeconds) /* = 5 */
 }
 
 void
-CProStatLossRate::SetMaxBrokenDuration(unsigned char maxBrokenDurationInSeconds) /* = 10 */
+CProStatLossRate::SetMaxBrokenDuration(unsigned char brokenDurationInSeconds) /* = 10 */
 {
-    assert(maxBrokenDurationInSeconds > 0);
-    if (maxBrokenDurationInSeconds == 0)
+    assert(brokenDurationInSeconds > 0);
+    if (brokenDurationInSeconds == 0)
     {
         return;
     }
 
-    m_maxBrokenDuration = maxBrokenDurationInSeconds;
+    m_maxBrokenDuration = brokenDurationInSeconds;
 }
 
 void
@@ -201,13 +201,13 @@ CProStatLossRate::PushData(PRO_UINT16 dataSeq)
 
         if (dataSeq < m_nextSeq)
         {
-            dist1 = (PRO_UINT16)-1 - m_nextSeq + dataSeq + 1;
+            dist1 = (PRO_UINT16)-1 - (m_nextSeq - dataSeq) + 1;
             dist2 = m_nextSeq - dataSeq;
         }
         else
         {
             dist1 = dataSeq - m_nextSeq;
-            dist2 = (PRO_UINT16)-1 - dataSeq + m_nextSeq + 1;
+            dist2 = (PRO_UINT16)-1 - (dataSeq - m_nextSeq) + 1;
         }
 
         if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* forward */

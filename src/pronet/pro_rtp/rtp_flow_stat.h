@@ -43,8 +43,8 @@ public:
         );
 
     void CalcInfo(
-        float* inFrameRate,  /* = NULL */
-        float* inBitRate,    /* = NULL */
+        float* srcFrameRate, /* = NULL */
+        float* srcBitRate,   /* = NULL */
         float* outFrameRate, /* = NULL */
         float* outBitRate    /* = NULL */
         );
@@ -59,10 +59,10 @@ private:
 
     PRO_INT64 m_timeSpan;
     PRO_INT64 m_startTick;
-    double    m_inFrames;
-    double    m_inFrameRate;
-    double    m_inBits;
-    double    m_inBitRate;
+    double    m_srcFrames;
+    double    m_srcFrameRate;
+    double    m_srcBits;
+    double    m_srcBitRate;
     double    m_outFrames;
     double    m_outFrameRate;
     double    m_outBits;

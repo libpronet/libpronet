@@ -90,8 +90,8 @@ CProServicePipe::Init(bool                     recvFdMode,
             return (false);
         }
 
-        if (!m_trans->Init(this, (CProTpReactorTask*)reactor,
-            sockId, unixSocket, RECV_BUF_SIZE, SEND_BUF_SIZE))
+        if (!m_trans->Init(this, (CProTpReactorTask*)reactor, sockId,
+            unixSocket, RECV_BUF_SIZE, SEND_BUF_SIZE, false)) /* suspendRecv is false */
         {
             m_trans->Release();
             m_trans = NULL;

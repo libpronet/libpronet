@@ -367,7 +367,13 @@ CProUdpTransport::SendData(const void*             buf,
             m_onWr = true;
         }
 
-        pbsd_sendto(m_sockId, buf, (int)size, 0, realAddr);
+        const int sentSize = pbsd_sendto(
+            m_sockId, buf, (int)size, 0, realAddr);
+        if (sentSize != (int)size)
+        {
+            return (false);
+        }
+
         m_pendingWr = true;
         m_actionId  = actionId;
     }

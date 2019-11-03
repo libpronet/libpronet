@@ -456,21 +456,21 @@ void
 PRO_CALLTYPE
 ProSrand()
 {
-    unsigned int seed = 0;
-
-#if defined(WIN32) || defined(_WIN32_WCE)
-    seed = (unsigned int)time(NULL) + (unsigned int)(PRO_UINT64)&seed +
-        (unsigned int)::GetCurrentThreadId();
-#else
-    seed = (unsigned int)time(NULL) + (unsigned int)(PRO_UINT64)&seed +
-        (unsigned int)pthread_self();
-#endif
-    if (seed == 0)
+    PRO_INT64 seed = time(NULL);
+    if (seed <= 0)
     {
-        seed = (unsigned int)time(NULL);
+        seed = ProGetTickCount64_s();
     }
 
-    srand(seed);
+#if defined(WIN32) || defined(_WIN32_WCE)
+    seed += (PRO_UINT16)::GetCurrentThreadId();
+    seed += (PRO_UINT32)::GetCurrentThreadId() << 16;
+#else
+    seed += (PRO_UINT16)pthread_self();
+    seed += (PRO_UINT32)pthread_self() << 16;
+#endif
+
+    srand((unsigned int)seed);
 }
 
 PRO_SHARED_API
@@ -587,14 +587,7 @@ ProGetTickCount64_s()
 
 #else
 
-    struct timeval tv;
-    gettimeofday(&tv, NULL);
-
-    PRO_INT64 ret = tv.tv_sec;
-    ret *= 1000;
-    ret += tv.tv_usec / 1000;
-
-    return (ret);
+    return (0);
 
 #endif
 }

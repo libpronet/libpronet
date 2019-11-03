@@ -38,7 +38,7 @@
  * "client_id"               "2-1"
  * "client_public_ip"        "a.b.c.d"
  * "client_hash_string"      "00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff"
- * "client_nonce"            "1234"
+ * "client_nonce_string"     "00112233445566778899aabbccddeeff00112233445566778899aabbccddeeff"
  */
 
 /*
@@ -82,7 +82,7 @@ static const char* const TAG_client_index                = "client_index"       
 static const char* const TAG_client_id                   = "client_id"            ;
 static const char* const TAG_client_public_ip            = "client_public_ip"     ;
 static const char* const TAG_client_hash_string          = "client_hash_string"   ;
-static const char* const TAG_client_nonce                = "client_nonce"         ;
+static const char* const TAG_client_nonce_string         = "client_nonce_string"  ;
 
 static const char* const MSG_client_login                = "***client_login"      ;
 static const char* const MSG_client_login_ok             = "***client_login_ok"   ;

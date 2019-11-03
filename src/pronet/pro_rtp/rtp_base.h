@@ -44,35 +44,34 @@
  *                Fig.2 structure diagram of RtpService
  */
 
-/*
- * 1) client ----->                connect()                -----> server
- * 2) client <-----                 accept()                <----- server
- * 3) client <-----                  nonce                  <----- server
- * 4) client ----->  serviceId + serviceOpt + (r) + (r+1)   -----> server
- * 5) client::[password hash]
- * 6) client ----->          rtp(RTP_SESSION_INFO)          -----> server
- * 7)                                             [password hash]::server
- * 8) client <-----          rtp(RTP_SESSION_ACK)           <----- server
- *                 Fig.3 TCP_EX handshake protocol flow chart
+/*               ______________________________
+ *       ====>>in__________ o                  |__________
+ *                         | o                  __________out====>>
+ *                         |..ooooooooooooooooo|       A
+ *                         |ooooooooooooooooooo|       |
+ *                         |ooooooooooooooooooo| WallHeight is 5
+ *                         |ooooooooooooooooooo|       |
+ *                         |ooooooooooooooooooo|       V
+ *                Fig.3 structure diagram of RtpReorder
  */
 
 /*
- * 1) client ----->                connect()                -----> server
- * 2) client <-----                 accept()                <----- server
- * 3) client <-----                  nonce                  <----- server
- * 4) client ----->  serviceId + serviceOpt + (r) + (r+1)   -----> server
- * 5) client <<====              ssl handshake              ====>> server
- * 6) client::[password hash]
- * 7) client ----->          rtp(RTP_SESSION_INFO)          -----> server
- * 8)                                             [password hash]::server
- * 9) client <-----          rtp(RTP_SESSION_ACK)           <----- server
- *                 Fig.4 SSL_EX handshake protocol flow chart
+ * 1)  client ----->                 connect()                  -----> server
+ * 2)  client <-----                  accept()                  <----- server
+ * 3a) client <-----                 PRO_NONCE                  <----- server
+ * 3b) client ----->    serviceId + serviceOpt + (r) + (r+1)    -----> server
+ * 4]  client <<====              [ssl handshake]               ====>> server
+ *     client::passwordHash
+ * 5)  client ----->            rtp(RTP_SESSION_INFO)           -----> server
+ *                                                       passwordHash::server
+ * 6)  client <-----            rtp(RTP_SESSION_ACK)            <----- server
+ *               Fig.4 TCP_EX/SSL_EX handshake protocol flow chart
  */
 
 /*
  * RFC-1889/1890, RFC-3550/3551, RFC-4571
  *
- * PSP-v1.0 (PRO Session Protocol version 1.0)
+ * PSP-v2.0 (PRO Session Protocol version 2.0)
  */
 
 #if !defined(____RTP_BASE_H____)
@@ -175,7 +174,7 @@ static const RTP_SESSION_TYPE RTP_ST_MCAST_EX     = 12; /* mcast-扩展协议端 */
  */
 struct RTP_SESSION_INFO
 {
-    PRO_UINT16        localVersion;     /* 本地版本号===[      无需设置      ], for tcp_ex, ssl_ex */
+    PRO_UINT16        localVersion;     /* 本地版本号===[无需设置, 当前值为02], for tcp_ex, ssl_ex */
     PRO_UINT16        remoteVersion;    /* 远端版本号===[c无需设置, s必须设置>, for tcp_ex, ssl_ex */
     RTP_SESSION_TYPE  sessionType;      /* 会话类型=====[      无需设置      ] */
     RTP_MM_TYPE       mmType;           /* 媒体类型=====<      必须设置      > */
@@ -190,6 +189,17 @@ struct RTP_SESSION_INFO
     PRO_UINT32        outSrcMmId;       /* 输出媒体流的源节点id. 可以为0 */
 
     char              userData[64];     /* 用户自定义数据 */
+};
+
+/*
+ * rtp会话应答
+ */
+struct RTP_SESSION_ACK
+{
+    PRO_UINT16 version;      /* the current protocol version is 02 */
+    char       reserved[30]; /* zero value */
+
+    char       userData[64];
 };
 
 /*
@@ -237,7 +247,10 @@ struct RTP_INIT_UDPSERVER
  * remotePort       : 远端的端口号
  * localIp          : 要绑定的本地ip地址. 如果为"", 系统将使用0.0.0.0
  * timeoutInSeconds : 握手超时. 默认20秒
+ * suspendRecv      : 是否挂起接收能力
  * bucket           : 流控桶. 如果为NULL, 系统将自动分配一个
+ *
+ * 说明: suspendRecv用于一些需要精确控制时序的场景
  */
 struct RTP_INIT_TCPCLIENT
 {
@@ -247,6 +260,7 @@ struct RTP_INIT_TCPCLIENT
     unsigned short               remotePort;
     char                         localIp[64];      /* = "" */
     unsigned long                timeoutInSeconds; /* = 0 */
+    bool                         suspendRecv;      /* = false */
     IRtpBucket*                  bucket;           /* = NULL */
 };
 
@@ -258,7 +272,10 @@ struct RTP_INIT_TCPCLIENT
  * localIp          : 要绑定的本地ip地址. 如果为"", 系统将使用0.0.0.0
  * localPort        : 要绑定的本地端口号. 如果为0, 系统将随机分配一个
  * timeoutInSeconds : 握手超时. 默认20秒
+ * suspendRecv      : 是否挂起接收能力
  * bucket           : 流控桶. 如果为NULL, 系统将自动分配一个
+ *
+ * 说明: suspendRecv用于一些需要精确控制时序的场景
  */
 struct RTP_INIT_TCPSERVER
 {
@@ -267,6 +284,7 @@ struct RTP_INIT_TCPSERVER
     char                         localIp[64];      /* = "" */
     unsigned short               localPort;        /* = 0 */
     unsigned long                timeoutInSeconds; /* = 0 */
+    bool                         suspendRecv;      /* = false */
     IRtpBucket*                  bucket;           /* = NULL */
 };
 
@@ -322,7 +340,10 @@ struct RTP_INIT_UDPSERVER_EX
  * password         : 会话口令
  * localIp          : 要绑定的本地ip地址. 如果为"", 系统将使用0.0.0.0
  * timeoutInSeconds : 握手超时. 默认20秒
+ * suspendRecv      : 是否挂起接收能力
  * bucket           : 流控桶. 如果为NULL, 系统将自动分配一个
+ *
+ * 说明: suspendRecv用于一些需要精确控制时序的场景
  */
 struct RTP_INIT_TCPCLIENT_EX
 {
@@ -333,17 +354,23 @@ struct RTP_INIT_TCPCLIENT_EX
     char                         password[64];     /* = "" */
     char                         localIp[64];      /* = "" */
     unsigned long                timeoutInSeconds; /* = 0 */
+    bool                         suspendRecv;      /* = false */
     IRtpBucket*                  bucket;           /* = NULL */
 };
 
 /*
  * rtp会话初始化参数
  *
- * observer   : 回调目标
- * reactor    : 反应器
- * sockId     : 套接字id. 来源于IRtpServiceObserver::OnAcceptSession(...)
- * unixSocket : 是否unix套接字
- * bucket     : 流控桶. 如果为NULL, 系统将自动分配一个
+ * observer    : 回调目标
+ * reactor     : 反应器
+ * sockId      : 套接字id. 来源于IRtpServiceObserver::OnAcceptSession(...)
+ * unixSocket  : 是否unix套接字
+ * suspendRecv : 是否挂起接收能力
+ * useAckData  : 是否使用自定义的会话应答数据
+ * ackData     : 自定义的会话应答数据
+ * bucket      : 流控桶. 如果为NULL, 系统将自动分配一个
+ *
+ * 说明: suspendRecv用于一些需要精确控制时序的场景
  */
 struct RTP_INIT_TCPSERVER_EX
 {
@@ -351,6 +378,9 @@ struct RTP_INIT_TCPSERVER_EX
     IProReactor*                 reactor;
     PRO_INT64                    sockId;
     bool                         unixSocket;
+    bool                         suspendRecv;      /* = false */
+    bool                         useAckData;
+    char                         ackData[64];
     IRtpBucket*                  bucket;           /* = NULL */
 };
 
@@ -366,9 +396,12 @@ struct RTP_INIT_TCPSERVER_EX
  * password         : 会话口令
  * localIp          : 要绑定的本地ip地址. 如果为"", 系统将使用0.0.0.0
  * timeoutInSeconds : 握手超时. 默认20秒
+ * suspendRecv      : 是否挂起接收能力
  * bucket           : 流控桶. 如果为NULL, 系统将自动分配一个
  *
  * 说明: sslConfig指定的对象必须在会话的生命周期内一直有效
+ *
+ *       suspendRecv用于一些需要精确控制时序的场景
  */
 struct RTP_INIT_SSLCLIENT_EX
 {
@@ -381,21 +414,27 @@ struct RTP_INIT_SSLCLIENT_EX
     char                         password[64];     /* = "" */
     char                         localIp[64];      /* = "" */
     unsigned long                timeoutInSeconds; /* = 0 */
+    bool                         suspendRecv;      /* = false */
     IRtpBucket*                  bucket;           /* = NULL */
 };
 
 /*
  * rtp会话初始化参数
  *
- * observer   : 回调目标
- * reactor    : 反应器
- * sslCtx     : ssl上下文
- * sockId     : 套接字id. 来源于IRtpServiceObserver::OnAcceptSession(...)
- * unixSocket : 是否unix套接字
- * bucket     : 流控桶. 如果为NULL, 系统将自动分配一个
+ * observer    : 回调目标
+ * reactor     : 反应器
+ * sslCtx      : ssl上下文
+ * sockId      : 套接字id. 来源于IRtpServiceObserver::OnAcceptSession(...)
+ * unixSocket  : 是否unix套接字
+ * suspendRecv : 是否挂起接收能力
+ * useAckData  : 是否使用自定义的会话应答数据
+ * ackData     : 自定义的会话应答数据
+ * bucket      : 流控桶. 如果为NULL, 系统将自动分配一个
  *
  * 说明: 如果创建成功, 会话将成为(sslCtx, sockId)的属主; 否则, 调用者应该
  *       释放(sslCtx, sockId)对应的资源
+ *
+ *       suspendRecv用于一些需要精确控制时序的场景
  */
 struct RTP_INIT_SSLSERVER_EX
 {
@@ -404,6 +443,9 @@ struct RTP_INIT_SSLSERVER_EX
     PRO_SSL_CTX*                 sslCtx;
     PRO_INT64                    sockId;
     bool                         unixSocket;
+    bool                         suspendRecv;      /* = false */
+    bool                         useAckData;
+    char                         ackData[64];
     IRtpBucket*                  bucket;           /* = NULL */
 };
 
@@ -572,18 +614,20 @@ public:
     virtual void PRO_CALLTYPE Reset() = 0;
 
     virtual void PRO_CALLTYPE SetRedline(
-        unsigned long redlineBytes,  /* = 0 */
-        unsigned long redlineFrames  /* = 0 */
+        unsigned long redlineBytes,   /* = 0 */
+        unsigned long redlineFrames,  /* = 0 */
+        unsigned long redlineDelayMs  /* = 0 */
         ) = 0;
 
     virtual void PRO_CALLTYPE GetRedline(
-        unsigned long* redlineBytes, /* = NULL */
-        unsigned long* redlineFrames /* = NULL */
+        unsigned long* redlineBytes,  /* = NULL */
+        unsigned long* redlineFrames, /* = NULL */
+        unsigned long* redlineDelayMs /* = NULL */
         ) const = 0;
 
     virtual void PRO_CALLTYPE GetFlowctrlInfo(
-        float*         inFrameRate,  /* = NULL */
-        float*         inBitRate,    /* = NULL */
+        float*         srcFrameRate, /* = NULL */
+        float*         srcBitRate,   /* = NULL */
         float*         outFrameRate, /* = NULL */
         float*         outBitRate,   /* = NULL */
         unsigned long* cachedBytes,  /* = NULL */
@@ -595,26 +639,30 @@ public:
 
 /*
  * rtp重排序器
+ *
+ * 通常情况下, 用于播放端<<a/v over udp>>
  */
 class IRtpReorder
 {
 public:
 
-    virtual void PRO_CALLTYPE SetGatePacketCount(
-        unsigned char gatePacketCount             /* = 5 */
+    virtual void PRO_CALLTYPE SetWallHeightInPackets(
+        unsigned char heightInPackets         /* = 3 */
         ) = 0;
 
-    virtual void PRO_CALLTYPE SetMaxWaitingDuration(
-        unsigned char maxWaitingDurationInSeconds /* = 1 */
+    virtual void PRO_CALLTYPE SetWallHeightInMilliseconds(
+        unsigned long heightInMs              /* = 500 */
         ) = 0;
 
     virtual void PRO_CALLTYPE SetMaxBrokenDuration(
-        unsigned char maxBrokenDurationInSeconds  /* = 10 */
+        unsigned char brokenDurationInSeconds /* = 10 */
         ) = 0;
+
+    virtual unsigned long PRO_CALLTYPE GetTotalPackets() const = 0;
 
     virtual void PRO_CALLTYPE PushBack(IRtpPacket* packet) = 0;
 
-    virtual IRtpPacket* PRO_CALLTYPE PopFront() = 0;
+    virtual IRtpPacket* PRO_CALLTYPE PopFront(bool force) = 0;
 
     virtual void PRO_CALLTYPE Reset() = 0;
 };
@@ -646,10 +694,10 @@ public:
         IRtpService*            service,
         PRO_INT64               sockId,     /* 套接字id */
         bool                    unixSocket, /* 是否unix套接字 */
-        const char*             remoteIp,   /* 远端的ip地址. != NULL */
-        unsigned short          remotePort, /* 远端的端口号. > 0 */
+        const char*             remoteIp,   /* 远端的ip地址.   != NULL */
+        unsigned short          remotePort, /* 远端的端口号.   > 0 */
         const RTP_SESSION_INFO* remoteInfo, /* 远端的会话信息. != NULL */
-        PRO_UINT64              nonce       /* 会话随机数 */
+        const PRO_NONCE*        nonce       /* 会话随机数.     != NULL */
         ) = 0;
 
     /*
@@ -664,10 +712,10 @@ public:
         PRO_SSL_CTX*            sslCtx,     /* ssl上下文 */
         PRO_INT64               sockId,     /* 套接字id */
         bool                    unixSocket, /* 是否unix套接字 */
-        const char*             remoteIp,   /* 远端的ip地址. != NULL */
-        unsigned short          remotePort, /* 远端的端口号. > 0 */
+        const char*             remoteIp,   /* 远端的ip地址.   != NULL */
+        unsigned short          remotePort, /* 远端的端口号.   > 0 */
         const RTP_SESSION_INFO* remoteInfo, /* 远端的会话信息. != NULL */
-        PRO_UINT64              nonce       /* 会话随机数 */
+        const PRO_NONCE*        nonce       /* 会话随机数.     != NULL */
         ) = 0;
 };
 
@@ -689,6 +737,14 @@ public:
      * 获取会话信息
      */
     virtual void PRO_CALLTYPE GetInfo(RTP_SESSION_INFO* info) const = 0;
+
+    /*
+     * 获取会话应答
+     *
+     * 仅用于RTP_ST_TCPCLIENT_EX, RTP_ST_SSLCLIENT_EX类型的会话.
+     * OnOkSession(...)回调之前没有意义
+     */
+    virtual void PRO_CALLTYPE GetAck(RTP_SESSION_ACK* ack) const = 0;
 
     /*
      * 获取会话的加密套件
@@ -739,7 +795,7 @@ public:
     /*
      * 检查会话是否已连接
      *
-     * 仅用于tcp协议家族的会话
+     * 仅用于面向连接的会话
      */
     virtual bool PRO_CALLTYPE IsTcpConnected() const = 0;
 
@@ -751,10 +807,13 @@ public:
     /*
      * 直接发送rtp包
      *
-     * 如果返回false, 表示发送池已满, 上层应该缓冲数据以待
-     * OnSendSession(...)回调拉取
+     * 如果返回false, 并且(*tryAgain)返回true, 则表示底层暂时无法发送,
+     * 上层应该缓冲数据, 以待稍后发送或OnSendSession(...)回调拉取
      */
-    virtual bool PRO_CALLTYPE SendPacket(IRtpPacket* packet) = 0;
+    virtual bool PRO_CALLTYPE SendPacket(
+        IRtpPacket* packet,
+        bool*       tryAgain = NULL
+        ) = 0;
 
     /*
      * 通过定时器平滑发送rtp包(for CRtpSessionWrapper only)
@@ -818,18 +877,20 @@ public:
      */
 
     virtual void PRO_CALLTYPE SetOutputRedline(
-        unsigned long redlineBytes,  /* = 0 */
-        unsigned long redlineFrames  /* = 0 */
+        unsigned long redlineBytes,   /* = 0 */
+        unsigned long redlineFrames,  /* = 0 */
+        unsigned long redlineDelayMs  /* = 0 */
         ) = 0;
 
     virtual void PRO_CALLTYPE GetOutputRedline(
-        unsigned long* redlineBytes, /* = NULL */
-        unsigned long* redlineFrames /* = NULL */
+        unsigned long* redlineBytes,  /* = NULL */
+        unsigned long* redlineFrames, /* = NULL */
+        unsigned long* redlineDelayMs /* = NULL */
         ) const = 0;
 
     virtual void PRO_CALLTYPE GetFlowctrlInfo(
-        float*         inFrameRate,  /* = NULL */
-        float*         inBitRate,    /* = NULL */
+        float*         srcFrameRate, /* = NULL */
+        float*         srcBitRate,   /* = NULL */
         float*         outFrameRate, /* = NULL */
         float*         outBitRate,   /* = NULL */
         unsigned long* cachedBytes,  /* = NULL */
@@ -859,6 +920,10 @@ public:
     virtual void PRO_CALLTYPE ResetInputStat() = 0;
 
     virtual void PRO_CALLTYPE ResetOutputStat() = 0;
+
+    virtual void PRO_CALLTYPE SetMagic(PRO_INT64 magic) = 0;
+
+    virtual PRO_INT64 PRO_CALLTYPE GetMagic() const = 0;
 };
 
 /*
@@ -1335,7 +1400,7 @@ DeleteRtpService(IRtpService* service);
 PRO_RTP_API
 bool
 PRO_CALLTYPE
-CheckRtpServiceData(PRO_UINT64  serviceNonce,
+CheckRtpServiceData(const char  serviceNonce[32],
                     const char* servicePassword,
                     const char  clientPasswordHash[32]);
 
@@ -1409,6 +1474,9 @@ CreateRtpAudioBucket();
  * 返回值: 流控桶对象或NULL
  *
  * 说明: 流控桶的线程安全性由调用者负责
+ *
+ *       该类型的流控桶以视频帧为单位进行操作, 适合信源端使用. 如果是用于
+ *       非信源端中转数据, 需要注意一点, 该流控桶会增加额外的网络延迟
  */
 PRO_RTP_API
 IRtpBucket*

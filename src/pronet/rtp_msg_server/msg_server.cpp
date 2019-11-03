@@ -336,7 +336,7 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
                         const char*         userPublicIp,
                         const RTP_MSG_USER* c2sUser, /* = NULL */
                         const char          hash[32],
-                        PRO_UINT64          nonce,
+                        const char          nonce[32],
                         PRO_UINT64*         userId,
                         PRO_UINT16*         instId,
                         PRO_INT64*          appData,

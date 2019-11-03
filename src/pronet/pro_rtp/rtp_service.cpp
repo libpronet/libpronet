@@ -31,7 +31,9 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define MAX_PENDING_COUNT 5000
+#if !defined(PRO_SERVICER_LENGTH)
+#define PRO_SERVICER_LENGTH 10000
+#endif
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -112,10 +114,10 @@ CRtpService::Init(IRtpServiceObserver* observer,
 void
 CRtpService::Fini()
 {
-    IRtpServiceObserver*                       observer    = NULL;
-    IProServiceHost*                           serviceHost = NULL;
-    CProStlMap<IProTcpHandshaker*, PRO_UINT64> tcpHandshaker2Nonce;
-    CProStlMap<IProSslHandshaker*, PRO_UINT64> sslHandshaker2Nonce;
+    IRtpServiceObserver*                      observer    = NULL;
+    IProServiceHost*                          serviceHost = NULL;
+    CProStlMap<IProTcpHandshaker*, PRO_NONCE> tcpHandshaker2Nonce;
+    CProStlMap<IProSslHandshaker*, PRO_NONCE> sslHandshaker2Nonce;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -137,8 +139,8 @@ CRtpService::Fini()
     }
 
     {
-        CProStlMap<IProSslHandshaker*, PRO_UINT64>::const_iterator       itr = sslHandshaker2Nonce.begin();
-        CProStlMap<IProSslHandshaker*, PRO_UINT64>::const_iterator const end = sslHandshaker2Nonce.end();
+        CProStlMap<IProSslHandshaker*, PRO_NONCE>::const_iterator       itr = sslHandshaker2Nonce.begin();
+        CProStlMap<IProSslHandshaker*, PRO_NONCE>::const_iterator const end = sslHandshaker2Nonce.end();
 
         for (; itr != end; ++itr)
         {
@@ -147,8 +149,8 @@ CRtpService::Fini()
     }
 
     {
-        CProStlMap<IProTcpHandshaker*, PRO_UINT64>::const_iterator       itr = tcpHandshaker2Nonce.begin();
-        CProStlMap<IProTcpHandshaker*, PRO_UINT64>::const_iterator const end = tcpHandshaker2Nonce.end();
+        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::const_iterator       itr = tcpHandshaker2Nonce.begin();
+        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::const_iterator const end = tcpHandshaker2Nonce.end();
 
         for (; itr != end; ++itr)
         {
@@ -187,14 +189,14 @@ CRtpService::OnServiceAccept(IProServiceHost* serviceHost,
                              unsigned short   remotePort,
                              unsigned char    serviceId,
                              unsigned char    serviceOpt,
-                             PRO_UINT64       nonce)
+                             const PRO_NONCE* nonce)
 {
     assert(serviceHost != NULL);
     assert(sockId != -1);
-    assert(remoteIp != NULL);
     assert(serviceId > 0);
-    if (serviceHost == NULL || sockId == -1 || remoteIp == NULL ||
-        serviceId == 0)
+    assert(nonce != NULL);
+    if (serviceHost == NULL || sockId == -1 || serviceId == 0 ||
+        nonce == NULL)
     {
         return;
     }
@@ -222,7 +224,7 @@ CRtpService::OnServiceAccept(IProServiceHost* serviceHost,
          * ddos?
          */
         if (m_tcpHandshaker2Nonce.size() + m_sslHandshaker2Nonce.size() >=
-            MAX_PENDING_COUNT)
+            PRO_SERVICER_LENGTH)
         {
             ProCloseSockId(sockId);
 
@@ -249,7 +251,7 @@ CRtpService::OnServiceAccept(IProServiceHost* serviceHost,
                 return;
             }
 
-            m_tcpHandshaker2Nonce[handshaker] = nonce;
+            m_tcpHandshaker2Nonce[handshaker] = *nonce;
         }
         else
         {
@@ -289,7 +291,7 @@ CRtpService::OnServiceAccept(IProServiceHost* serviceHost,
                 return;
             }
 
-            m_sslHandshaker2Nonce[handshaker] = nonce;
+            m_sslHandshaker2Nonce[handshaker] = *nonce;
         }
     }
 }
@@ -310,7 +312,7 @@ CRtpService::OnHandshakeOk(IProTcpHandshaker* handshaker,
     }
 
     IRtpServiceObserver* observer = NULL;
-    PRO_UINT64           nonce    = 0;
+    PRO_NONCE            nonce;
     pbsd_sockaddr_in     remoteAddr;
 
     {
@@ -323,7 +325,7 @@ CRtpService::OnHandshakeOk(IProTcpHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProTcpHandshaker*, PRO_UINT64>::iterator const itr =
+        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator const itr =
             m_tcpHandshaker2Nonce.find(handshaker);
         if (itr == m_tcpHandshaker2Nonce.end())
         {
@@ -412,7 +414,7 @@ CRtpService::OnHandshakeOk(IProTcpHandshaker* handshaker,
                 remoteIp,
                 remotePort,
                 &remoteInfo,
-                nonce
+                &nonce
                 );
         }
     }
@@ -439,7 +441,7 @@ CRtpService::OnHandshakeError(IProTcpHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProTcpHandshaker*, PRO_UINT64>::iterator const itr =
+        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator const itr =
             m_tcpHandshaker2Nonce.find(handshaker);
         if (itr == m_tcpHandshaker2Nonce.end())
         {
@@ -470,7 +472,7 @@ CRtpService::OnHandshakeOk(IProSslHandshaker* handshaker,
     }
 
     IRtpServiceObserver* observer = NULL;
-    PRO_UINT64           nonce    = 0;
+    PRO_NONCE            nonce;
     pbsd_sockaddr_in     remoteAddr;
 
     {
@@ -484,7 +486,7 @@ CRtpService::OnHandshakeOk(IProSslHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProSslHandshaker*, PRO_UINT64>::iterator const itr =
+        CProStlMap<IProSslHandshaker*, PRO_NONCE>::iterator const itr =
             m_sslHandshaker2Nonce.find(handshaker);
         if (itr == m_sslHandshaker2Nonce.end())
         {
@@ -581,7 +583,7 @@ CRtpService::OnHandshakeOk(IProSslHandshaker* handshaker,
                 remoteIp,
                 remotePort,
                 &remoteInfo,
-                nonce
+                &nonce
                 );
         }
     }
@@ -609,7 +611,7 @@ CRtpService::OnHandshakeError(IProSslHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProSslHandshaker*, PRO_UINT64>::iterator const itr =
+        CProStlMap<IProSslHandshaker*, PRO_NONCE>::iterator const itr =
             m_sslHandshaker2Nonce.find(handshaker);
         if (itr == m_sslHandshaker2Nonce.end())
         {

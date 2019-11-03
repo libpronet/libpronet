@@ -57,18 +57,20 @@ public:
     virtual void PRO_CALLTYPE Reset();
 
     virtual void PRO_CALLTYPE SetRedline(
-        unsigned long redlineBytes,  /* = 0 */
-        unsigned long redlineFrames  /* = 0 */
+        unsigned long redlineBytes,   /* = 0 */
+        unsigned long redlineFrames,  /* = 0 */
+        unsigned long redlineDelayMs  /* = 0 */
         );
 
     virtual void PRO_CALLTYPE GetRedline(
-        unsigned long* redlineBytes, /* = NULL */
-        unsigned long* redlineFrames /* = NULL */
+        unsigned long* redlineBytes,  /* = NULL */
+        unsigned long* redlineFrames, /* = NULL */
+        unsigned long* redlineDelayMs /* = NULL */
         ) const;
 
     virtual void PRO_CALLTYPE GetFlowctrlInfo(
-        float*         inFrameRate,  /* = NULL */
-        float*         inBitRate,    /* = NULL */
+        float*         srcFrameRate, /* = NULL */
+        float*         srcBitRate,   /* = NULL */
         float*         outFrameRate, /* = NULL */
         float*         outBitRate,   /* = NULL */
         unsigned long* cachedBytes,  /* = NULL */
@@ -80,6 +82,8 @@ public:
 protected:
 
     unsigned long             m_redlineBytes;
+    unsigned long             m_redlineFrames;
+    PRO_INT64                 m_redlineDelayMs;
     unsigned long             m_totalBytes;
     CProStlDeque<IRtpPacket*> m_packets;
 
@@ -130,18 +134,20 @@ public:
     virtual void PRO_CALLTYPE Reset();
 
     virtual void PRO_CALLTYPE SetRedline(
-        unsigned long redlineBytes,  /* = 0 */
-        unsigned long redlineFrames  /* = 0 */
+        unsigned long redlineBytes,   /* = 0 */
+        unsigned long redlineFrames,  /* = 0 */
+        unsigned long redlineDelayMs  /* = 0 */
         );
 
     virtual void PRO_CALLTYPE GetRedline(
-        unsigned long* redlineBytes, /* = NULL */
-        unsigned long* redlineFrames /* = NULL */
+        unsigned long* redlineBytes,  /* = NULL */
+        unsigned long* redlineFrames, /* = NULL */
+        unsigned long* redlineDelayMs /* = NULL */
         ) const;
 
     virtual void PRO_CALLTYPE GetFlowctrlInfo(
-        float*         inFrameRate,  /* = NULL */
-        float*         inBitRate,    /* = NULL */
+        float*         srcFrameRate, /* = NULL */
+        float*         srcBitRate,   /* = NULL */
         float*         outFrameRate, /* = NULL */
         float*         outBitRate,   /* = NULL */
         unsigned long* cachedBytes,  /* = NULL */
@@ -152,16 +158,19 @@ public:
 
 private:
 
+    void RemoveOldFrames();
+
+private:
+
     unsigned long                  m_redlineBytes;
     unsigned long                  m_redlineFrames;
+    PRO_INT64                      m_redlineDelayMs;
     unsigned long                  m_totalBytes;
     unsigned long                  m_totalFrames;
     RTP_VIDEO_FRAME*               m_waitingFrame;
     CProStlDeque<RTP_VIDEO_FRAME*> m_frames;
     RTP_VIDEO_FRAME*               m_sendingFrame;
     bool                           m_needKeyFrame;
-    PRO_UINT16                     m_nextSeq;
-    PRO_UINT32                     m_ssrc;
 
     mutable CRtpFlowStat           m_flowStat;
 

@@ -16,18 +16,6 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-/*
- * 1) client ----->                connect()                -----> server
- * 2) client <-----                 accept()                <----- server
- * 3) client <-----                  nonce                  <----- server
- * 4) client ----->  serviceId + serviceOpt + (r) + (r+1)   -----> server
- * 5) client::[password hash]
- * 6) client ----->          rtp(RTP_SESSION_INFO)          -----> server
- * 7)                                             [password hash]::server
- * 8) client <-----          rtp(RTP_SESSION_ACK)           <----- server
- *                   TCP_EX handshake protocol flow chart
- */
-
 #if !defined(RTP_SESSION_TCPCLIENT_EX_H)
 #define RTP_SESSION_TCPCLIENT_EX_H
 
@@ -47,7 +35,8 @@ public CRtpSessionBase
 public:
 
     static CRtpSessionTcpclientEx* CreateInstance(
-        const RTP_SESSION_INFO* localInfo
+        const RTP_SESSION_INFO* localInfo,
+        bool                    suspendRecv
         );
 
     bool Init(
@@ -70,6 +59,7 @@ protected:
 
     CRtpSessionTcpclientEx(
         const RTP_SESSION_INFO&      localInfo,
+        bool                         suspendRecv,
         const PRO_SSL_CLIENT_CONFIG* sslConfig, /* = NULL */
         const char*                  sslSni     /* = NULL */
         );
@@ -77,14 +67,14 @@ protected:
     virtual ~CRtpSessionTcpclientEx();
 
     virtual void PRO_CALLTYPE OnConnectOk(
-        IProConnector* connector,
-        PRO_INT64      sockId,
-        bool           unixSocket,
-        const char*    remoteIp,
-        unsigned short remotePort,
-        unsigned char  serviceId,
-        unsigned char  serviceOpt,
-        PRO_UINT64     nonce
+        IProConnector*   connector,
+        PRO_INT64        sockId,
+        bool             unixSocket,
+        const char*      remoteIp,
+        unsigned short   remotePort,
+        unsigned char    serviceId,
+        unsigned char    serviceOpt,
+        const PRO_NONCE* nonce
         );
 
     virtual void PRO_CALLTYPE OnConnectError(
@@ -136,9 +126,9 @@ protected:
     bool Recv4(CRtpPacket*& packet);
 
     bool DoHandshake(
-        PRO_INT64  sockId,
-        bool       unixSocket,
-        PRO_UINT64 nonce
+        PRO_INT64        sockId,
+        bool             unixSocket,
+        const PRO_NONCE& nonce
         );
 
 private:

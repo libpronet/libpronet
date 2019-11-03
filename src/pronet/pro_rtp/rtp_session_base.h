@@ -35,15 +35,7 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define RTP_SESSION_PROTOCOL_VERSION 1
-
-struct RTP_SESSION_ACK
-{
-    PRO_UINT16 version;      /* the current protocol version is 1 */
-    char       reserved[30]; /* zero value */
-
-    DECLARE_SGI_POOL(0);
-};
+#define RTP_SESSION_PROTOCOL_VERSION 2
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -63,11 +55,13 @@ public:
 
 protected:
 
-    CRtpSessionBase();
+    CRtpSessionBase(bool suspendRecv);
 
     virtual ~CRtpSessionBase();
 
     virtual void PRO_CALLTYPE GetInfo(RTP_SESSION_INFO* info) const;
+
+    virtual void PRO_CALLTYPE GetAck(RTP_SESSION_ACK* ack) const;
 
     virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
         char suiteName[64]
@@ -94,7 +88,10 @@ protected:
 
     virtual bool PRO_CALLTYPE IsReady() const;
 
-    virtual bool PRO_CALLTYPE SendPacket(IRtpPacket* packet);
+    virtual bool PRO_CALLTYPE SendPacket(
+        IRtpPacket* packet,
+        bool*       tryAgain         /* = NULL */
+        );
 
     virtual bool PRO_CALLTYPE SendPacketByTimer(
         IRtpPacket*   packet,
@@ -133,22 +130,24 @@ protected:
     }
 
     virtual void PRO_CALLTYPE SetOutputRedline(
-        unsigned long redlineBytes,  /* = 0 */
-        unsigned long redlineFrames  /* = 0 */
+        unsigned long redlineBytes,   /* = 0 */
+        unsigned long redlineFrames,  /* = 0 */
+        unsigned long redlineDelayMs  /* = 0 */
         )
     {
     }
 
     virtual void PRO_CALLTYPE GetOutputRedline(
-        unsigned long* redlineBytes, /* = NULL */
-        unsigned long* redlineFrames /* = NULL */
+        unsigned long* redlineBytes,  /* = NULL */
+        unsigned long* redlineFrames, /* = NULL */
+        unsigned long* redlineDelayMs /* = NULL */
         ) const
     {
     }
 
     virtual void PRO_CALLTYPE GetFlowctrlInfo(
-        float*         inFrameRate,  /* = NULL */
-        float*         inBitRate,    /* = NULL */
+        float*         srcFrameRate, /* = NULL */
+        float*         srcBitRate,   /* = NULL */
         float*         outFrameRate, /* = NULL */
         float*         outBitRate,   /* = NULL */
         unsigned long* cachedBytes,  /* = NULL */
@@ -187,6 +186,10 @@ protected:
     {
     }
 
+    virtual void PRO_CALLTYPE SetMagic(PRO_INT64 magic);
+
+    virtual PRO_INT64 PRO_CALLTYPE GetMagic() const;
+
     virtual void PRO_CALLTYPE OnSend(
         IProTransport* trans,
         PRO_UINT64     actionId
@@ -205,11 +208,16 @@ protected:
         PRO_INT64     userData
         );
 
-    virtual void Fini() = 0;
+    virtual void Fini()
+    {
+    }
 
 protected:
 
+    const bool              m_suspendRecv;
     RTP_SESSION_INFO        m_info;
+    RTP_SESSION_ACK         m_ack;
+    PRO_INT64               m_magic;
     IRtpSessionObserver*    m_observer;
     IProReactor*            m_reactor;
     IProTransport*          m_trans;

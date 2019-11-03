@@ -16,14 +16,6 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-/*
- * 1) client -----> rtp(RTP_SESSION_INFO with RTP_MSG_HEADER0) -----> server
- * 2) client <-----            rtp(RTP_SESSION_ACK)            <----- server
- * 3) client <-----            tcp4(RTP_MSG_HEADER0)           <----- server
- * 4) client <<====                  tcp4(msg)                 ====>> server
- *                   msg system handshake protocol flow chart
- */
-
 #if !defined(RTP_MSG_CLIENT_H)
 #define RTP_MSG_CLIENT_H
 
@@ -47,7 +39,7 @@ public:
         const void*         buf,
         unsigned long       size,
         PRO_UINT16          charset,
-        const RTP_MSG_USER* srcUser,
+        const RTP_MSG_USER& srcUser,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount
         ) = 0;
@@ -135,7 +127,7 @@ public:
         PRO_UINT16          charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount,
-        const RTP_MSG_USER* srcUser
+        const RTP_MSG_USER& srcUser
         );
 
 private:
@@ -149,9 +141,7 @@ private:
 
     virtual ~CRtpMsgClient();
 
-    virtual void PRO_CALLTYPE OnOkSession(IRtpSession* session)
-    {
-    }
+    virtual void PRO_CALLTYPE OnOkSession(IRtpSession* session);
 
     virtual void PRO_CALLTYPE OnRecvSession(
         IRtpSession* session,
@@ -186,17 +176,7 @@ private:
         const RTP_MSG_USER* srcUser /* = NULL */
         );
 
-    void SendData(bool onOkCalled);
-
-    void RecvAck(
-        IRtpSession* session,
-        IRtpPacket*  packet
-        );
-
-    void RecvData(
-        IRtpSession* session,
-        IRtpPacket*  packet
-        );
+    void DoSendData(bool onOkCalled);
 
 private:
 
@@ -209,8 +189,6 @@ private:
     IProReactor*                       m_reactor;
     IRtpSession*                       m_session;
     IRtpBucket*                        m_bucket;
-    CProStlString                      m_remoteIp;
-    unsigned short                     m_remotePort;
     RTP_MSG_USER                       m_userBak;
     unsigned long                      m_timerId;
     bool                               m_onOkCalled;

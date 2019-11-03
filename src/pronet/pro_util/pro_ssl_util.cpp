@@ -762,12 +762,26 @@ ProRsaKeyGen(unsigned long  keyBytes, /* 128, 256, 512 */
 
 void
 PRO_CALLTYPE
-ProCalcPasswordHash(PRO_UINT64  nonce,
+ProCalcPasswordHash(const char  nonce[32],
                     const char* password,
                     char        passwordHash[32])
 {
-    char nonceString[64] = "";
-    sprintf(nonceString, PRO_PRT64U, nonce);
+    char nonceString[64 + 1] = "";
+    nonceString[64] = '\0';
+
+    {
+        const char* const p = nonce;
+
+        for (int i = 0; i < 32; ++i)
+        {
+            snprintf_pro(
+                nonceString + i * 2,
+                2 + 1,
+                "%02x",
+                (unsigned int)(unsigned char)p[i] /* unsigned */
+                );
+        }
+    }
 
     CProStlString passwordString = nonceString;
     passwordString += password != NULL ? password : "";

@@ -66,7 +66,6 @@ CProNotifyPipe::Init()
     pbsd_sockaddr_in localAddr;
     memset(&localAddr, 0, sizeof(pbsd_sockaddr_in));
     localAddr.sin_family      = AF_INET;
-    localAddr.sin_port        = 0;
     localAddr.sin_addr.s_addr = pbsd_inet_aton("127.0.0.1");
 
     int retc = pbsd_bind(sockId, &localAddr, false);

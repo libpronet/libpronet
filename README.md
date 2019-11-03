@@ -1,8 +1,9 @@
 Overview
 ====
 
-LibProNet is a network communication engine in c++. It is composed of
-a network library, a messaging framework as well as a toolset.
+LibProNet(https://github.com/libpronet/libpronet) is a network
+communication engine in c++. It is composed of a network library,
+a messaging framework as well as a toolset.
 
 LibProNet is designed to be a reliable, easy-to-use and cross-platform
 solution, which is object-oriented and has a layered structure.
@@ -98,6 +99,16 @@ directory of "pub/inc/pronet" for more.
             Hub-Process
                 Fig.3-2 structure diagram of RtpService
 
+                ______________________________
+        ====>>in__________ o                  |__________
+                          | o                  __________out====>>
+                          |..ooooooooooooooooo|       A
+                          |ooooooooooooooooooo|       |
+                          |ooooooooooooooooooo| WallHeight is 5
+                          |ooooooooooooooooooo|       |
+                          |ooooooooooooooooooo|       V
+                 Fig.4 structure diagram of RtpReorder
+
          ______________________________________________________
         |                                                      |
         |                      msg server                      |
@@ -114,7 +125,7 @@ directory of "pub/inc/pronet" for more.
         |  msg  ||  msg  | |  msg  ||  msg  | |  msg  ||  msg  |
         | client|| client| | client|| client| | client|| client|
         |_______||_______| |_______||_______| |_______||_______|
-                 Fig.4 structure diagram of msg system
+                 Fig.5 structure diagram of msg system
 
 
 How to compile LibProNet?
@@ -125,8 +136,14 @@ the file "build/DEFINE.txt" for more.
 
 1. GCC on Linux
 
-   To build the libraries you will need to have autoconf-2.65+
+   To build the libraries you will need to have autoconf-2.63+
    and automake-1.11+ installed appropriately in your system.
+
+   On Ubuntu:
+   > apt-get install autoconf automake gcc g++ make
+
+   On CentOS:
+   > yum install autoconf automake gcc gcc-c++ make
 
    > cd build/linux-gcc-r/x86_64 (or "cd build/linux-gcc-r/x86")
 
@@ -138,9 +155,9 @@ the file "build/DEFINE.txt" for more.
 
 2. VS6 on Windows
 
-   1)Apply patchs that is under the directory of "build/_sp_for_vs6"
+   1) Apply patchs that is under the directory of "build/_sp_for_vs6"
 
-   2)Open the workspace file "build/windows-vs6/pronet.dsw"
+   2) Open the workspace file "build/windows-vs6/pronet.dsw"
 
 3. VS2010/VS2013 on Windows
 

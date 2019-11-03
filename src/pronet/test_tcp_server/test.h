@@ -140,14 +140,14 @@ private:
     virtual ~CTest();
 
     virtual void PRO_CALLTYPE OnAccept(
-        IProAcceptor*  acceptor,
-        PRO_INT64      sockId,
-        bool           unixSocket,
-        const char*    remoteIp,
-        unsigned short remotePort,
-        unsigned char  serviceId,
-        unsigned char  serviceOpt,
-        PRO_UINT64     nonce
+        IProAcceptor*    acceptor,
+        PRO_INT64        sockId,
+        bool             unixSocket,
+        const char*      remoteIp,
+        unsigned short   remotePort,
+        unsigned char    serviceId,
+        unsigned char    serviceOpt,
+        const PRO_NONCE* nonce
         );
 
     virtual void PRO_CALLTYPE OnServiceAccept(
@@ -158,7 +158,7 @@ private:
         unsigned short   remotePort,
         unsigned char    serviceId,
         unsigned char    serviceOpt,
-        PRO_UINT64       nonce
+        const PRO_NONCE* nonce
         );
 
     virtual void PRO_CALLTYPE OnHandshakeOk(
@@ -211,19 +211,19 @@ private:
 
 private:
 
-    IProReactor*                               m_reactor;
-    TCP_SERVER_CONFIG_INFO                     m_configInfo;
-    PRO_SSL_SERVER_CONFIG*                     m_sslConfig;
-    IProAcceptor*                              m_acceptor;
-    IProServiceHost*                           m_service;
-    CProStlMap<IProTcpHandshaker*, PRO_UINT64> m_tcpHandshaker2Nonce;
-    CProStlMap<IProSslHandshaker*, PRO_UINT64> m_sslHandshaker2Nonce;
-    CProStlSet<IProTransport*>                 m_transports;
-    mutable CProThreadMutex                    m_lock;
+    IProReactor*                              m_reactor;
+    TCP_SERVER_CONFIG_INFO                    m_configInfo;
+    PRO_SSL_SERVER_CONFIG*                    m_sslConfig;
+    IProAcceptor*                             m_acceptor;
+    IProServiceHost*                          m_service;
+    CProStlMap<IProTcpHandshaker*, PRO_NONCE> m_tcpHandshaker2Nonce;
+    CProStlMap<IProSslHandshaker*, PRO_NONCE> m_sslHandshaker2Nonce;
+    CProStlSet<IProTransport*>                m_transports;
+    mutable CProThreadMutex                   m_lock;
 
-    PRO_UINT16                                 m_heartbeatData[512];
-    unsigned long                              m_heartbeatSize; /* 0 ~ 1024 */
-    mutable CProThreadMutex                    m_lock2;
+    PRO_UINT16                                m_heartbeatData[512];
+    unsigned long                             m_heartbeatSize; /* 0 ~ 1024 */
+    mutable CProThreadMutex                   m_lock2;
 
     DECLARE_SGI_POOL(0);
 };

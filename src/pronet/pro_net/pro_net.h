@@ -73,11 +73,12 @@
  */
 
 /*
- * 1) client ----->                connect()                -----> server
- * 2) client <-----                 accept()                <----- server
- * 3) client <-----                  nonce                  <----- server
- * 4) client ----->  serviceId + serviceOpt + (r) + (r+1)   -----> server
- *       Fig.4 acceptor_ex/connector_ex handshake protocol flow chart
+ * 1)  client ----->                 connect()                  -----> server
+ * 2)  client <-----                  accept()                  <----- server
+ * 3a) client <-----                 PRO_NONCE                  <----- server
+ * 3b) client ----->    serviceId + serviceOpt + (r) + (r+1)    -----> server
+ * 4]  client <<====              [ssl handshake]               ====>> server
+ *          Fig.4 acceptor_ex/connector_ex handshake protocol flow chart
  */
 
 #if !defined(____PRO_NET_H____)
@@ -232,6 +233,14 @@ static const PRO_TRANS_TYPE PRO_TRANS_SSL   = 11;
  * ]]]]
  */
 
+/*
+ * 会话随机数
+ */
+struct PRO_NONCE
+{
+    char nonce[32];
+};
+
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -356,14 +365,14 @@ public:
      * 使用者负责sockId的资源维护
      */
     virtual void PRO_CALLTYPE OnAccept(
-        IProAcceptor*  acceptor,
-        PRO_INT64      sockId,     /* 套接字id */
-        bool           unixSocket, /* 是否unix套接字 */
-        const char*    remoteIp,   /* 远端的ip地址. != NULL */
-        unsigned short remotePort, /* 远端的端口号. > 0 */
-        unsigned char  serviceId,  /* 允许服务扩展时, 远端请求的服务id */
-        unsigned char  serviceOpt, /* 允许服务扩展时, 远端请求的服务选项 */
-        PRO_UINT64     nonce       /* 允许服务扩展时, 会话随机数 */
+        IProAcceptor*    acceptor,
+        PRO_INT64        sockId,     /* 套接字id */
+        bool             unixSocket, /* 是否unix套接字 */
+        const char*      remoteIp,   /* 远端的ip地址. != NULL */
+        unsigned short   remotePort, /* 远端的端口号. > 0 */
+        unsigned char    serviceId,  /* 允许服务扩展时, 远端请求的服务id */
+        unsigned char    serviceOpt, /* 允许服务扩展时, 远端请求的服务选项 */
+        const PRO_NONCE* nonce       /* 允许服务扩展时, 会话随机数 */
         ) = 0;
 };
 
@@ -389,11 +398,11 @@ public:
         IProServiceHost* serviceHost,
         PRO_INT64        sockId,     /* 套接字id */
         bool             unixSocket, /* 是否unix套接字 */
-        const char*      remoteIp,   /* 远端的ip地址. != NULL */
-        unsigned short   remotePort, /* 远端的端口号. > 0 */
-        unsigned char    serviceId,  /* 远端请求的服务id */
+        const char*      remoteIp,   /* 远端的ip地址.     != NULL */
+        unsigned short   remotePort, /* 远端的端口号.     > 0 */
+        unsigned char    serviceId,  /* 远端请求的服务id. > 0 */
         unsigned char    serviceOpt, /* 远端请求的服务选项 */
-        PRO_UINT64       nonce       /* 会话随机数 */
+        const PRO_NONCE* nonce       /* 会话随机数.       != NULL */
         ) = 0;
 };
 
@@ -419,14 +428,14 @@ public:
      * 使用者负责sockId的资源维护
      */
     virtual void PRO_CALLTYPE OnConnectOk(
-        IProConnector* connector,
-        PRO_INT64      sockId,     /* 套接字id */
-        bool           unixSocket, /* 是否unix套接字 */
-        const char*    remoteIp,   /* 远端的ip地址. != NULL */
-        unsigned short remotePort, /* 远端的端口号. > 0 */
-        unsigned char  serviceId,  /* 允许服务扩展时, 请求的服务id */
-        unsigned char  serviceOpt, /* 允许服务扩展时, 请求的服务选项 */
-        PRO_UINT64     nonce       /* 允许服务扩展时, 会话随机数 */
+        IProConnector*   connector,
+        PRO_INT64        sockId,     /* 套接字id */
+        bool             unixSocket, /* 是否unix套接字 */
+        const char*      remoteIp,   /* 远端的ip地址. != NULL */
+        unsigned short   remotePort, /* 远端的端口号. > 0 */
+        unsigned char    serviceId,  /* 允许服务扩展时, 请求的服务id */
+        unsigned char    serviceOpt, /* 允许服务扩展时, 请求的服务选项 */
+        const PRO_NONCE* nonce       /* 允许服务扩展时, 会话随机数 */
         ) = 0;
 
     /*
@@ -1084,10 +1093,11 @@ ProDeleteSslHandshaker(IProSslHandshaker* handshaker);
  * sockBufSizeRecv : 套接字的系统接收缓冲区字节数. 默认(1024 * 56)
  * sockBufSizeSend : 套接字的系统发送缓冲区字节数. 默认(1024 * 8)
  * recvPoolSize    : 接收池的字节数. 默认(1024 * 65)
+ * suspendRecv     : 是否挂起接收能力
  *
  * 返回值: 传输器对象或NULL
  *
- * 说明: 无
+ * 说明: suspendRecv用于一些需要精确控制时序的场景
  */
 PRO_NET_API
 IProTransport*
@@ -1098,7 +1108,8 @@ ProCreateTcpTransport(IProTransportObserver* observer,
                       bool                   unixSocket,
                       size_t                 sockBufSizeRecv = 0,
                       size_t                 sockBufSizeSend = 0,
-                      size_t                 recvPoolSize    = 0);
+                      size_t                 recvPoolSize    = 0,
+                      bool                   suspendRecv     = false);
 
 /*
  * 功能: 创建一个udp传输器
@@ -1176,10 +1187,13 @@ ProCreateMcastTransport(IProTransportObserver* observer,
  * sockBufSizeRecv : 套接字的系统接收缓冲区字节数. 默认(1024 * 56)
  * sockBufSizeSend : 套接字的系统发送缓冲区字节数. 默认(1024 * 8)
  * recvPoolSize    : 接收池的字节数. 默认(1024 * 65)
+ * suspendRecv     : 是否挂起接收能力
  *
  * 返回值: 传输器对象或NULL
  *
  * 说明: 这里是安全访问ctx的最后时刻!!! 此后, ctx将交由IProTransport管理
+ *
+ *       suspendRecv用于一些需要精确控制时序的场景
  */
 PRO_NET_API
 IProTransport*
@@ -1191,7 +1205,8 @@ ProCreateSslTransport(IProTransportObserver* observer,
                       bool                   unixSocket,
                       size_t                 sockBufSizeRecv = 0,
                       size_t                 sockBufSizeSend = 0,
-                      size_t                 recvPoolSize    = 0);
+                      size_t                 recvPoolSize    = 0,
+                      bool                   suspendRecv     = false);
 
 /*
  * 功能: 删除一个传输器

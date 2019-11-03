@@ -172,19 +172,20 @@ CProServiceHub::Release()
 
 void
 PRO_CALLTYPE
-CProServiceHub::OnAccept(IProAcceptor*  acceptor,
-                         PRO_INT64      sockId,
-                         bool           unixSocket,
-                         const char*    remoteIp,
-                         unsigned short remotePort,
-                         unsigned char  serviceId,
-                         unsigned char  serviceOpt,
-                         PRO_UINT64     nonce)
+CProServiceHub::OnAccept(IProAcceptor*    acceptor,
+                         PRO_INT64        sockId,
+                         bool             unixSocket,
+                         const char*      remoteIp,
+                         unsigned short   remotePort,
+                         unsigned char    serviceId,
+                         unsigned char    serviceOpt,
+                         const PRO_NONCE* nonce)
 {
     assert(acceptor != NULL);
     assert(sockId != -1);
     assert(remoteIp != NULL);
-    if (acceptor == NULL || sockId == -1 || remoteIp == NULL)
+    assert(nonce != NULL);
+    if (acceptor == NULL || sockId == -1 || remoteIp == NULL || nonce == NULL)
     {
         return;
     }
@@ -195,7 +196,7 @@ CProServiceHub::OnAccept(IProAcceptor*  acceptor,
     }
     else
     {
-        OnAcceptOther(sockId, unixSocket, serviceId, serviceOpt, nonce);
+        OnAcceptOther(sockId, unixSocket, serviceId, serviceOpt, *nonce);
     }
 }
 
@@ -233,8 +234,8 @@ CProServiceHub::OnAcceptIpc(PRO_INT64   sockId,
             return;
         }
 
-        CProServicePipe* const pipe =
-            ProCreateServicePipe(false, this, m_reactor, sockId, unixSocket);
+        CProServicePipe* const pipe = ProCreateServicePipe(
+            false, this, m_reactor, sockId, unixSocket); /* recvFdMode is false */
         if (pipe == NULL)
         {
             ProCloseSockId(sockId);
@@ -252,11 +253,11 @@ CProServiceHub::OnAcceptIpc(PRO_INT64   sockId,
 }
 
 void
-CProServiceHub::OnAcceptOther(PRO_INT64     sockId,
-                              bool          unixSocket,
-                              unsigned char serviceId,
-                              unsigned char serviceOpt,
-                              PRO_UINT64    nonce)
+CProServiceHub::OnAcceptOther(PRO_INT64        sockId,
+                              bool             unixSocket,
+                              unsigned char    serviceId,
+                              unsigned char    serviceOpt,
+                              const PRO_NONCE& nonce)
 {
     assert(sockId != -1);
     assert(serviceId > 0);

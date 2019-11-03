@@ -180,14 +180,14 @@ CProServiceHost::Release()
 
 void
 PRO_CALLTYPE
-CProServiceHost::OnConnectOk(IProConnector* connector,
-                             PRO_INT64      sockId,
-                             bool           unixSocket,
-                             const char*    remoteIp,
-                             unsigned short remotePort,
-                             unsigned char  serviceId,
-                             unsigned char  serviceOpt,
-                             PRO_UINT64     nonce)
+CProServiceHost::OnConnectOk(IProConnector*   connector,
+                             PRO_INT64        sockId,
+                             bool             unixSocket,
+                             const char*      remoteIp,
+                             unsigned short   remotePort,
+                             unsigned char    serviceId,
+                             unsigned char    serviceOpt,
+                             const PRO_NONCE* nonce)
 {
     assert(connector != NULL);
     assert(sockId != -1);
@@ -216,10 +216,13 @@ CProServiceHost::OnConnectOk(IProConnector* connector,
         assert(m_pipe == NULL);
 
 #if defined(WIN32) || defined(_WIN32_WCE)
-        m_pipe = ProCreateServicePipe(false, this, m_reactor, sockId, unixSocket);
+        const bool recvFdMode = false;
 #else
-        m_pipe = ProCreateServicePipe(true , this, m_reactor, sockId, unixSocket);
+        const bool recvFdMode = true;
 #endif
+
+        m_pipe = ProCreateServicePipe(
+            recvFdMode, this, m_reactor, sockId, unixSocket);
         if (m_pipe == NULL)
         {
             ProCloseSockId(sockId);
@@ -404,7 +407,7 @@ CProServiceHost::OnRecv(CProServicePipe*          pipe,
         remotePort,
         s2cPacket.s2c.serviceId,
         s2cPacket.s2c.serviceOpt,
-        s2cPacket.s2c.nonce
+        &s2cPacket.s2c.nonce
         );
     observer->Release();
 }
@@ -493,7 +496,7 @@ CProServiceHost::OnRecvFd(CProServicePipe*          pipe,
         remotePort,
         s2cPacket.s2c.serviceId,
         s2cPacket.s2c.serviceOpt,
-        s2cPacket.s2c.nonce
+        &s2cPacket.s2c.nonce
         );
     observer->Release();
 }

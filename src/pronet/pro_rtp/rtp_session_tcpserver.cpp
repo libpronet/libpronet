@@ -35,7 +35,8 @@
 ////
 
 CRtpSessionTcpserver*
-CRtpSessionTcpserver::CreateInstance(const RTP_SESSION_INFO* localInfo)
+CRtpSessionTcpserver::CreateInstance(const RTP_SESSION_INFO* localInfo,
+                                     bool                    suspendRecv)
 {
     assert(localInfo != NULL);
     assert(localInfo->mmType != 0);
@@ -44,12 +45,16 @@ CRtpSessionTcpserver::CreateInstance(const RTP_SESSION_INFO* localInfo)
         return (NULL);
     }
 
-    CRtpSessionTcpserver* const session = new CRtpSessionTcpserver(*localInfo);
+    CRtpSessionTcpserver* const session =
+        new CRtpSessionTcpserver(*localInfo, suspendRecv);
 
     return (session);
 }
 
-CRtpSessionTcpserver::CRtpSessionTcpserver(const RTP_SESSION_INFO& localInfo)
+CRtpSessionTcpserver::CRtpSessionTcpserver(const RTP_SESSION_INFO& localInfo,
+                                           bool                    suspendRecv)
+                                           :
+CRtpSessionBase(suspendRecv)
 {
     m_info               = localInfo;
     m_info.localVersion  = 0;
@@ -152,11 +157,11 @@ CRtpSessionTcpserver::Init(IRtpSessionObserver* observer,
         }
 
         localAddr.sin_port = pbsd_hton16(ProGetAcceptorPort(m_acceptor));
-        m_localAddr = localAddr;
 
         observer->AddRef();
         m_observer       = observer;
         m_reactor        = reactor;
+        m_localAddr      = localAddr;
         m_timeoutTimerId = reactor->ScheduleTimer(this, (PRO_UINT64)timeoutInSeconds * 1000, false);
     }
 
@@ -218,14 +223,14 @@ CRtpSessionTcpserver::Release()
 
 void
 PRO_CALLTYPE
-CRtpSessionTcpserver::OnAccept(IProAcceptor*  acceptor,
-                               PRO_INT64      sockId,
-                               bool           unixSocket,
-                               const char*    remoteIp,
-                               unsigned short remotePort,
-                               unsigned char  serviceId,
-                               unsigned char  serviceOpt,
-                               PRO_UINT64     nonce)
+CRtpSessionTcpserver::OnAccept(IProAcceptor*    acceptor,
+                               PRO_INT64        sockId,
+                               bool             unixSocket,
+                               const char*      remoteIp,
+                               unsigned short   remotePort,
+                               unsigned char    serviceId,
+                               unsigned char    serviceOpt,
+                               const PRO_NONCE* nonce)
 {{
     CProThreadMutexGuard mon(m_lockUpcall);
 
@@ -266,8 +271,8 @@ CRtpSessionTcpserver::OnAccept(IProAcceptor*  acceptor,
         assert(m_trans == NULL);
 
         m_trans = ProCreateTcpTransport(
-            this, m_reactor, sockId, unixSocket,
-            sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
+            this, m_reactor, sockId, unixSocket, sockBufSizeRecv,
+            sockBufSizeSend, recvPoolSize, m_suspendRecv);
         if (m_trans == NULL)
         {
             ProCloseSockId(sockId);
@@ -275,9 +280,13 @@ CRtpSessionTcpserver::OnAccept(IProAcceptor*  acceptor,
         }
         else
         {
+            char theIp[64] = "";
+            m_localAddr.sin_family       = AF_INET;
+            m_localAddr.sin_port         = pbsd_hton16(m_trans->GetLocalPort());
+            m_localAddr.sin_addr.s_addr  = pbsd_inet_aton(m_trans->GetLocalIp(theIp));
             m_remoteAddr.sin_family      = AF_INET;
-            m_remoteAddr.sin_port        = pbsd_hton16(remotePort);
-            m_remoteAddr.sin_addr.s_addr = pbsd_inet_aton(remoteIp);
+            m_remoteAddr.sin_port        = pbsd_hton16(m_trans->GetRemotePort());
+            m_remoteAddr.sin_addr.s_addr = pbsd_inet_aton(m_trans->GetRemoteIp(theIp));
 
             m_trans->StartHeartbeat();
 

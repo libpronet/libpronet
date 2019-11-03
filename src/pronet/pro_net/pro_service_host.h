@@ -60,14 +60,14 @@ private:
     virtual ~CProServiceHost();
 
     virtual void PRO_CALLTYPE OnConnectOk(
-        IProConnector* connector,
-        PRO_INT64      sockId,
-        bool           unixSocket,
-        const char*    remoteIp,
-        unsigned short remotePort,
-        unsigned char  serviceId,
-        unsigned char  serviceOpt,
-        PRO_UINT64     nonce
+        IProConnector*   connector,
+        PRO_INT64        sockId,
+        bool             unixSocket,
+        const char*      remoteIp,
+        unsigned short   remotePort,
+        unsigned char    serviceId,
+        unsigned char    serviceOpt,
+        const PRO_NONCE* nonce
         );
 
     virtual void PRO_CALLTYPE OnConnectError(

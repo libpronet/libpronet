@@ -29,7 +29,8 @@
 ////
 
 CRtpSessionTcpserverEx*
-CRtpSessionTcpserverEx::CreateInstance(const RTP_SESSION_INFO* localInfo)
+CRtpSessionTcpserverEx::CreateInstance(const RTP_SESSION_INFO* localInfo,
+                                       bool                    suspendRecv)
 {
     assert(localInfo != NULL);
     assert(localInfo->mmType != 0);
@@ -51,14 +52,16 @@ CRtpSessionTcpserverEx::CreateInstance(const RTP_SESSION_INFO* localInfo)
     }
 
     CRtpSessionTcpserverEx* const session =
-        new CRtpSessionTcpserverEx(*localInfo, NULL);
+        new CRtpSessionTcpserverEx(*localInfo, suspendRecv, NULL);
 
     return (session);
 }
 
 CRtpSessionTcpserverEx::CRtpSessionTcpserverEx(const RTP_SESSION_INFO& localInfo,
+                                               bool                    suspendRecv,
                                                PRO_SSL_CTX*            sslCtx) /* = NULL */
                                                :
+CRtpSessionBase(suspendRecv),
 m_sslCtx(sslCtx)
 {
     m_info              = localInfo;
@@ -78,7 +81,9 @@ bool
 CRtpSessionTcpserverEx::Init(IRtpSessionObserver* observer,
                              IProReactor*         reactor,
                              PRO_INT64            sockId,
-                             bool                 unixSocket)
+                             bool                 unixSocket,
+                             bool                 useAckData,
+                             char                 ackData[64])
 {
     assert(observer != NULL);
     assert(reactor != NULL);
@@ -108,8 +113,8 @@ CRtpSessionTcpserverEx::Init(IRtpSessionObserver* observer,
         if (m_sslCtx != NULL)
         {
             m_trans = ProCreateSslTransport(
-                this, reactor, m_sslCtx, sockId, unixSocket,
-                sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
+                this, reactor, m_sslCtx, sockId, unixSocket, sockBufSizeRecv,
+                sockBufSizeSend, recvPoolSize, m_suspendRecv);
             if (m_trans != NULL)
             {
                 m_sslCtx = NULL;
@@ -118,8 +123,8 @@ CRtpSessionTcpserverEx::Init(IRtpSessionObserver* observer,
         else
         {
             m_trans = ProCreateTcpTransport(
-                this, reactor, sockId, unixSocket,
-                sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
+                this, reactor, sockId, unixSocket, sockBufSizeRecv,
+                sockBufSizeSend, recvPoolSize, m_suspendRecv);
         }
         if (m_trans == NULL)
         {
@@ -143,7 +148,7 @@ CRtpSessionTcpserverEx::Init(IRtpSessionObserver* observer,
         m_handshakeOk  = true; /* !!! */
         m_onOkTimerId  = reactor->ScheduleTimer(this, 0, false);
 
-        if (DoHandshake())
+        if (DoHandshake(useAckData, ackData))
         {
             return (true);
         }
@@ -550,7 +555,8 @@ CRtpSessionTcpserverEx::Recv4(CRtpPacket*& packet)
 }}
 
 bool
-CRtpSessionTcpserverEx::DoHandshake()
+CRtpSessionTcpserverEx::DoHandshake(bool useAckData,
+                                    char ackData[64])
 {
     assert(m_trans != NULL);
     if (m_trans == NULL)
@@ -558,9 +564,16 @@ CRtpSessionTcpserverEx::DoHandshake()
         return (false);
     }
 
+    /*
+     * send the ACK result
+     */
     RTP_SESSION_ACK ack;
     memset(&ack, 0, sizeof(RTP_SESSION_ACK));
     ack.version = pbsd_hton16(m_info.localVersion);
+    if (useAckData)
+    {
+        memcpy(ack.userData, ackData, 64);
+    }
 
     IRtpPacket* const packet = CreateRtpPacket(&ack, sizeof(RTP_SESSION_ACK));
     if (packet == NULL)

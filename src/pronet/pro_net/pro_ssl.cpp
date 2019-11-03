@@ -361,19 +361,29 @@ struct PRO_SSL_CLIENT_CONFIG : public mbedtls_ssl_config
 struct PRO_SSL_CTX : public mbedtls_ssl_context
 {
     PRO_SSL_CTX(
-        PRO_INT64  __sockId,
-        PRO_UINT64 __nonce
+        PRO_INT64        __sockId,
+        const PRO_NONCE* __nonce
         )
         :
     sockId(__sockId),
-    nonce(pbsd_hton64(__nonce))
+    hasNonce(__nonce != NULL)
     {
         sentBytes = 0;
         recvBytes = 0;
+
+        if (__nonce != NULL)
+        {
+            nonce = *__nonce;
+        }
+        else
+        {
+            memset(&nonce, 0, sizeof(PRO_NONCE));
+        }
     }
 
     const PRO_INT64  sockId;
-    const PRO_UINT64 nonce; /* network byte order */
+    const bool       hasNonce;
+    PRO_NONCE        nonce;
     PRO_INT64        sentBytes;
     PRO_INT64        recvBytes;
 
@@ -572,7 +582,7 @@ ProSend_i(void*                ctx,
     int sentSize  = 0;
     int errorCode = 0;
 
-    if (size > 0 && ctx2->nonce != 0 && ctx2->sentBytes < MAGIC_BYTES)
+    if (size > 0 && ctx2->hasNonce && ctx2->sentBytes < MAGIC_BYTES)
     {
         if (size > MAGIC_BYTES)
         {
@@ -588,8 +598,8 @@ ProSend_i(void*                ctx,
         memcpy(buf2, buf, size);
 
         unsigned char*       const k0    = (unsigned char*)&ctx2->nonce;
-        const unsigned char* const kk    = k0 + sizeof(PRO_UINT64);
-        unsigned char*             k     = k0 + ctx2->sentBytes % sizeof(PRO_UINT64);
+        const unsigned char* const kk    = k0 + sizeof(PRO_NONCE);
+        unsigned char*             k     = k0 + ctx2->sentBytes % sizeof(PRO_NONCE);
         unsigned char*             p     = buf2;
         const int                  msize = (int)(MAGIC_BYTES - ctx2->sentBytes);
 
@@ -676,11 +686,11 @@ ProRecv_i(void*          ctx,
         return (MBEDTLS_ERR_NET_RECV_FAILED);
     }
 
-    if (recvSize > 0 && ctx2->nonce != 0 && ctx2->recvBytes < MAGIC_BYTES)
+    if (recvSize > 0 && ctx2->hasNonce && ctx2->recvBytes < MAGIC_BYTES)
     {
         unsigned char*       const k0    = (unsigned char*)&ctx2->nonce;
-        const unsigned char* const kk    = k0 + sizeof(PRO_UINT64);
-        unsigned char*             k     = k0 + ctx2->recvBytes % sizeof(PRO_UINT64);
+        const unsigned char* const kk    = k0 + sizeof(PRO_NONCE);
+        unsigned char*             k     = k0 + ctx2->recvBytes % sizeof(PRO_NONCE);
         unsigned char*             p     = buf;
         const int                  msize = (int)(MAGIC_BYTES - ctx2->recvBytes);
 
@@ -1801,7 +1811,7 @@ PRO_SSL_CTX*
 PRO_CALLTYPE
 ProSslCtx_Creates(const PRO_SSL_SERVER_CONFIG* config,
                   PRO_INT64                    sockId,
-                  PRO_UINT64                   nonce) /* = 0 */
+                  const PRO_NONCE*             nonce) /* = NULL */
 {
     assert(config != NULL);
     assert(sockId != -1);
@@ -1832,7 +1842,7 @@ PRO_CALLTYPE
 ProSslCtx_Createc(const PRO_SSL_CLIENT_CONFIG* config,
                   const char*                  serverHostName, /* = NULL */
                   PRO_INT64                    sockId,
-                  PRO_UINT64                   nonce)          /* = 0 */
+                  const PRO_NONCE*             nonce)          /* = NULL */
 {
     assert(config != NULL);
     assert(sockId != -1);

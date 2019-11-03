@@ -16,19 +16,6 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-/*
- * 1) client ----->                connect()                -----> server
- * 2) client <-----                 accept()                <----- server
- * 3) client <-----                  nonce                  <----- server
- * 4) client ----->  serviceId + serviceOpt + (r) + (r+1)   -----> server
- * 5) client <<====              ssl handshake              ====>> server
- * 6) client::[password hash]
- * 7) client ----->          rtp(RTP_SESSION_INFO)          -----> server
- * 8)                                             [password hash]::server
- * 9) client <-----          rtp(RTP_SESSION_ACK)           <----- server
- *                   SSL_EX handshake protocol flow chart
- */
-
 #if !defined(RTP_SESSION_SSLSERVER_EX_H)
 #define RTP_SESSION_SSLSERVER_EX_H
 
@@ -43,6 +30,7 @@ public:
 
     static CRtpSessionSslserverEx* CreateInstance(
         const RTP_SESSION_INFO* localInfo,
+        bool                    suspendRecv,
         PRO_SSL_CTX*            sslCtx
         );
 
@@ -50,6 +38,7 @@ private:
 
     CRtpSessionSslserverEx(
         const RTP_SESSION_INFO& localInfo,
+        bool                    suspendRecv,
         PRO_SSL_CTX*            sslCtx
         );
 

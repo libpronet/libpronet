@@ -16,18 +16,6 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-/*
- * 1) client ----->                connect()                -----> server
- * 2) client <-----                 accept()                <----- server
- * 3) client <-----                  nonce                  <----- server
- * 4) client ----->  serviceId + serviceOpt + (r) + (r+1)   -----> server
- * 5) client::[password hash]
- * 6) client ----->          rtp(RTP_SESSION_INFO)          -----> server
- * 7)                                             [password hash]::server
- * 8) client <-----          rtp(RTP_SESSION_ACK)           <----- server
- *                   TCP_EX handshake protocol flow chart
- */
-
 #if !defined(RTP_SESSION_TCPSERVER_EX_H)
 #define RTP_SESSION_TCPSERVER_EX_H
 
@@ -41,14 +29,17 @@ class CRtpSessionTcpserverEx : public CRtpSessionBase
 public:
 
     static CRtpSessionTcpserverEx* CreateInstance(
-        const RTP_SESSION_INFO* localInfo
+        const RTP_SESSION_INFO* localInfo,
+        bool                    suspendRecv
         );
 
     bool Init(
         IRtpSessionObserver* observer,
         IProReactor*         reactor,
         PRO_INT64            sockId,
-        bool                 unixSocket
+        bool                 unixSocket,
+        bool                 useAckData,
+        char                 ackData[64]
         );
 
     virtual void Fini();
@@ -61,6 +52,7 @@ protected:
 
     CRtpSessionTcpserverEx(
         const RTP_SESSION_INFO& localInfo,
+        bool                    suspendRecv,
         PRO_SSL_CTX*            sslCtx /* = NULL */
         );
 
@@ -79,7 +71,10 @@ private:
 
     bool Recv4(CRtpPacket*& packet);
 
-    bool DoHandshake();
+    bool DoHandshake(
+        bool useAckData,
+        char ackData[64]
+        );
 
 private:
 

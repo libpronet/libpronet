@@ -34,28 +34,34 @@ public:
 
     virtual ~CRtpReorder();
 
-    virtual void PRO_CALLTYPE SetGatePacketCount(
-        unsigned char gatePacketCount             /* = 5 */
+    virtual void PRO_CALLTYPE SetWallHeightInPackets(
+        unsigned char heightInPackets         /* = 3 */
         );
 
-    virtual void PRO_CALLTYPE SetMaxWaitingDuration(
-        unsigned char maxWaitingDurationInSeconds /* = 1 */
+    virtual void PRO_CALLTYPE SetWallHeightInMilliseconds(
+        unsigned long heightInMs              /* = 500 */
         );
 
     virtual void PRO_CALLTYPE SetMaxBrokenDuration(
-        unsigned char maxBrokenDurationInSeconds  /* = 10 */
+        unsigned char brokenDurationInSeconds /* = 10 */
         );
+
+    virtual unsigned long PRO_CALLTYPE GetTotalPackets() const;
 
     virtual void PRO_CALLTYPE PushBack(IRtpPacket* packet);
 
-    virtual IRtpPacket* PRO_CALLTYPE PopFront();
+    virtual IRtpPacket* PRO_CALLTYPE PopFront(bool force);
 
     virtual void PRO_CALLTYPE Reset();
 
 private:
 
-    unsigned long                      m_gatePacketCount;
-    PRO_INT64                          m_maxWaitingDuration;
+    void Clean();
+
+private:
+
+    unsigned long                      m_heightInPackets;
+    PRO_INT64                          m_heightInMs;
     PRO_INT64                          m_maxBrokenDuration;
     PRO_INT64                          m_minSeq64;
     PRO_INT64                          m_lastValidTick;

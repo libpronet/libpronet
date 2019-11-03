@@ -64,7 +64,8 @@ public:
         PRO_INT64              sockId,
         bool                   unixSocket,
         size_t                 sockBufSizeRecv, /* = 0 */
-        size_t                 sockBufSizeSend  /* = 0 */
+        size_t                 sockBufSizeSend, /* = 0 */
+        bool                   suspendRecv      /* = false */
         );
 
     void Fini();

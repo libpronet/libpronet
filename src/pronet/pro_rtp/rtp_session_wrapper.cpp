@@ -42,11 +42,8 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define DEFAULT_REORDER_PACKET_COUNT 1
-#define AUDIO_REORDER_PACKET_COUNT   2
-#define VIDEO_REORDER_PACKET_COUNT   5
-#define TRACE_INTERVAL               20
-#define HEARTBEAT_INTERVAL           1
+#define TRACE_INTERVAL     20
+#define HEARTBEAT_INTERVAL 1
 
 #if defined(__cplusplus)
 extern "C" {
@@ -75,12 +72,6 @@ CRtpSessionWrapper::CreateInstance(const RTP_SESSION_INFO* localInfo)
 
     CRtpSessionWrapper* const sessionWrapper =
         new CRtpSessionWrapper(*localInfo);
-    if (sessionWrapper->m_reorderInput == NULL)
-    {
-        delete sessionWrapper;
-
-        return (NULL);
-    }
 
     return (sessionWrapper);
 }
@@ -88,6 +79,7 @@ CRtpSessionWrapper::CreateInstance(const RTP_SESSION_INFO* localInfo)
 CRtpSessionWrapper::CRtpSessionWrapper(const RTP_SESSION_INFO& localInfo)
 {
     m_info             = localInfo;
+    m_magic            = 0;
     m_observer         = NULL;
     m_reactor          = NULL;
     m_session          = NULL;
@@ -104,36 +96,11 @@ CRtpSessionWrapper::CRtpSessionWrapper(const RTP_SESSION_INFO& localInfo)
     m_sendTimerId      = 0;
     m_sendDurationMs   = 0;
     m_pushTick         = 0;
-
-    m_reorderInput     = CreateRtpReorder();
-
-    if (m_reorderInput != NULL)
-    {
-        if (localInfo.mmType >= RTP_MMT_AUDIO_MIN &&
-            localInfo.mmType <= RTP_MMT_AUDIO_MAX)
-        {
-            m_reorderInput->SetGatePacketCount(AUDIO_REORDER_PACKET_COUNT);
-        }
-        else if (
-            localInfo.mmType >= RTP_MMT_VIDEO_MIN &&
-            localInfo.mmType <= RTP_MMT_VIDEO_MAX
-            )
-        {
-            m_reorderInput->SetGatePacketCount(VIDEO_REORDER_PACKET_COUNT);
-        }
-        else
-        {
-            m_reorderInput->SetGatePacketCount(DEFAULT_REORDER_PACKET_COUNT);
-        }
-    }
 }
 
 CRtpSessionWrapper::~CRtpSessionWrapper()
 {
     Fini();
-
-    DeleteRtpReorder(m_reorderInput);
-    m_reorderInput = NULL;
 }
 
 bool
@@ -308,7 +275,8 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                     initArgs2.tcpclient.remoteIp,
                     initArgs2.tcpclient.remotePort,
                     initArgs2.tcpclient.localIp,
-                    initArgs2.tcpclient.timeoutInSeconds
+                    initArgs2.tcpclient.timeoutInSeconds,
+                    initArgs2.tcpclient.suspendRecv
                     );
                 if (m_session == NULL)
                 {
@@ -334,7 +302,8 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                     &m_info,
                     initArgs2.tcpserver.localIp,
                     initArgs2.tcpserver.localPort,
-                    initArgs2.tcpserver.timeoutInSeconds
+                    initArgs2.tcpserver.timeoutInSeconds,
+                    initArgs2.tcpserver.suspendRecv
                     );
                 if (m_session == NULL)
                 {
@@ -415,7 +384,8 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                     initArgs2.tcpclientEx.remotePort,
                     initArgs2.tcpclientEx.password,
                     initArgs2.tcpclientEx.localIp,
-                    initArgs2.tcpclientEx.timeoutInSeconds
+                    initArgs2.tcpclientEx.timeoutInSeconds,
+                    initArgs2.tcpclientEx.suspendRecv
                     );
                 ProZeroMemory(
                     initArgs2.tcpclientEx.password,
@@ -444,7 +414,10 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                     initArgs2.comm.reactor,
                     &m_info,
                     initArgs2.tcpserverEx.sockId,
-                    initArgs2.tcpserverEx.unixSocket
+                    initArgs2.tcpserverEx.unixSocket,
+                    initArgs2.tcpserverEx.useAckData,
+                    initArgs2.tcpserverEx.ackData,
+                    initArgs2.tcpserverEx.suspendRecv
                     );
                 if (m_session == NULL)
                 {
@@ -474,7 +447,8 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                     initArgs2.sslclientEx.remotePort,
                     initArgs2.sslclientEx.password,
                     initArgs2.sslclientEx.localIp,
-                    initArgs2.sslclientEx.timeoutInSeconds
+                    initArgs2.sslclientEx.timeoutInSeconds,
+                    initArgs2.sslclientEx.suspendRecv
                     );
                 ProZeroMemory(
                     initArgs2.sslclientEx.password,
@@ -504,7 +478,10 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                     &m_info,
                     initArgs2.sslserverEx.sslCtx,
                     initArgs2.sslserverEx.sockId,
-                    initArgs2.sslserverEx.unixSocket
+                    initArgs2.sslserverEx.unixSocket,
+                    initArgs2.sslserverEx.useAckData,
+                    initArgs2.sslserverEx.ackData,
+                    initArgs2.sslserverEx.suspendRecv
                     );
                 if (m_session == NULL)
                 {
@@ -660,7 +637,6 @@ CRtpSessionWrapper::Fini()
         m_timerId     = 0;
         m_sendTimerId = 0;
 
-        m_reorderInput->Reset();
         pushPackets = m_pushPackets;
         m_pushPackets.clear();
         bucket = m_bucket;
@@ -717,6 +693,28 @@ CRtpSessionWrapper::GetInfo(RTP_SESSION_INFO* info) const
         CProThreadMutexGuard mon(m_lock);
 
         *info = m_info;
+    }
+}
+
+void
+PRO_CALLTYPE
+CRtpSessionWrapper::GetAck(RTP_SESSION_ACK* ack) const
+{
+    assert(ack != NULL);
+    if (ack == NULL)
+    {
+        return;
+    }
+
+    memset(ack, 0, sizeof(RTP_SESSION_ACK));
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_session != NULL)
+        {
+            m_session->GetAck(ack);
+        }
     }
 }
 
@@ -886,8 +884,14 @@ CRtpSessionWrapper::IsReady() const
 
 bool
 PRO_CALLTYPE
-CRtpSessionWrapper::SendPacket(IRtpPacket* packet)
+CRtpSessionWrapper::SendPacket(IRtpPacket* packet,
+                               bool*       tryAgain) /* = NULL */
 {
+    if (tryAgain != NULL)
+    {
+        *tryAgain = false;
+    }
+
     assert(packet != NULL);
     if (packet == NULL)
     {
@@ -910,7 +914,7 @@ CRtpSessionWrapper::SendPacket(IRtpPacket* packet)
             return (false);
         }
 
-        ret = SendPacketUnlock(packet);
+        ret = PushPacket(packet);
     }
 
     return (ret);
@@ -956,15 +960,11 @@ CRtpSessionWrapper::SendPacketByTimer(IRtpPacket*   packet,
 }
 
 bool
-CRtpSessionWrapper::SendPacketUnlock(IRtpPacket* packet)
+CRtpSessionWrapper::PushPacket(IRtpPacket* packet)
 {
     assert(packet != NULL);
     assert(m_session != NULL);
     assert(m_bucket != NULL);
-    if (packet == NULL || m_session == NULL || m_bucket == NULL)
-    {
-        return (false);
-    }
 
     m_pushToBucketRet2 = m_bucket->PushBackAddRef(packet);
     if (m_pushToBucketRet1 && !m_pushToBucketRet2)      /* 1 ---> 0 */
@@ -981,58 +981,46 @@ CRtpSessionWrapper::SendPacketUnlock(IRtpPacket* packet)
     }
     m_pushToBucketRet1 = m_pushToBucketRet2;
 
-    IRtpPacket* const packet2 = m_bucket->GetFront();
-    if (packet2 != NULL)
-    {
-        if (m_session->SendPacket(packet2))
-        {
-            if (packet2->GetMarker()
-                ||
-                m_info.mmType < RTP_MMT_VIDEO_MIN ||
-                m_info.mmType > RTP_MMT_VIDEO_MAX) /* non-video */
-            {
-                m_statFrameRateOutput.PushDataBits(1);
-            }
-            m_statBitRateOutput.PushDataBytes(packet2->GetPayloadSize());
-            m_statLossRateOutput.PushData(packet2->GetSequence());
-
-            m_bucket->PopFrontRelease(packet2);
-        }
-    }
+    DoSendPacket();
 
     return (m_pushToBucketRet2);
 }
 
 bool
-CRtpSessionWrapper::SendPacketUnlock()
+CRtpSessionWrapper::DoSendPacket()
 {
     assert(m_session != NULL);
     assert(m_bucket != NULL);
-    if (m_session == NULL || m_bucket == NULL)
+
+    IRtpPacket* const packet = m_bucket->GetFront();
+    if (packet == NULL)
     {
         return (false);
     }
 
-    bool ret = false;
+    bool       tryAgain = false;
+    const bool ret      = m_session->SendPacket(packet, &tryAgain);
 
-    IRtpPacket* const packet = m_bucket->GetFront();
-    if (packet != NULL)
+    if (ret)
     {
-        ret = m_session->SendPacket(packet);
-        if (ret)
+        if (packet->GetMarker()
+            ||
+            m_info.mmType < RTP_MMT_VIDEO_MIN ||
+            m_info.mmType > RTP_MMT_VIDEO_MAX) /* non-video */
         {
-            if (packet->GetMarker()
-                ||
-                m_info.mmType < RTP_MMT_VIDEO_MIN ||
-                m_info.mmType > RTP_MMT_VIDEO_MAX) /* non-video */
-            {
-                m_statFrameRateOutput.PushDataBits(1);
-            }
-            m_statBitRateOutput.PushDataBytes(packet->GetPayloadSize());
-            m_statLossRateOutput.PushData(packet->GetSequence());
-
-            m_bucket->PopFrontRelease(packet);
+            m_statFrameRateOutput.PushDataBits(1);
         }
+        m_statBitRateOutput.PushDataBytes(packet->GetPayloadSize());
+        m_statLossRateOutput.PushData(packet->GetSequence());
+
+        m_bucket->PopFrontRelease(packet);
+    }
+    else if (!tryAgain)
+    {
+        m_bucket->PopFrontRelease(packet);
+    }
+    else
+    {
     }
 
     return (ret);
@@ -1173,8 +1161,6 @@ CRtpSessionWrapper::EnableInput(bool enable)
 
         m_enableInput = enable;
 
-        m_reorderInput->Reset();
-
         m_statFrameRateInput.Reset();
         m_statBitRateInput.Reset();
         m_statLossRateInput.Reset();
@@ -1231,8 +1217,9 @@ CRtpSessionWrapper::EnableOutput(bool enable)
 
 void
 PRO_CALLTYPE
-CRtpSessionWrapper::SetOutputRedline(unsigned long redlineBytes,  /* = 0 */
-                                     unsigned long redlineFrames) /* = 0 */
+CRtpSessionWrapper::SetOutputRedline(unsigned long redlineBytes,   /* = 0 */
+                                     unsigned long redlineFrames,  /* = 0 */
+                                     unsigned long redlineDelayMs) /* = 0 */
 {
     {
         CProThreadMutexGuard mon(m_lock);
@@ -1243,22 +1230,27 @@ CRtpSessionWrapper::SetOutputRedline(unsigned long redlineBytes,  /* = 0 */
             return;
         }
 
-        m_bucket->SetRedline(redlineBytes, redlineFrames);
+        m_bucket->SetRedline(redlineBytes, redlineFrames, redlineDelayMs);
     }
 }
 
 void
 PRO_CALLTYPE
-CRtpSessionWrapper::GetOutputRedline(unsigned long* redlineBytes,        /* = NULL */
-                                     unsigned long* redlineFrames) const /* = NULL */
+CRtpSessionWrapper::GetOutputRedline(unsigned long* redlineBytes,         /* = NULL */
+                                     unsigned long* redlineFrames,        /* = NULL */
+                                     unsigned long* redlineDelayMs) const /* = NULL */
 {
     if (redlineBytes != NULL)
     {
-        *redlineBytes  = 0;
+        *redlineBytes   = 0;
     }
     if (redlineFrames != NULL)
     {
-        *redlineFrames = 0;
+        *redlineFrames  = 0;
+    }
+    if (redlineDelayMs != NULL)
+    {
+        *redlineDelayMs = 0;
     }
 
     {
@@ -1266,27 +1258,27 @@ CRtpSessionWrapper::GetOutputRedline(unsigned long* redlineBytes,        /* = NU
 
         if (m_bucket != NULL)
         {
-            m_bucket->GetRedline(redlineBytes, redlineFrames);
+            m_bucket->GetRedline(redlineBytes, redlineFrames, redlineDelayMs);
         }
     }
 }
 
 void
 PRO_CALLTYPE
-CRtpSessionWrapper::GetFlowctrlInfo(float*         inFrameRate,        /* = NULL */
-                                    float*         inBitRate,          /* = NULL */
+CRtpSessionWrapper::GetFlowctrlInfo(float*         srcFrameRate,       /* = NULL */
+                                    float*         srcBitRate,         /* = NULL */
                                     float*         outFrameRate,       /* = NULL */
                                     float*         outBitRate,         /* = NULL */
                                     unsigned long* cachedBytes,        /* = NULL */
                                     unsigned long* cachedFrames) const /* = NULL */
 {
-    if (inFrameRate != NULL)
+    if (srcFrameRate != NULL)
     {
-        *inFrameRate  = 0;
+        *srcFrameRate = 0;
     }
-    if (inBitRate != NULL)
+    if (srcBitRate != NULL)
     {
-        *inBitRate    = 0;
+        *srcBitRate   = 0;
     }
     if (outFrameRate != NULL)
     {
@@ -1311,8 +1303,8 @@ CRtpSessionWrapper::GetFlowctrlInfo(float*         inFrameRate,        /* = NULL
         if (m_bucket != NULL)
         {
             m_bucket->GetFlowctrlInfo(
-                inFrameRate,
-                inBitRate,
+                srcFrameRate,
+                srcBitRate,
                 outFrameRate,
                 outBitRate,
                 cachedBytes,
@@ -1437,6 +1429,32 @@ CRtpSessionWrapper::ResetOutputStat()
 
 void
 PRO_CALLTYPE
+CRtpSessionWrapper::SetMagic(PRO_INT64 magic)
+{
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        m_magic = magic;
+    }
+}
+
+PRO_INT64
+PRO_CALLTYPE
+CRtpSessionWrapper::GetMagic() const
+{
+    PRO_INT64 magic = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        magic = m_magic;
+    }
+
+    return (magic);
+}
+
+void
+PRO_CALLTYPE
 CRtpSessionWrapper::OnOkSession(IRtpSession* session)
 {
     assert(session != NULL);
@@ -1486,8 +1504,7 @@ CRtpSessionWrapper::OnRecvSession(IRtpSession* session,
         return;
     }
 
-    IRtpSessionObserver*       observer = NULL;
-    CProStlVector<IRtpPacket*> packets;
+    IRtpSessionObserver* observer = NULL;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -1508,74 +1525,21 @@ CRtpSessionWrapper::OnRecvSession(IRtpSession* session,
             return;
         }
 
-        if (
-            m_info.sessionType == RTP_ST_TCPCLIENT    ||
-            m_info.sessionType == RTP_ST_TCPSERVER    ||
-            m_info.sessionType == RTP_ST_TCPCLIENT_EX ||
-            m_info.sessionType == RTP_ST_TCPSERVER_EX ||
-            m_info.sessionType == RTP_ST_SSLCLIENT_EX ||
-            m_info.sessionType == RTP_ST_SSLSERVER_EX
+        if (packet->GetMarker()
             ||
-            ((m_info.mmType < RTP_MMT_AUDIO_MIN ||
-              m_info.mmType > RTP_MMT_AUDIO_MAX)       /* non-audio */
-             &&
-             (m_info.mmType < RTP_MMT_VIDEO_MIN ||
-              m_info.mmType > RTP_MMT_VIDEO_MAX))      /* non-video */
-           )
+            m_info.mmType < RTP_MMT_VIDEO_MIN ||
+            m_info.mmType > RTP_MMT_VIDEO_MAX) /* non-video */
         {
-            packet->AddRef();
-            packets.push_back(packet);
-
-            if (packet->GetMarker()
-                ||
-                m_info.mmType < RTP_MMT_VIDEO_MIN ||
-                m_info.mmType > RTP_MMT_VIDEO_MAX)     /* non-video */
-            {
-                m_statFrameRateInput.PushDataBits(1);
-            }
-            m_statBitRateInput.PushDataBytes(packet->GetPayloadSize());
-            m_statLossRateInput.PushData(packet->GetSequence());
+            m_statFrameRateInput.PushDataBits(1);
         }
-        else
-        {
-            m_reorderInput->PushBack(packet);
-
-            while (1)
-            {
-                IRtpPacket* const packet2 = m_reorderInput->PopFront();
-                if (packet2 == NULL)
-                {
-                    break;
-                }
-
-                packets.push_back(packet2);
-
-                if (packet2->GetMarker()
-                    ||
-                    m_info.mmType < RTP_MMT_VIDEO_MIN ||
-                    m_info.mmType > RTP_MMT_VIDEO_MAX) /* non-video */
-                {
-                    m_statFrameRateInput.PushDataBits(1);
-                }
-                m_statBitRateInput.PushDataBytes(packet2->GetPayloadSize());
-                m_statLossRateInput.PushData(packet2->GetSequence());
-            }
-        }
+        m_statBitRateInput.PushDataBytes(packet->GetPayloadSize());
+        m_statLossRateInput.PushData(packet->GetSequence());
 
         m_observer->AddRef();
         observer = m_observer;
     }
 
-    int       i = 0;
-    const int c = (int)packets.size();
-
-    for (; i < c; ++i)
-    {
-        IRtpPacket* const packet2 = packets[i];
-        observer->OnRecvSession(this, packet2);
-        packet2->Release();
-    }
-
+    observer->OnRecvSession(this, packet);
     observer->Release();
 }
 
@@ -1585,7 +1549,8 @@ CRtpSessionWrapper::OnSendSession(IRtpSession* session,
                                   bool         packetErased)
 {
     assert(session != NULL);
-    if (session == NULL)
+    assert(!packetErased);
+    if (session == NULL || packetErased)
     {
         return;
     }
@@ -1609,7 +1574,7 @@ CRtpSessionWrapper::OnSendSession(IRtpSession* session,
         /*
          * 1. first
          */
-        if (SendPacketUnlock() && !m_packetErased)
+        if (DoSendPacket() && !m_packetErased)
         {
             return;
         }
@@ -1662,15 +1627,14 @@ CRtpSessionWrapper::OnCloseSession(IRtpSession* session,
             return;
         }
 
-        m_session = NULL;
-
         m_observer->AddRef();
         observer = m_observer;
     }
 
     observer->OnCloseSession(this, errorCode, sslCode, tcpConnected);
     observer->Release();
-    DeleteRtpSession(session);
+
+    Fini();
 }
 
 void
@@ -1707,8 +1671,11 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
 
                 m_traceTick = tick;
 
-                unsigned long redlineBytes = 0;
-                m_bucket->GetRedline(&redlineBytes, NULL);
+                unsigned long redlineBytes   = 0;
+                unsigned long redlineFrames  = 0;
+                unsigned long redlineDelayMs = 0;
+                m_bucket->GetRedline(
+                    &redlineBytes, &redlineFrames, &redlineDelayMs);
 
                 char traceInfo[2048] = "";
 
@@ -1769,6 +1736,7 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         "\n"
                         " CRtpSessionWrapper(A) --- [pid : %u/0x%X, this : %p, session : %p, mmType : %u] \n"
                         "\t CRtpSessionWrapper(A) - redlineBytes        : %u \n"
+                        "\t CRtpSessionWrapper(A) - redlineDelayMs      : %u \n"
                         "\t CRtpSessionWrapper(A) - bucketBytes         : %u \n"
                         "\t CRtpSessionWrapper(A) - pushToBucketRet1    : %d \n"
                         "\t CRtpSessionWrapper(A) - pushToBucketRet2    : %d \n"
@@ -1788,6 +1756,7 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         m_session,
                         (unsigned int)m_info.mmType,
                         (unsigned int)redlineBytes,
+                        (unsigned int)redlineDelayMs,
                         (unsigned int)m_bucket->GetTotalBytes(),
                         (int)(m_pushToBucketRet1 ? 1 : 0),
                         (int)(m_pushToBucketRet2 ? 1 : 0),
@@ -1817,6 +1786,8 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         "\n"
                         " CRtpSessionWrapper(V) --- [pid : %u/0x%X, this : %p, session : %p, mmType : %u] \n"
                         "\t CRtpSessionWrapper(V) - redlineBytes        : %u \n"
+                        "\t CRtpSessionWrapper(V) - redlineFrames       : %u \n"
+                        "\t CRtpSessionWrapper(V) - redlineDelayMs      : %u \n"
                         "\t CRtpSessionWrapper(V) - bucketBytes         : %u \n"
                         "\t CRtpSessionWrapper(V) - pushToBucketRet1    : %d \n"
                         "\t CRtpSessionWrapper(V) - pushToBucketRet2    : %d \n"
@@ -1836,6 +1807,8 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
                         m_session,
                         (unsigned int)m_info.mmType,
                         (unsigned int)redlineBytes,
+                        (unsigned int)redlineFrames,
+                        (unsigned int)redlineDelayMs,
                         (unsigned int)m_bucket->GetTotalBytes(),
                         (int)(m_pushToBucketRet1 ? 1 : 0),
                         (int)(m_pushToBucketRet2 ? 1 : 0),
@@ -1885,7 +1858,7 @@ CRtpSessionWrapper::OnTimer(unsigned long timerId,
 
                 IRtpPacket* const packet = m_pushPackets.front();
                 m_pushPackets.pop_front();
-                SendPacketUnlock(packet);
+                PushPacket(packet);
                 packet->Release();
             }
         }

@@ -36,7 +36,8 @@ public CRtpSessionBase
 public:
 
     static CRtpSessionTcpclient* CreateInstance(
-        const RTP_SESSION_INFO* localInfo
+        const RTP_SESSION_INFO* localInfo,
+        bool                    suspendRecv
         );
 
     bool Init(
@@ -56,19 +57,22 @@ public:
 
 private:
 
-    CRtpSessionTcpclient(const RTP_SESSION_INFO& localInfo);
+    CRtpSessionTcpclient(
+        const RTP_SESSION_INFO& localInfo,
+        bool                    suspendRecv
+        );
 
     virtual ~CRtpSessionTcpclient();
 
     virtual void PRO_CALLTYPE OnConnectOk(
-        IProConnector* connector,
-        PRO_INT64      sockId,
-        bool           unixSocket,
-        const char*    remoteIp,
-        unsigned short remotePort,
-        unsigned char  serviceId,
-        unsigned char  serviceOpt,
-        PRO_UINT64     nonce
+        IProConnector*   connector,
+        PRO_INT64        sockId,
+        bool             unixSocket,
+        const char*      remoteIp,
+        unsigned short   remotePort,
+        unsigned char    serviceId,
+        unsigned char    serviceOpt,
+        const PRO_NONCE* nonce
         );
 
     virtual void PRO_CALLTYPE OnConnectError(

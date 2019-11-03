@@ -30,6 +30,11 @@ extern "C" {
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+struct PRO_NONCE;             /* a big random number */
+struct PRO_SSL_CLIENT_CONFIG; /* derived from mbedtls_ssl_config */
+struct PRO_SSL_CTX;           /* derived from mbedtls_ssl_context */
+struct PRO_SSL_SERVER_CONFIG; /* derived from mbedtls_ssl_config */
+
 /*
  * [[[[ authentication levels
  */
@@ -76,10 +81,6 @@ static const PRO_SSL_SUITE_ID PRO_SSL_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256     
 /*
  * ]]]]
  */
-
-struct PRO_SSL_CLIENT_CONFIG; /* derived from mbedtls_ssl_config */
-struct PRO_SSL_CTX;           /* derived from mbedtls_ssl_context */
-struct PRO_SSL_SERVER_CONFIG; /* derived from mbedtls_ssl_config */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -498,7 +499,7 @@ ProSslClientConfig_SetAuthLevel(PRO_SSL_CLIENT_CONFIG* config,
  * 参数:
  * config : SSL配置对象
  * sockId : 套接字id
- * nonce  : 扰动随机数. 0表示无扰动
+ * nonce  : 扰动随机数. NULL表示无扰动
  *
  * 返回值: SSL上下文对象或NULL
  *
@@ -513,7 +514,7 @@ PRO_SSL_CTX*
 PRO_CALLTYPE
 ProSslCtx_Creates(const PRO_SSL_SERVER_CONFIG* config,
                   PRO_INT64                    sockId,
-                  PRO_UINT64                   nonce); /* = 0 */
+                  const PRO_NONCE*             nonce); /* = NULL */
 
 /*
  * 功能: 创建一个客户端SSL上下文
@@ -522,7 +523,7 @@ ProSslCtx_Creates(const PRO_SSL_SERVER_CONFIG* config,
  * config         : SSL配置对象
  * serverHostName : server主机名. 如果有效, 则参与认证server证书
  * sockId         : 套接字id
- * nonce          : 扰动随机数. 0表示无扰动
+ * nonce          : 扰动随机数. NULL表示无扰动
  *
  * 返回值: SSL上下文对象或NULL
  *
@@ -538,7 +539,7 @@ PRO_CALLTYPE
 ProSslCtx_Createc(const PRO_SSL_CLIENT_CONFIG* config,
                   const char*                  serverHostName, /* = NULL */
                   PRO_INT64                    sockId,
-                  PRO_UINT64                   nonce);         /* = 0 */
+                  const PRO_NONCE*             nonce);         /* = NULL */
 
 /*
  * 功能: 删除一个SSL上下文

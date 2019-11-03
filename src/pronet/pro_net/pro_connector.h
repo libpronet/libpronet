@@ -16,14 +16,6 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-/*
- * 1) client ----->                connect()                -----> server
- * 2) client <-----                 accept()                <----- server
- * 3) client <-----                  nonce                  <----- server
- * 4) client ----->  serviceId + serviceOpt + (r) + (r+1)   -----> server
- *          acceptor_ex/connector_ex handshake protocol flow chart
- */
-
 #if !defined(PRO_CONNECTOR_H)
 #define PRO_CONNECTOR_H
 

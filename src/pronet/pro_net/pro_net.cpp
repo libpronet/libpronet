@@ -391,7 +391,8 @@ ProCreateTcpTransport(IProTransportObserver* observer,
                       bool                   unixSocket,
                       size_t                 sockBufSizeRecv, /* = 0 */
                       size_t                 sockBufSizeSend, /* = 0 */
-                      size_t                 recvPoolSize)    /* = 0 */
+                      size_t                 recvPoolSize,    /* = 0 */
+                      bool                   suspendRecv)     /* = false */
 {
     ProNetInit();
 
@@ -402,8 +403,8 @@ ProCreateTcpTransport(IProTransportObserver* observer,
         return (NULL);
     }
 
-    if (!trans->Init(observer, (CProTpReactorTask*)reactor,
-        sockId, unixSocket, sockBufSizeRecv, sockBufSizeSend))
+    if (!trans->Init(observer, (CProTpReactorTask*)reactor, sockId,
+        unixSocket, sockBufSizeRecv, sockBufSizeSend, suspendRecv))
     {
         trans->Release();
 
@@ -489,7 +490,8 @@ ProCreateSslTransport(IProTransportObserver* observer,
                       bool                   unixSocket,
                       size_t                 sockBufSizeRecv, /* = 0 */
                       size_t                 sockBufSizeSend, /* = 0 */
-                      size_t                 recvPoolSize)    /* = 0 */
+                      size_t                 recvPoolSize,    /* = 0 */
+                      bool                   suspendRecv)     /* = false */
 {
     ProNetInit();
 
@@ -500,8 +502,8 @@ ProCreateSslTransport(IProTransportObserver* observer,
         return (NULL);
     }
 
-    if (!trans->Init(observer, (CProTpReactorTask*)reactor,
-        ctx, sockId, unixSocket, sockBufSizeRecv, sockBufSizeSend))
+    if (!trans->Init(observer, (CProTpReactorTask*)reactor, ctx, sockId,
+        unixSocket, sockBufSizeRecv, sockBufSizeSend, suspendRecv))
     {
         trans->Release();
 

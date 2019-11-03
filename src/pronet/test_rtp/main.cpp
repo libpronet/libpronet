@@ -31,85 +31,246 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+static
+TEST_MODE
+PRO_CALLTYPE
+String2Mode_i(const char* modeString)
+{
+    TEST_MODE mode = 0;
+
+    assert(modeString != NULL);
+    assert(modeString[0] != '\0');
+    if (modeString == NULL || modeString[0] == '\0')
+    {
+        return mode;
+    }
+
+    if (stricmp(modeString, "-udpecho") == 0)
+    {
+        mode = TM_UDPE;
+    }
+    else if (stricmp(modeString, "-tcpecho") == 0)
+    {
+        mode = TM_TCPE;
+    }
+    else if (stricmp(modeString, "-udps") == 0)
+    {
+        mode = TM_UDPS;
+    }
+    else if (stricmp(modeString, "-tcps") == 0)
+    {
+        mode = TM_TCPS;
+    }
+    else if (stricmp(modeString, "-udpc") == 0)
+    {
+        mode = TM_UDPC;
+    }
+    else if (stricmp(modeString, "-tcpc") == 0)
+    {
+        mode = TM_TCPC;
+    }
+    else
+    {
+    }
+
+    return (mode);
+}
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
 int main(int argc, char* argv[])
 {
     printf(
         "\n"
-        " usage: \n"
-        " test_rtp <remote_ip> <remote_port> <local_ip> <local_port> <kbps> \n"
+        " usage [server-side]: \n"
+        " test_rtp -udpecho <local_ip> <local_port> \n"
+        " test_rtp -tcpecho <local_ip> <local_port> \n"
+        " test_rtp -udps    <local_ip> <local_port> <kbps> \n"
+        " test_rtp -tcps    <local_ip> <local_port> <kbps> \n"
         "\n"
-        " for example [server-side]: \n"
-        " test_rtp 0.0.0.0       0    0.0.0.0       4000 1024 \n"
-        " test_rtp 0.0.0.0       0    192.168.0.102 4000 1024 \n"
-        " test_rtp 0.0.0.0       0    0.0.0.0       4000 0    \n"
-        " test_rtp 0.0.0.0       0    192.168.0.102 4000 0    \n"
+        " usage [client-side]: \n"
+        " test_rtp -udpc    <remote_ip> <remote_port> <kbps> [local_ip] \n"
+        " test_rtp -tcpc    <remote_ip> <remote_port> <kbps> [local_ip] \n"
         "\n"
-        " for example [client-side]: \n"
-        " test_rtp 192.168.0.101 4000 0.0.0.0       4000 1024 \n"
-        " test_rtp 192.168.0.101 4000 192.168.0.102 4000 1024 \n"
-        " test_rtp 192.168.0.101 4000 0.0.0.0       0    1024 \n"
-        " test_rtp 192.168.0.101 4000 192.168.0.102 0    1024 \n"
+        " for example [server-side on host 192.168.0.101]: \n"
+        " test_rtp -udpecho 0.0.0.0       1234 \n"
+        " test_rtp -udpecho 192.168.0.101 1234 \n"
+        " test_rtp -tcpecho 0.0.0.0       1234 \n"
+        " test_rtp -tcpecho 192.168.0.101 1234 \n"
+        " test_rtp -udps    0.0.0.0       1234 512 \n"
+        " test_rtp -udps    192.168.0.101 1234 512 \n"
+        " test_rtp -tcps    0.0.0.0       1234 512 \n"
+        " test_rtp -tcps    192.168.0.101 1234 512 \n"
+        "\n"
+        " for example [client-side on host 192.168.0.102]: \n"
+        " test_rtp -udpc    192.168.0.101 1234 512               \n"
+        " test_rtp -udpc    192.168.0.101 1234 512 192.168.0.102 \n"
+        " test_rtp -tcpc    192.168.0.101 1234 512               \n"
+        " test_rtp -tcpc    192.168.0.101 1234 512 192.168.0.102 \n"
         );
 
     ProNetInit();
     ProRtpInit();
 
-    const char*  remote_ip   = NULL;
-    int          remote_port = 0;
+    TEST_MODE    mode        = 0;
     const char*  local_ip    = NULL;
     int          local_port  = 0;
+    const char*  remote_ip   = NULL;
+    int          remote_port = 0;
     int          kbps        = 0;
     IProReactor* reactor     = NULL;
     CTest*       tester      = NULL;
 
-    if (argc < 6)
+    if (argc < 2)
     {
         printf("\n test_rtp --- error! too few arguments. \n");
 
         goto EXIT;
     }
 
-    remote_ip   = argv[1];
-    remote_port = atoi(argv[2]);
-    local_ip    = argv[3];
-    local_port  = atoi(argv[4]);
-    kbps        = atoi(argv[5]);
-
-    /*
-     * remote_port
-     */
-    assert(remote_port >= 0);
-    assert(remote_port <= 65535);
-    if (remote_port < 0 || remote_port > 65535)
+    mode = String2Mode_i(argv[1]);
+    if (mode == 0)
     {
-        printf("\n test_rtp --- error! invalid argument <remote_port>. \n");
+        printf("\n test_rtp --- error! invalid argument <-mode>. \n");
 
         goto EXIT;
     }
 
-    /*
-     * local_port
-     */
-    assert(local_port >= 0);
-    assert(local_port <= 65535);
-    if (local_port < 0 || local_port > 65535)
-    {
-        printf("\n test_rtp --- error! invalid argument <local_port>. \n");
+    TEST_PARAMS params;
+    memset(&params, 0, sizeof(TEST_PARAMS));
 
-        goto EXIT;
-    }
+    switch (mode)
+    {
+    case TM_UDPE:
+    case TM_TCPE:
+    case TM_UDPS:
+    case TM_TCPS:
+        {
+            TEST_SERVER& prm = params.server;
 
-    /*
-     * kbps
-     */
-    if (kbps < 0)
-    {
-        kbps = 0;
-    }
-    if (kbps > 2048000)
-    {
-        kbps = 2048000;
-    }
+            if (mode == TM_UDPE || mode == TM_TCPE)
+            {
+                if (argc < 4)
+                {
+                    printf("\n test_rtp --- error! too few arguments. \n");
+
+                    goto EXIT;
+                }
+
+                local_ip   = argv[2];
+                local_port = atoi(argv[3]);
+            }
+            else
+            {
+                if (argc < 5)
+                {
+                    printf("\n test_rtp --- error! too few arguments. \n");
+
+                    goto EXIT;
+                }
+
+                local_ip   = argv[2];
+                local_port = atoi(argv[3]);
+                kbps       = atoi(argv[4]);
+            }
+
+            /*
+             * local_ip
+             */
+            strncpy_pro(prm.local_ip, sizeof(prm.local_ip), local_ip);
+
+            /*
+             * local_port
+             */
+            assert(local_port > 0);
+            assert(local_port <= 65535);
+            if (local_port <= 0 || local_port > 65535)
+            {
+                printf("\n test_rtp --- error! invalid argument <local_port>. \n");
+
+                goto EXIT;
+            }
+            else
+            {
+                prm.local_port = (unsigned short)local_port;
+            }
+
+            /*
+             * kbps
+             */
+            if (kbps < 1)
+            {
+                kbps = 1;
+            }
+            if (kbps > 1024000)
+            {
+                kbps = 1024000;
+            }
+            prm.kbps = kbps;
+            break;
+        }
+    case TM_UDPC:
+    case TM_TCPC:
+        {
+            TEST_CLIENT& prm = params.client;
+
+            if (argc < 5)
+            {
+                printf("\n test_rtp --- error! too few arguments. \n");
+
+                goto EXIT;
+            }
+
+            remote_ip   = argv[2];
+            remote_port = atoi(argv[3]);
+            kbps        = atoi(argv[4]);
+            local_ip    = argc >= 6 ? argv[5] : NULL;
+
+            /*
+             * remote_ip
+             */
+            strncpy_pro(prm.remote_ip, sizeof(prm.remote_ip), remote_ip);
+
+            /*
+             * remote_port
+             */
+            assert(remote_port > 0);
+            assert(remote_port <= 65535);
+            if (remote_port <= 0 || remote_port > 65535)
+            {
+                printf("\n test_rtp --- error! invalid argument <remote_port>. \n");
+
+                goto EXIT;
+            }
+            else
+            {
+                prm.remote_port = (unsigned short)remote_port;
+            }
+
+            /*
+             * kbps
+             */
+            if (kbps < 1)
+            {
+                kbps = 1;
+            }
+            if (kbps > 1024000)
+            {
+                kbps = 1024000;
+            }
+            prm.kbps = kbps;
+
+            /*
+             * local_ip
+             */
+            if (local_ip != NULL)
+            {
+                strncpy_pro(prm.local_ip, sizeof(prm.local_ip), local_ip);
+            }
+            break;
+        }
+    } /* end of switch (...) */
 
     reactor = ProCreateReactor(THREAD_COUNT);
     if (reactor == NULL)
@@ -119,25 +280,32 @@ int main(int argc, char* argv[])
         goto EXIT;
     }
 
-    tester = CTest::CreateInstance();
+    tester = CTest::CreateInstance(mode);
     if (tester == NULL)
     {
         printf("\n test_rtp --- error! can't create tester. \n");
 
         goto EXIT;
     }
-    if (!tester->Init(
-        reactor,
-        remote_ip,
-        (unsigned short)remote_port,
-        local_ip,
-        (unsigned short)local_port,
-        kbps * 1000
-        ))
-    {
-        printf("\n test_rtp --- error! can't init tester. \n");
 
-        goto EXIT;
+    if (mode == TM_UDPE || mode == TM_TCPE ||
+        mode == TM_UDPS || mode == TM_TCPS)
+    {
+        if (!tester->Init(reactor, params.server))
+        {
+            printf("\n test_rtp --- error! can't init tester. \n");
+
+            goto EXIT;
+        }
+    }
+    else
+    {
+        if (!tester->Init(reactor, params.client))
+        {
+            printf("\n test_rtp --- error! can't init tester. \n");
+
+            goto EXIT;
+        }
     }
 
     ProSleep(-1);

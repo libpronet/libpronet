@@ -66,9 +66,9 @@ public:
 
     CProStatLossRate();
 
-    void SetTimeSpan(unsigned long timeSpanInSeconds);                   /* = 5 */
+    void SetTimeSpan(unsigned long timeSpanInSeconds);                /* = 5 */
 
-    void SetMaxBrokenDuration(unsigned char maxBrokenDurationInSeconds); /* = 10 */
+    void SetMaxBrokenDuration(unsigned char brokenDurationInSeconds); /* = 10 */
 
     void PushData(PRO_UINT16 dataSeq);
 

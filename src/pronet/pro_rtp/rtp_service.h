@@ -73,7 +73,7 @@ private:
         unsigned short   remotePort,
         unsigned char    serviceId,
         unsigned char    serviceOpt,
-        PRO_UINT64       nonce
+        const PRO_NONCE* nonce
         );
 
     virtual void PRO_CALLTYPE OnHandshakeOk(
@@ -106,17 +106,17 @@ private:
 
 private:
 
-    const PRO_SSL_SERVER_CONFIG* const         m_sslConfig;
-    const RTP_MM_TYPE                          m_mmType;
-    IRtpServiceObserver*                       m_observer;
-    IProReactor*                               m_reactor;
-    IProServiceHost*                           m_serviceHost;
-    unsigned long                              m_timeoutInSeconds;
+    const PRO_SSL_SERVER_CONFIG* const        m_sslConfig;
+    const RTP_MM_TYPE                         m_mmType;
+    IRtpServiceObserver*                      m_observer;
+    IProReactor*                              m_reactor;
+    IProServiceHost*                          m_serviceHost;
+    unsigned long                             m_timeoutInSeconds;
 
-    CProStlMap<IProTcpHandshaker*, PRO_UINT64> m_tcpHandshaker2Nonce;
-    CProStlMap<IProSslHandshaker*, PRO_UINT64> m_sslHandshaker2Nonce;
+    CProStlMap<IProTcpHandshaker*, PRO_NONCE> m_tcpHandshaker2Nonce;
+    CProStlMap<IProSslHandshaker*, PRO_NONCE> m_sslHandshaker2Nonce;
 
-    CProThreadMutex                            m_lock;
+    CProThreadMutex                           m_lock;
 
     DECLARE_SGI_POOL(0);
 };

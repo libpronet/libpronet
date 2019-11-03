@@ -36,7 +36,8 @@
 ////
 
 CRtpSessionTcpclientEx*
-CRtpSessionTcpclientEx::CreateInstance(const RTP_SESSION_INFO* localInfo)
+CRtpSessionTcpclientEx::CreateInstance(const RTP_SESSION_INFO* localInfo,
+                                       bool                    suspendRecv)
 {
     assert(localInfo != NULL);
     assert(localInfo->mmType != 0);
@@ -58,15 +59,17 @@ CRtpSessionTcpclientEx::CreateInstance(const RTP_SESSION_INFO* localInfo)
     }
 
     CRtpSessionTcpclientEx* const session =
-        new CRtpSessionTcpclientEx(*localInfo, NULL, NULL);
+        new CRtpSessionTcpclientEx(*localInfo, suspendRecv, NULL, NULL);
 
     return (session);
 }
 
 CRtpSessionTcpclientEx::CRtpSessionTcpclientEx(const RTP_SESSION_INFO&      localInfo,
+                                               bool                         suspendRecv,
                                                const PRO_SSL_CLIENT_CONFIG* sslConfig, /* = NULL */
                                                const char*                  sslSni)    /* = NULL */
                                                :
+CRtpSessionBase(suspendRecv),
 m_sslConfig(sslConfig),
 m_sslSni(sslSni != NULL ? sslSni : "")
 {
@@ -108,10 +111,39 @@ CRtpSessionTcpclientEx::Init(IRtpSessionObserver* observer,
         return (false);
     }
 
+    const char* const anyIp = "0.0.0.0";
+    if (localIp == NULL || localIp[0] == '\0')
+    {
+        localIp = anyIp;
+    }
+
     if (timeoutInSeconds == 0)
     {
         timeoutInSeconds = DEFAULT_TIMEOUT;
     }
+
+    pbsd_sockaddr_in localAddr;
+    memset(&localAddr, 0, sizeof(pbsd_sockaddr_in));
+    localAddr.sin_family      = AF_INET;
+    localAddr.sin_addr.s_addr = pbsd_inet_aton(localIp);
+
+    pbsd_sockaddr_in remoteAddr;
+    memset(&remoteAddr, 0, sizeof(pbsd_sockaddr_in));
+    remoteAddr.sin_family      = AF_INET;
+    remoteAddr.sin_port        = pbsd_hton16(remotePort);
+    remoteAddr.sin_addr.s_addr = pbsd_inet_aton(remoteIp); /* DNS */
+
+    if (localAddr.sin_addr.s_addr  == (PRO_UINT32)-1 ||
+        remoteAddr.sin_addr.s_addr == (PRO_UINT32)-1 ||
+        remoteAddr.sin_addr.s_addr == 0)
+    {
+        return (false);
+    }
+
+    char localIp2[64]  = "";
+    char remoteIp2[64] = "";
+    pbsd_inet_ntoa(localAddr.sin_addr.s_addr , localIp2);
+    pbsd_inet_ntoa(remoteAddr.sin_addr.s_addr, remoteIp2);
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -135,9 +167,9 @@ CRtpSessionTcpclientEx::Init(IRtpSessionObserver* observer,
             m_sslConfig != NULL, /* serviceOpt. [0 for tcp     , !0 for ssl] */
             this,
             reactor,
-            remoteIp,
+            remoteIp2,
             remotePort,
-            localIp,
+            localIp2,
             timeoutInSeconds
             );
         if (m_connector == NULL)
@@ -148,6 +180,8 @@ CRtpSessionTcpclientEx::Init(IRtpSessionObserver* observer,
         observer->AddRef();
         m_observer         = observer;
         m_reactor          = reactor;
+        m_localAddr        = localAddr;
+        m_remoteAddr       = remoteAddr;
         m_timeoutTimerId   = reactor->ScheduleTimer(this, (PRO_UINT64)timeoutInSeconds * 1000, false);
         m_password         = password != NULL ? password : "";
         m_timeoutInSeconds = timeoutInSeconds;
@@ -222,20 +256,21 @@ CRtpSessionTcpclientEx::Release()
 
 void
 PRO_CALLTYPE
-CRtpSessionTcpclientEx::OnConnectOk(IProConnector* connector,
-                                    PRO_INT64      sockId,
-                                    bool           unixSocket,
-                                    const char*    remoteIp,
-                                    unsigned short remotePort,
-                                    unsigned char  serviceId,
-                                    unsigned char  serviceOpt,
-                                    PRO_UINT64     nonce)
+CRtpSessionTcpclientEx::OnConnectOk(IProConnector*   connector,
+                                    PRO_INT64        sockId,
+                                    bool             unixSocket,
+                                    const char*      remoteIp,
+                                    unsigned short   remotePort,
+                                    unsigned char    serviceId,
+                                    unsigned char    serviceOpt,
+                                    const PRO_NONCE* nonce)
 {{
     CProThreadMutexGuard mon(m_lockUpcall);
 
     assert(connector != NULL);
     assert(sockId != -1);
-    if (connector == NULL || sockId == -1)
+    assert(nonce != NULL);
+    if (connector == NULL || sockId == -1 || nonce == NULL)
     {
         return;
     }
@@ -263,7 +298,7 @@ CRtpSessionTcpclientEx::OnConnectOk(IProConnector* connector,
         assert(m_tcpHandshaker == NULL);
         assert(m_sslHandshaker == NULL);
 
-        if (!DoHandshake(sockId, unixSocket, nonce))
+        if (!DoHandshake(sockId, unixSocket, *nonce))
         {
             ProCloseSockId(sockId);
             sockId = -1;
@@ -401,19 +436,21 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProTcpHandshaker* handshaker,
             }
             else
             {
-                RTP_SESSION_ACK ack;
+                /*
+                 * grab the ACK result
+                 */
                 memcpy(
-                    &ack,
+                    &m_ack,
                     (char*)buf + sizeof(RTP_EXT) + sizeof(RTP_HEADER),
                     sizeof(RTP_SESSION_ACK)
                     );
-                ack.version = pbsd_ntoh16(ack.version);
+                m_ack.version = pbsd_ntoh16(m_ack.version);
 
-                m_info.remoteVersion = ack.version;
+                m_info.remoteVersion = m_ack.version;
 
                 m_trans = ProCreateTcpTransport(
-                    this, m_reactor, sockId, unixSocket,
-                    sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
+                    this, m_reactor, sockId, unixSocket, sockBufSizeRecv,
+                    sockBufSizeSend, recvPoolSize, m_suspendRecv);
                 if (m_trans == NULL)
                 {
                     ProCloseSockId(sockId);
@@ -586,19 +623,21 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProSslHandshaker* handshaker,
             }
             else
             {
-                RTP_SESSION_ACK ack;
+                /*
+                 * grab the ACK result
+                 */
                 memcpy(
-                    &ack,
+                    &m_ack,
                     (char*)buf + sizeof(RTP_EXT) + sizeof(RTP_HEADER),
                     sizeof(RTP_SESSION_ACK)
                     );
-                ack.version = pbsd_ntoh16(ack.version);
+                m_ack.version = pbsd_ntoh16(m_ack.version);
 
-                m_info.remoteVersion = ack.version;
+                m_info.remoteVersion = m_ack.version;
 
                 m_trans = ProCreateSslTransport(
-                    this, m_reactor, ctx, sockId, unixSocket,
-                    sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
+                    this, m_reactor, ctx, sockId, unixSocket, sockBufSizeRecv,
+                    sockBufSizeSend, recvPoolSize, m_suspendRecv);
                 if (m_trans == NULL)
                 {
                     ProSslCtx_Delete(ctx);
@@ -1042,9 +1081,9 @@ CRtpSessionTcpclientEx::Recv4(CRtpPacket*& packet)
 }}
 
 bool
-CRtpSessionTcpclientEx::DoHandshake(PRO_INT64  sockId,
-                                    bool       unixSocket,
-                                    PRO_UINT64 nonce)
+CRtpSessionTcpclientEx::DoHandshake(PRO_INT64        sockId,
+                                    bool             unixSocket,
+                                    const PRO_NONCE& nonce)
 {
     assert(sockId != -1);
     assert(m_tcpHandshaker == NULL);
@@ -1061,7 +1100,8 @@ CRtpSessionTcpclientEx::DoHandshake(PRO_INT64  sockId,
     localInfo.mmId          = pbsd_hton32(localInfo.mmId);
     localInfo.inSrcMmId     = pbsd_hton32(localInfo.inSrcMmId);
     localInfo.outSrcMmId    = pbsd_hton32(localInfo.outSrcMmId);
-    ProCalcPasswordHash(nonce, m_password.c_str(), localInfo.passwordHash);
+    ProCalcPasswordHash(
+        nonce.nonce, m_password.c_str(), localInfo.passwordHash);
 
     if (!m_password.empty())
     {
@@ -1082,7 +1122,7 @@ CRtpSessionTcpclientEx::DoHandshake(PRO_INT64  sockId,
     if (m_sslConfig != NULL)
     {
         PRO_SSL_CTX* const sslCtx = ProSslCtx_Createc(
-            m_sslConfig, m_sslSni.c_str(), sockId, nonce);
+            m_sslConfig, m_sslSni.c_str(), sockId, &nonce);
         if (sslCtx != NULL)
         {
             m_sslHandshaker = ProCreateSslHandshaker(

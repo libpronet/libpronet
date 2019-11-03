@@ -79,10 +79,11 @@ CreateRtpSessionUdpserver(IRtpSessionObserver*    observer,
  * remotePort       : 远端的端口号
  * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
  * timeoutInSeconds : 握手超时. 默认20秒
+ * suspendRecv      : 是否挂起接收能力
  *
  * 返回值: 会话对象或NULL
  *
- * 说明: 无
+ * 说明: suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
 PRO_CALLTYPE
@@ -92,7 +93,8 @@ CreateRtpSessionTcpclient(IRtpSessionObserver*    observer,
                           const char*             remoteIp,
                           unsigned short          remotePort,
                           const char*             localIp          = NULL,
-                          unsigned long           timeoutInSeconds = 0);
+                          unsigned long           timeoutInSeconds = 0,
+                          bool                    suspendRecv      = false);
 
 /*
  * 功能: 创建一个RTP_ST_TCPSERVER类型的会话
@@ -104,10 +106,13 @@ CreateRtpSessionTcpclient(IRtpSessionObserver*    observer,
  * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
  * localPort        : 要绑定的本地端口号. 如果为0, 系统将随机分配一个
  * timeoutInSeconds : 握手超时. 默认20秒
+ * suspendRecv      : 是否挂起接收能力
  *
  * 返回值: 会话对象或NULL
  *
  * 说明: 可以使用IRtpSession::GetLocalPort(...)获取本地端口号
+ *
+ *       suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
 PRO_CALLTYPE
@@ -116,7 +121,8 @@ CreateRtpSessionTcpserver(IRtpSessionObserver*    observer,
                           const RTP_SESSION_INFO* localInfo,
                           const char*             localIp          = NULL,
                           unsigned short          localPort        = 0,
-                          unsigned long           timeoutInSeconds = 0);
+                          unsigned long           timeoutInSeconds = 0,
+                          bool                    suspendRecv      = false);
 
 /*
  * 功能: 创建一个RTP_ST_UDPCLIENT_EX类型的会话
@@ -180,10 +186,11 @@ CreateRtpSessionUdpserverEx(IRtpSessionObserver*    observer,
  * password         : 会话口令
  * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
  * timeoutInSeconds : 握手超时. 默认20秒
+ * suspendRecv      : 是否挂起接收能力
  *
  * 返回值: 会话对象或NULL
  *
- * 说明: 无
+ * 说明: suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
 PRO_CALLTYPE
@@ -194,21 +201,25 @@ CreateRtpSessionTcpclientEx(IRtpSessionObserver*    observer,
                             unsigned short          remotePort,
                             const char*             password         = NULL,
                             const char*             localIp          = NULL,
-                            unsigned long           timeoutInSeconds = 0);
+                            unsigned long           timeoutInSeconds = 0,
+                            bool                    suspendRecv      = false);
 
 /*
  * 功能: 创建一个RTP_ST_TCPSERVER_EX类型的会话
  *
  * 参数:
- * observer   : 回调目标
- * reactor    : 反应器
- * localInfo  : 会话信息. 根据IRtpServiceObserver::OnAcceptSession(...)的remoteInfo构造
- * sockId     : 套接字id. 来源于IRtpServiceObserver::OnAcceptSession(...)
- * unixSocket : 是否unix套接字
+ * observer    : 回调目标
+ * reactor     : 反应器
+ * localInfo   : 会话信息. 根据IRtpServiceObserver::OnAcceptSession(...)的remoteInfo构造
+ * sockId      : 套接字id. 来源于IRtpServiceObserver::OnAcceptSession(...)
+ * unixSocket  : 是否unix套接字
+ * useAckData  : 是否使用自定义的会话应答数据
+ * ackData     : 自定义的会话应答数据
+ * suspendRecv : 是否挂起接收能力
  *
  * 返回值: 会话对象或NULL
  *
- * 说明: 无
+ * 说明: suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
 PRO_CALLTYPE
@@ -216,7 +227,10 @@ CreateRtpSessionTcpserverEx(IRtpSessionObserver*    observer,
                             IProReactor*            reactor,
                             const RTP_SESSION_INFO* localInfo,
                             PRO_INT64               sockId,
-                            bool                    unixSocket);
+                            bool                    unixSocket,
+                            bool                    useAckData,
+                            char                    ackData[64],
+                            bool                    suspendRecv = false);
 
 /*
  * 功能: 创建一个RTP_ST_SSLCLIENT_EX类型的会话
@@ -232,10 +246,13 @@ CreateRtpSessionTcpserverEx(IRtpSessionObserver*    observer,
  * password         : 会话口令
  * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
  * timeoutInSeconds : 握手超时. 默认20秒
+ * suspendRecv      : 是否挂起接收能力
  *
  * 返回值: 会话对象或NULL
  *
  * 说明: sslConfig指定的对象必须在会话的生命周期内一直有效
+ *
+ *       suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
 PRO_CALLTYPE
@@ -248,23 +265,29 @@ CreateRtpSessionSslclientEx(IRtpSessionObserver*         observer,
                             unsigned short               remotePort,
                             const char*                  password         = NULL,
                             const char*                  localIp          = NULL,
-                            unsigned long                timeoutInSeconds = 0);
+                            unsigned long                timeoutInSeconds = 0,
+                            bool                         suspendRecv      = false);
 
 /*
  * 功能: 创建一个RTP_ST_SSLSERVER_EX类型的会话
  *
  * 参数:
- * observer   : 回调目标
- * reactor    : 反应器
- * localInfo  : 会话信息. 根据IRtpServiceObserver::OnAcceptSession(...)的remoteInfo构造
- * sslCtx     : ssl上下文
- * sockId     : 套接字id. 来源于IRtpServiceObserver::OnAcceptSession(...)
- * unixSocket : 是否unix套接字
+ * observer    : 回调目标
+ * reactor     : 反应器
+ * localInfo   : 会话信息. 根据IRtpServiceObserver::OnAcceptSession(...)的remoteInfo构造
+ * sslCtx      : ssl上下文
+ * sockId      : 套接字id. 来源于IRtpServiceObserver::OnAcceptSession(...)
+ * unixSocket  : 是否unix套接字
+ * useAckData  : 是否使用自定义的会话应答数据
+ * ackData     : 自定义的会话应答数据
+ * suspendRecv : 是否挂起接收能力
  *
  * 返回值: 会话对象或NULL
  *
  * 说明: 如果创建成功, 会话将成为(sslCtx, sockId)的属主; 否则, 调用者应该
  *       释放(sslCtx, sockId)对应的资源
+ *
+ *       suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
 PRO_CALLTYPE
@@ -273,7 +296,10 @@ CreateRtpSessionSslserverEx(IRtpSessionObserver*    observer,
                             const RTP_SESSION_INFO* localInfo,
                             PRO_SSL_CTX*            sslCtx,
                             PRO_INT64               sockId,
-                            bool                    unixSocket);
+                            bool                    unixSocket,
+                            bool                    useAckData,
+                            char                    ackData[64],
+                            bool                    suspendRecv = false);
 
 /*
  * 功能: 创建一个RTP_ST_MCAST类型的会话

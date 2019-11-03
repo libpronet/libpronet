@@ -36,15 +36,21 @@
  */
 
 /*
- * 1) client -----> rtp(RTP_SESSION_INFO with RTP_MSG_HEADER0) -----> server
- * 2) client <-----            rtp(RTP_SESSION_ACK)            <----- server
- * 3) client <-----            tcp4(RTP_MSG_HEADER0)           <----- server
- * 4) client <<====                  tcp4(msg)                 ====>> server
- *                Fig.2 msg system handshake protocol flow chart
+ * 1)  client ----->                 connect()                  -----> server
+ * 2)  client <-----                  accept()                  <----- server
+ * 3a) client <-----                 PRO_NONCE                  <----- server
+ * 3b) client ----->    serviceId + serviceOpt + (r) + (r+1)    -----> server
+ * 4]  client <<====              [ssl handshake]               ====>> server
+ *     client::passwordHash
+ * 5)  client -----> rtp(RTP_SESSION_INFO with RTP_MSG_HEADER0) -----> server
+ *                                                       passwordHash::server
+ * 6)  client <----- rtp(RTP_SESSION_ACK with RTP_MSG_HEADER0)  <----- server
+ * 7)  client <<====        tcp4(RTP_MSG_HEADER + data)         ====>> server
+ *                 Fig.2 msg system handshake protocol flow chart
  */
 
 /*
- * PMP-v1.0 (PRO Messaging Protocol version 1.0)
+ * PMP-v2.0 (PRO Messaging Protocol version 2.0)
  */
 
 #if !defined(____RTP_MSG_H____)
@@ -228,6 +234,32 @@ struct RTP_MSG_USER
     unsigned char userId4;
     unsigned char userId5;
     PRO_UINT16    instId;
+};
+
+/*
+ * 消息握手头
+ */
+struct RTP_MSG_HEADER0
+{
+    PRO_UINT16     version; /* the current protocol version is 02 */
+    RTP_MSG_USER   user;
+    union
+    {
+        char       reserved[22];
+        PRO_UINT32 publicIp;
+    };
+};
+
+/*
+ * 消息数据头
+ */
+struct RTP_MSG_HEADER
+{
+    PRO_UINT16     charset;      /* ANSI, UTF-8, ... */
+    RTP_MSG_USER   srcUser;
+    char           reserved[1];
+    unsigned char  dstUserCount; /* to 255 users at most */
+    RTP_MSG_USER   dstUsers[1];  /* a variable-length array */
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -508,7 +540,7 @@ public:
         const char*         userPublicIp, /* 用户的ip地址 */
         const RTP_MSG_USER* c2sUser,      /* 经由哪个c2s而来. 可以是NULL */
         const char          hash[32],     /* 用户发来的口令hash值 */
-        PRO_UINT64          nonce,        /* 会话随机数. 用于CheckRtpServiceData(...)校验口令hash值 */
+        const char          nonce[32],    /* 会话随机数. 用于CheckRtpServiceData(...)校验口令hash值 */
         PRO_UINT64*         userId,       /* 上层分配或许可的uid */
         PRO_UINT16*         instId,       /* 上层分配或许可的iid */
         PRO_INT64*          appData,      /* 上层设置的标识数据. 后续的OnOkUser(...)会带回来 */

@@ -16,14 +16,6 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-/*
- * 1) client -----> rtp(RTP_SESSION_INFO with RTP_MSG_HEADER0) -----> server
- * 2) client <-----            rtp(RTP_SESSION_ACK)            <----- server
- * 3) client <-----            tcp4(RTP_MSG_HEADER0)           <----- server
- * 4) client <<====                  tcp4(msg)                 ====>> server
- *                   msg system handshake protocol flow chart
- */
-
 #if !defined(RTP_MSG_SERVER_H)
 #define RTP_MSG_SERVER_H
 
@@ -39,34 +31,10 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define RTP_MSG_PROTOCOL_VERSION 1
+#define RTP_MSG_PROTOCOL_VERSION 2
 #define RTP_MSG_PACK_MODE        RTP_EPM_TCP4
 
 class CProFunctorCommandTask;
-
-struct RTP_MSG_HEADER0
-{
-    PRO_UINT16     version;      /* the current protocol version is 1 */
-    RTP_MSG_USER   user;
-    union
-    {
-        char       reserved[22];
-        PRO_UINT32 publicIp;
-    };
-
-    DECLARE_SGI_POOL(0);
-};
-
-struct RTP_MSG_HEADER
-{
-    PRO_UINT16     charset;      /* ANSI, UTF-8, ... */
-    RTP_MSG_USER   srcUser;
-    char           reserved[1];
-    unsigned char  dstUserCount; /* to 255 users at most */
-    RTP_MSG_USER   dstUsers[1];  /* a variable-length array */
-
-    DECLARE_SGI_POOL(0);
-};
 
 struct RTP_MSG_AsyncOnAcceptSession
 {
@@ -77,8 +45,9 @@ struct RTP_MSG_AsyncOnAcceptSession
         unixSocket = false;
         remoteIp   = "";
         remotePort = 0;
-        nonce      = 0;
+
         memset(&remoteInfo, 0, sizeof(RTP_SESSION_INFO));
+        memset(&nonce     , 0, sizeof(PRO_NONCE));
     }
 
     PRO_SSL_CTX*     sslCtx;
@@ -86,8 +55,8 @@ struct RTP_MSG_AsyncOnAcceptSession
     bool             unixSocket;
     CProStlString    remoteIp;
     unsigned short   remotePort;
-    PRO_UINT64       nonce;
     RTP_SESSION_INFO remoteInfo;
+    PRO_NONCE        nonce;
 
     DECLARE_SGI_POOL(0);
 };
@@ -221,7 +190,7 @@ private:
         const char*             remoteIp,
         unsigned short          remotePort,
         const RTP_SESSION_INFO* remoteInfo,
-        PRO_UINT64              nonce
+        const PRO_NONCE*        nonce
         );
 
     virtual void PRO_CALLTYPE OnAcceptSession(
@@ -232,7 +201,7 @@ private:
         const char*             remoteIp,
         unsigned short          remotePort,
         const RTP_SESSION_INFO* remoteInfo,
-        PRO_UINT64              nonce
+        const PRO_NONCE*        nonce
         );
 
     virtual void PRO_CALLTYPE OnOkSession(IRtpSession* session)
@@ -276,13 +245,6 @@ private:
         PRO_INT64            appData
         );
 
-    static bool SendAckToDownlink(
-        RTP_MM_TYPE         mmType,
-        IRtpSession*        session,
-        const RTP_MSG_USER* user,
-        const char*         publicIp
-        );
-
     static bool SendMsgToDownlink(
         RTP_MM_TYPE         mmType,
         IRtpSession**       sessions,
@@ -292,7 +254,7 @@ private:
         const void*         buf2,        /* = NULL */
         unsigned long       size2,       /* = 0 */
         PRO_UINT16          charset,
-        const RTP_MSG_USER* srcUser,
+        const RTP_MSG_USER& srcUser,
         const RTP_MSG_USER* dstUsers,    /* = NULL */
         unsigned char       dstUserCount /* = 0 */
         );

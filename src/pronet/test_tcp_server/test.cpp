@@ -195,12 +195,12 @@ EXIT:
 void
 CTest::Fini()
 {
-    PRO_SSL_SERVER_CONFIG*                     sslConfig = NULL;
-    IProAcceptor*                              acceptor  = NULL;
-    IProServiceHost*                           service   = NULL;
-    CProStlMap<IProTcpHandshaker*, PRO_UINT64> tcpHandshaker2Nonce;
-    CProStlMap<IProSslHandshaker*, PRO_UINT64> sslHandshaker2Nonce;
-    CProStlSet<IProTransport*>                 transports;
+    PRO_SSL_SERVER_CONFIG*                    sslConfig = NULL;
+    IProAcceptor*                             acceptor  = NULL;
+    IProServiceHost*                          service   = NULL;
+    CProStlMap<IProTcpHandshaker*, PRO_NONCE> tcpHandshaker2Nonce;
+    CProStlMap<IProSslHandshaker*, PRO_NONCE> sslHandshaker2Nonce;
+    CProStlSet<IProTransport*>                transports;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -236,8 +236,8 @@ CTest::Fini()
     }
 
     {
-        CProStlMap<IProSslHandshaker*, PRO_UINT64>::const_iterator       itr = sslHandshaker2Nonce.begin();
-        CProStlMap<IProSslHandshaker*, PRO_UINT64>::const_iterator const end = sslHandshaker2Nonce.end();
+        CProStlMap<IProSslHandshaker*, PRO_NONCE>::const_iterator       itr = sslHandshaker2Nonce.begin();
+        CProStlMap<IProSslHandshaker*, PRO_NONCE>::const_iterator const end = sslHandshaker2Nonce.end();
 
         for (; itr != end; ++itr)
         {
@@ -246,8 +246,8 @@ CTest::Fini()
     }
 
     {
-        CProStlMap<IProTcpHandshaker*, PRO_UINT64>::const_iterator       itr = tcpHandshaker2Nonce.begin();
-        CProStlMap<IProTcpHandshaker*, PRO_UINT64>::const_iterator const end = tcpHandshaker2Nonce.end();
+        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::const_iterator       itr = tcpHandshaker2Nonce.begin();
+        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::const_iterator const end = tcpHandshaker2Nonce.end();
 
         for (; itr != end; ++itr)
         {
@@ -328,27 +328,20 @@ CTest::GetTransportCount() const
 
 void
 PRO_CALLTYPE
-CTest::OnAccept(IProAcceptor*  acceptor,
-                PRO_INT64      sockId,
-                bool           unixSocket,
-                const char*    remoteIp,
-                unsigned short remotePort,
-                unsigned char  serviceId,
-                unsigned char  serviceOpt,
-                PRO_UINT64     nonce)
+CTest::OnAccept(IProAcceptor*    acceptor,
+                PRO_INT64        sockId,
+                bool             unixSocket,
+                const char*      remoteIp,
+                unsigned short   remotePort,
+                unsigned char    serviceId,
+                unsigned char    serviceOpt,
+                const PRO_NONCE* nonce)
 {
     assert(acceptor != NULL);
     assert(sockId != -1);
-    assert(remoteIp != NULL);
-    if (acceptor == NULL || sockId == -1 || remoteIp == NULL)
+    assert(nonce != NULL);
+    if (acceptor == NULL || sockId == -1 || nonce == NULL)
     {
-        return;
-    }
-
-    if (serviceId == 0)
-    {
-        ProCloseSockId(sockId);
-
         return;
     }
 
@@ -389,7 +382,7 @@ CTest::OnAccept(IProAcceptor*  acceptor,
                 return;
             }
 
-            m_tcpHandshaker2Nonce[handshaker] = nonce;
+            m_tcpHandshaker2Nonce[handshaker] = *nonce;
         }
         else
         {
@@ -429,7 +422,7 @@ CTest::OnAccept(IProAcceptor*  acceptor,
                 return;
             }
 
-            m_sslHandshaker2Nonce[handshaker] = nonce;
+            m_sslHandshaker2Nonce[handshaker] = *nonce;
         }
     }
 }
@@ -443,14 +436,12 @@ CTest::OnServiceAccept(IProServiceHost* serviceHost,
                        unsigned short   remotePort,
                        unsigned char    serviceId,
                        unsigned char    serviceOpt,
-                       PRO_UINT64       nonce)
+                       const PRO_NONCE* nonce)
 {
     assert(serviceHost != NULL);
     assert(sockId != -1);
-    assert(remoteIp != NULL);
-    assert(serviceId > 0);
-    if (serviceHost == NULL || sockId == -1 || remoteIp == NULL ||
-        serviceId == 0)
+    assert(nonce != NULL);
+    if (serviceHost == NULL || sockId == -1 || nonce == NULL)
     {
         return;
     }
@@ -492,7 +483,7 @@ CTest::OnServiceAccept(IProServiceHost* serviceHost,
                 return;
             }
 
-            m_tcpHandshaker2Nonce[handshaker] = nonce;
+            m_tcpHandshaker2Nonce[handshaker] = *nonce;
         }
         else
         {
@@ -532,7 +523,7 @@ CTest::OnServiceAccept(IProServiceHost* serviceHost,
                 return;
             }
 
-            m_sslHandshaker2Nonce[handshaker] = nonce;
+            m_sslHandshaker2Nonce[handshaker] = *nonce;
         }
     }
 }
@@ -562,7 +553,7 @@ CTest::OnHandshakeOk(IProTcpHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProTcpHandshaker*, PRO_UINT64>::iterator const itr =
+        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator const itr =
             m_tcpHandshaker2Nonce.find(handshaker);
         if (itr == m_tcpHandshaker2Nonce.end())
         {
@@ -616,7 +607,7 @@ CTest::OnHandshakeError(IProTcpHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProTcpHandshaker*, PRO_UINT64>::iterator const itr =
+        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator const itr =
             m_tcpHandshaker2Nonce.find(handshaker);
         if (itr == m_tcpHandshaker2Nonce.end())
         {
@@ -657,7 +648,7 @@ CTest::OnHandshakeOk(IProSslHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProSslHandshaker*, PRO_UINT64>::iterator const itr =
+        CProStlMap<IProSslHandshaker*, PRO_NONCE>::iterator const itr =
             m_sslHandshaker2Nonce.find(handshaker);
         if (itr == m_sslHandshaker2Nonce.end())
         {
@@ -716,7 +707,7 @@ CTest::OnHandshakeError(IProSslHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProSslHandshaker*, PRO_UINT64>::iterator const itr =
+        CProStlMap<IProSslHandshaker*, PRO_NONCE>::iterator const itr =
             m_sslHandshaker2Nonce.find(handshaker);
         if (itr == m_sslHandshaker2Nonce.end())
         {

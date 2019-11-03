@@ -60,14 +60,14 @@ private:
     virtual ~CProServiceHub();
 
     virtual void PRO_CALLTYPE OnAccept(
-        IProAcceptor*  acceptor,
-        PRO_INT64      sockId,
-        bool           unixSocket,
-        const char*    remoteIp,
-        unsigned short remotePort,
-        unsigned char  serviceId,
-        unsigned char  serviceOpt,
-        PRO_UINT64     nonce
+        IProAcceptor*    acceptor,
+        PRO_INT64        sockId,
+        bool             unixSocket,
+        const char*      remoteIp,
+        unsigned short   remotePort,
+        unsigned char    serviceId,
+        unsigned char    serviceOpt,
+        const PRO_NONCE* nonce
         );
 
     virtual void PRO_CALLTYPE OnRecv(
@@ -98,11 +98,11 @@ private:
         );
 
     void OnAcceptOther(
-        PRO_INT64     sockId,
-        bool          unixSocket,
-        unsigned char serviceId,
-        unsigned char serviceOpt,
-        PRO_UINT64    nonce
+        PRO_INT64        sockId,
+        bool             unixSocket,
+        unsigned char    serviceId,
+        unsigned char    serviceOpt,
+        const PRO_NONCE& nonce
         );
 
 private:

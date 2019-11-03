@@ -23,8 +23,77 @@
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_shaper.h"
+#include "../pro_util/pro_stat.h"
 #include "../pro_util/pro_thread_mutex.h"
+#include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_timer_factory.h"
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
+/*
+ * [[[[ modes
+ */
+typedef unsigned char TEST_MODE;
+
+static const TEST_MODE TM_UDPE = 1;
+static const TEST_MODE TM_TCPE = 2;
+static const TEST_MODE TM_UDPS = 3;
+static const TEST_MODE TM_TCPS = 4;
+static const TEST_MODE TM_UDPC = 5;
+static const TEST_MODE TM_TCPC = 6;
+/*
+ * ]]]]
+ */
+
+struct TEST_SERVER
+{
+    char           local_ip[64];
+    unsigned short local_port;
+    double         kbps;
+
+    DECLARE_SGI_POOL(0);
+};
+
+struct TEST_CLIENT
+{
+    char           remote_ip[64];
+    unsigned short remote_port;
+    double         kbps;
+    char           local_ip[64];
+
+    DECLARE_SGI_POOL(0);
+};
+
+union TEST_PARAMS
+{
+    TEST_SERVER server;
+    TEST_CLIENT client;
+
+    DECLARE_SGI_POOL(0);
+};
+
+struct TEST_PACKET_HDR
+{
+    TEST_PACKET_HDR()
+    {
+        version   = 1;
+        ack       = false;
+        reserved1 = 0;
+        reserved2 = 0;
+        srcSeq    = 0;
+        srcTick   = ProGetTickCount64();
+    }
+
+    PRO_UINT16 version;
+    bool       ack;
+    char       reserved1;
+    PRO_UINT16 reserved2;
+    PRO_UINT16 srcSeq;
+    PRO_INT64  srcTick;
+
+    DECLARE_SGI_POOL(0);
+};
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -37,15 +106,16 @@ public CProRefCount
 {
 public:
 
-    static CTest* CreateInstance();
+    static CTest* CreateInstance(TEST_MODE mode);
 
     bool Init(
-        IProReactor*   reactor,
-        const char*    remoteIp,
-        unsigned short remotePort,
-        const char*    localIp,
-        unsigned short localPort,
-        unsigned long  bitRate
+        IProReactor*       reactor,
+        const TEST_SERVER& param
+        );
+
+    bool Init(
+        IProReactor*       reactor,
+        const TEST_CLIENT& param
         );
 
     void Fini();
@@ -56,7 +126,7 @@ public:
 
 private:
 
-    CTest();
+    CTest(TEST_MODE mode);
 
     virtual ~CTest();
 
@@ -65,9 +135,7 @@ private:
     virtual void PRO_CALLTYPE OnRecvSession(
         IRtpSession* session,
         IRtpPacket*  packet
-        )
-    {
-    }
+        );
 
     virtual void PRO_CALLTYPE OnSendSession(
         IRtpSession* session,
@@ -81,28 +149,75 @@ private:
         long         errorCode,
         long         sslCode,
         bool         tcpConnected
-        )
-    {
-    }
+        );
 
     virtual void PRO_CALLTYPE OnTimer(
         unsigned long timerId,
         PRO_INT64     userData
         );
 
+    IRtpSession* CreateUdpServer(
+        IProReactor*   reactor,
+        const char*    localIp,
+        unsigned short localPort,
+        bool           printReady
+        );
+
+    IRtpSession* CreateTcpServer(
+        IProReactor*   reactor,
+        const char*    localIp,
+        unsigned short localPort,
+        bool           printReady
+        );
+
+    IRtpSession* CreateUdpClient(
+        IProReactor*   reactor,
+        const char*    remoteIp,
+        unsigned short remotePort,
+        const char*    localIp,
+        bool           printReady
+        );
+
+    IRtpSession* CreateTcpClient(
+        IProReactor*   reactor,
+        const char*    remoteIp,
+        unsigned short remotePort,
+        const char*    localIp,
+        bool           printReady
+        );
+
+    void PrintSessionReady(
+        IRtpSession* session,
+        bool         udp
+        );
+
+    void PrintSessionBroken(
+        IRtpSession* session,
+        bool         udp
+        );
+
 private:
 
-    IProReactor*    m_reactor;
-    IRtpSession*    m_session;
-    unsigned long   m_sendTimerId;
-    unsigned long   m_recvTimerId;
+    const TEST_MODE  m_mode;
+    TEST_PARAMS      m_params;
+    IProReactor*     m_reactor;
+    IRtpSession*     m_udpSession;
+    IRtpSession*     m_tcpSession;
+    unsigned long    m_sendTimerId;
+    unsigned long    m_recvTimerId;
+    unsigned long    m_htbtTimerId;
 
-    PRO_UINT16      m_outputSeq;
-    PRO_INT64       m_outputTs64;
-    PRO_UINT32      m_outputSsrc;
-    CProShaper      m_outputShaper;
+    PRO_UINT16       m_outputSeq;
+    PRO_INT64        m_outputTs64;
+    PRO_UINT32       m_outputSsrc;
+    unsigned long    m_outputPacketCount;
+    unsigned long    m_outputFrameIndex;
+    CProShaper       m_outputShaper;
+    bool             m_echoClient;
+    CProStatLossRate m_statRttLossRate;
+    CProStatAvgValue m_statRttDelay;
 
-    CProThreadMutex m_lock;
+    CProThreadMutex  m_lock;
 
     DECLARE_SGI_POOL(0);
 };

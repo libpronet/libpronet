@@ -51,6 +51,7 @@ CRtpSessionUdpclientEx::CreateInstance(const RTP_SESSION_INFO* localInfo)
 }
 
 CRtpSessionUdpclientEx::CRtpSessionUdpclientEx(const RTP_SESSION_INFO& localInfo)
+: CRtpSessionBase(false)
 {
     m_info               = localInfo;
     m_info.localVersion  = 0;

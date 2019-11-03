@@ -38,30 +38,32 @@ struct C2S_SERVER_CONFIG_INFO
 {
     C2S_SERVER_CONFIG_INFO()
     {
-        c2ss_thread_count         = 20;
-        c2ss_mm_type              = RTP_MMT_MSG;
-        c2ss_uplink_ip            = "127.0.0.1";
-        c2ss_uplink_port          = 3000;
-        c2ss_uplink_password      = "test";
-        c2ss_uplink_local_ip      = "0.0.0.0";
-        c2ss_uplink_timeout       = 20;
-        c2ss_uplink_redline_bytes = 8192000;
-        c2ss_local_hub_port       = 4000;
-        c2ss_local_timeout        = 20;
-        c2ss_local_redline_bytes  = 1024000;
+        c2ss_thread_count               = 20;
+        c2ss_mm_type                    = RTP_MMT_MSG;
+        c2ss_uplink_ip                  = "127.0.0.1";
+        c2ss_uplink_port                = 3000;
+        c2ss_uplink_password            = "test";
+        c2ss_uplink_local_ip            = "0.0.0.0";
+        c2ss_uplink_timeout             = 20;
+        c2ss_uplink_redline_bytes       = 8192000;
+        c2ss_local_hub_port             = 4000;
+        c2ss_local_timeout              = 20;
+        c2ss_local_redline_bytes        = 1024000;
 
-        c2ss_enable_ssl           = true;
-        c2ss_ssl_enable_sha1cert  = true;
-        c2ss_ssl_uplink_sni       = "server.libpro.org";
-        c2ss_ssl_uplink_aes256    = false;
-        c2ss_ssl_local_forced     = false;
-        c2ss_ssl_local_keyfile    = "./server.key";
+        c2ss_ssl_uplink                 = false;
+        c2ss_ssl_local                  = true;
+        c2ss_ssl_local_forced           = false;
+        c2ss_ssl_uplink_enable_sha1cert = true;
+        c2ss_ssl_uplink_sni             = "server.libpro.org";
+        c2ss_ssl_uplink_aes256          = false;
+        c2ss_ssl_local_enable_sha1cert  = true;
+        c2ss_ssl_local_keyfile          = "./server.key";
 
-        c2ss_log_loop_bytes       = 20 * 1000 * 1000;
-        c2ss_log_level_green      = 0;
-        c2ss_log_level_status     = 0;
-        c2ss_log_level_userin     = 0;
-        c2ss_log_level_userout    = 0;
+        c2ss_log_loop_bytes             = 20 * 1000 * 1000;
+        c2ss_log_level_green            = 0;
+        c2ss_log_level_status           = 0;
+        c2ss_log_level_userin           = 0;
+        c2ss_log_level_userout          = 0;
 
         RtpMsgString2User("1-10000001-1", &c2ss_uplink_id);
 
@@ -94,36 +96,38 @@ struct C2S_SERVER_CONFIG_INFO
 
         CProConfigStream configStream;
 
-        configStream.AddUint("c2ss_thread_count"        , c2ss_thread_count);
-        configStream.AddUint("c2ss_mm_type"             , c2ss_mm_type);
-        configStream.Add    ("c2ss_uplink_ip"           , c2ss_uplink_ip);
-        configStream.AddUint("c2ss_uplink_port"         , c2ss_uplink_port);
-        configStream.Add    ("c2ss_uplink_id"           , idString);
-        configStream.Add    ("c2ss_uplink_password"     , c2ss_uplink_password);
-        configStream.Add    ("c2ss_uplink_local_ip"     , c2ss_uplink_local_ip);
-        configStream.AddUint("c2ss_uplink_timeout"      , c2ss_uplink_timeout);
-        configStream.AddUint("c2ss_uplink_redline_bytes", c2ss_uplink_redline_bytes);
-        configStream.AddUint("c2ss_local_hub_port"      , c2ss_local_hub_port);
-        configStream.AddUint("c2ss_local_timeout"       , c2ss_local_timeout);
-        configStream.AddUint("c2ss_local_redline_bytes" , c2ss_local_redline_bytes);
+        configStream.AddUint("c2ss_thread_count"              , c2ss_thread_count);
+        configStream.AddUint("c2ss_mm_type"                   , c2ss_mm_type);
+        configStream.Add    ("c2ss_uplink_ip"                 , c2ss_uplink_ip);
+        configStream.AddUint("c2ss_uplink_port"               , c2ss_uplink_port);
+        configStream.Add    ("c2ss_uplink_id"                 , idString);
+        configStream.Add    ("c2ss_uplink_password"           , c2ss_uplink_password);
+        configStream.Add    ("c2ss_uplink_local_ip"           , c2ss_uplink_local_ip);
+        configStream.AddUint("c2ss_uplink_timeout"            , c2ss_uplink_timeout);
+        configStream.AddUint("c2ss_uplink_redline_bytes"      , c2ss_uplink_redline_bytes);
+        configStream.AddUint("c2ss_local_hub_port"            , c2ss_local_hub_port);
+        configStream.AddUint("c2ss_local_timeout"             , c2ss_local_timeout);
+        configStream.AddUint("c2ss_local_redline_bytes"       , c2ss_local_redline_bytes);
 
-        configStream.AddInt ("c2ss_enable_ssl"          , c2ss_enable_ssl);
-        configStream.AddInt ("c2ss_ssl_enable_sha1cert" , c2ss_ssl_enable_sha1cert);
-        configStream.Add    ("c2ss_ssl_uplink_cafile"   , c2ss_ssl_uplink_cafiles);
-        configStream.Add    ("c2ss_ssl_uplink_crlfile"  , c2ss_ssl_uplink_crlfiles);
-        configStream.Add    ("c2ss_ssl_uplink_sni"      , c2ss_ssl_uplink_sni);
-        configStream.AddInt ("c2ss_ssl_uplink_aes256"   , c2ss_ssl_uplink_aes256);
-        configStream.AddInt ("c2ss_ssl_local_forced"    , c2ss_ssl_local_forced);
-        configStream.Add    ("c2ss_ssl_local_cafile"    , c2ss_ssl_local_cafiles);
-        configStream.Add    ("c2ss_ssl_local_crlfile"   , c2ss_ssl_local_crlfiles);
-        configStream.Add    ("c2ss_ssl_local_certfile"  , c2ss_ssl_local_certfiles);
-        configStream.Add    ("c2ss_ssl_local_keyfile"   , c2ss_ssl_local_keyfile);
+        configStream.AddInt ("c2ss_ssl_uplink"                , c2ss_ssl_uplink);
+        configStream.AddInt ("c2ss_ssl_local"                 , c2ss_ssl_local);
+        configStream.AddInt ("c2ss_ssl_local_forced"          , c2ss_ssl_local_forced);
+        configStream.AddInt ("c2ss_ssl_uplink_enable_sha1cert", c2ss_ssl_uplink_enable_sha1cert);
+        configStream.Add    ("c2ss_ssl_uplink_cafile"         , c2ss_ssl_uplink_cafiles);
+        configStream.Add    ("c2ss_ssl_uplink_crlfile"        , c2ss_ssl_uplink_crlfiles);
+        configStream.Add    ("c2ss_ssl_uplink_sni"            , c2ss_ssl_uplink_sni);
+        configStream.AddInt ("c2ss_ssl_uplink_aes256"         , c2ss_ssl_uplink_aes256);
+        configStream.AddInt ("c2ss_ssl_local_enable_sha1cert" , c2ss_ssl_local_enable_sha1cert);
+        configStream.Add    ("c2ss_ssl_local_cafile"          , c2ss_ssl_local_cafiles);
+        configStream.Add    ("c2ss_ssl_local_crlfile"         , c2ss_ssl_local_crlfiles);
+        configStream.Add    ("c2ss_ssl_local_certfile"        , c2ss_ssl_local_certfiles);
+        configStream.Add    ("c2ss_ssl_local_keyfile"         , c2ss_ssl_local_keyfile);
 
-        configStream.AddUint("c2ss_log_loop_bytes"      , c2ss_log_loop_bytes);
-        configStream.AddInt ("c2ss_log_level_green"     , c2ss_log_level_green);
-        configStream.AddInt ("c2ss_log_level_status"    , c2ss_log_level_status);
-        configStream.AddInt ("c2ss_log_level_userin"    , c2ss_log_level_userin);
-        configStream.AddInt ("c2ss_log_level_userout"   , c2ss_log_level_userout);
+        configStream.AddUint("c2ss_log_loop_bytes"            , c2ss_log_loop_bytes);
+        configStream.AddInt ("c2ss_log_level_green"           , c2ss_log_level_green);
+        configStream.AddInt ("c2ss_log_level_status"          , c2ss_log_level_status);
+        configStream.AddInt ("c2ss_log_level_userin"          , c2ss_log_level_userin);
+        configStream.AddInt ("c2ss_log_level_userout"         , c2ss_log_level_userout);
 
         configStream.Get(configs);
     }
@@ -141,13 +145,15 @@ struct C2S_SERVER_CONFIG_INFO
     unsigned int                 c2ss_local_timeout;
     unsigned int                 c2ss_local_redline_bytes;
 
-    bool                         c2ss_enable_ssl;
-    bool                         c2ss_ssl_enable_sha1cert;
+    bool                         c2ss_ssl_uplink;
+    bool                         c2ss_ssl_local;
+    bool                         c2ss_ssl_local_forced;
+    bool                         c2ss_ssl_uplink_enable_sha1cert;
     CProStlVector<CProStlString> c2ss_ssl_uplink_cafiles;
     CProStlVector<CProStlString> c2ss_ssl_uplink_crlfiles;
     CProStlString                c2ss_ssl_uplink_sni;
     bool                         c2ss_ssl_uplink_aes256;
-    bool                         c2ss_ssl_local_forced;
+    bool                         c2ss_ssl_local_enable_sha1cert;
     CProStlVector<CProStlString> c2ss_ssl_local_cafiles;
     CProStlVector<CProStlString> c2ss_ssl_local_crlfiles;
     CProStlVector<CProStlString> c2ss_ssl_local_certfiles;

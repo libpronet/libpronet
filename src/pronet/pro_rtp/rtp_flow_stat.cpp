@@ -29,10 +29,10 @@ CRtpFlowStat::CRtpFlowStat()
 {
     m_timeSpan     = 1;
     m_startTick    = 0;
-    m_inFrames     = 0;
-    m_inFrameRate  = 0;
-    m_inBits       = 0;
-    m_inBitRate    = 0;
+    m_srcFrames    = 0;
+    m_srcFrameRate = 0;
+    m_srcBits      = 0;
+    m_srcBitRate   = 0;
     m_outFrames    = 0;
     m_outFrameRate = 0;
     m_outBits      = 0;
@@ -60,8 +60,8 @@ CRtpFlowStat::PushData(unsigned long frames,
         m_startTick = ProGetTickCount64();
     }
 
-    m_inFrames += frames;
-    m_inBits   += (double)bytes * 8;
+    m_srcFrames += frames;
+    m_srcBits   += (double)bytes * 8;
 
     Update();
 }
@@ -82,20 +82,20 @@ CRtpFlowStat::PopData(unsigned long frames,
 }
 
 void
-CRtpFlowStat::CalcInfo(float* inFrameRate,  /* = NULL */
-                       float* inBitRate,    /* = NULL */
+CRtpFlowStat::CalcInfo(float* srcFrameRate, /* = NULL */
+                       float* srcBitRate,   /* = NULL */
                        float* outFrameRate, /* = NULL */
                        float* outBitRate)   /* = NULL */
 {
     Update();
 
-    if (inFrameRate != NULL)
+    if (srcFrameRate != NULL)
     {
-        *inFrameRate  = (float)m_inFrameRate;
+        *srcFrameRate = (float)m_srcFrameRate;
     }
-    if (inBitRate != NULL)
+    if (srcBitRate != NULL)
     {
-        *inBitRate    = (float)m_inBitRate;
+        *srcBitRate   = (float)m_srcBitRate;
     }
     if (outFrameRate != NULL)
     {
@@ -119,14 +119,14 @@ CRtpFlowStat::Update()
 
     if (tick - m_startTick >= m_timeSpan * 1000)
     {
-        m_inFrameRate  = m_inFrames  * 1000 / (tick - m_startTick);
-        m_inBitRate    = m_inBits    * 1000 / (tick - m_startTick);
+        m_srcFrameRate = m_srcFrames * 1000 / (tick - m_startTick);
+        m_srcBitRate   = m_srcBits   * 1000 / (tick - m_startTick);
         m_outFrameRate = m_outFrames * 1000 / (tick - m_startTick);
         m_outBitRate   = m_outBits   * 1000 / (tick - m_startTick);
 
         m_startTick = tick;
-        m_inFrames  = 0;
-        m_inBits    = 0;
+        m_srcFrames = 0;
+        m_srcBits   = 0;
         m_outFrames = 0;
         m_outBits   = 0;
     }
@@ -136,10 +136,10 @@ void
 CRtpFlowStat::Reset()
 {
     m_startTick    = 0;
-    m_inFrames     = 0;
-    m_inFrameRate  = 0;
-    m_inBits       = 0;
-    m_inBitRate    = 0;
+    m_srcFrames    = 0;
+    m_srcFrameRate = 0;
+    m_srcBits      = 0;
+    m_srcBitRate   = 0;
     m_outFrames    = 0;
     m_outFrameRate = 0;
     m_outBits      = 0;

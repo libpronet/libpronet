@@ -118,7 +118,6 @@ CProConnector::Init(IProConnectorObserver* observer,
     pbsd_sockaddr_in localAddr;
     memset(&localAddr, 0, sizeof(pbsd_sockaddr_in));
     localAddr.sin_family      = AF_INET;
-    localAddr.sin_port        = 0;
     localAddr.sin_addr.s_addr = pbsd_inet_aton(localBindIp);
 
     pbsd_sockaddr_in remoteAddr;
@@ -256,10 +255,10 @@ CProConnector::OnOutput(PRO_INT64 sockId)
         if (m_enableServiceExt)
         {
             unsigned char serviceData[SERVICE_HANDSHAKE_BYTES];
-            serviceData[0] = m_serviceId;                              /* serviceId */
-            serviceData[1] = m_serviceOpt;                             /* serviceOpt */
-            serviceData[2] = (unsigned char)(ProRand_0_1() * 254 + 1); /* r */
-            serviceData[3] = (unsigned char)(serviceData[2] + 1);      /* r + 1 */
+            serviceData[0] = m_serviceId;                          /* serviceId */
+            serviceData[1] = m_serviceOpt;                         /* serviceOpt */
+            serviceData[2] = (unsigned char)(ProRand_0_1() * 255); /* r */
+            serviceData[3] = (unsigned char)(serviceData[2] + 1);  /* r + 1 */
 
             assert(m_handshaker == NULL);
 
@@ -270,8 +269,8 @@ CProConnector::OnOutput(PRO_INT64 sockId)
                 m_unixSocket,
                 serviceData,             /* sendData */
                 SERVICE_HANDSHAKE_BYTES, /* sendDataSize */
-                sizeof(PRO_UINT64),      /* recvDataSize = nonce */
-                true,                    /* recvFirst */
+                sizeof(PRO_NONCE),       /* recvDataSize */
+                false,                   /* recvFirst is false */
                 m_timeoutInSeconds
                 );
             if (m_handshaker == NULL)
@@ -313,7 +312,7 @@ EXIT:
             pbsd_ntoh16(m_remoteAddr.sin_port),
             m_serviceId,
             m_serviceOpt,
-            0     /* nonce */
+            NULL  /* nonce */
             );
     }
     else
@@ -426,8 +425,8 @@ CProConnector::OnHandshakeOk(IProTcpHandshaker* handshaker,
         }
 
         assert(buf != NULL);
-        assert(size == sizeof(PRO_UINT64));
-        if (buf == NULL || size != sizeof(PRO_UINT64))
+        assert(size == sizeof(PRO_NONCE));
+        if (buf == NULL || size != sizeof(PRO_NONCE))
         {
             ProCloseSockId(sockId);
             sockId = -1;
@@ -449,9 +448,8 @@ CProConnector::OnHandshakeOk(IProTcpHandshaker* handshaker,
 
     if (sockId != -1)
     {
-        PRO_UINT64 nonce = 0;
+        PRO_NONCE nonce;
         memcpy(&nonce, buf, size);
-        nonce = pbsd_ntoh64(nonce);
 
         observer->OnConnectOk(
             (IProConnector*)this,
@@ -461,7 +459,7 @@ CProConnector::OnHandshakeOk(IProTcpHandshaker* handshaker,
             pbsd_ntoh16(m_remoteAddr.sin_port),
             m_serviceId,
             m_serviceOpt,
-            nonce
+            &nonce
             );
     }
     else

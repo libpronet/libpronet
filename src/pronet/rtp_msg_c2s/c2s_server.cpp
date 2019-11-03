@@ -85,7 +85,7 @@ CC2sServer::Init(IProReactor*                  reactor,
             return (false);
         }
 
-        if (configInfo.c2ss_enable_ssl)
+        if (configInfo.c2ss_ssl_uplink)
         {
             CProStlVector<const char*>      caFiles;
             CProStlVector<const char*>      crlFiles;
@@ -137,7 +137,9 @@ CC2sServer::Init(IProReactor*                  reactor,
                 }
 
                 ProSslClientConfig_EnableSha1Cert(
-                    uplinkSslConfig, configInfo.c2ss_ssl_enable_sha1cert);
+                    uplinkSslConfig,
+                    configInfo.c2ss_ssl_uplink_enable_sha1cert
+                    );
 
                 if (!ProSslClientConfig_SetCaList(
                     uplinkSslConfig,
@@ -161,7 +163,7 @@ CC2sServer::Init(IProReactor*                  reactor,
             }
         }
 
-        if (configInfo.c2ss_enable_ssl)
+        if (configInfo.c2ss_ssl_local)
         {
             CProStlVector<const char*> caFiles;
             CProStlVector<const char*> crlFiles;
@@ -212,7 +214,9 @@ CC2sServer::Init(IProReactor*                  reactor,
                 }
 
                 ProSslServerConfig_EnableSha1Cert(
-                    localSslConfig, configInfo.c2ss_ssl_enable_sha1cert);
+                    localSslConfig,
+                    configInfo.c2ss_ssl_local_enable_sha1cert
+                    );
 
                 if (!ProSslServerConfig_SetCaList(
                     localSslConfig,

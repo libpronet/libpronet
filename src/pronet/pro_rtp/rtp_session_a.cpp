@@ -93,10 +93,11 @@ CreateRtpSessionTcpclient(IRtpSessionObserver*    observer,
                           const char*             remoteIp,
                           unsigned short          remotePort,
                           const char*             localIp,          /* = NULL */
-                          unsigned long           timeoutInSeconds) /* = 0 */
+                          unsigned long           timeoutInSeconds, /* = 0 */
+                          bool                    suspendRecv)      /* = false */
 {
     CRtpSessionTcpclient* const session =
-        CRtpSessionTcpclient::CreateInstance(localInfo);
+        CRtpSessionTcpclient::CreateInstance(localInfo, suspendRecv);
     if (session == NULL)
     {
         return (NULL);
@@ -120,10 +121,11 @@ CreateRtpSessionTcpserver(IRtpSessionObserver*    observer,
                           const RTP_SESSION_INFO* localInfo,
                           const char*             localIp,          /* = NULL */
                           unsigned short          localPort,        /* = 0 */
-                          unsigned long           timeoutInSeconds) /* = 0 */
+                          unsigned long           timeoutInSeconds, /* = 0 */
+                          bool                    suspendRecv)      /* = false */
 {
     CRtpSessionTcpserver* const session =
-        CRtpSessionTcpserver::CreateInstance(localInfo);
+        CRtpSessionTcpserver::CreateInstance(localInfo, suspendRecv);
     if (session == NULL)
     {
         return (NULL);
@@ -204,10 +206,11 @@ CreateRtpSessionTcpclientEx(IRtpSessionObserver*    observer,
                             unsigned short          remotePort,
                             const char*             password,         /* = NULL */
                             const char*             localIp,          /* = NULL */
-                            unsigned long           timeoutInSeconds) /* = 0 */
+                            unsigned long           timeoutInSeconds, /* = 0 */
+                            bool                    suspendRecv)      /* = false */
 {
     CRtpSessionTcpclientEx* const session =
-        CRtpSessionTcpclientEx::CreateInstance(localInfo);
+        CRtpSessionTcpclientEx::CreateInstance(localInfo, suspendRecv);
     if (session == NULL)
     {
         return (NULL);
@@ -230,16 +233,20 @@ CreateRtpSessionTcpserverEx(IRtpSessionObserver*    observer,
                             IProReactor*            reactor,
                             const RTP_SESSION_INFO* localInfo,
                             PRO_INT64               sockId,
-                            bool                    unixSocket)
+                            bool                    unixSocket,
+                            bool                    useAckData,
+                            char                    ackData[64],
+                            bool                    suspendRecv) /* = false */
 {
     CRtpSessionTcpserverEx* const session =
-        CRtpSessionTcpserverEx::CreateInstance(localInfo);
+        CRtpSessionTcpserverEx::CreateInstance(localInfo, suspendRecv);
     if (session == NULL)
     {
         return (NULL);
     }
 
-    if (!session->Init(observer, reactor, sockId, unixSocket))
+    if (!session->Init(
+        observer, reactor, sockId, unixSocket, useAckData, ackData))
     {
         session->Release();
 
@@ -260,10 +267,12 @@ CreateRtpSessionSslclientEx(IRtpSessionObserver*         observer,
                             unsigned short               remotePort,
                             const char*                  password,         /* = NULL */
                             const char*                  localIp,          /* = NULL */
-                            unsigned long                timeoutInSeconds) /* = 0 */
+                            unsigned long                timeoutInSeconds, /* = 0 */
+                            bool                         suspendRecv)      /* = false */
 {
     CRtpSessionSslclientEx* const session =
-        CRtpSessionSslclientEx::CreateInstance(localInfo, sslConfig, sslSni);
+        CRtpSessionSslclientEx::CreateInstance(localInfo, suspendRecv,
+        sslConfig, sslSni);
     if (session == NULL)
     {
         return (NULL);
@@ -287,16 +296,20 @@ CreateRtpSessionSslserverEx(IRtpSessionObserver*    observer,
                             const RTP_SESSION_INFO* localInfo,
                             PRO_SSL_CTX*            sslCtx,
                             PRO_INT64               sockId,
-                            bool                    unixSocket)
+                            bool                    unixSocket,
+                            bool                    useAckData,
+                            char                    ackData[64],
+                            bool                    suspendRecv) /* = false */
 {
     CRtpSessionSslserverEx* const session =
-        CRtpSessionSslserverEx::CreateInstance(localInfo, sslCtx);
+        CRtpSessionSslserverEx::CreateInstance(localInfo, suspendRecv, sslCtx);
     if (session == NULL)
     {
         return (NULL);
     }
 
-    if (!session->Init(observer, reactor, sockId, unixSocket))
+    if (!session->Init(
+        observer, reactor, sockId, unixSocket, useAckData, ackData))
     {
         session->Release();
 

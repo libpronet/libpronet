@@ -496,7 +496,7 @@ DeleteRtpService(IRtpService* service)
 PRO_RTP_API
 bool
 PRO_CALLTYPE
-CheckRtpServiceData(PRO_UINT64  serviceNonce,
+CheckRtpServiceData(const char  serviceNonce[32],
                     const char* servicePassword,
                     const char  clientPasswordHash[32])
 {

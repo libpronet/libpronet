@@ -49,6 +49,7 @@ CRtpSessionMcast::CreateInstance(const RTP_SESSION_INFO* localInfo)
 }
 
 CRtpSessionMcast::CRtpSessionMcast(const RTP_SESSION_INFO& localInfo)
+: CRtpSessionBase(false)
 {
     m_info               = localInfo;
     m_info.localVersion  = 0;

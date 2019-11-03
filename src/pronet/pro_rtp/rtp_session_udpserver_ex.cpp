@@ -52,6 +52,7 @@ CRtpSessionUdpserverEx::CreateInstance(const RTP_SESSION_INFO* localInfo)
 }
 
 CRtpSessionUdpserverEx::CRtpSessionUdpserverEx(const RTP_SESSION_INFO& localInfo)
+: CRtpSessionBase(false)
 {
     m_info               = localInfo;
     m_info.localVersion  = 0;
@@ -398,7 +399,9 @@ CRtpSessionUdpserverEx::DoHandshake()
 
     const bool ret = m_trans->SendData(
         (char*)packet->GetPayloadBuffer() - sizeof(RTP_HEADER) - sizeof(RTP_EXT),
-        packet->GetPayloadSize() + sizeof(RTP_HEADER) + sizeof(RTP_EXT)
+        packet->GetPayloadSize() + sizeof(RTP_HEADER) + sizeof(RTP_EXT),
+        0,
+        &m_remoteAddr
         );
     packet->Release();
 

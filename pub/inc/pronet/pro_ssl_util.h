@@ -204,10 +204,10 @@ ProRsaKeyGen(unsigned long  keyBytes, /* 128, 256, 512 */
 /*-------------------------------------------------------------------------*/
 
 /*
- * 功能: 计算(随机数+口令)组合的HASH(SHA-256)值
+ * 功能: 计算(会话随机数+口令)组合的HASH(SHA-256)值
  *
  * 参数:
- * nonce        : 随机数
+ * nonce        : 会话随机数
  * password     : 口令
  * passwordHash : 输出结果
  *
@@ -217,7 +217,7 @@ ProRsaKeyGen(unsigned long  keyBytes, /* 128, 256, 512 */
  */
 void
 PRO_CALLTYPE
-ProCalcPasswordHash(PRO_UINT64  nonce,
+ProCalcPasswordHash(const char  nonce[32],
                     const char* password,
                     char        passwordHash[32]);
 

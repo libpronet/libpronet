@@ -205,13 +205,21 @@ int main(int argc, char* argv[])
                     configInfo.c2ss_local_redline_bytes = value;
                 }
             }
-            else if (stricmp(configName.c_str(), "c2ss_enable_ssl") == 0)
+            else if (stricmp(configName.c_str(), "c2ss_ssl_uplink") == 0)
             {
-                configInfo.c2ss_enable_ssl = atoi(configValue.c_str()) != 0;
+                configInfo.c2ss_ssl_uplink = atoi(configValue.c_str()) != 0;
             }
-            else if (stricmp(configName.c_str(), "c2ss_ssl_enable_sha1cert") == 0)
+            else if (stricmp(configName.c_str(), "c2ss_ssl_local") == 0)
             {
-                configInfo.c2ss_ssl_enable_sha1cert = atoi(configValue.c_str()) != 0;
+                configInfo.c2ss_ssl_local  = atoi(configValue.c_str()) != 0;
+            }
+            else if (stricmp(configName.c_str(), "c2ss_ssl_local_forced") == 0)
+            {
+                configInfo.c2ss_ssl_local_forced = atoi(configValue.c_str()) != 0;
+            }
+            else if (stricmp(configName.c_str(), "c2ss_ssl_uplink_enable_sha1cert") == 0)
+            {
+                configInfo.c2ss_ssl_uplink_enable_sha1cert = atoi(configValue.c_str()) != 0;
             }
             else if (stricmp(configName.c_str(), "c2ss_ssl_uplink_cafile") == 0)
             {
@@ -257,9 +265,9 @@ int main(int argc, char* argv[])
             {
                 configInfo.c2ss_ssl_uplink_aes256 = atoi(configValue.c_str()) != 0;
             }
-            else if (stricmp(configName.c_str(), "c2ss_ssl_local_forced") == 0)
+            else if (stricmp(configName.c_str(), "c2ss_ssl_local_enable_sha1cert") == 0)
             {
-                configInfo.c2ss_ssl_local_forced = atoi(configValue.c_str()) != 0;
+                configInfo.c2ss_ssl_local_enable_sha1cert = atoi(configValue.c_str()) != 0;
             }
             else if (stricmp(configName.c_str(), "c2ss_ssl_local_cafile") == 0)
             {

@@ -345,19 +345,21 @@ CTest::SendMsg(const char* msg)
 
 void
 PRO_CALLTYPE
-CTest::OnConnectOk(IProConnector* connector,
-                   PRO_INT64      sockId,
-                   bool           unixSocket,
-                   const char*    remoteIp,
-                   unsigned short remotePort,
-                   unsigned char  serviceId,
-                   unsigned char  serviceOpt,
-                   PRO_UINT64     nonce)
+CTest::OnConnectOk(IProConnector*   connector,
+                   PRO_INT64        sockId,
+                   bool             unixSocket,
+                   const char*      remoteIp,
+                   unsigned short   remotePort,
+                   unsigned char    serviceId,
+                   unsigned char    serviceOpt,
+                   const PRO_NONCE* nonce)
 {
     assert(connector != NULL);
     assert(sockId != -1);
     assert(remoteIp != NULL);
-    if (connector == NULL || sockId == -1 || remoteIp == NULL)
+    assert(nonce != NULL);
+    if (connector == NULL || sockId == -1 || remoteIp == NULL ||
+        nonce == NULL)
     {
         return;
     }
@@ -379,7 +381,7 @@ CTest::OnConnectOk(IProConnector* connector,
             return;
         }
 
-        if (!DoHandshake(sockId, unixSocket, nonce))
+        if (!DoHandshake(sockId, unixSocket, *nonce))
         {
             ProCloseSockId(sockId);
             sockId = -1;
@@ -402,9 +404,9 @@ CTest::OnConnectOk(IProConnector* connector,
 }
 
 bool
-CTest::DoHandshake(PRO_INT64  sockId,
-                   bool       unixSocket,
-                   PRO_UINT64 nonce)
+CTest::DoHandshake(PRO_INT64        sockId,
+                   bool             unixSocket,
+                   const PRO_NONCE& nonce)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -418,7 +420,7 @@ CTest::DoHandshake(PRO_INT64  sockId,
     if (m_sslConfig != NULL)
     {
         PRO_SSL_CTX* const sslCtx = ProSslCtx_Createc(
-            m_sslConfig, m_configInfo.tcpc_ssl_sni.c_str(), sockId, nonce);
+            m_sslConfig, m_configInfo.tcpc_ssl_sni.c_str(), sockId, &nonce);
         if (sslCtx != NULL)
         {
             sslHandshaker = ProCreateSslHandshaker(

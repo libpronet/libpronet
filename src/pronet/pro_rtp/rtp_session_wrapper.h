@@ -66,6 +66,8 @@ private:
 
     virtual void PRO_CALLTYPE GetInfo(RTP_SESSION_INFO* info) const;
 
+    virtual void PRO_CALLTYPE GetAck(RTP_SESSION_ACK* ack) const;
+
     virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
         char suiteName[64]
         ) const;
@@ -89,7 +91,10 @@ private:
 
     virtual bool PRO_CALLTYPE IsReady() const;
 
-    virtual bool PRO_CALLTYPE SendPacket(IRtpPacket* packet);
+    virtual bool PRO_CALLTYPE SendPacket(
+        IRtpPacket* packet,
+        bool*       tryAgain         /* = NULL */
+        );
 
     virtual bool PRO_CALLTYPE SendPacketByTimer(
         IRtpPacket*   packet,
@@ -116,18 +121,20 @@ private:
     virtual void PRO_CALLTYPE EnableOutput(bool enable);
 
     virtual void PRO_CALLTYPE SetOutputRedline(
-        unsigned long redlineBytes,  /* = 0 */
-        unsigned long redlineFrames  /* = 0 */
+        unsigned long redlineBytes,   /* = 0 */
+        unsigned long redlineFrames,  /* = 0 */
+        unsigned long redlineDelayMs  /* = 0 */
         );
 
     virtual void PRO_CALLTYPE GetOutputRedline(
-        unsigned long* redlineBytes, /* = NULL */
-        unsigned long* redlineFrames /* = NULL */
+        unsigned long* redlineBytes,  /* = NULL */
+        unsigned long* redlineFrames, /* = NULL */
+        unsigned long* redlineDelayMs /* = NULL */
         ) const;
 
     virtual void PRO_CALLTYPE GetFlowctrlInfo(
-        float*         inFrameRate,  /* = NULL */
-        float*         inBitRate,    /* = NULL */
+        float*         srcFrameRate, /* = NULL */
+        float*         srcBitRate,   /* = NULL */
         float*         outFrameRate, /* = NULL */
         float*         outBitRate,   /* = NULL */
         unsigned long* cachedBytes,  /* = NULL */
@@ -154,6 +161,10 @@ private:
 
     virtual void PRO_CALLTYPE ResetOutputStat();
 
+    virtual void PRO_CALLTYPE SetMagic(PRO_INT64 magic);
+
+    virtual PRO_INT64 PRO_CALLTYPE GetMagic() const;
+
     virtual void PRO_CALLTYPE OnOkSession(IRtpSession* session);
 
     virtual void PRO_CALLTYPE OnRecvSession(
@@ -178,13 +189,14 @@ private:
         PRO_INT64     userData
         );
 
-    bool SendPacketUnlock(IRtpPacket* packet);
+    bool PushPacket(IRtpPacket* packet);
 
-    bool SendPacketUnlock();
+    bool DoSendPacket();
 
 private:
 
     RTP_SESSION_INFO          m_info;
+    PRO_INT64                 m_magic;
     IRtpSessionObserver*      m_observer;
     IProReactor*              m_reactor;
     IRtpSession*              m_session;
@@ -203,7 +215,6 @@ private:
     PRO_INT64                 m_pushTick;
     CProStlDeque<IRtpPacket*> m_pushPackets;
 
-    IRtpReorder*              m_reorderInput;
     mutable CProStatBitRate   m_statFrameRateInput;
     mutable CProStatBitRate   m_statFrameRateOutput;
     mutable CProStatBitRate   m_statBitRateInput;

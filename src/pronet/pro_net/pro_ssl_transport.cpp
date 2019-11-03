@@ -70,7 +70,8 @@ CProSslTransport::Init(IProTransportObserver* observer,
                        PRO_INT64              sockId,
                        bool                   unixSocket,
                        size_t                 sockBufSizeRecv, /* = 0 */
-                       size_t                 sockBufSizeSend) /* = 0 */
+                       size_t                 sockBufSizeSend, /* = 0 */
+                       bool                   suspendRecv)     /* = false */
 {
     assert(observer != NULL);
     assert(reactorTask != NULL);
@@ -176,10 +177,20 @@ CProSslTransport::Init(IProTransportObserver* observer,
             return (false);
         }
 
-        if (!reactorTask->AddHandler(
-            sockId, this, PRO_MASK_WRITE | PRO_MASK_READ))
+        if (suspendRecv)
         {
-            return (false);
+            if (!reactorTask->AddHandler(sockId, this, PRO_MASK_WRITE))
+            {
+                return (false);
+            }
+        }
+        else
+        {
+            if (!reactorTask->AddHandler(
+                sockId, this, PRO_MASK_WRITE | PRO_MASK_READ))
+            {
+                return (false);
+            }
         }
 
         observer->AddRef();

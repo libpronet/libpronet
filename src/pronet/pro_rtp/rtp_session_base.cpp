@@ -55,8 +55,10 @@ extern CProFileMonitor g_fileMonitor;
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-CRtpSessionBase::CRtpSessionBase()
+CRtpSessionBase::CRtpSessionBase(bool suspendRecv)
+: m_suspendRecv(suspendRecv)
 {
+    m_magic          = 0;
     m_observer       = NULL;
     m_reactor        = NULL;
     m_trans          = NULL;
@@ -77,6 +79,7 @@ CRtpSessionBase::CRtpSessionBase()
     m_canUpcall      = true;
 
     memset(&m_info            , 0, sizeof(RTP_SESSION_INFO));
+    memset(&m_ack             , 0, sizeof(RTP_SESSION_ACK));
     memset(&m_localAddr       , 0, sizeof(pbsd_sockaddr_in));
     memset(&m_remoteAddr      , 0, sizeof(pbsd_sockaddr_in));
     memset(&m_remoteAddrConfig, 0, sizeof(pbsd_sockaddr_in));
@@ -123,6 +126,23 @@ CRtpSessionBase::GetInfo(RTP_SESSION_INFO* info) const
         CProThreadMutexGuard mon(m_lock);
 
         *info = m_info;
+    }
+}
+
+void
+PRO_CALLTYPE
+CRtpSessionBase::GetAck(RTP_SESSION_ACK* ack) const
+{
+    assert(ack != NULL);
+    if (ack == NULL)
+    {
+        return;
+    }
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        *ack = m_ack;
     }
 }
 
@@ -282,8 +302,14 @@ CRtpSessionBase::IsReady() const
 
 bool
 PRO_CALLTYPE
-CRtpSessionBase::SendPacket(IRtpPacket* packet)
+CRtpSessionBase::SendPacket(IRtpPacket* packet,
+                            bool*       tryAgain) /* = NULL */
 {
+    if (tryAgain != NULL)
+    {
+        *tryAgain = false;
+    }
+
     assert(packet != NULL);
     if (packet == NULL)
     {
@@ -353,6 +379,11 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet)
 
         if (!m_onOkCalled)
         {
+            if (tryAgain != NULL)
+            {
+                *tryAgain = true;
+            }
+
             return (false);
         }
 
@@ -381,6 +412,10 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet)
                     m_actionId + 1,
                     &m_remoteAddr
                     );
+                if (!ret && tryAgain != NULL)
+                {
+                    *tryAgain = true;
+                }
             }
             else if (m_remoteAddrConfig.sin_addr.s_addr != 0)
             {
@@ -390,10 +425,13 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet)
                     m_actionId + 1,
                     &m_remoteAddrConfig
                     );
+                if (!ret && tryAgain != NULL)
+                {
+                    *tryAgain = true;
+                }
             }
             else
             {
-                ret = true; /* drop this packet */
             }
         }
         else
@@ -404,6 +442,10 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet)
                 m_actionId + 1,
                 &m_remoteAddr
                 );
+            if (!ret && tryAgain != NULL)
+            {
+                *tryAgain = true;
+            }
         }
 
         m_sendingTick = ProGetTickCount64();
@@ -497,6 +539,32 @@ CRtpSessionBase::ResumeRecv()
 
 void
 PRO_CALLTYPE
+CRtpSessionBase::SetMagic(PRO_INT64 magic)
+{
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        m_magic = magic;
+    }
+}
+
+PRO_INT64
+PRO_CALLTYPE
+CRtpSessionBase::GetMagic() const
+{
+    PRO_INT64 magic = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        magic = m_magic;
+    }
+
+    return (magic);
+}
+
+void
+PRO_CALLTYPE
 CRtpSessionBase::OnSend(IProTransport* trans,
                         PRO_UINT64     actionId)
 {{
@@ -586,8 +654,6 @@ CRtpSessionBase::OnClose(IProTransport* trans,
             return;
         }
 
-        m_trans = NULL;
-
         m_observer->AddRef();
         observer = m_observer;
     }
@@ -599,7 +665,8 @@ CRtpSessionBase::OnClose(IProTransport* trans,
     }
 
     observer->Release();
-    ProDeleteTransport(trans);
+
+    Fini();
 }}
 
 void
