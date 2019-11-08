@@ -1,3 +1,31 @@
+LibProNet-1.3.0, tag-release-1.3.0, 2019-11-08
+====
+
+Features
+  * Upgrade acceptor_ex/connector_ex protocol to speed up
+    the handshaking process
+  * Upgrade rtp-session handshake protocol, and upgrade msg-system
+    protocol:
+    PRO Session   Protocol version 2.0 (PSP-v2.0),
+    PRO Messaging Protocol version 2.0 (PMP-v2.0)
+  * <RTP_MSG_C2S> supports different security policies for uplinks
+    and downlinks
+  * <TEST_RTP> becomes a useful network speed measuring tool
+
+Bugfix
+  * Fixed a bug in CProTimerFactory::UpdateHeartbeatTimers()
+  * Fixed an issue that caused the udp_ex handshake to fail
+
+Changes
+  * Enhance an 8-byte nonce with a 32-byte nonce
+  * Change PRO_ACCEPTOR_LENGTH value from 5000 to 10000, and
+    add PRO_SERVICER_LENGTH definition with a value of 10000
+  * Add IRtpSession::SetMagic()/GetMagic() methods
+  * Improve flow control strategy of video buckets
+  * No longer reorder when packets are received
+  * The autoconf requirement was downgraded from 2.65 to 2.63
+
+
 LibProNet-1.2.1, tag-release-1.2.1, 2019-10-08
 ====
 
