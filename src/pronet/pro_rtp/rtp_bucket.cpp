@@ -227,7 +227,7 @@ CRtpBucket::GetRedline(unsigned long* redlineBytes,         /* = NULL */
     }
     if (redlineDelayMs != NULL)
     {
-        *redlineDelayMs = m_redlineDelayMs;
+        *redlineDelayMs = (unsigned long)m_redlineDelayMs;
     }
 }
 
@@ -652,7 +652,7 @@ CRtpVideoBucket::GetRedline(unsigned long* redlineBytes,         /* = NULL */
     }
     if (redlineDelayMs != NULL)
     {
-        *redlineDelayMs = m_redlineDelayMs;
+        *redlineDelayMs = (unsigned long)m_redlineDelayMs;
     }
 }
 
