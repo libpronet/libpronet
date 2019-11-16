@@ -54,7 +54,13 @@ private:
         const pbsd_sockaddr_in* remoteAddr
         );
 
-    bool DoHandshake();
+    bool DoHandshake1();
+
+    bool DoHandshake3();
+
+private:
+
+    RTP_SESSION_ACK m_ackToPeer; /* network byte order */
 
     DECLARE_SGI_POOL(0);
 };

@@ -52,7 +52,7 @@ CRtpSessionMcastEx::CRtpSessionMcastEx(const RTP_SESSION_INFO& localInfo)
 : CRtpSessionBase(false)
 {
     m_info               = localInfo;
-    m_info.localVersion  = 0;
+    m_info.localVersion  = RTP_SESSION_PROTOCOL_VERSION;
     m_info.remoteVersion = 0;
     m_info.sessionType   = RTP_ST_MCAST_EX;
     m_info.inSrcMmId     = 0;
@@ -262,6 +262,7 @@ CRtpSessionMcastEx::OnRecv(IProTransport*          trans,
             if (ext.hdrAndPayloadSize == 0)
             {
                 m_peerAliveTick = ProGetTickCount64();
+
                 recvPool.Flush(sizeof(RTP_EXT));
                 continue;
             }

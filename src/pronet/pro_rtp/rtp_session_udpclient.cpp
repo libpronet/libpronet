@@ -52,7 +52,7 @@ CRtpSessionUdpclient::CRtpSessionUdpclient(const RTP_SESSION_INFO& localInfo)
 : CRtpSessionBase(false)
 {
     m_info               = localInfo;
-    m_info.localVersion  = 0;
+    m_info.localVersion  = RTP_SESSION_PROTOCOL_VERSION;
     m_info.remoteVersion = 0;
     m_info.sessionType   = RTP_ST_UDPCLIENT;
 }
@@ -283,7 +283,8 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
                     break;
                 }
 
-                m_remoteAddr = *remoteAddr; /* rebind */
+                m_peerAliveTick = ProGetTickCount64();
+                m_remoteAddr    = *remoteAddr; /* rebind */
 
                 if (payloadBuffer == NULL || payloadSize == 0) /* h.460 */
                 {
@@ -292,8 +293,6 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
                     recvPool.Flush(dataSize);
                     break;
                 }
-
-                m_peerAliveTick = ProGetTickCount64();
 
                 hdr.v  = 2;
                 hdr.p  = 0;

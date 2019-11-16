@@ -52,7 +52,7 @@ CRtpSessionMcast::CRtpSessionMcast(const RTP_SESSION_INFO& localInfo)
 : CRtpSessionBase(false)
 {
     m_info               = localInfo;
-    m_info.localVersion  = 0;
+    m_info.localVersion  = RTP_SESSION_PROTOCOL_VERSION;
     m_info.remoteVersion = 0;
     m_info.sessionType   = RTP_ST_MCAST;
     m_info.inSrcMmId     = 0;

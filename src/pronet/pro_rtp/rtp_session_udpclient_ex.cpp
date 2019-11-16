@@ -20,7 +20,9 @@
 #include "rtp_packet.h"
 #include "rtp_session_base.h"
 #include "../pro_net/pro_net.h"
+#include "../pro_shared/pro_shared.h"
 #include "../pro_util/pro_bsd_wrapper.h"
+#include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_z.h"
 #include <cassert>
@@ -28,7 +30,7 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define UDP_HANDSHAKE_BYTES 1400
+#define UDP_HANDSHAKE_BYTES 1200
 #define DEFAULT_TIMEOUT     20
 
 /////////////////////////////////////////////////////////////////////////////
@@ -54,9 +56,25 @@ CRtpSessionUdpclientEx::CRtpSessionUdpclientEx(const RTP_SESSION_INFO& localInfo
 : CRtpSessionBase(false)
 {
     m_info               = localInfo;
-    m_info.localVersion  = 0;
+    m_info.localVersion  = RTP_SESSION_PROTOCOL_VERSION;
     m_info.remoteVersion = 0;
     m_info.sessionType   = RTP_ST_UDPCLIENT_EX;
+
+    memset(&m_ackToPeer, 0, sizeof(RTP_SESSION_ACK));
+    m_ackToPeer.version  = pbsd_hton16(RTP_SESSION_PROTOCOL_VERSION);
+
+    {
+        char* const p0 = (char*)&m_ackToPeer;
+        char*       p1 = p0 + sizeof(PRO_UINT16);
+        char* const p2 = p0 + sizeof(RTP_SESSION_ACK);
+
+        for (; p1 != p2; ++p1)
+        {
+            *p1 = (char)(ProRand_0_1() * 255);
+        }
+
+        std::random_shuffle(p0, p2);
+    }
 }
 
 CRtpSessionUdpclientEx::~CRtpSessionUdpclientEx()
@@ -128,7 +146,7 @@ CRtpSessionUdpclientEx::Init(IRtpSessionObserver* observer,
         m_reactor        = reactor;
         m_timeoutTimerId = reactor->ScheduleTimer(this, (PRO_UINT64)timeoutInSeconds * 1000, false);
 
-        if (DoHandshake())
+        if (DoHandshake1())
         {
             return (true);
         }
@@ -228,14 +246,13 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
             if (ext.hdrAndPayloadSize == 0)
             {
                 m_peerAliveTick = ProGetTickCount64();
+
                 recvPool.Flush(sizeof(RTP_EXT));
                 continue;
             }
 
             if (!m_handshakeOk)
             {
-                assert(ext.hdrAndPayloadSize ==
-                    sizeof(RTP_HEADER) + UDP_HANDSHAKE_BYTES);
                 if (ext.hdrAndPayloadSize !=
                     sizeof(RTP_HEADER) + UDP_HANDSHAKE_BYTES)
                 {
@@ -256,11 +273,32 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
 
                 m_peerAliveTick = ProGetTickCount64();
 
+                RTP_SESSION_ACK ack;
+                memcpy(
+                    &ack,
+                    buffer + sizeof(RTP_EXT) + sizeof(RTP_HEADER),
+                    sizeof(RTP_SESSION_ACK)
+                    );
+
+                if (memcmp((char*)&ack + sizeof(PRO_UINT16),
+                    (char*)&m_ackToPeer + sizeof(PRO_UINT16),
+                    sizeof(RTP_SESSION_ACK) - sizeof(PRO_UINT16)) != 0)
+                {
+                    recvPool.Flush(dataSize);
+                    break;
+                }
+
                 recvPool.Flush(size);
-                m_handshakeOk = true;
+                m_info.remoteVersion = pbsd_ntoh16(ack.version);
+                m_handshakeOk        = true;
 
                 m_reactor->CancelTimer(m_timeoutTimerId);
                 m_timeoutTimerId = 0;
+
+                if (!DoHandshake3())
+                {
+                    error = true;
+                }
             }
             else
             {
@@ -362,7 +400,7 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
 }}
 
 bool
-CRtpSessionUdpclientEx::DoHandshake()
+CRtpSessionUdpclientEx::DoHandshake1()
 {
     assert(m_trans != NULL);
     if (m_trans == NULL)
@@ -377,6 +415,7 @@ CRtpSessionUdpclientEx::DoHandshake()
     }
 
     memset(packet->GetPayloadBuffer(), 0, packet->GetPayloadSize());
+    memcpy(packet->GetPayloadBuffer(), &m_ackToPeer, sizeof(RTP_SESSION_ACK));
     packet->SetMmId(m_info.mmId);
     packet->SetMmType(m_info.mmType);
 
@@ -387,4 +426,20 @@ CRtpSessionUdpclientEx::DoHandshake()
     packet->Release();
 
     return (ret);
+}
+
+bool
+CRtpSessionUdpclientEx::DoHandshake3()
+{
+    assert(m_trans != NULL);
+    if (m_trans == NULL)
+    {
+        return (false);
+    }
+
+    RTP_EXT ext;
+    memset(&ext, 0, sizeof(RTP_EXT));
+    m_trans->SendData(&ext, sizeof(RTP_EXT));
+
+    return (true);
 }

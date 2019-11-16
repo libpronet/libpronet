@@ -28,7 +28,7 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define UDP_HANDSHAKE_BYTES 1400
+#define UDP_HANDSHAKE_BYTES 1200
 #define MAX_TRY_TIMES       100
 #define DEFAULT_TIMEOUT     20
 
@@ -55,9 +55,13 @@ CRtpSessionUdpserverEx::CRtpSessionUdpserverEx(const RTP_SESSION_INFO& localInfo
 : CRtpSessionBase(false)
 {
     m_info               = localInfo;
-    m_info.localVersion  = 0;
+    m_info.localVersion  = RTP_SESSION_PROTOCOL_VERSION;
     m_info.remoteVersion = 0;
     m_info.sessionType   = RTP_ST_UDPSERVER_EX;
+
+    m_ack                = false;
+    memset(&m_ackToPeer, 0, sizeof(RTP_SESSION_ACK));
+    m_ackToPeer.version  = pbsd_hton16(RTP_SESSION_PROTOCOL_VERSION);
 }
 
 CRtpSessionUdpserverEx::~CRtpSessionUdpserverEx()
@@ -224,22 +228,8 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                 break;
             }
 
-            if (ext.hdrAndPayloadSize == 0)
+            if (!m_ack)
             {
-                if (remoteAddr->sin_addr.s_addr == m_remoteAddr.sin_addr.s_addr &&
-                    remoteAddr->sin_port        == m_remoteAddr.sin_port)
-                {
-                    m_peerAliveTick = ProGetTickCount64();
-                }
-
-                recvPool.Flush(sizeof(RTP_EXT));
-                continue;
-            }
-
-            if (!m_handshakeOk)
-            {
-                assert(ext.hdrAndPayloadSize ==
-                    sizeof(RTP_HEADER) + UDP_HANDSHAKE_BYTES);
                 if (ext.hdrAndPayloadSize !=
                     sizeof(RTP_HEADER) + UDP_HANDSHAKE_BYTES)
                 {
@@ -260,14 +250,24 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
 
                 m_peerAliveTick = ProGetTickCount64();
 
+                RTP_SESSION_ACK ack;
+                memcpy(
+                    &ack,
+                    buffer + sizeof(RTP_EXT) + sizeof(RTP_HEADER),
+                    sizeof(RTP_SESSION_ACK)
+                    );
+                memcpy(
+                    (char*)&m_ackToPeer + sizeof(PRO_UINT16),
+                    (char*)&ack + sizeof(PRO_UINT16),
+                    sizeof(RTP_SESSION_ACK) - sizeof(PRO_UINT16)
+                    );
+
                 recvPool.Flush(size);
-                m_remoteAddr  = *remoteAddr; /* bind */
-                m_handshakeOk = true;
+                m_info.remoteVersion = pbsd_ntoh16(ack.version);
+                m_remoteAddr         = *remoteAddr; /* bind */
+                m_ack                = true;
 
-                m_reactor->CancelTimer(m_timeoutTimerId);
-                m_timeoutTimerId = 0;
-
-                if (!DoHandshake())
+                if (!DoHandshake2())
                 {
                     error = true;
                 }
@@ -281,57 +281,71 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                     break;
                 }
 
-                packet = CRtpPacket::CreateInstance(
-                    sizeof(RTP_EXT) + ext.hdrAndPayloadSize, RTP_EPM_DEFAULT);
-                if (packet == NULL)
+                if (ext.hdrAndPayloadSize == 0)
                 {
-                    error = true;
+                    m_peerAliveTick = ProGetTickCount64();
                 }
                 else
                 {
-                    recvPool.PeekData(
-                        packet->GetPayloadBuffer(),
-                        sizeof(RTP_EXT) + ext.hdrAndPayloadSize
-                        );
-
-                    if (!CRtpPacket::ParseExtBuffer(
-                        (char*)packet->GetPayloadBuffer(),
-                        packet->GetPayloadSize16()
-                        ))
+                    packet = CRtpPacket::CreateInstance(
+                        sizeof(RTP_EXT) + ext.hdrAndPayloadSize, RTP_EPM_DEFAULT);
+                    if (packet == NULL)
                     {
-                        packet->Release();
-                        packet = NULL;
-                        recvPool.Flush(dataSize);
-                        break;
+                        error = true;
                     }
-
-                    m_peerAliveTick = ProGetTickCount64();
-
-                    RTP_PACKET& magicPacket = packet->GetPacket();
-
-                    magicPacket.ext = (RTP_EXT*)packet->GetPayloadBuffer();
-                    magicPacket.hdr = (RTP_HEADER*)(magicPacket.ext + 1);
-
-                    assert(
-                        m_info.inSrcMmId  == 0 ||
-                        packet->GetMmId() == m_info.inSrcMmId
-                        );
-                    assert(packet->GetMmType() == m_info.mmType);
-                    if (
-                        (m_info.inSrcMmId  != 0 &&
-                         packet->GetMmId() != m_info.inSrcMmId)
-                        ||
-                        packet->GetMmType() != m_info.mmType /* drop this packet */
-                       )
+                    else
                     {
-                        packet->Release();
-                        packet = NULL;
-                        recvPool.Flush(dataSize);
-                        break;
+                        recvPool.PeekData(
+                            packet->GetPayloadBuffer(),
+                            sizeof(RTP_EXT) + ext.hdrAndPayloadSize
+                            );
+
+                        if (!CRtpPacket::ParseExtBuffer(
+                            (char*)packet->GetPayloadBuffer(),
+                            packet->GetPayloadSize16()
+                            ))
+                        {
+                            packet->Release();
+                            packet = NULL;
+                            recvPool.Flush(dataSize);
+                            break;
+                        }
+
+                        m_peerAliveTick = ProGetTickCount64();
+
+                        RTP_PACKET& magicPacket = packet->GetPacket();
+
+                        magicPacket.ext = (RTP_EXT*)packet->GetPayloadBuffer();
+                        magicPacket.hdr = (RTP_HEADER*)(magicPacket.ext + 1);
+
+                        assert(
+                            m_info.inSrcMmId  == 0 ||
+                            packet->GetMmId() == m_info.inSrcMmId
+                            );
+                        assert(packet->GetMmType() == m_info.mmType);
+                        if (
+                            (m_info.inSrcMmId  != 0 &&
+                             packet->GetMmId() != m_info.inSrcMmId)
+                            ||
+                            packet->GetMmType() != m_info.mmType /* drop this packet */
+                           )
+                        {
+                            packet->Release();
+                            packet = NULL;
+                            recvPool.Flush(dataSize);
+                            break;
+                        }
                     }
                 }
 
                 recvPool.Flush(sizeof(RTP_EXT) + ext.hdrAndPayloadSize);
+                m_handshakeOk = true;
+
+                if (m_timeoutTimerId > 0)
+                {
+                    m_reactor->CancelTimer(m_timeoutTimerId);
+                    m_timeoutTimerId = 0;
+                }
             }
 
             m_observer->AddRef();
@@ -379,7 +393,7 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
 }}
 
 bool
-CRtpSessionUdpserverEx::DoHandshake()
+CRtpSessionUdpserverEx::DoHandshake2()
 {
     assert(m_trans != NULL);
     if (m_trans == NULL)
@@ -394,6 +408,7 @@ CRtpSessionUdpserverEx::DoHandshake()
     }
 
     memset(packet->GetPayloadBuffer(), 0, packet->GetPayloadSize());
+    memcpy(packet->GetPayloadBuffer(), &m_ackToPeer, sizeof(RTP_SESSION_ACK));
     packet->SetMmId(m_info.mmId);
     packet->SetMmType(m_info.mmType);
 
