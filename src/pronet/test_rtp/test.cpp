@@ -717,7 +717,10 @@ CTest::OnOkSession(IRtpSession* session)
         }
         else
         {
+            return;
         }
+
+        session->SetMagic(ProGetTickCount64());
     }
 }
 
