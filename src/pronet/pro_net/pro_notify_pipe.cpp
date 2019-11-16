@@ -63,6 +63,12 @@ CProNotifyPipe::Init()
         return;
     }
 
+    int option;
+    option = RECV_BUF_SIZE;
+    pbsd_setsockopt(sockId, SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
+    option = SEND_BUF_SIZE;
+    pbsd_setsockopt(sockId, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
+
     pbsd_sockaddr_in localAddr;
     memset(&localAddr, 0, sizeof(pbsd_sockaddr_in));
     localAddr.sin_family      = AF_INET;
@@ -109,17 +115,6 @@ CProNotifyPipe::Init()
     m_sockIds[1] = sockIds[1];
 
 #endif /* WIN32, _WIN32_WCE */
-
-    for (int i = 0; i < 2; ++i)
-    {
-        int option;
-        option = RECV_BUF_SIZE;
-        pbsd_setsockopt(
-            m_sockIds[i], SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
-        option = SEND_BUF_SIZE;
-        pbsd_setsockopt(
-            m_sockIds[i], SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
-    }
 }
 
 void

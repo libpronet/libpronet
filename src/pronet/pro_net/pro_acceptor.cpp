@@ -36,9 +36,16 @@
 #endif
 
 #define SERVICE_HANDSHAKE_BYTES 4 /* serviceId + serviceOpt + (r) + (r+1) */
-#define DEFAULT_RECV_BUF_SIZE   (1024 * 8)
-#define DEFAULT_SEND_BUF_SIZE   (1024 * 8)
 #define DEFAULT_TIMEOUT         10
+
+/*
+ * Linux uses double-size values
+ *
+ * please refer to "/usr/src/linux-a.b.c.d/net/core/sock.c",
+ * sock_setsockopt()
+ */
+#define DEFAULT_RECV_BUF_SIZE   (1024 * 16)
+#define DEFAULT_SEND_BUF_SIZE   (1024 * 8)
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -193,11 +200,6 @@ CProAcceptor::Init(IProAcceptorObserver* observer,
         {
             goto EXIT;
         }
-
-        option = DEFAULT_RECV_BUF_SIZE;
-        pbsd_setsockopt(sockIdUn, SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
-        option = DEFAULT_SEND_BUF_SIZE;
-        pbsd_setsockopt(sockIdUn, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
 
         localAddrUn.sun_family = AF_LOCAL;
         sprintf(localAddrUn.sun_path, "/tmp/libpronet_127001_%u",
@@ -373,15 +375,15 @@ CProAcceptor::OnInput(PRO_INT64 sockId)
             return;
         }
 
-        int option;
-        option = DEFAULT_RECV_BUF_SIZE;
-        pbsd_setsockopt(
-            newSockId, SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
-        option = DEFAULT_SEND_BUF_SIZE;
-        pbsd_setsockopt(
-            newSockId, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
         if (!unixSocket)
         {
+            int option;
+            option = DEFAULT_RECV_BUF_SIZE;
+            pbsd_setsockopt(
+                newSockId, SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
+            option = DEFAULT_SEND_BUF_SIZE;
+            pbsd_setsockopt(
+                newSockId, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
             option = 1;
             pbsd_setsockopt(
                 newSockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));

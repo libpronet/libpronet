@@ -27,9 +27,16 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+#define MULTICAST_TTL         32 /* 0 ~ 255 */
+
+/*
+ * Linux uses double-size values
+ *
+ * please refer to "/usr/src/linux-a.b.c.d/net/core/sock.c",
+ * sock_setsockopt()
+ */
 #define DEFAULT_RECV_BUF_SIZE (1024 * 56)
 #define DEFAULT_SEND_BUF_SIZE (1024 * 56)
-#define MULTICAST_TTL         32 /* 0 ~ 255 */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -169,13 +176,8 @@ CProMcastTransport::Init(IProTransportObserver* observer,
         mreq.imr_multiaddr.s_addr = remoteAddr.sin_addr.s_addr;
         mreq.imr_interface.s_addr = localAddr.sin_addr.s_addr;
 
-        if (pbsd_setsockopt(sockId,
-            IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(struct ip_mreq)) != 0)
-        {
-            ProCloseSockId(sockId);
-
-            return (false);
-        }
+        pbsd_setsockopt(sockId,
+            IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(struct ip_mreq));
 
         option = MULTICAST_TTL;
         pbsd_setsockopt(

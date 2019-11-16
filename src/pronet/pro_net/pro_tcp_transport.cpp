@@ -32,9 +32,16 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+#define DEFAULT_RECV_POOL_SIZE (1024 * 65)
+
+/*
+ * Linux uses double-size values
+ *
+ * please refer to "/usr/src/linux-a.b.c.d/net/core/sock.c",
+ * sock_setsockopt()
+ */
 #define DEFAULT_RECV_BUF_SIZE  (1024 * 56)
 #define DEFAULT_SEND_BUF_SIZE  (1024 * 8)
-#define DEFAULT_RECV_POOL_SIZE (1024 * 65)
 
 #if !defined(WIN32) && !defined(_WIN32_WCE)
 
@@ -118,11 +125,14 @@ CProTcpTransport::Init(IProTransportObserver* observer,
         sockBufSizeSend = DEFAULT_SEND_BUF_SIZE;
     }
 
-    int option;
-    option = (int)sockBufSizeRecv;
-    pbsd_setsockopt(sockId, SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
-    option = (int)sockBufSizeSend;
-    pbsd_setsockopt(sockId, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
+    if (!unixSocket)
+    {
+        int option;
+        option = (int)sockBufSizeRecv;
+        pbsd_setsockopt(sockId, SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
+        option = (int)sockBufSizeSend;
+        pbsd_setsockopt(sockId, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
+    }
 
     {
         CProThreadMutexGuard mon(m_lock);

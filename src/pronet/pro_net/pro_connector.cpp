@@ -31,9 +31,16 @@
 ////
 
 #define SERVICE_HANDSHAKE_BYTES 4 /* serviceId + serviceOpt + (r) + (r+1) */
-#define DEFAULT_RECV_BUF_SIZE   (1024 * 8)
-#define DEFAULT_SEND_BUF_SIZE   (1024 * 8)
 #define DEFAULT_TIMEOUT         20
+
+/*
+ * Linux uses double-size values
+ *
+ * please refer to "/usr/src/linux-a.b.c.d/net/core/sock.c",
+ * sock_setsockopt()
+ */
+#define DEFAULT_RECV_BUF_SIZE   (1024 * 16)
+#define DEFAULT_SEND_BUF_SIZE   (1024 * 8)
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -582,20 +589,6 @@ CProConnector::OnTimer(unsigned long timerId,
                 break;
             }
 
-            int option;
-            option = DEFAULT_RECV_BUF_SIZE;
-            pbsd_setsockopt(
-                m_sockId, SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
-            option = DEFAULT_SEND_BUF_SIZE;
-            pbsd_setsockopt(
-                m_sockId, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
-            if (!m_unixSocket)
-            {
-                option = 1;
-                pbsd_setsockopt(
-                    m_sockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
-            }
-
 #if !defined(WIN32) && !defined(_WIN32_WCE)
             if (m_unixSocket)
             {
@@ -615,6 +608,17 @@ CProConnector::OnTimer(unsigned long timerId,
             else
 #endif
             {
+                int option;
+                option = DEFAULT_RECV_BUF_SIZE;
+                pbsd_setsockopt(
+                    m_sockId, SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
+                option = DEFAULT_SEND_BUF_SIZE;
+                pbsd_setsockopt(
+                    m_sockId, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
+                option = 1;
+                pbsd_setsockopt(
+                    m_sockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
+
                 if (pbsd_bind(m_sockId, &m_localAddr, false) != 0)
                 {
                     error = true;
