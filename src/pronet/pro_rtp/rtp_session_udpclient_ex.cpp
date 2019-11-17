@@ -65,15 +65,15 @@ CRtpSessionUdpclientEx::CRtpSessionUdpclientEx(const RTP_SESSION_INFO& localInfo
 
     {
         char* const p0 = (char*)&m_ackToPeer;
-        char*       p1 = p0 + sizeof(PRO_UINT16);
+        char* const p1 = p0 + sizeof(PRO_UINT16);
         char* const p2 = p0 + sizeof(RTP_SESSION_ACK);
 
-        for (; p1 != p2; ++p1)
+        for (char* p = p1; p < p2; ++p)
         {
-            *p1 = (char)(ProRand_0_1() * 255);
+            *p = (char)(ProRand_0_1() * 255);
         }
 
-        std::random_shuffle(p0, p2);
+        std::random_shuffle(p1, p2);
     }
 }
 

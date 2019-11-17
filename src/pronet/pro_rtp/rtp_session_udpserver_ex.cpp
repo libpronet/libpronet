@@ -284,6 +284,12 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                 if (ext.hdrAndPayloadSize == 0)
                 {
                     m_peerAliveTick = ProGetTickCount64();
+
+                    if (m_handshakeOk)
+                    {
+                        recvPool.Flush(sizeof(RTP_EXT));
+                        continue;
+                    }
                 }
                 else
                 {
