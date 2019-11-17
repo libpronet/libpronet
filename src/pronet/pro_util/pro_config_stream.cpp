@@ -680,10 +680,7 @@ CProConfigStream::Get(CProStlVector<PRO_CONFIG_ITEM>& configs) const
                 const CProStlVector<PRO_CONFIG_ITEM>& configs2 = itr2->second;
 
                 configs.insert(
-                    configs.begin() + configs.size(),
-                    configs2.begin(),
-                    configs2.begin() + configs2.size()
-                    );
+                    configs.end(), configs2.begin(), configs2.end());
             }
         }
     }
