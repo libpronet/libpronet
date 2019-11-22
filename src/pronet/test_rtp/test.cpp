@@ -37,28 +37,30 @@
 ////
 
 #if defined(USING_VIDEO_BUCKET)
-#define FRAME_PACKETS            10
+#define FRAME_PACKETS          10
 #else
-#define FRAME_PACKETS            1
+#define FRAME_PACKETS          1
 #endif
-#define GOP_FRAMES               30
+#define GOP_FRAMES             30
 
-#define RECV_BUF_SIZE            (1024 * 1024 * 2) /* for udp */
-#define SEND_BUF_SIZE            (1024 * 1024 * 2) /* for udp */
-#define STD_PACKET_SIZE          1024
-#define LOW_PACKET_SIZE          160
-#define LOW_BIT_RATE             64000
-#define REDLINE_BYTES            (1024 * 512)
-#define REDLINE_FRAMES           (REDLINE_BYTES / STD_PACKET_SIZE / FRAME_PACKETS + 1)
-#define REDLINE_DELAY_MS         1200
-#define MEDIA_PAYLOAD_TYPE       109
-#define MEDIA_MM_TYPE            RTP_MMT_VIDEO
-#define SEND_TIMER_MS            1
-#define RECV_TIMER_MS            1000
-#define HTBT_TIMER_MS            1000
-#define SERVER_HANDSHAKE_TIMEOUT 3600
-#define UDP_CLIENT_TIMEOUT       10
-#define TRAFFIC_BROKEN_TIMEOUT   5
+#define RECV_BUF_SIZE          (1024 * 1024 * 2) /* for udp */
+#define SEND_BUF_SIZE          (1024 * 1024 * 2) /* for udp */
+#define STD_PACKET_SIZE        1024
+#define LOW_PACKET_SIZE        160
+#define LOW_BIT_RATE           64000
+#define REDLINE_BYTES          (1024 * 512)
+#define REDLINE_FRAMES         (REDLINE_BYTES / STD_PACKET_SIZE / FRAME_PACKETS + 1)
+#define REDLINE_DELAY_MS       1200
+#define MEDIA_PAYLOAD_TYPE     109
+#define MEDIA_MM_TYPE          RTP_MMT_VIDEO
+#define SEND_TIMER_MS          1
+#define RECV_TIMER_MS          1000
+#define HTBT_TIMER_MS          100
+#define UDP_SERVER_TIMEOUT     20
+#define UDP_CLIENT_TIMEOUT     10
+#define TCP_SERVER_TIMEOUT     3600
+#define TCP_CLIENT_TIMEOUT     20
+#define TRAFFIC_BROKEN_TIMEOUT 5
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -185,9 +187,9 @@ CTest::Init(IProReactor*       reactor,
         m_reactor       = reactor;
         m_udpSession    = udpSession;
         m_tcpSession    = tcpSession;
-        m_sendTimerId   = reactor->ScheduleMmTimer(this, SEND_TIMER_MS, true);
-        m_recvTimerId   = reactor->ScheduleTimer  (this, RECV_TIMER_MS, true);
-        m_htbtTimerId   = reactor->ScheduleTimer  (this, HTBT_TIMER_MS, true);
+        m_sendTimerId   = reactor->ScheduleTimer(this, SEND_TIMER_MS, true);
+        m_recvTimerId   = reactor->ScheduleTimer(this, RECV_TIMER_MS, true);
+        m_htbtTimerId   = reactor->ScheduleTimer(this, HTBT_TIMER_MS, true);
         m_outputShaper.SetMaxBitRate(param.kbps * 1000);
     }
 
@@ -253,9 +255,9 @@ CTest::Init(IProReactor*       reactor,
         m_reactor       = reactor;
         m_udpSession    = udpSession;
         m_tcpSession    = tcpSession;
-        m_sendTimerId   = reactor->ScheduleMmTimer(this, SEND_TIMER_MS, true);
-        m_recvTimerId   = reactor->ScheduleTimer  (this, RECV_TIMER_MS, true);
-        m_htbtTimerId   = reactor->ScheduleTimer  (this, HTBT_TIMER_MS, true);
+        m_sendTimerId   = reactor->ScheduleTimer(this, SEND_TIMER_MS, true);
+        m_recvTimerId   = reactor->ScheduleTimer(this, RECV_TIMER_MS, true);
+        m_htbtTimerId   = reactor->ScheduleTimer(this, HTBT_TIMER_MS, true);
         m_outputShaper.SetMaxBitRate(param.kbps * 1000);
     }
 
@@ -314,7 +316,7 @@ CTest::CreateUdpServer(IProReactor*   reactor,
     initArgs.udpserverEx.observer         = this;
     initArgs.udpserverEx.reactor          = reactor;
     initArgs.udpserverEx.localPort        = localPort;
-    initArgs.udpserverEx.timeoutInSeconds = SERVER_HANDSHAKE_TIMEOUT;
+    initArgs.udpserverEx.timeoutInSeconds = UDP_SERVER_TIMEOUT;
 #if defined(USING_VIDEO_BUCKET)
     initArgs.udpserverEx.bucket           = CreateRtpVideoBucket();
 #else
@@ -374,7 +376,7 @@ CTest::CreateTcpServer(IProReactor*   reactor,
     initArgs.tcpserver.observer         = this;
     initArgs.tcpserver.reactor          = reactor;
     initArgs.tcpserver.localPort        = localPort;
-    initArgs.tcpserver.timeoutInSeconds = SERVER_HANDSHAKE_TIMEOUT;
+    initArgs.tcpserver.timeoutInSeconds = TCP_SERVER_TIMEOUT;
     initArgs.tcpserver.bucket           = CreateRtpBaseBucket();
     strncpy_pro(initArgs.tcpserver.localIp,
         sizeof(initArgs.tcpserver.localIp), localIp);
@@ -507,10 +509,11 @@ CTest::CreateTcpClient(IProReactor*   reactor,
 
     RTP_INIT_ARGS initArgs;
     memset(&initArgs, 0, sizeof(RTP_INIT_ARGS));
-    initArgs.tcpclient.observer   = this;
-    initArgs.tcpclient.reactor    = reactor;
-    initArgs.tcpclient.remotePort = remotePort;
-    initArgs.tcpclient.bucket     = CreateRtpBaseBucket();
+    initArgs.tcpclient.observer         = this;
+    initArgs.tcpclient.reactor          = reactor;
+    initArgs.tcpclient.remotePort       = remotePort;
+    initArgs.tcpclient.timeoutInSeconds = TCP_CLIENT_TIMEOUT;
+    initArgs.tcpclient.bucket           = CreateRtpBaseBucket();
     strncpy_pro(initArgs.tcpclient.remoteIp,
         sizeof(initArgs.tcpclient.remoteIp), remoteIp);
     strncpy_pro(initArgs.tcpclient.localIp,
@@ -555,7 +558,8 @@ CTest::PrintSessionReady(IRtpSession* session,
     if (m_mode == TM_UDPE || m_mode == TM_TCPE ||
         m_mode == TM_UDPS || m_mode == TM_TCPS)
     {
-        strcpy(status, "ready!");
+        static int count = 0;
+        sprintf(status, "waiting...[%d]", ++count);
     }
     else
     {
@@ -624,7 +628,7 @@ CTest::Fini()
             return;
         }
 
-        m_reactor->CancelMmTimer(m_sendTimerId);
+        m_reactor->CancelTimer(m_sendTimerId);
         m_reactor->CancelTimer(m_recvTimerId);
         m_reactor->CancelTimer(m_htbtTimerId);
         m_sendTimerId = 0;
@@ -690,7 +694,7 @@ CTest::OnOkSession(IRtpSession* session)
         if (session == m_udpSession)
         {
             printf(
-                "\n test_rtp [ver-%d.%d.%d] --- [UDP, Lc-%s:%u, Rm-%s:%u] --- ok! \n"
+                "\n test_rtp [ver-%d.%d.%d] --- [UDP, Lc-%s:%u, Rm-%s:%u] --- connected! \n"
                 ,
                 PRO_VER_MAJOR,
                 PRO_VER_MINOR,
@@ -704,7 +708,7 @@ CTest::OnOkSession(IRtpSession* session)
         else if (session == m_tcpSession)
         {
             printf(
-                "\n test_rtp [ver-%d.%d.%d] --- [TCP, Lc-%s:%u, Rm-%s:%u] --- ok! \n"
+                "\n test_rtp [ver-%d.%d.%d] --- [TCP, Lc-%s:%u, Rm-%s:%u] --- connected! \n"
                 ,
                 PRO_VER_MAJOR,
                 PRO_VER_MINOR,
