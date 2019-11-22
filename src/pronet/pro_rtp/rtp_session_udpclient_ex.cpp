@@ -19,6 +19,7 @@
 #include "rtp_session_udpclient_ex.h"
 #include "rtp_packet.h"
 #include "rtp_session_base.h"
+#include "rtp_session_udpserver_ex.h"
 #include "../pro_net/pro_net.h"
 #include "../pro_shared/pro_shared.h"
 #include "../pro_util/pro_bsd_wrapper.h"
@@ -30,8 +31,8 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define UDP_HANDSHAKE_BYTES 1200
-#define DEFAULT_TIMEOUT     20
+#define SEND_SYNC_INTERVAL_MS 300
+#define DEFAULT_TIMEOUT       10
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -60,20 +61,20 @@ CRtpSessionUdpclientEx::CRtpSessionUdpclientEx(const RTP_SESSION_INFO& localInfo
     m_info.remoteVersion = 0;
     m_info.sessionType   = RTP_ST_UDPCLIENT_EX;
 
-    memset(&m_ackToPeer, 0, sizeof(RTP_SESSION_ACK));
-    m_ackToPeer.version  = pbsd_hton16(RTP_SESSION_PROTOCOL_VERSION);
+    memset(&m_syncToPeer, 0, sizeof(RTP_UDPX_SYNC));
+    m_syncToPeer.version = pbsd_hton16(RTP_SESSION_PROTOCOL_VERSION);
+    m_syncTimerId        = 0;
 
     {
-        char* const p0 = (char*)&m_ackToPeer;
-        char* const p1 = p0 + sizeof(PRO_UINT16);
-        char* const p2 = p0 + sizeof(RTP_SESSION_ACK);
-
-        for (char* p = p1; p < p2; ++p)
+        for (int i = 0; i < (int)sizeof(m_syncToPeer.nonce); ++i)
         {
-            *p = (char)(ProRand_0_1() * 255);
+            m_syncToPeer.nonce[i] = (unsigned char)(ProRand_0_1() * 255);
         }
 
-        std::random_shuffle(p1, p2);
+        std::random_shuffle(m_syncToPeer.nonce,
+            m_syncToPeer.nonce + sizeof(m_syncToPeer.nonce));
+
+        m_syncToPeer.checksum = pbsd_hton16(m_syncToPeer.CalcChecksum());
     }
 }
 
@@ -145,12 +146,22 @@ CRtpSessionUdpclientEx::Init(IRtpSessionObserver* observer,
         m_observer       = observer;
         m_reactor        = reactor;
         m_timeoutTimerId = reactor->ScheduleTimer(this, (PRO_UINT64)timeoutInSeconds * 1000, false);
+        m_syncTimerId    = reactor->ScheduleTimer(this, SEND_SYNC_INTERVAL_MS, true);
 
-        if (DoHandshake1())
+        if (!DoHandshake1())
         {
-            return (true);
+            m_reactor->CancelTimer(m_timeoutTimerId);
+            m_reactor->CancelTimer(m_syncTimerId);
+            m_timeoutTimerId = 0;
+            m_syncTimerId    = 0;
+
+            goto EXIT;
         }
     }
+
+    return (true);
+
+EXIT:
 
     Fini();
 
@@ -172,7 +183,9 @@ CRtpSessionUdpclientEx::Fini()
         }
 
         m_reactor->CancelTimer(m_timeoutTimerId);
+        m_reactor->CancelTimer(m_syncTimerId);
         m_timeoutTimerId = 0;
+        m_syncTimerId    = 0;
 
         trans = m_trans;
         m_trans = NULL;
@@ -251,16 +264,20 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
                 continue;
             }
 
-            if (!m_handshakeOk)
+            if (!m_handshakeOk || ext.udpxSync)
             {
+                /*
+                 * The packet must be a sync packet.
+                 */
                 if (ext.hdrAndPayloadSize !=
-                    sizeof(RTP_HEADER) + UDP_HANDSHAKE_BYTES)
+                    sizeof(RTP_HEADER) + sizeof(RTP_UDPX_SYNC) ||
+                    !ext.udpxSync)
                 {
                     recvPool.Flush(dataSize);
                     break;
                 }
 
-                const PRO_UINT16 size = sizeof(RTP_EXT) + sizeof(RTP_HEADER) + UDP_HANDSHAKE_BYTES;
+                const PRO_UINT16 size = sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_UDPX_SYNC);
                 char             buffer[size];
 
                 recvPool.PeekData(buffer, size);
@@ -273,32 +290,34 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
 
                 m_peerAliveTick = ProGetTickCount64();
 
-                RTP_SESSION_ACK ack;
+                RTP_UDPX_SYNC sync;
                 memcpy(
-                    &ack,
+                    &sync,
                     buffer + sizeof(RTP_EXT) + sizeof(RTP_HEADER),
-                    sizeof(RTP_SESSION_ACK)
+                    sizeof(RTP_UDPX_SYNC)
                     );
 
-                if (memcmp((char*)&ack + sizeof(PRO_UINT16),
-                    (char*)&m_ackToPeer + sizeof(PRO_UINT16),
-                    sizeof(RTP_SESSION_ACK) - sizeof(PRO_UINT16)) != 0)
+                if (memcmp((char*)&sync + sizeof(PRO_UINT16),
+                    (char*)&m_syncToPeer + sizeof(PRO_UINT16),
+                    sizeof(RTP_UDPX_SYNC) - sizeof(PRO_UINT16)) != 0)
                 {
                     recvPool.Flush(dataSize);
                     break;
                 }
 
-                recvPool.Flush(size);
-                m_info.remoteVersion = pbsd_ntoh16(ack.version);
+                DoHandshake3();
+
+                if (m_handshakeOk)
+                {
+                    recvPool.Flush(size);
+                    continue;
+                }
+
+                m_info.remoteVersion = pbsd_ntoh16(sync.version);
                 m_handshakeOk        = true;
 
                 m_reactor->CancelTimer(m_timeoutTimerId);
                 m_timeoutTimerId = 0;
-
-                if (!DoHandshake3())
-                {
-                    error = true;
-                }
             }
             else
             {
@@ -351,9 +370,9 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
                         break;
                     }
                 }
-
-                recvPool.Flush(sizeof(RTP_EXT) + ext.hdrAndPayloadSize);
             }
+
+            recvPool.Flush(sizeof(RTP_EXT) + ext.hdrAndPayloadSize);
 
             m_observer->AddRef();
             observer = m_observer;
@@ -399,6 +418,44 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
     } /* end of while (...) */
 }}
 
+void
+PRO_CALLTYPE
+CRtpSessionUdpclientEx::OnTimer(unsigned long timerId,
+                                PRO_INT64     userData)
+{
+    CRtpSessionBase::OnTimer(timerId, userData);
+
+    assert(timerId > 0);
+    if (timerId == 0)
+    {
+        return;
+    }
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_observer == NULL || m_reactor == NULL)
+        {
+            return;
+        }
+
+        if (timerId != m_syncTimerId)
+        {
+            return;
+        }
+
+        if (!m_handshakeOk)
+        {
+            DoHandshake1();
+        }
+        else
+        {
+            m_reactor->CancelTimer(m_syncTimerId);
+            m_syncTimerId = 0;
+        }
+    }
+}
+
 bool
 CRtpSessionUdpclientEx::DoHandshake1()
 {
@@ -408,16 +465,16 @@ CRtpSessionUdpclientEx::DoHandshake1()
         return (false);
     }
 
-    IRtpPacket* const packet = CreateRtpPacketSpace(UDP_HANDSHAKE_BYTES);
+    CRtpPacket* const packet = CRtpPacket::CreateInstance(
+        &m_syncToPeer, sizeof(RTP_UDPX_SYNC), RTP_EPM_DEFAULT);
     if (packet == NULL)
     {
         return (false);
     }
 
-    memset(packet->GetPayloadBuffer(), 0, packet->GetPayloadSize());
-    memcpy(packet->GetPayloadBuffer(), &m_ackToPeer, sizeof(RTP_SESSION_ACK));
     packet->SetMmId(m_info.mmId);
     packet->SetMmType(m_info.mmType);
+    packet->SetUdpxSync(true); /* sync flag */
 
     const bool ret = m_trans->SendData(
         (char*)packet->GetPayloadBuffer() - sizeof(RTP_HEADER) - sizeof(RTP_EXT),
@@ -428,18 +485,16 @@ CRtpSessionUdpclientEx::DoHandshake1()
     return (ret);
 }
 
-bool
+void
 CRtpSessionUdpclientEx::DoHandshake3()
 {
     assert(m_trans != NULL);
     if (m_trans == NULL)
     {
-        return (false);
+        return;
     }
 
     RTP_EXT ext;
     memset(&ext, 0, sizeof(RTP_EXT));
     m_trans->SendData(&ext, sizeof(RTP_EXT));
-
-    return (true);
 }

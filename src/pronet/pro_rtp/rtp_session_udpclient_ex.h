@@ -20,6 +20,7 @@
 #define RTP_SESSION_UDPCLIENT_EX_H
 
 #include "rtp_session_base.h"
+#include "rtp_session_udpserver_ex.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -54,13 +55,19 @@ private:
         const pbsd_sockaddr_in* remoteAddr
         );
 
+    virtual void PRO_CALLTYPE OnTimer(
+        unsigned long timerId,
+        PRO_INT64     userData
+        );
+
     bool DoHandshake1();
 
-    bool DoHandshake3();
+    void DoHandshake3();
 
 private:
 
-    RTP_SESSION_ACK m_ackToPeer; /* network byte order */
+    RTP_UDPX_SYNC m_syncToPeer; /* network byte order */
+    unsigned long m_syncTimerId;
 
     DECLARE_SGI_POOL(0);
 };

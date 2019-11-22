@@ -47,9 +47,11 @@ struct RTP_EXT
 #if defined(PRO_WORDS_BIGENDIAN)
     unsigned char keyFrame           : 1;
     unsigned char firstPacketOfFrame : 1;
-    unsigned char reserved           : 6;
+    unsigned char udpxSync           : 1;
+    unsigned char reserved           : 5;
 #else
-    unsigned char reserved           : 6;
+    unsigned char reserved           : 5;
+    unsigned char udpxSync           : 1;
     unsigned char firstPacketOfFrame : 1;
     unsigned char keyFrame           : 1;
 #endif
@@ -190,6 +192,10 @@ public:
     virtual void PRO_CALLTYPE SetMagic(PRO_INT64 magic);
 
     virtual PRO_INT64 PRO_CALLTYPE GetMagic() const;
+
+    void SetUdpxSync(bool sync);
+
+    bool GetUdpxSync() const;
 
     /*
      * Don't use this method unless you know why and how to use it.

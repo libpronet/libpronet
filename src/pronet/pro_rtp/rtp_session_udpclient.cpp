@@ -243,13 +243,15 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
                 break;
             }
 
-            if (m_remoteAddr.sin_addr.s_addr != 0
+            if (
+                m_remoteAddr.sin_addr.s_addr != 0
                 &&
                 (remoteAddr->sin_addr.s_addr != m_remoteAddr.sin_addr.s_addr ||
                  remoteAddr->sin_port        != m_remoteAddr.sin_port)
                 &&
                 (remoteAddr->sin_addr.s_addr != m_remoteAddrConfig.sin_addr.s_addr ||
-                 remoteAddr->sin_port        != m_remoteAddrConfig.sin_port)) /* check */
+                 remoteAddr->sin_port        != m_remoteAddrConfig.sin_port)
+               ) /* check */
             {
                 recvPool.Flush(dataSize);
                 break;

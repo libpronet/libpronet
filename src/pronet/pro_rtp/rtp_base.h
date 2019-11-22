@@ -296,7 +296,7 @@ struct RTP_INIT_TCPSERVER
  * remoteIp         : 远端的ip地址或域名
  * remotePort       : 远端的端口号
  * localIp          : 要绑定的本地ip地址. 如果为"", 系统将使用0.0.0.0
- * timeoutInSeconds : 握手超时. 默认20秒
+ * timeoutInSeconds : 握手超时. 默认10秒
  * bucket           : 流控桶. 如果为NULL, 系统将自动分配一个
  */
 struct RTP_INIT_UDPCLIENT_EX
@@ -317,7 +317,7 @@ struct RTP_INIT_UDPCLIENT_EX
  * reactor          : 反应器
  * localIp          : 要绑定的本地ip地址. 如果为"", 系统将使用0.0.0.0
  * localPort        : 要绑定的本地端口号. 如果为0, 系统将随机分配一个
- * timeoutInSeconds : 握手超时. 默认20秒
+ * timeoutInSeconds : 握手超时. 默认10秒
  * bucket           : 流控桶. 如果为NULL, 系统将自动分配一个
  */
 struct RTP_INIT_UDPSERVER_EX

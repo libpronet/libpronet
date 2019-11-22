@@ -134,7 +134,7 @@ CreateRtpSessionTcpserver(IRtpSessionObserver*    observer,
  * remoteIp         : 远端的ip地址或域名
  * remotePort       : 远端的端口号
  * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
- * timeoutInSeconds : 握手超时. 默认20秒
+ * timeoutInSeconds : 握手超时. 默认10秒
  *
  * 返回值: 会话对象或NULL
  *
@@ -159,7 +159,7 @@ CreateRtpSessionUdpclientEx(IRtpSessionObserver*    observer,
  * localInfo        : 会话信息
  * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
  * localPort        : 要绑定的本地端口号. 如果为0, 系统将随机分配一个
- * timeoutInSeconds : 握手超时. 默认20秒
+ * timeoutInSeconds : 握手超时. 默认10秒
  *
  * 返回值: 会话对象或NULL
  *

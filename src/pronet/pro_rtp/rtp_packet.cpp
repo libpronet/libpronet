@@ -597,6 +597,18 @@ CRtpPacket::GetMagic() const
     return (m_magic);
 }
 
+void
+CRtpPacket::SetUdpxSync(bool sync)
+{
+    m_packet->ext->udpxSync = sync ? 1 : 0;
+}
+
+bool
+CRtpPacket::GetUdpxSync() const
+{
+    return (m_packet->ext->udpxSync != 0);
+}
+
 const RTP_PACKET&
 CRtpPacket::GetPacket() const
 {

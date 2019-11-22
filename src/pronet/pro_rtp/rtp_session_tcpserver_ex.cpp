@@ -148,14 +148,18 @@ CRtpSessionTcpserverEx::Init(IRtpSessionObserver* observer,
         m_handshakeOk  = true; /* !!! */
         m_onOkTimerId  = reactor->ScheduleTimer(this, 0, false);
 
-        if (DoHandshake(useAckData, ackData))
+        if (!DoHandshake(useAckData, ackData))
         {
-            return (true);
-        }
+            m_reactor->CancelTimer(m_onOkTimerId);
+            m_onOkTimerId = 0;
 
-        m_reactor->CancelTimer(m_onOkTimerId);
-        m_onOkTimerId = 0;
+            goto EXIT;
+        }
     }
+
+    return (true);
+
+EXIT:
 
     Fini();
 
