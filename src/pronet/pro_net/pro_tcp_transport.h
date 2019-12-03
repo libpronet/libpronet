@@ -118,6 +118,10 @@ public:
 
     virtual void PRO_CALLTYPE StopHeartbeat();
 
+    virtual void PRO_CALLTYPE UdpConnResetAsError()
+    {
+    }
+
     bool SendFd(const PRO_SERVICE_PACKET& s2cPacket);
 
 protected:

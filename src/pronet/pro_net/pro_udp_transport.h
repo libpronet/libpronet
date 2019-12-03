@@ -102,6 +102,8 @@ public:
 
     virtual void PRO_CALLTYPE StopHeartbeat();
 
+    virtual void PRO_CALLTYPE UdpConnResetAsError();
+
 protected:
 
     CProUdpTransport(size_t recvPoolSize); /* = 0 */
@@ -142,6 +144,7 @@ private:
     bool                    m_pendingWr;
     bool                    m_requestOnSend;
     PRO_UINT64              m_actionId;
+    bool                    m_connResetAsError;
 
     bool                    m_canUpcall;
     CProThreadMutex         m_lockUpcall;

@@ -701,6 +701,13 @@ public:
      * 停止心跳定时器
      */
     virtual void PRO_CALLTYPE StopHeartbeat() = 0;
+
+    /*
+     * udp数据不可达时, 作为错误对待(for CProUdpTransport only)
+     *
+     * 默认false. 设置之后不可逆
+     */
+    virtual void PRO_CALLTYPE UdpConnResetAsError() = 0;
 };
 
 /*

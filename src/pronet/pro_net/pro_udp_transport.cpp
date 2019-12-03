@@ -55,16 +55,17 @@ CProUdpTransport::CreateInstance(size_t recvPoolSize)   /* = 0 */
 CProUdpTransport::CProUdpTransport(size_t recvPoolSize) /* = 0 */
 : m_recvPoolSize(recvPoolSize > 0 ? recvPoolSize : DEFAULT_RECV_POOL_SIZE)
 {
-    m_observer      = NULL;
-    m_reactorTask   = NULL;
-    m_sockId        = -1;
-    m_timerId       = 0;
-    m_onWr          = false;
-    m_pendingWr     = false;
-    m_requestOnSend = false;
-    m_actionId      = 0;
+    m_observer         = NULL;
+    m_reactorTask      = NULL;
+    m_sockId           = -1;
+    m_timerId          = 0;
+    m_onWr             = false;
+    m_pendingWr        = false;
+    m_requestOnSend    = false;
+    m_actionId         = 0;
+    m_connResetAsError = false;
 
-    m_canUpcall     = true;
+    m_canUpcall        = true;
 
     memset(&m_localAddr        , 0, sizeof(pbsd_sockaddr_in));
     memset(&m_defaultRemoteAddr, 0, sizeof(pbsd_sockaddr_in));
@@ -489,6 +490,22 @@ CProUdpTransport::StopHeartbeat()
 
 void
 PRO_CALLTYPE
+CProUdpTransport::UdpConnResetAsError()
+{
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_observer == NULL || m_reactorTask == NULL)
+        {
+            return;
+        }
+
+        m_connResetAsError = true;
+    }
+}
+
+void
+PRO_CALLTYPE
 CProUdpTransport::OnInput(PRO_INT64 sockId)
 {{
     CProThreadMutexGuard mon(m_lockUpcall);
@@ -562,6 +579,14 @@ EXIT:
         {
             observer->OnRecv(this, &remoteAddr);
             assert(m_recvPool.ContinuousIdleSize() > 0);
+        }
+        else if (
+            recvSize < 0 && errorCode == PBSD_ECONNRESET &&
+            m_connResetAsError
+            )
+        {
+            m_canUpcall = false;
+            observer->OnClose(this, errorCode, sslCode);
         }
         else if (
             recvSize < 0 && errorCode != PBSD_EWOULDBLOCK &&

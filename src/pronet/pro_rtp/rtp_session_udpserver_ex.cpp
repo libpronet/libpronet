@@ -373,6 +373,11 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
 
                     m_reactor->CancelTimer(m_timeoutTimerId);
                     m_timeoutTimerId = 0;
+
+                    /*
+                     * Activate ECONNRESET event
+                     */
+                    m_trans->UdpConnResetAsError();
                 }
             }
 
