@@ -133,6 +133,7 @@ int main(int argc, char* argv[])
 
     IProReactor*                   reactor    = NULL;
     CProStlString                  portString = "";
+    CProStlString                  timeString = "";
     SERVICE_HUB_CONFIG_INFO        configInfo;
     CProStlVector<IProServiceHub*> hubs;
 
@@ -260,9 +261,13 @@ int main(int argc, char* argv[])
         } /* end of for (...) */
     }
 
+    ProGetLocalTimeString(timeString);
     printf(
-        "\n pro_service_hub [ver-%d.%d.%d] --- [ports : %s] --- ok! \n"
+        "\n"
+        "%s \n"
+        " pro_service_hub [ver-%d.%d.%d] --- [ports : %s] --- ok! \n"
         ,
+        timeString.c_str(),
         PRO_VER_MAJOR,
         PRO_VER_MINOR,
         PRO_VER_PATCH,

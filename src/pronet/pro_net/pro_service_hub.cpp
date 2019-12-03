@@ -368,6 +368,24 @@ CProServiceHub::OnRecv(CProServicePipe*          pipe,
             sp.processId  = packet.c2s.processId;
 
             m_serviceId2Pipe[sp.serviceId] = sp;
+
+            {{{
+                CProStlString timeString = "";
+                ProGetLocalTimeString(timeString);
+
+                printf(
+                    "\n"
+                    "%s \n"
+                    " CProServiceHub::OnRecv(port : %u, serviceId : %u,"
+                    " processId : %u/0x%X) \n"
+                    ,
+                    timeString.c_str(),
+                    (unsigned int)ProGetAcceptorPort(m_acceptor),
+                    (unsigned int)sp.serviceId,
+                    (unsigned int)sp.processId,
+                    (unsigned int)sp.processId
+                    );
+            }}}
         }
         else
         {
