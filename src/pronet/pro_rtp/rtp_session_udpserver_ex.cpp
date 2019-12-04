@@ -377,7 +377,7 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                     /*
                      * Activate ECONNRESET event
                      */
-                    m_trans->UdpConnResetAsError();
+                    m_trans->UdpConnResetAsError(&m_remoteAddr);
                 }
             }
 

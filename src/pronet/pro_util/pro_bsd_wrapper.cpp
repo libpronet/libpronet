@@ -31,16 +31,18 @@ extern "C" {
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define PBSD_EPOLL_SIZE 10000
+#define PBSD_EPOLL_SIZE   10000
 
 #if defined(WIN32) || defined(_WIN32_WCE)
-#define PBSD_EINTR      WSAEINTR    /* 10004 */
-#define PBSD_EINVAL     WSAEINVAL   /* 10022 */
-#define PBSD_ENOTSOCK   WSAENOTSOCK /* 10038 */
+#define PBSD_EINTR        WSAEINTR        /* 10004 */
+#define PBSD_EINVAL       WSAEINVAL       /* 10022 */
+#define PBSD_ENOTSOCK     WSAENOTSOCK     /* 10038 */
+#define PBSD_ECONNREFUSED WSAECONNREFUSED /* 10061 */
 #else
-#define PBSD_EINTR      EINTR       /*  4 */
-#define PBSD_EINVAL     EINVAL      /* 22 */
-#define PBSD_ENOTSOCK   ENOTSOCK    /*  8 */
+#define PBSD_EINTR        EINTR           /*  4 */
+#define PBSD_EINVAL       EINVAL          /* 22 */
+#define PBSD_ENOTSOCK     ENOTSOCK        /*  8 */
+#define PBSD_ECONNREFUSED ECONNREFUSED    /* 111 */
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
@@ -306,6 +308,10 @@ pbsd_errno(void* action) /* = NULL */
     if (errcode == PBSD_ENOTSOCK)
     {
         errcode = PBSD_EBADF;
+    }
+    if (errcode == PBSD_ECONNREFUSED)
+    {
+        errcode = PBSD_ECONNRESET;
     }
 
     return (errcode);

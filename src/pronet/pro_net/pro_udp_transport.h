@@ -102,7 +102,9 @@ public:
 
     virtual void PRO_CALLTYPE StopHeartbeat();
 
-    virtual void PRO_CALLTYPE UdpConnResetAsError();
+    virtual void PRO_CALLTYPE UdpConnResetAsError(
+        const pbsd_sockaddr_in* remoteAddr
+        );
 
 protected:
 
@@ -145,6 +147,7 @@ private:
     bool                    m_requestOnSend;
     PRO_UINT64              m_actionId;
     bool                    m_connResetAsError;
+    bool                    m_connRefused;
 
     bool                    m_canUpcall;
     CProThreadMutex         m_lockUpcall;

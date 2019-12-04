@@ -707,7 +707,9 @@ public:
      *
      * 默认false. 设置之后不可逆
      */
-    virtual void PRO_CALLTYPE UdpConnResetAsError() = 0;
+    virtual void PRO_CALLTYPE UdpConnResetAsError(
+        const pbsd_sockaddr_in* remoteAddr
+        ) = 0;
 };
 
 /*

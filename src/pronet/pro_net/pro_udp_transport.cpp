@@ -64,6 +64,7 @@ CProUdpTransport::CProUdpTransport(size_t recvPoolSize) /* = 0 */
     m_requestOnSend    = false;
     m_actionId         = 0;
     m_connResetAsError = false;
+    m_connRefused      = false;
 
     m_canUpcall        = true;
 
@@ -360,7 +361,7 @@ CProUdpTransport::SendData(const void*             buf,
             return (false);
         }
 
-        if (m_pendingWr)
+        if (m_pendingWr || m_connRefused)
         {
             return (false);
         }
@@ -379,6 +380,11 @@ CProUdpTransport::SendData(const void*             buf,
             m_sockId, buf, (int)size, 0, realAddr);
         if (sentSize != (int)size)
         {
+            if (pbsd_errno((void*)&pbsd_sendto) == PBSD_ECONNRESET)
+            {
+                m_connRefused = true;
+            }
+
             return (false);
         }
 
@@ -490,8 +496,14 @@ CProUdpTransport::StopHeartbeat()
 
 void
 PRO_CALLTYPE
-CProUdpTransport::UdpConnResetAsError()
+CProUdpTransport::UdpConnResetAsError(const pbsd_sockaddr_in* remoteAddr)
 {
+    assert(remoteAddr != NULL);
+    if (remoteAddr == NULL)
+    {
+        return;
+    }
+
     {
         CProThreadMutexGuard mon(m_lock);
 
@@ -501,6 +513,15 @@ CProUdpTransport::UdpConnResetAsError()
         }
 
         m_connResetAsError = true;
+
+#if defined(WIN32) || defined(_WIN32_WCE)
+        long          arg           = 1;
+        unsigned long bytesReturned = 0;
+        ::WSAIoctl((SOCKET)m_sockId, (unsigned long)SIO_UDP_CONNRESET,
+            &arg, sizeof(long), NULL, 0, &bytesReturned, NULL, NULL);
+#else
+        pbsd_connect(m_sockId, remoteAddr);
+#endif
     }
 }
 
@@ -519,7 +540,6 @@ CProUdpTransport::OnInput(PRO_INT64 sockId)
     IProTransportObserver* observer  = NULL;
     int                    recvSize  = 0;
     int                    errorCode = 0;
-    const int              sslCode   = 0;
     pbsd_sockaddr_in       remoteAddr;
 
     {
@@ -586,7 +606,7 @@ EXIT:
             )
         {
             m_canUpcall = false;
-            observer->OnClose(this, errorCode, sslCode);
+            observer->OnClose(this, PBSD_ECONNRESET, 0);
         }
         else if (
             recvSize < 0 && errorCode != PBSD_EWOULDBLOCK &&
@@ -594,7 +614,7 @@ EXIT:
             )
         {
             m_canUpcall = false;
-            observer->OnClose(this, errorCode, sslCode);
+            observer->OnClose(this, errorCode, 0);
         }
         else
         {
@@ -637,7 +657,7 @@ CProUdpTransport::OnOutput(PRO_INT64 sockId)
             return;
         }
 
-        if (!m_pendingWr && !m_requestOnSend)
+        if (!m_pendingWr && !m_requestOnSend && !m_connRefused)
         {
             return;
         }
@@ -654,24 +674,37 @@ CProUdpTransport::OnOutput(PRO_INT64 sockId)
 
     if (m_canUpcall)
     {
-        observer->OnSend(this, actionId);
-
+        if (m_connRefused)
         {
-            CProThreadMutexGuard mon(m_lock);
+            m_canUpcall = false;
+            observer->OnClose(this, PBSD_ECONNRESET, 0);
+        }
+        else
+        {
+            observer->OnSend(this, actionId);
 
-            if (m_observer != NULL && m_reactorTask != NULL)
             {
-                if (m_onWr && !m_pendingWr && !m_requestOnSend)
+                CProThreadMutexGuard mon(m_lock);
+
+                if (m_observer != NULL && m_reactorTask != NULL)
                 {
-                    m_reactorTask->RemoveHandler(
-                        m_sockId, this, PRO_MASK_WRITE);
-                    m_onWr = false;
+                    if (m_onWr && !m_pendingWr && !m_requestOnSend)
+                    {
+                        m_reactorTask->RemoveHandler(
+                            m_sockId, this, PRO_MASK_WRITE);
+                        m_onWr = false;
+                    }
                 }
             }
         }
     }
 
     observer->Release();
+
+    if (!m_canUpcall)
+    {
+        Fini();
+    }
 }}
 
 void
@@ -688,7 +721,6 @@ CProUdpTransport::OnError(PRO_INT64 sockId,
     }
 
     IProTransportObserver* observer = NULL;
-    const int              sslCode  = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -710,7 +742,7 @@ CProUdpTransport::OnError(PRO_INT64 sockId,
     if (m_canUpcall)
     {
         m_canUpcall = false;
-        observer->OnClose(this, errorCode, sslCode);
+        observer->OnClose(this, errorCode, 0);
     }
 
     observer->Release();
