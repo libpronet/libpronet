@@ -160,6 +160,11 @@ private:
         bool         tcpConnected
         );
 
+    virtual void PRO_CALLTYPE OnHeartbeatSession(
+        IRtpSession* session,
+        PRO_INT64    peerAliveTick
+        );
+
     virtual void PRO_CALLTYPE OnTimer(
         unsigned long timerId,
         PRO_INT64     userData

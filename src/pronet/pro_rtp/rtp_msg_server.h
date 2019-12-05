@@ -227,6 +227,11 @@ private:
         bool         tcpConnected
         );
 
+    virtual void PRO_CALLTYPE OnHeartbeatSession(
+        IRtpSession* session,
+        PRO_INT64    peerAliveTick
+        );
+
     bool AddBaseUser(
         RTP_SESSION_TYPE        sessionType,
         const RTP_INIT_ARGS&    initArgs,

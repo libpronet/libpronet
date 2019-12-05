@@ -1642,6 +1642,47 @@ CRtpMsgServer::AsyncOnCloseSession(PRO_INT64* args)
     DeleteRtpSessionWrapper(session);
 }
 
+void
+PRO_CALLTYPE
+CRtpMsgServer::OnHeartbeatSession(IRtpSession* session,
+                                  PRO_INT64    peerAliveTick)
+{
+    assert(session != NULL);
+    if (session == NULL)
+    {
+        return;
+    }
+
+    IRtpMsgServerObserver* observer = NULL;
+    RTP_MSG_USER           user;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_observer == NULL || m_reactor == NULL || m_task == NULL ||
+            m_service == NULL)
+        {
+            return;
+        }
+
+        CProStlMap<IRtpSession*, RTP_MSG_LINK_CTX*>::const_iterator const itr =
+            m_session2Ctx.find(session);
+        if (itr == m_session2Ctx.end())
+        {
+            return;
+        }
+
+        const RTP_MSG_LINK_CTX* const ctx = itr->second;
+        user = ctx->baseUser;
+
+        m_observer->AddRef();
+        observer = m_observer;
+    }
+
+    observer->OnHeartbeatUser(this, &user, peerAliveTick);
+    observer->Release();
+}
+
 bool
 CRtpMsgServer::AddBaseUser(RTP_SESSION_TYPE        sessionType,
                            const RTP_INIT_ARGS&    initArgs,

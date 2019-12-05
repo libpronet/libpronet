@@ -167,6 +167,13 @@ private:
         bool           tcpConnected
         );
 
+    virtual void PRO_CALLTYPE OnHeartbeatMsg(
+        IRtpMsgClient* msgClient,
+        PRO_INT64      peerAliveTick
+        )
+    {
+    }
+
 private:
 
     IProReactor*           m_reactor;

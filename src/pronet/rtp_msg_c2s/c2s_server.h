@@ -209,6 +209,13 @@ private:
         bool        tcpConnected
         );
 
+    virtual void PRO_CALLTYPE OnHeartbeatC2s(
+        IRtpMsgC2s* msgC2s,
+        PRO_INT64   peerAliveTick
+        )
+    {
+    }
+
     virtual void PRO_CALLTYPE OnOkUser(
         IRtpMsgC2s*         msgC2s,
         const RTP_MSG_USER* user,
@@ -221,6 +228,14 @@ private:
         long                errorCode,
         long                sslCode
         );
+
+    virtual void PRO_CALLTYPE OnHeartbeatUser(
+        IRtpMsgC2s*         msgC2s,
+        const RTP_MSG_USER* user,
+        PRO_INT64           peerAliveTick
+        )
+    {
+    }
 
 private:
 

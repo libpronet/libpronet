@@ -969,6 +969,21 @@ public:
         long         sslCode,     /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
         bool         tcpConnected /* tcp连接是否已经建立 */
         ) = 0;
+
+    /*
+     * 心跳发生时, 该函数将被回调
+     *
+     * 仅用于以下类型的会话:
+     * RTP_ST_UDPCLIENT_EX, RTP_ST_UDPSERVER_EX,
+     * RTP_ST_TCPCLIENT_EX, RTP_ST_TCPSERVER_EX,
+     * RTP_ST_SSLCLIENT_EX, RTP_ST_SSLSERVER_EX
+     *
+     * 主要用于调试
+     */
+    virtual void PRO_CALLTYPE OnHeartbeatSession(
+        IRtpSession* session,
+        PRO_INT64    peerAliveTick
+        ) = 0;
 };
 
 /////////////////////////////////////////////////////////////////////////////

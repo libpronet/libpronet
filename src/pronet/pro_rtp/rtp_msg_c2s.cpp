@@ -1153,6 +1153,48 @@ CRtpMsgC2s::OnCloseSession(IRtpSession* session,
 
 void
 PRO_CALLTYPE
+CRtpMsgC2s::OnHeartbeatSession(IRtpSession* session,
+                               PRO_INT64    peerAliveTick)
+{{
+    CProThreadMutexGuard mon(m_lockUpcall);
+
+    assert(session != NULL);
+    if (session == NULL)
+    {
+        return;
+    }
+
+    IRtpMsgC2sObserver* observer = NULL;
+    RTP_MSG_USER        user;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_observer == NULL || m_reactor == NULL || m_task == NULL ||
+            m_service == NULL)
+        {
+            return;
+        }
+
+        CProStlMap<IRtpSession*, RTP_MSG_USER>::const_iterator const itr =
+            m_session2User.find(session);
+        if (itr == m_session2User.end())
+        {
+            return;
+        }
+
+        user = itr->second;
+
+        m_observer->AddRef();
+        observer = m_observer;
+    }
+
+    observer->OnHeartbeatUser(this, &user, peerAliveTick);
+    observer->Release();
+}}
+
+void
+PRO_CALLTYPE
 CRtpMsgC2s::OnOkMsg(IRtpMsgClient*      msgClient,
                     const RTP_MSG_USER* myUser,
                     const char*         myPublicIp)
@@ -1625,8 +1667,9 @@ CRtpMsgC2s::OnCloseMsg(IRtpMsgClient* msgClient,
         m_session2User.clear();
         m_user2Session.clear();
 
-        m_myUserNow.Zero(); /* logout */
-        m_msgClient = NULL; /* logout */
+        m_myUserNow.Zero();         /* logout */
+        m_myUserBak = m_uplinkUser; /* logout */
+        m_msgClient = NULL;         /* logout */
 
         m_observer->AddRef();
         observer = m_observer;
@@ -1646,6 +1689,43 @@ CRtpMsgC2s::OnCloseMsg(IRtpMsgClient* msgClient,
     CRtpMsgClient* const msgClient2 = (CRtpMsgClient*)msgClient;
     msgClient2->Fini();
     msgClient2->Release();
+}}
+
+void
+PRO_CALLTYPE
+CRtpMsgC2s::OnHeartbeatMsg(IRtpMsgClient* msgClient,
+                           PRO_INT64      peerAliveTick)
+{{
+    CProThreadMutexGuard mon(m_lockUpcall);
+
+    assert(msgClient != NULL);
+    if (msgClient == NULL)
+    {
+        return;
+    }
+
+    IRtpMsgC2sObserver* observer = NULL;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_observer == NULL || m_reactor == NULL || m_task == NULL ||
+            m_service == NULL)
+        {
+            return;
+        }
+
+        if (msgClient != m_msgClient)
+        {
+            return;
+        }
+
+        m_observer->AddRef();
+        observer = m_observer;
+    }
+
+    observer->OnHeartbeatC2s(this, peerAliveTick);
+    observer->Release();
 }}
 
 void

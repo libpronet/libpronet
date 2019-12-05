@@ -698,7 +698,9 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
         return;
     }
 
-    IRtpSessionObserver* observer = NULL;
+    IRtpSessionObserver* observer      = NULL;
+    PRO_INT64            peerAliveTick = 0;
+    const PRO_INT64      tick          = ProGetTickCount64();
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -712,8 +714,6 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
         {
             return;
         }
-
-        const PRO_INT64 tick = ProGetTickCount64();
 
 #if !defined(_WIN32_WCE)
         do
@@ -1173,14 +1173,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
             }
         } /* end of switch (...) */
 
-        /*
-         * a timeout occured?
-         */
-        if (tick - m_peerAliveTick <
-            (PRO_INT64)GetRtpKeepaliveTimeout() * 1000)
-        {
-            return;
-        }
+        peerAliveTick = m_peerAliveTick;
 
         m_observer->AddRef();
         observer = m_observer;
@@ -1188,13 +1181,27 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
 
     if (m_canUpcall)
     {
-        m_canUpcall = false;
-        observer->OnCloseSession(this, PBSD_ETIMEDOUT, 0, m_tcpConnected);
+        /*
+         * a timeout occured?
+         */
+        if (tick - peerAliveTick >=
+            (PRO_INT64)GetRtpKeepaliveTimeout() * 1000)
+        {
+            m_canUpcall = false;
+            observer->OnCloseSession(this, PBSD_ETIMEDOUT, 0, m_tcpConnected);
+        }
+        else
+        {
+            observer->OnHeartbeatSession(this, peerAliveTick);
+        }
     }
 
     observer->Release();
 
-    Fini();
+    if (!m_canUpcall)
+    {
+        Fini();
+    }
 }}
 
 void

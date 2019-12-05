@@ -190,6 +190,14 @@ private:
         long                sslCode
         );
 
+    virtual void PRO_CALLTYPE OnHeartbeatUser(
+        IRtpMsgServer*      msgServer,
+        const RTP_MSG_USER* user,
+        PRO_INT64           peerAliveTick
+        )
+    {
+    }
+
     virtual void PRO_CALLTYPE OnRecvMsg(
         IRtpMsgServer*      msgServer,
         const void*         buf,

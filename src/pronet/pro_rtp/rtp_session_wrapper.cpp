@@ -1639,6 +1639,46 @@ CRtpSessionWrapper::OnCloseSession(IRtpSession* session,
 
 void
 PRO_CALLTYPE
+CRtpSessionWrapper::OnHeartbeatSession(IRtpSession* session,
+                                       PRO_INT64    peerAliveTick)
+{
+    assert(session != NULL);
+    if (session == NULL)
+    {
+        return;
+    }
+
+    IRtpSessionObserver* observer = NULL;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
+        {
+            return;
+        }
+
+        if (session != m_session)
+        {
+            return;
+        }
+
+        if (!m_onOkCalled)
+        {
+            return;
+        }
+
+        m_observer->AddRef();
+        observer = m_observer;
+    }
+
+    observer->OnHeartbeatSession(this, peerAliveTick);
+    observer->Release();
+}
+
+void
+PRO_CALLTYPE
 CRtpSessionWrapper::OnTimer(unsigned long timerId,
                             PRO_INT64     userData)
 {

@@ -401,6 +401,16 @@ public:
         long           sslCode,     /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
         bool           tcpConnected /* tcp连接是否已经建立 */
         ) = 0;
+
+    /*
+     * 心跳发生时, 该函数将被回调
+     *
+     * 主要用于调试
+     */
+    virtual void PRO_CALLTYPE OnHeartbeatMsg(
+        IRtpMsgClient* msgClient,
+        PRO_INT64      peerAliveTick
+        ) = 0;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -566,6 +576,17 @@ public:
         const RTP_MSG_USER* user,
         long                errorCode,    /* 系统错误码 */
         long                sslCode       /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
+        ) = 0;
+
+    /*
+     * 用户心跳发生时, 该函数将被回调
+     *
+     * 主要用于调试
+     */
+    virtual void PRO_CALLTYPE OnHeartbeatUser(
+        IRtpMsgServer*      msgServer,
+        const RTP_MSG_USER* user,
+        PRO_INT64           peerAliveTick
         ) = 0;
 
     /*
@@ -738,6 +759,16 @@ public:
         ) = 0;
 
     /*
+     * c2s心跳发生时, 该函数将被回调
+     *
+     * 主要用于调试
+     */
+    virtual void PRO_CALLTYPE OnHeartbeatC2s(
+        IRtpMsgC2s* msgC2s,
+        PRO_INT64   peerAliveTick
+        ) = 0;
+
+    /*
      * 用户登录成功时, 该函数将被回调
      */
     virtual void PRO_CALLTYPE OnOkUser(
@@ -754,6 +785,17 @@ public:
         const RTP_MSG_USER* user,
         long                errorCode, /* 系统错误码 */
         long                sslCode    /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
+        ) = 0;
+
+    /*
+     * 用户心跳发生时, 该函数将被回调
+     *
+     * 主要用于调试
+     */
+    virtual void PRO_CALLTYPE OnHeartbeatUser(
+        IRtpMsgC2s*         msgC2s,
+        const RTP_MSG_USER* user,
+        PRO_INT64           peerAliveTick
         ) = 0;
 };
 

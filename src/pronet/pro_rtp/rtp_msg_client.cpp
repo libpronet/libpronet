@@ -957,6 +957,47 @@ CRtpMsgClient::OnCloseSession(IRtpSession* session,
 
 void
 PRO_CALLTYPE
+CRtpMsgClient::OnHeartbeatSession(IRtpSession* session,
+                                  PRO_INT64    peerAliveTick)
+{{
+    CProThreadMutexGuard mon(m_lockUpcall);
+
+    assert(session != NULL);
+    if (session == NULL)
+    {
+        return;
+    }
+
+    IRtpMsgClientObserver* observer = NULL;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
+            m_bucket == NULL)
+        {
+            return;
+        }
+
+        if (session != m_session)
+        {
+            return;
+        }
+
+        m_observer->AddRef();
+        observer = m_observer;
+    }
+
+    if (m_canUpcall)
+    {
+        observer->OnHeartbeatMsg(this, peerAliveTick);
+    }
+
+    observer->Release();
+}}
+
+void
+PRO_CALLTYPE
 CRtpMsgClient::OnTimer(unsigned long timerId,
                        PRO_INT64     userData)
 {{
