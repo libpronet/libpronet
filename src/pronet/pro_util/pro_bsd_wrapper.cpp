@@ -45,6 +45,12 @@ extern "C" {
 #define PBSD_ECONNREFUSED ECONNREFUSED    /* 111 */
 #endif
 
+#if !defined(PRO_LACKS_GETADDRINFO)
+#define PBSD_GET_IPS      pbsd_getaddrinfo_i
+#else
+#define PBSD_GET_IPS      pbsd_gethostbyname_r_i
+#endif
+
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -127,19 +133,79 @@ pbsd_inet_addr_i(const char* ipstring)
     return (ip);
 }
 
+#if !defined(PRO_LACKS_GETADDRINFO)
+
 static
 unsigned long
 PRO_CALLTYPE
-pbsd_gethostbyname_r_i(const char* name,
-                       PRO_UINT32  ips[8],
-                       bool        enableloopip)
+pbsd_getaddrinfo_i(const char* name,
+                   PRO_UINT32  ips[8])
 {
     if (name == NULL || name[0] == '\0')
     {
         return (0);
     }
 
-    const PRO_UINT32 loopip = pbsd_inet_addr_i("127.0.0.1");
+    const PRO_UINT32 loopmin = pbsd_ntoh32(pbsd_inet_addr_i("127.0.0.0"));
+    const PRO_UINT32 loopmax = pbsd_ntoh32(pbsd_inet_addr_i("127.255.255.255"));
+
+    struct addrinfo hints;
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_family   = AF_INET;
+    hints.ai_socktype = SOCK_DGRAM;
+
+    struct addrinfo*        res  = NULL;
+    struct addrinfo*        itr  = NULL;
+    const pbsd_sockaddr_in* addr = NULL;
+
+    if (getaddrinfo(name, NULL, &hints, &res) != 0)
+    {
+        return (0);
+    }
+
+    unsigned long count = 0;
+
+    itr = res;
+
+    for (int i = 0; i < 8 && itr != NULL; ++i, itr = itr->ai_next)
+    {
+        if (itr->ai_family != AF_INET || itr->ai_socktype != SOCK_DGRAM ||
+            itr->ai_addrlen != sizeof(pbsd_sockaddr_in) ||
+            itr->ai_addr == NULL)
+        {
+            continue;
+        }
+
+        addr       = (pbsd_sockaddr_in*)itr->ai_addr;
+        ips[count] = addr->sin_addr.s_addr;
+
+        const PRO_UINT32 iphost = pbsd_ntoh32(ips[count]);
+        if (iphost < loopmin || iphost > loopmax)
+        {
+            ++count;
+        }
+    }
+
+    freeaddrinfo(res);
+
+    return (count);
+}
+
+#else  /* PRO_LACKS_GETADDRINFO */
+
+static
+unsigned long
+PRO_CALLTYPE
+pbsd_gethostbyname_r_i(const char* name,
+                       PRO_UINT32  ips[8])
+{
+    if (name == NULL || name[0] == '\0')
+    {
+        return (0);
+    }
+
+    const PRO_UINT32 loopmin = pbsd_ntoh32(pbsd_inet_addr_i("127.0.0.0"));
+    const PRO_UINT32 loopmax = pbsd_ntoh32(pbsd_inet_addr_i("127.255.255.255"));
 
     struct hostent* phe = NULL;
 
@@ -176,7 +242,8 @@ pbsd_gethostbyname_r_i(const char* name,
 
         ips[count] = ((struct in_addr*)phe->h_addr_list[i])->s_addr;
 
-        if (enableloopip || ips[count] != loopip)
+        const PRO_UINT32 iphost = pbsd_ntoh32(ips[count]);
+        if (iphost < loopmin || iphost > loopmax)
         {
             ++count;
         }
@@ -184,6 +251,8 @@ pbsd_gethostbyname_r_i(const char* name,
 
     return (count);
 }
+
+#endif /* PRO_LACKS_GETADDRINFO */
 
 static
 void
@@ -245,9 +314,9 @@ GetLocalFirstIpWithoutGW_i(char localFirstIp[64])
         return;
     }
 
-    PRO_UINT32 ips[8];
+    PRO_UINT32          ips[8];
+    const unsigned long count = PBSD_GET_IPS(name, ips);
 
-    const unsigned long count = pbsd_gethostbyname_r_i(name, ips, false);
     if (count > 0)
     {
         pbsd_inet_ntoa(ips[0], localFirstIp);
@@ -341,16 +410,14 @@ pbsd_inet_aton(const char* ipornamestring)
         return (ip);
     }
 
-    PRO_UINT32 ips[8];
-
-    const unsigned long count =
-        pbsd_gethostbyname_r_i(ipornamestring, ips, true); /* true */
-    if (count == 0)
+    PRO_UINT32          ips[8];
+    const unsigned long count = PBSD_GET_IPS(ipornamestring, ips);
+    if (count > 0)
     {
-        return ((PRO_UINT32)-1);
+        return (ips[0]);
     }
 
-    return (ips[0]);
+    return ((PRO_UINT32)-1);
 }
 
 const char*
@@ -1400,7 +1467,10 @@ unsigned long
 PRO_CALLTYPE
 ProGetLocalIpList(char localIpList[8][64])
 {
-    for (int i = 0; i < 8; ++i)
+    int i = 0;
+    int j = 0;
+
+    for (i = 0; i < 8; ++i)
     {
         localIpList[i][0]  = '\0';
         localIpList[i][63] = '\0';
@@ -1414,16 +1484,40 @@ ProGetLocalIpList(char localIpList[8][64])
         return (0);
     }
 
-    PRO_UINT32 ips[8];
+    PRO_UINT32          ips[1 + 8];
+    const unsigned long count = PBSD_GET_IPS(name, ips + 1);
 
-    const unsigned long count = pbsd_gethostbyname_r_i(name, ips, false);
+    char ipString[64] = "";
+    GetLocalFirstIpWithGW_i(ipString, NULL);
 
-    for (int j = 0; j < (int)count; ++j)
+    if (count == 0 && ipString[0] == '\0')
     {
-        pbsd_inet_ntoa(ips[j], localIpList[j]);
+        return (0);
     }
 
-    return (count);
+    if (ipString[0] != '\0')
+    {
+        ips[0] = pbsd_inet_addr_i(ipString);
+        strcpy(localIpList[0], ipString);
+    }
+    else
+    {
+        ips[0] = ips[1];
+        pbsd_inet_ntoa(ips[0], localIpList[0]);
+    }
+
+    for (i = 1, j = 1; i < 8 && j <= (int)count; ++j)
+    {
+        if (ips[j] == ips[0])
+        {
+            continue;
+        }
+
+        pbsd_inet_ntoa(ips[j], localIpList[i]);
+        ++i;
+    }
+
+    return (i);
 }
 
 /////////////////////////////////////////////////////////////////////////////
