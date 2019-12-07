@@ -694,7 +694,7 @@ CTest::OnOkSession(IRtpSession* session)
         if (session == m_udpSession)
         {
             printf(
-                "\n test_rtp [ver-%d.%d.%d] --- [UDP, Lc-%s:%u, Rm-%s:%u] --- connected! \n"
+                "\n test_rtp [ver-%d.%d.%d] --- [UDP, Lc-%s:%u, Rm-%s:%u] --- connected! \n\n"
                 ,
                 PRO_VER_MAJOR,
                 PRO_VER_MINOR,
@@ -708,7 +708,7 @@ CTest::OnOkSession(IRtpSession* session)
         else if (session == m_tcpSession)
         {
             printf(
-                "\n test_rtp [ver-%d.%d.%d] --- [TCP, Lc-%s:%u, Rm-%s:%u] --- connected! \n"
+                "\n test_rtp [ver-%d.%d.%d] --- [TCP, Lc-%s:%u, Rm-%s:%u] --- connected! \n\n"
                 ,
                 PRO_VER_MAJOR,
                 PRO_VER_MINOR,
@@ -939,11 +939,6 @@ CTest::OnTimer(unsigned long timerId,
         }
         else if (timerId == m_recvTimerId)
         {
-            if (m_mode == TM_UDPE || m_mode == TM_TCPE)
-            {
-                return;
-            }
-
             IRtpSession* const session =
                 m_udpSession != NULL ? m_udpSession : m_tcpSession;
             if (session == NULL || !session->IsReady())
@@ -961,7 +956,23 @@ CTest::OnTimer(unsigned long timerId,
             session->GetInputStat(
                 NULL, &inputBitRate, &inputLossRate, &inputLossCount);
 
-            if (m_echoClient)
+            if (m_mode == TM_UDPE || m_mode == TM_TCPE)
+            {
+                /*
+                 * using a single line
+                 */
+                printf(
+                    "\r SEND : %9.1f(kbps)\t RECV : %9.1f(kbps)\t"
+                    " LOSS : %5.2f%% [%u] "
+                    ,
+                    outputBitRate / 1000,
+                    inputBitRate  / 1000,
+                    inputLossRate * 100,
+                    (unsigned int)inputLossCount
+                    );
+                fflush(stdout);
+            }
+            else if (m_echoClient)
             {
                 inputLossRate  = (float)m_statRttLossRate.CalcLossRate();
                 inputLossCount = (float)m_statRttLossRate.CalcLossCount();
@@ -969,7 +980,7 @@ CTest::OnTimer(unsigned long timerId,
 
                 printf(
                     "\n SEND : %9.1f(kbps)\t RECV : %9.1f(kbps)\t"
-                    " LOSS : %5.2f%% [%u]\t RTT : %u(ms) \n"
+                    " LOSS : %5.2f%% [%u]\t RTT' : %u(ms) \n"
                     ,
                     outputBitRate / 1000,
                     inputBitRate  / 1000,
