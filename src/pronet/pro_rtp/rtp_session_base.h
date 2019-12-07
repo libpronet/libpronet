@@ -63,6 +63,8 @@ protected:
 
     virtual void PRO_CALLTYPE GetAck(RTP_SESSION_ACK* ack) const;
 
+    virtual void PRO_CALLTYPE GetSyncId(unsigned char syncId[14]) const;
+
     virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
         char suiteName[64]
         ) const;
@@ -102,8 +104,8 @@ protected:
     }
 
     virtual void PRO_CALLTYPE GetSendOnSendTick(
-        PRO_INT64* sendTick,         /* = NULL */
-        PRO_INT64* onSendTick        /* = NULL */
+        PRO_INT64* onSendTick1,      /* = NULL */
+        PRO_INT64* onSendTick2       /* = NULL */
         ) const;
 
     virtual void PRO_CALLTYPE RequestOnSend();
@@ -227,9 +229,9 @@ protected:
     PRO_INT64               m_dummySockId;
     PRO_UINT64              m_actionId;
     PRO_INT64               m_initTick;
-    PRO_INT64               m_sendingTick;
-    PRO_INT64               m_sendTick;         /* for tcp, tcp_ex, ssl_ex */
-    PRO_INT64               m_onSendTick;       /* for tcp, tcp_ex, ssl_ex */
+    PRO_INT64               m_sendTick;
+    PRO_INT64               m_onSendTick1;      /* for tcp, tcp_ex, ssl_ex */
+    PRO_INT64               m_onSendTick2;      /* for tcp, tcp_ex, ssl_ex */
     PRO_INT64               m_peerAliveTick;
     unsigned long           m_timeoutTimerId;
     unsigned long           m_onOkTimerId;

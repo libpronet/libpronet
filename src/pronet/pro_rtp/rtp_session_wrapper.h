@@ -68,6 +68,8 @@ private:
 
     virtual void PRO_CALLTYPE GetAck(RTP_SESSION_ACK* ack) const;
 
+    virtual void PRO_CALLTYPE GetSyncId(unsigned char syncId[14]) const;
+
     virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
         char suiteName[64]
         ) const;
@@ -102,8 +104,8 @@ private:
         );
 
     virtual void PRO_CALLTYPE GetSendOnSendTick(
-        PRO_INT64* sendTick,         /* = NULL */
-        PRO_INT64* onSendTick        /* = NULL */
+        PRO_INT64* onSendTick1,      /* = NULL */
+        PRO_INT64* onSendTick2       /* = NULL */
         ) const;
 
     virtual void PRO_CALLTYPE RequestOnSend();

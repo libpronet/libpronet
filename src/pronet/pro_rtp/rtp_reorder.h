@@ -48,7 +48,7 @@ public:
 
     virtual unsigned long PRO_CALLTYPE GetTotalPackets() const;
 
-    virtual void PRO_CALLTYPE PushBack(IRtpPacket* packet);
+    virtual void PRO_CALLTYPE PushBackAddRef(IRtpPacket* packet);
 
     virtual IRtpPacket* PRO_CALLTYPE PopFront(bool force);
 

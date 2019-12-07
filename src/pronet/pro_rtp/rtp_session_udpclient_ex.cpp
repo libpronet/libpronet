@@ -501,5 +501,6 @@ CRtpSessionUdpclientEx::DoHandshake3()
 
     RTP_EXT ext;
     memset(&ext, 0, sizeof(RTP_EXT));
+    ext.mmType = m_info.mmType;
     m_trans->SendData(&ext, sizeof(RTP_EXT));
 }

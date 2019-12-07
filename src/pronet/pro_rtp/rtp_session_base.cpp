@@ -65,9 +65,9 @@ CRtpSessionBase::CRtpSessionBase(bool suspendRecv)
     m_dummySockId    = -1;
     m_actionId       = 0;
     m_initTick       = ProGetTickCount64();
-    m_sendingTick    = m_initTick;
     m_sendTick       = m_initTick;
-    m_onSendTick     = m_initTick; /* assert(m_onSendTick >= m_sendTick) */
+    m_onSendTick1    = m_initTick;
+    m_onSendTick2    = m_initTick; /* assert(m_onSendTick2 >= m_onSendTick1) */
     m_peerAliveTick  = m_initTick;
     m_timeoutTimerId = 0;
     m_onOkTimerId    = 0;
@@ -144,6 +144,13 @@ CRtpSessionBase::GetAck(RTP_SESSION_ACK* ack) const
 
         *ack = m_ack;
     }
+}
+
+void
+PRO_CALLTYPE
+CRtpSessionBase::GetSyncId(unsigned char syncId[14]) const
+{
+    memset(syncId, 0, 14);
 }
 
 PRO_SSL_SUITE_ID
@@ -448,7 +455,7 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
             }
         }
 
-        m_sendingTick = ProGetTickCount64();
+        m_sendTick = ProGetTickCount64();
 
         if (ret)
         {
@@ -461,8 +468,8 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
                 m_info.sessionType == RTP_ST_SSLCLIENT_EX ||
                 m_info.sessionType == RTP_ST_SSLSERVER_EX)
             {
-                m_sendTick   = m_sendingTick;
-                m_onSendTick = m_sendingTick - 1; /* assert(m_onSendTick < m_sendTick) */
+                m_onSendTick1 = m_sendTick;
+                m_onSendTick2 = m_sendTick - 1; /* assert(m_onSendTick2 < m_onSendTick1) */
             }
         }
     }
@@ -472,19 +479,19 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
 
 void
 PRO_CALLTYPE
-CRtpSessionBase::GetSendOnSendTick(PRO_INT64* sendTick,         /* = NULL */
-                                   PRO_INT64* onSendTick) const /* = NULL */
+CRtpSessionBase::GetSendOnSendTick(PRO_INT64* onSendTick1,       /* = NULL */
+                                   PRO_INT64* onSendTick2) const /* = NULL */
 {
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (sendTick != NULL)
+        if (onSendTick1 != NULL)
         {
-            *sendTick   = m_sendTick;
+            *onSendTick1 = m_onSendTick1;
         }
-        if (onSendTick != NULL)
+        if (onSendTick2 != NULL)
         {
-            *onSendTick = m_onSendTick;
+            *onSendTick2 = m_onSendTick2;
         }
     }
 }
@@ -607,7 +614,7 @@ CRtpSessionBase::OnSend(IProTransport* trans,
             {
                 if (actionId > 0 && actionId == m_actionId)
                 {
-                    m_onSendTick = ProGetTickCount64();
+                    m_onSendTick2 = ProGetTickCount64();
                 }
                 break;
             }
@@ -750,8 +757,8 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     size,
                     "\n"
                     " CRtpSessionBase(M) --- [pid : %u/0x%X, this : %p, mmType : %u] \n"
-                    "\t CRtpSessionBase(M) - localVersion     : %u (for tcp_ex, ssl_ex) \n"
-                    "\t CRtpSessionBase(M) - remoteVersion    : %u (for tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(M) - localVersion     : %u (for udp_ex, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(M) - remoteVersion    : %u (for udp_ex, tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(M) - sessionType      : %u \n"
                     "\t CRtpSessionBase(M) - packMode         : %u (for tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(M) - sslSuiteName     : %s (for ssl_ex) \n"
@@ -764,9 +771,9 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     "\t CRtpSessionBase(M) - remoteAddrConfig : %s:%u (for udp) \n"
                     "\t CRtpSessionBase(M) - actionId         : " PRO_PRT64U " \n"
                     "\t CRtpSessionBase(M) - initTick         : " PRO_PRT64D " \n"
-                    "\t CRtpSessionBase(M) - sendingTick      : " PRO_PRT64D " \n"
-                    "\t CRtpSessionBase(M) - sendTick         : " PRO_PRT64D " (for tcp, tcp_ex, ssl_ex) \n"
-                    "\t CRtpSessionBase(M) - onSendTick       : " PRO_PRT64D " (for tcp, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(M) - sendTick         : " PRO_PRT64D " \n"
+                    "\t CRtpSessionBase(M) - onSendTick1      : " PRO_PRT64D " (for tcp, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(M) - onSendTick2      : " PRO_PRT64D " (for tcp, tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(M) - peerAliveTick    : " PRO_PRT64D " \n"
                     "\t CRtpSessionBase(M) - tick             : " PRO_PRT64D " \n"
                     "\t CRtpSessionBase(M) - tcpConnected     : %d (for tcp   , tcp_ex, ssl_ex) \n"
@@ -795,9 +802,9 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (unsigned int)pbsd_ntoh16(m_remoteAddrConfig.sin_port),
                     m_actionId,
                     m_initTick,
-                    m_sendingTick,
                     m_sendTick,
-                    m_onSendTick,
+                    m_onSendTick1,
+                    m_onSendTick2,
                     m_peerAliveTick,
                     tick,
                     (int)(m_tcpConnected ? 1 : 0),
@@ -821,8 +828,8 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     size,
                     "\n"
                     " CRtpSessionBase(A) --- [pid : %u/0x%X, this : %p, mmType : %u] \n"
-                    "\t CRtpSessionBase(A) - localVersion     : %u (for tcp_ex, ssl_ex) \n"
-                    "\t CRtpSessionBase(A) - remoteVersion    : %u (for tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(A) - localVersion     : %u (for udp_ex, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(A) - remoteVersion    : %u (for udp_ex, tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(A) - sessionType      : %u \n"
                     "\t CRtpSessionBase(A) - packMode         : %u (for tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(A) - sslSuiteName     : %s (for ssl_ex) \n"
@@ -835,9 +842,9 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     "\t CRtpSessionBase(A) - remoteAddrConfig : %s:%u (for udp) \n"
                     "\t CRtpSessionBase(A) - actionId         : " PRO_PRT64U " \n"
                     "\t CRtpSessionBase(A) - initTick         : " PRO_PRT64D " \n"
-                    "\t CRtpSessionBase(A) - sendingTick      : " PRO_PRT64D " \n"
-                    "\t CRtpSessionBase(A) - sendTick         : " PRO_PRT64D " (for tcp, tcp_ex, ssl_ex) \n"
-                    "\t CRtpSessionBase(A) - onSendTick       : " PRO_PRT64D " (for tcp, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(A) - sendTick         : " PRO_PRT64D " \n"
+                    "\t CRtpSessionBase(A) - onSendTick1      : " PRO_PRT64D " (for tcp, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(A) - onSendTick2      : " PRO_PRT64D " (for tcp, tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(A) - peerAliveTick    : " PRO_PRT64D " \n"
                     "\t CRtpSessionBase(A) - tick             : " PRO_PRT64D " \n"
                     "\t CRtpSessionBase(A) - tcpConnected     : %d (for tcp   , tcp_ex, ssl_ex) \n"
@@ -866,9 +873,9 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (unsigned int)pbsd_ntoh16(m_remoteAddrConfig.sin_port),
                     m_actionId,
                     m_initTick,
-                    m_sendingTick,
                     m_sendTick,
-                    m_onSendTick,
+                    m_onSendTick1,
+                    m_onSendTick2,
                     m_peerAliveTick,
                     tick,
                     (int)(m_tcpConnected ? 1 : 0),
@@ -892,8 +899,8 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     size,
                     "\n"
                     " CRtpSessionBase(V) --- [pid : %u/0x%X, this : %p, mmType : %u] \n"
-                    "\t CRtpSessionBase(V) - localVersion     : %u (for tcp_ex, ssl_ex) \n"
-                    "\t CRtpSessionBase(V) - remoteVersion    : %u (for tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(V) - localVersion     : %u (for udp_ex, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(V) - remoteVersion    : %u (for udp_ex, tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(V) - sessionType      : %u \n"
                     "\t CRtpSessionBase(V) - packMode         : %u (for tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(V) - sslSuiteName     : %s (for ssl_ex) \n"
@@ -906,9 +913,9 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     "\t CRtpSessionBase(V) - remoteAddrConfig : %s:%u (for udp) \n"
                     "\t CRtpSessionBase(V) - actionId         : " PRO_PRT64U " \n"
                     "\t CRtpSessionBase(V) - initTick         : " PRO_PRT64D " \n"
-                    "\t CRtpSessionBase(V) - sendingTick      : " PRO_PRT64D " \n"
-                    "\t CRtpSessionBase(V) - sendTick         : " PRO_PRT64D " (for tcp, tcp_ex, ssl_ex) \n"
-                    "\t CRtpSessionBase(V) - onSendTick       : " PRO_PRT64D " (for tcp, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(V) - sendTick         : " PRO_PRT64D " \n"
+                    "\t CRtpSessionBase(V) - onSendTick1      : " PRO_PRT64D " (for tcp, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(V) - onSendTick2      : " PRO_PRT64D " (for tcp, tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(V) - peerAliveTick    : " PRO_PRT64D " \n"
                     "\t CRtpSessionBase(V) - tick             : " PRO_PRT64D " \n"
                     "\t CRtpSessionBase(V) - tcpConnected     : %d (for tcp   , tcp_ex, ssl_ex) \n"
@@ -937,9 +944,9 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (unsigned int)pbsd_ntoh16(m_remoteAddrConfig.sin_port),
                     m_actionId,
                     m_initTick,
-                    m_sendingTick,
                     m_sendTick,
-                    m_onSendTick,
+                    m_onSendTick1,
+                    m_onSendTick2,
                     m_peerAliveTick,
                     tick,
                     (int)(m_tcpConnected ? 1 : 0),
@@ -1141,6 +1148,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
             {
                 RTP_EXT ext;
                 memset(&ext, 0, sizeof(RTP_EXT));
+                ext.mmType = m_info.mmType;
                 m_trans->SendData(&ext, sizeof(RTP_EXT));
                 break;
             }
@@ -1153,6 +1161,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                 {
                     RTP_EXT ext;
                     memset(&ext, 0, sizeof(RTP_EXT));
+                    ext.mmType = m_info.mmType;
                     m_trans->SendData(&ext, sizeof(RTP_EXT));
                 }
                 else if (m_info.packMode == RTP_EPM_TCP2)

@@ -660,7 +660,7 @@ public:
 
     virtual unsigned long PRO_CALLTYPE GetTotalPackets() const = 0;
 
-    virtual void PRO_CALLTYPE PushBack(IRtpPacket* packet) = 0;
+    virtual void PRO_CALLTYPE PushBackAddRef(IRtpPacket* packet) = 0;
 
     virtual IRtpPacket* PRO_CALLTYPE PopFront(bool force) = 0;
 
@@ -747,6 +747,16 @@ public:
     virtual void PRO_CALLTYPE GetAck(RTP_SESSION_ACK* ack) const = 0;
 
     /*
+     * 获取会话的同步id
+     *
+     * 仅用于RTP_ST_UDPCLIENT_EX, RTP_ST_UDPSERVER_EX类型的会话.
+     * OnOkSession(...)回调之前没有意义
+     *
+     * 上层可以用同步id做一些有用的事情, 比如协商可靠udp链路的初始序号
+     */
+    virtual void PRO_CALLTYPE GetSyncId(unsigned char syncId[14]) const = 0;
+
+    /*
      * 获取会话的加密套件
      *
      * 仅用于RTP_ST_SSLCLIENT_EX, RTP_ST_SSLSERVER_EX类型的会话
@@ -831,8 +841,8 @@ public:
      * 用于粗略地判断tcp链路的发送延迟, 判断tcp链路是否老化
      */
     virtual void PRO_CALLTYPE GetSendOnSendTick(
-        PRO_INT64* sendTick,  /* = NULL */
-        PRO_INT64* onSendTick /* = NULL */
+        PRO_INT64* onSendTick1, /* = NULL */
+        PRO_INT64* onSendTick2  /* = NULL */
         ) const = 0;
 
     /*

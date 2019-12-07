@@ -718,6 +718,22 @@ CRtpSessionWrapper::GetAck(RTP_SESSION_ACK* ack) const
     }
 }
 
+void
+PRO_CALLTYPE
+CRtpSessionWrapper::GetSyncId(unsigned char syncId[14]) const
+{
+    memset(syncId, 0, 14);
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_session != NULL)
+        {
+            m_session->GetSyncId(syncId);
+        }
+    }
+}
+
 PRO_SSL_SUITE_ID
 PRO_CALLTYPE
 CRtpSessionWrapper::GetSslSuite(char suiteName[64]) const
@@ -1028,16 +1044,16 @@ CRtpSessionWrapper::DoSendPacket()
 
 void
 PRO_CALLTYPE
-CRtpSessionWrapper::GetSendOnSendTick(PRO_INT64* sendTick,         /* = NULL */
-                                      PRO_INT64* onSendTick) const /* = NULL */
+CRtpSessionWrapper::GetSendOnSendTick(PRO_INT64* onSendTick1,       /* = NULL */
+                                      PRO_INT64* onSendTick2) const /* = NULL */
 {
-    if (sendTick != NULL)
+    if (onSendTick1 != NULL)
     {
-        *sendTick   = 0;
+        *onSendTick1 = 0;
     }
-    if (onSendTick != NULL)
+    if (onSendTick2 != NULL)
     {
-        *onSendTick = 0;
+        *onSendTick2 = 0;
     }
 
     {
@@ -1045,7 +1061,7 @@ CRtpSessionWrapper::GetSendOnSendTick(PRO_INT64* sendTick,         /* = NULL */
 
         if (m_session != NULL)
         {
-            m_session->GetSendOnSendTick(sendTick, onSendTick);
+            m_session->GetSendOnSendTick(onSendTick1, onSendTick2);
         }
     }
 }

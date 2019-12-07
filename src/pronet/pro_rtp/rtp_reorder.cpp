@@ -94,7 +94,7 @@ CRtpReorder::GetTotalPackets() const
 
 void
 PRO_CALLTYPE
-CRtpReorder::PushBack(IRtpPacket* packet)
+CRtpReorder::PushBackAddRef(IRtpPacket* packet)
 {
     assert(packet != NULL);
     if (packet == NULL)
