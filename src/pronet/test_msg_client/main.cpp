@@ -260,9 +260,15 @@ int main(int argc, char* argv[])
     }
 
     tester = CTest::CreateInstance();
-    if (tester == NULL || !tester->Init(reactor, configInfo))
+    if (tester == NULL)
     {
         printf("\n test_msg_client --- error! can't create tester. \n");
+
+        goto EXIT;
+    }
+    if (!tester->Init(reactor, configInfo))
+    {
+        printf("\n test_msg_client --- error! can't init tester. \n");
 
         goto EXIT;
     }

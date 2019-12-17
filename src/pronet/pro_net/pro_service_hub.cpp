@@ -376,8 +376,8 @@ CProServiceHub::OnRecv(CProServicePipe*          pipe,
                 printf(
                     "\n"
                     "%s \n"
-                    " CProServiceHub::OnRecv(port : %u, serviceId : %u,"
-                    " processId : %u/0x%X) \n"
+                    " CProServiceHub::OnRecv(port : %u,"
+                    " serviceId : %u, processId : %u/0x%X) [ok] \n"
                     ,
                     timeString.c_str(),
                     (unsigned int)ProGetAcceptorPort(m_acceptor),
@@ -452,6 +452,24 @@ CProServiceHub::OnClose(CProServicePipe* pipe)
         if (itr2 != m_serviceId2Pipe.end() && itr2->second.pipe == pipe)
         {
             m_serviceId2Pipe.erase(itr2);
+
+            {{{
+                CProStlString timeString = "";
+                ProGetLocalTimeString(timeString);
+
+                printf(
+                    "\n"
+                    "%s \n"
+                    " CProServiceHub::OnClose(port : %u,"
+                    " serviceId : %u, processId : %u/0x%X) [broken] \n"
+                    ,
+                    timeString.c_str(),
+                    (unsigned int)ProGetAcceptorPort(m_acceptor),
+                    (unsigned int)sp.serviceId,
+                    (unsigned int)sp.processId,
+                    (unsigned int)sp.processId
+                    );
+            }}}
         }
 
         m_allPipes.erase(itr);
@@ -531,6 +549,25 @@ CProServiceHub::OnTimer(unsigned long timerId,
                         itr2->second.pipe == sp.pipe)
                     {
                         m_serviceId2Pipe.erase(itr2);
+
+                        {{{
+                            CProStlString timeString = "";
+                            ProGetLocalTimeString(timeString);
+
+                            printf(
+                                "\n"
+                                "%s \n"
+                                " CProServiceHub::OnTimer(port : %u,"
+                                " serviceId : %u, processId : %u/0x%X)"
+                                " [timeout] \n"
+                                ,
+                                timeString.c_str(),
+                                (unsigned int)ProGetAcceptorPort(m_acceptor),
+                                (unsigned int)sp.serviceId,
+                                (unsigned int)sp.processId,
+                                (unsigned int)sp.processId
+                                );
+                        }}}
                     }
 
                     pipes.insert(sp.pipe);

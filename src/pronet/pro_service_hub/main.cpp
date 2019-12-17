@@ -42,26 +42,31 @@ struct SERVICE_HUB_CONFIG_INFO
         hubs_thread_count      = 10;
         hubs_handshake_timeout = 10;
 
-        hubs_listen_ports.push_back(3000);
-        hubs_listen_ports.push_back(4000);
+        hubs_listen_ports.insert(3000);
     }
 
     void ToConfigs(CProStlVector<PRO_CONFIG_ITEM>& configs) const
     {
         CProConfigStream configStream;
 
-        configStream.AddUint("hubs_thread_count"     , hubs_thread_count);
-        configStream.AddUint("hubs_handshake_timeout", hubs_handshake_timeout);
+        configStream.AddUint    ("hubs_thread_count"     , hubs_thread_count);
+        configStream.AddUint    ("hubs_handshake_timeout", hubs_handshake_timeout);
 
-        configStream.AddUint("hubs_listen_port"      , hubs_listen_ports);
+        CProStlSet<unsigned short>::const_iterator       itr = hubs_listen_ports.begin();
+        CProStlSet<unsigned short>::const_iterator const end = hubs_listen_ports.end();
+
+        for (; itr != end; ++itr)
+        {
+            configStream.AddUint("hubs_listen_port"      , *itr);
+        }
 
         configStream.Get(configs);
     }
 
-    unsigned int                hubs_thread_count; /* 1 ~ 100 */
-    unsigned int                hubs_handshake_timeout;
+    unsigned int               hubs_thread_count; /* 1 ~ 100 */
+    unsigned int               hubs_handshake_timeout;
 
-    CProStlVector<unsigned int> hubs_listen_ports;
+    CProStlSet<unsigned short> hubs_listen_ports;
 
     DECLARE_SGI_POOL(0);
 };
@@ -193,7 +198,7 @@ int main(int argc, char* argv[])
                 const int value = atoi(configValue.c_str());
                 if (value > 0 && value <= 65535)
                 {
-                    configInfo.hubs_listen_ports.push_back(value);
+                    configInfo.hubs_listen_ports.insert((unsigned short)value);
                 }
             }
             else
@@ -222,14 +227,15 @@ int main(int argc, char* argv[])
 #endif
 
     {
-        int       i = 0;
-        const int c = (int)configInfo.hubs_listen_ports.size();
+        CProStlSet<unsigned short>::const_iterator       itr = configInfo.hubs_listen_ports.begin();
+        CProStlSet<unsigned short>::const_iterator const end = configInfo.hubs_listen_ports.end();
 
-        for (; i < c; ++i)
+        for (; itr != end; ++itr)
         {
+            const unsigned short port = *itr;
+
             IProServiceHub* const hub = ProCreateServiceHub(
-                reactor, (unsigned short)configInfo.hubs_listen_ports[i],
-                configInfo.hubs_handshake_timeout);
+                reactor, port, configInfo.hubs_handshake_timeout);
             if (hub == NULL)
             {
                 printf(
@@ -237,9 +243,9 @@ int main(int argc, char* argv[])
                     " pro_service_hub --- error! can't create service hub on the port %u. \n"
                     " [maybe the port %u or the file \"/tmp/libpronet_127001_%u\" is busy.] \n"
                     ,
-                    configInfo.hubs_listen_ports[i],
-                    configInfo.hubs_listen_ports[i],
-                    configInfo.hubs_listen_ports[i]
+                    (unsigned int)port,
+                    (unsigned int)port,
+                    (unsigned int)port
                     );
 
                 goto EXIT;
@@ -248,8 +254,8 @@ int main(int argc, char* argv[])
             hubs.push_back(hub);
 
             char info[64] = "";
-            sprintf(info, "%u", configInfo.hubs_listen_ports[i]);
-            if (i == 0)
+            sprintf(info, "%u", (unsigned int)port);
+            if (portString.empty())
             {
                 portString =  info;
             }

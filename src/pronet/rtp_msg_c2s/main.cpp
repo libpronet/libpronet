@@ -388,9 +388,17 @@ int main(int argc, char* argv[])
     }
 
     server = CC2sServer::CreateInstance(*logFile);
-    if (server == NULL || !server->Init(reactor, configInfo))
+    if (server == NULL)
     {
         strcpy(s_traceInfo, "\n rtp_msg_c2s --- error! can't create server. \n");
+        printf("%s", s_traceInfo);
+        logFile->Log(s_traceInfo);
+
+        goto EXIT;
+    }
+    if (!server->Init(reactor, configInfo))
+    {
+        strcpy(s_traceInfo, "\n rtp_msg_c2s --- error! can't init server. \n");
         printf("%s", s_traceInfo);
         logFile->Log(s_traceInfo);
 

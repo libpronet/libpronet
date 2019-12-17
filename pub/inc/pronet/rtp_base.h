@@ -1140,7 +1140,7 @@ FindRtpStreamFromPacket(const IRtpPacket* packet,
  *
  * 返回值: 无
  *
- * 说明: 默认的端口号分配范围为[3000 ~ 5999]
+ * 说明: 默认的端口号分配范围为[3000 ~ 9999]
  */
 PRO_RTP_API
 void
@@ -1161,7 +1161,7 @@ SetRtpPortRange(unsigned short minUdpPort,
  *
  * 返回值: 无
  *
- * 说明: 默认的端口号分配范围为[3000 ~ 5999]
+ * 说明: 默认的端口号分配范围为[3000 ~ 9999]
  */
 PRO_RTP_API
 void
