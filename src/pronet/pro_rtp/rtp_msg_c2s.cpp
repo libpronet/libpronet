@@ -301,12 +301,12 @@ CRtpMsgC2s::Fini()
             m_uplinkPassword = "";
         }
 
-        CProStlMap<unsigned long, RTP_MSG_AsyncOnAcceptSession>::const_iterator       itr = m_timerId2Info.begin();
-        CProStlMap<unsigned long, RTP_MSG_AsyncOnAcceptSession>::const_iterator const end = m_timerId2Info.end();
+        CProStlMap<PRO_UINT64, RTP_MSG_AsyncOnAcceptSession>::const_iterator       itr = m_timerId2Info.begin();
+        CProStlMap<PRO_UINT64, RTP_MSG_AsyncOnAcceptSession>::const_iterator const end = m_timerId2Info.end();
 
         for (; itr != end; ++itr)
         {
-            const unsigned long                 timerId = itr->first;
+            const PRO_UINT64                    timerId = itr->first;
             const RTP_MSG_AsyncOnAcceptSession& info    = itr->second;
 
             m_reactor->CancelTimer(timerId);
@@ -949,16 +949,16 @@ CRtpMsgC2s::AcceptSession(IRtpService*            service,
             }
         }
 
-        const unsigned long timerId = m_reactor->ScheduleTimer(
+        const PRO_UINT64 timerId = m_reactor->ScheduleTimer(
             this, (PRO_UINT64)m_localTimeoutInSeconds * 1000, false);
 
         CProConfigStream msgStream;
-        msgStream.Add    (TAG_msg_name           , MSG_client_login);
-        msgStream.AddUint(TAG_client_index       , timerId);
-        msgStream.Add    (TAG_client_id          , idString);
-        msgStream.Add    (TAG_client_public_ip   , remoteIp);
-        msgStream.Add    (TAG_client_hash_string , hashString);
-        msgStream.Add    (TAG_client_nonce_string, nonceString);
+        msgStream.Add      (TAG_msg_name           , MSG_client_login);
+        msgStream.AddUint64(TAG_client_index       , timerId);
+        msgStream.Add      (TAG_client_id          , idString);
+        msgStream.Add      (TAG_client_public_ip   , remoteIp);
+        msgStream.Add      (TAG_client_hash_string , hashString);
+        msgStream.Add      (TAG_client_nonce_string, nonceString);
 
         CProStlString theString = "";
         msgStream.ToString(theString);
@@ -1309,11 +1309,11 @@ CRtpMsgC2s::ProcessMsg_client_login_ok(IRtpMsgClient*          msgClient,
         return;
     }
 
-    unsigned int  client_index = 0;
+    PRO_UINT64    client_index = 0;
     CProStlString client_id    = "";
 
-    msgStream.GetUint(TAG_client_index, client_index);
-    msgStream.Get    (TAG_client_id   , client_id);
+    msgStream.GetUint64(TAG_client_index, client_index);
+    msgStream.Get      (TAG_client_id   , client_id);
 
     RTP_MSG_USER user;
     RtpMsgString2User(client_id.c_str(), &user);
@@ -1344,7 +1344,7 @@ CRtpMsgC2s::ProcessMsg_client_login_ok(IRtpMsgClient*          msgClient,
             return;
         }
 
-        CProStlMap<unsigned long, RTP_MSG_AsyncOnAcceptSession>::iterator const itr =
+        CProStlMap<PRO_UINT64, RTP_MSG_AsyncOnAcceptSession>::iterator const itr =
             m_timerId2Info.find(client_index);
         if (itr != m_timerId2Info.end())
         {
@@ -1462,8 +1462,8 @@ CRtpMsgC2s::ProcessMsg_client_login_error(IRtpMsgClient*          msgClient,
         return;
     }
 
-    unsigned int client_index = 0;
-    msgStream.GetUint(TAG_client_index, client_index);
+    PRO_UINT64 client_index = 0;
+    msgStream.GetUint64(TAG_client_index, client_index);
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -1479,7 +1479,7 @@ CRtpMsgC2s::ProcessMsg_client_login_error(IRtpMsgClient*          msgClient,
             return;
         }
 
-        CProStlMap<unsigned long, RTP_MSG_AsyncOnAcceptSession>::iterator const itr =
+        CProStlMap<PRO_UINT64, RTP_MSG_AsyncOnAcceptSession>::iterator const itr =
             m_timerId2Info.find(client_index);
         if (itr == m_timerId2Info.end())
         {
@@ -1649,12 +1649,12 @@ CRtpMsgC2s::OnCloseMsg(IRtpMsgClient* msgClient,
             return;
         }
 
-        CProStlMap<unsigned long, RTP_MSG_AsyncOnAcceptSession>::const_iterator       itr = m_timerId2Info.begin();
-        CProStlMap<unsigned long, RTP_MSG_AsyncOnAcceptSession>::const_iterator const end = m_timerId2Info.end();
+        CProStlMap<PRO_UINT64, RTP_MSG_AsyncOnAcceptSession>::const_iterator       itr = m_timerId2Info.begin();
+        CProStlMap<PRO_UINT64, RTP_MSG_AsyncOnAcceptSession>::const_iterator const end = m_timerId2Info.end();
 
         for (; itr != end; ++itr)
         {
-            const unsigned long                 timerId = itr->first;
+            const PRO_UINT64                    timerId = itr->first;
             const RTP_MSG_AsyncOnAcceptSession& info    = itr->second;
 
             m_reactor->CancelTimer(timerId);
@@ -1730,11 +1730,13 @@ CRtpMsgC2s::OnHeartbeatMsg(IRtpMsgClient* msgClient,
 
 void
 PRO_CALLTYPE
-CRtpMsgC2s::OnTimer(unsigned long timerId,
-                    PRO_INT64     userData)
+CRtpMsgC2s::OnTimer(void*      factory,
+                    PRO_UINT64 timerId,
+                    PRO_INT64  userData)
 {
+    assert(factory != NULL);
     assert(timerId > 0);
-    if (timerId == 0)
+    if (factory == NULL || timerId == 0)
     {
         return;
     }
@@ -1785,7 +1787,7 @@ CRtpMsgC2s::OnTimer(unsigned long timerId,
             return;
         }
 
-        CProStlMap<unsigned long, RTP_MSG_AsyncOnAcceptSession>::iterator const itr =
+        CProStlMap<PRO_UINT64, RTP_MSG_AsyncOnAcceptSession>::iterator const itr =
             m_timerId2Info.find(timerId);
         if (itr != m_timerId2Info.end())
         {

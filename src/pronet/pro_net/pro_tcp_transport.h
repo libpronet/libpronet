@@ -145,8 +145,9 @@ protected:
         );
 
     virtual void PRO_CALLTYPE OnTimer(
-        unsigned long timerId,
-        PRO_INT64     userData
+        void*      factory,
+        PRO_UINT64 timerId,
+        PRO_INT64  userData
         );
 
     void OnInputData(PRO_INT64 sockId);
@@ -168,7 +169,7 @@ protected:
     CProRecvPool            m_recvPool;
     CProSendPool            m_sendPool;
     PRO_INT64               m_sendingFd;
-    unsigned long           m_timerId;
+    PRO_UINT64              m_timerId;
     mutable CProThreadMutex m_lock;
 
     bool                    m_canUpcall;

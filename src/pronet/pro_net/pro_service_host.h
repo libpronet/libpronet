@@ -94,8 +94,9 @@ private:
     virtual void PRO_CALLTYPE OnClose(CProServicePipe* pipe);
 
     virtual void PRO_CALLTYPE OnTimer(
-        unsigned long timerId,
-        PRO_INT64     userData
+        void*      factory,
+        PRO_UINT64 timerId,
+        PRO_INT64  userData
         );
 
 private:
@@ -104,7 +105,7 @@ private:
     IProReactor*             m_reactor;
     IProConnector*           m_connector;
     CProServicePipe*         m_pipe;
-    unsigned long            m_timerId;
+    PRO_UINT64               m_timerId;
 
     unsigned short           m_servicePort;
     unsigned char            m_serviceId;

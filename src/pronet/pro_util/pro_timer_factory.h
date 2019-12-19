@@ -65,7 +65,7 @@ struct PRO_TIMER_NODE
     }
 
     PRO_INT64     expireTick;
-    unsigned long timerId;
+    PRO_UINT64    timerId;
 
     IProOnTimer*  onTimer;
     PRO_INT64     timeSpan;
@@ -94,8 +94,9 @@ public:
     virtual unsigned long PRO_CALLTYPE Release() = 0;
 
     virtual void PRO_CALLTYPE OnTimer(
-        unsigned long timerId,
-        PRO_INT64     userData
+        void*      factory,
+        PRO_UINT64 timerId,
+        PRO_INT64  userData
         ) = 0;
 };
 #endif /* ____IProOnTimer____ */
@@ -115,19 +116,19 @@ public:
 
     void Stop();
 
-    unsigned long ScheduleTimer(
+    PRO_UINT64 ScheduleTimer(
         IProOnTimer* onTimer,
         PRO_UINT64   timeSpan,
         bool         recurring,
         PRO_INT64    userData = 0
         );
 
-    unsigned long ScheduleHeartbeatTimer(
+    PRO_UINT64 ScheduleHeartbeatTimer(
         IProOnTimer* onTimer,
         PRO_INT64    userData = 0
         );
 
-    void CancelTimer(unsigned long timerId);
+    void CancelTimer(PRO_UINT64 timerId);
 
     unsigned long GetTimerCount() const;
 
@@ -141,17 +142,17 @@ private:
 
 private:
 
-    CProFunctorCommandTask*              m_task;
-    bool                                 m_wantExit;
-    bool                                 m_mmTimer;
-    unsigned long                        m_mmResolution;
-    CProStlSet<PRO_TIMER_NODE>           m_timers;
-    CProStlMap<unsigned long, PRO_INT64> m_timerId2ExpireTick;
-    PRO_INT64                            m_htbtTimeSpan;
-    CProStlVector<unsigned long>         m_htbtCounts;
-    CProThreadMutexCondition             m_cond;
-    mutable CProThreadMutex              m_lock;
-    CProThreadMutex                      m_lockAtom;
+    CProFunctorCommandTask*           m_task;
+    bool                              m_wantExit;
+    bool                              m_mmTimer;
+    unsigned long                     m_mmResolution;
+    CProStlSet<PRO_TIMER_NODE>        m_timers;
+    CProStlMap<PRO_UINT64, PRO_INT64> m_timerId2ExpireTick;
+    PRO_INT64                         m_htbtTimeSpan;
+    CProStlVector<unsigned long>      m_htbtCounts;
+    CProThreadMutexCondition          m_cond;
+    mutable CProThreadMutex           m_lock;
+    CProThreadMutex                   m_lockAtom;
 
     DECLARE_SGI_POOL(0);
 };

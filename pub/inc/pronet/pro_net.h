@@ -262,8 +262,9 @@ public:
     virtual unsigned long PRO_CALLTYPE Release() = 0;
 
     virtual void PRO_CALLTYPE OnTimer(
-        unsigned long timerId,
-        PRO_INT64     userData
+        void*      factory,
+        PRO_UINT64 timerId,
+        PRO_INT64  userData
         ) = 0;
 };
 #endif /* ____IProOnTimer____ */
@@ -283,7 +284,7 @@ public:
      *
      * 返回值为定时器id. 0无效
      */
-    virtual unsigned long PRO_CALLTYPE ScheduleTimer(
+    virtual PRO_UINT64 PRO_CALLTYPE ScheduleTimer(
         IProOnTimer* onTimer,
         PRO_UINT64   timeSpan,  /* 定时周期(ms) */
         bool         recurring, /* 是否重复. 如果timeSpan为0, recurring必须为false */
@@ -298,7 +299,7 @@ public:
      *
      * 返回值为定时器id. 0无效
      */
-    virtual unsigned long PRO_CALLTYPE ScheduleHeartbeatTimer(
+    virtual PRO_UINT64 PRO_CALLTYPE ScheduleHeartbeatTimer(
         IProOnTimer* onTimer,
         PRO_INT64    userData = 0
         ) = 0;
@@ -315,14 +316,14 @@ public:
     /*
      * 删除一个普通定时器
      */
-    virtual void PRO_CALLTYPE CancelTimer(unsigned long timerId) = 0;
+    virtual void PRO_CALLTYPE CancelTimer(PRO_UINT64 timerId) = 0;
 
     /*
      * 创建一个多媒体定时器(高精度定时器)
      *
      * 返回值为定时器id. 0无效
      */
-    virtual unsigned long PRO_CALLTYPE ScheduleMmTimer(
+    virtual PRO_UINT64 PRO_CALLTYPE ScheduleMmTimer(
         IProOnTimer* onTimer,
         PRO_UINT64   timeSpan,  /* 定时周期(ms) */
         bool         recurring, /* 是否重复. 如果timeSpan为0, recurring必须为false */
@@ -332,7 +333,7 @@ public:
     /*
      * 删除一个多媒体定时器(高精度定时器)
      */
-    virtual void PRO_CALLTYPE CancelMmTimer(unsigned long timerId) = 0;
+    virtual void PRO_CALLTYPE CancelMmTimer(PRO_UINT64 timerId) = 0;
 
     /*
      * 获取状态信息字符串

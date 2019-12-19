@@ -362,14 +362,14 @@ CProTpReactorTask::RemoveHandler(PRO_INT64         sockId,
     }
 }
 
-unsigned long
+PRO_UINT64
 PRO_CALLTYPE
 CProTpReactorTask::ScheduleTimer(IProOnTimer* onTimer,
                                  PRO_UINT64   timeSpan,
                                  bool         recurring,
                                  PRO_INT64    userData) /* = 0 */
 {
-    unsigned long timerId = 0;
+    PRO_UINT64 timerId = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -388,12 +388,12 @@ CProTpReactorTask::ScheduleTimer(IProOnTimer* onTimer,
     return (timerId);
 }
 
-unsigned long
+PRO_UINT64
 PRO_CALLTYPE
 CProTpReactorTask::ScheduleHeartbeatTimer(IProOnTimer* onTimer,
                                           PRO_INT64    userData) /* = 0 */
 {
-    unsigned long timerId = 0;
+    PRO_UINT64 timerId = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -435,7 +435,7 @@ CProTpReactorTask::UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds)
 
 void
 PRO_CALLTYPE
-CProTpReactorTask::CancelTimer(unsigned long timerId)
+CProTpReactorTask::CancelTimer(PRO_UINT64 timerId)
 {
     {
         CProThreadMutexGuard mon(m_lock);
@@ -450,14 +450,14 @@ CProTpReactorTask::CancelTimer(unsigned long timerId)
     }
 }
 
-unsigned long
+PRO_UINT64
 PRO_CALLTYPE
 CProTpReactorTask::ScheduleMmTimer(IProOnTimer* onTimer,
                                    PRO_UINT64   timeSpan,
                                    bool         recurring,
                                    PRO_INT64    userData) /* = 0 */
 {
-    unsigned long timerId = 0;
+    PRO_UINT64 timerId = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -478,7 +478,7 @@ CProTpReactorTask::ScheduleMmTimer(IProOnTimer* onTimer,
 
 void
 PRO_CALLTYPE
-CProTpReactorTask::CancelMmTimer(unsigned long timerId)
+CProTpReactorTask::CancelMmTimer(PRO_UINT64 timerId)
 {
     {
         CProThreadMutexGuard mon(m_lock);

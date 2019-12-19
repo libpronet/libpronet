@@ -532,11 +532,13 @@ CProServiceHost::OnClose(CProServicePipe* pipe)
 
 void
 PRO_CALLTYPE
-CProServiceHost::OnTimer(unsigned long timerId,
-                         PRO_INT64     userData)
+CProServiceHost::OnTimer(void*      factory,
+                         PRO_UINT64 timerId,
+                         PRO_INT64  userData)
 {
+    assert(factory != NULL);
     assert(timerId > 0);
-    if (timerId == 0)
+    if (factory == NULL || timerId == 0)
     {
         return;
     }

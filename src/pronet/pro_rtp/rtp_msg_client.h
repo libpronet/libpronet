@@ -166,8 +166,9 @@ private:
         );
 
     virtual void PRO_CALLTYPE OnTimer(
-        unsigned long timerId,
-        PRO_INT64     userData
+        void*      factory,
+        PRO_UINT64 timerId,
+        PRO_INT64  userData
         );
 
     bool PushData(
@@ -195,7 +196,7 @@ private:
     IRtpSession*                       m_session;
     IRtpBucket*                        m_bucket;
     RTP_MSG_USER                       m_userBak;
-    unsigned long                      m_timerId;
+    PRO_UINT64                         m_timerId;
     bool                               m_onOkCalled;
     mutable CProThreadMutex            m_lock;
 

@@ -95,8 +95,9 @@ private:
         );
 
     virtual void PRO_CALLTYPE OnTimer(
-        unsigned long timerId,
-        PRO_INT64     userData
+        void*      factory,
+        PRO_UINT64 timerId,
+        PRO_INT64  userData
         );
 
 private:
@@ -113,8 +114,8 @@ private:
     pbsd_sockaddr_in       m_localAddr;
     pbsd_sockaddr_in       m_remoteAddr;
     unsigned long          m_timeoutInSeconds;
-    unsigned long          m_timerId0;
-    unsigned long          m_timerId1;
+    PRO_UINT64             m_timerId0;
+    PRO_UINT64             m_timerId1;
     CProThreadMutex        m_lock;
 
     DECLARE_SGI_POOL(0);

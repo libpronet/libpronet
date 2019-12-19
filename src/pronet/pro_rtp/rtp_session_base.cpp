@@ -1215,13 +1215,15 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
 
 void
 PRO_CALLTYPE
-CRtpSessionBase::OnTimer(unsigned long timerId,
-                         PRO_INT64     userData)
+CRtpSessionBase::OnTimer(void*      factory,
+                         PRO_UINT64 timerId,
+                         PRO_INT64  userData)
 {{
     CProThreadMutexGuard mon(m_lockUpcall);
 
+    assert(factory != NULL);
     assert(timerId > 0);
-    if (timerId == 0)
+    if (factory == NULL || timerId == 0)
     {
         return;
     }

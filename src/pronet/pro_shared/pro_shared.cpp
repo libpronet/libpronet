@@ -150,8 +150,8 @@ static mach_timebase_info_data_t        g_s_timebaseInfo  = { 0, 0 };
 #endif
 static volatile bool                    g_s_socketFlag    = false;
 static PRO_INT64                        g_s_sockId        = -1;
-static unsigned long                    g_s_nextTimerId   = 1;
-static unsigned long                    g_s_nextMmTimerId = 2;
+static PRO_UINT64                       g_s_nextTimerId   = 1;
+static PRO_UINT64                       g_s_nextMmTimerId = 2;
 static CProThreadMutex_s                g_s_lock;
 
 /*
@@ -706,13 +706,13 @@ ProSleep_s(PRO_UINT32 milliseconds)
 }
 
 PRO_SHARED_API
-unsigned long
+PRO_UINT64
 PRO_CALLTYPE
 ProMakeTimerId()
 {
     g_s_lock.Lock();
 
-    const unsigned long timerId = g_s_nextTimerId;
+    const PRO_UINT64 timerId = g_s_nextTimerId;
     g_s_nextTimerId += 2;
 
     g_s_lock.Unlock();
@@ -721,13 +721,13 @@ ProMakeTimerId()
 }
 
 PRO_SHARED_API
-unsigned long
+PRO_UINT64
 PRO_CALLTYPE
 ProMakeMmTimerId()
 {
     g_s_lock.Lock();
 
-    const unsigned long timerId = g_s_nextMmTimerId;
+    const PRO_UINT64 timerId = g_s_nextMmTimerId;
     g_s_nextMmTimerId += 2;
     if (g_s_nextMmTimerId == 0)
     {

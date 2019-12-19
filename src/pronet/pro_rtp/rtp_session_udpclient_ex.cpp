@@ -425,13 +425,15 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
 
 void
 PRO_CALLTYPE
-CRtpSessionUdpclientEx::OnTimer(unsigned long timerId,
-                                PRO_INT64     userData)
+CRtpSessionUdpclientEx::OnTimer(void*      factory,
+                                PRO_UINT64 timerId,
+                                PRO_INT64  userData)
 {
-    CRtpSessionBase::OnTimer(timerId, userData);
+    CRtpSessionBase::OnTimer(factory, timerId, userData);
 
+    assert(factory != NULL);
     assert(timerId > 0);
-    if (timerId == 0)
+    if (factory == NULL || timerId == 0)
     {
         return;
     }

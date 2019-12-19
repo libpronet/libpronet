@@ -71,8 +71,9 @@ private:
         );
 
     virtual void PRO_CALLTYPE OnTimer(
-        unsigned long timerId,
-        PRO_INT64     userData
+        void*      factory,
+        PRO_UINT64 timerId,
+        PRO_INT64  userData
         );
 
 private:
@@ -83,7 +84,7 @@ private:
     bool                       m_unixSocket;
     CProRecvPool               m_recvPool;
     CProSendPool               m_sendPool;
-    unsigned long              m_timerId;
+    PRO_UINT64                 m_timerId;
     CProThreadMutex            m_lock;
 
     DECLARE_SGI_POOL(0);

@@ -217,8 +217,9 @@ private:
     virtual void PRO_CALLTYPE OnHeartbeat(IProTransport* trans);
 
     virtual void PRO_CALLTYPE OnTimer(
-        unsigned long timerId,
-        PRO_INT64     userData
+        void*      factory,
+        PRO_UINT64 timerId,
+        PRO_INT64  userData
         );
 
     bool DoHandshake(
@@ -232,7 +233,7 @@ private:
     IProReactor*                   m_reactor;
     TCP_CLIENT_CONFIG_INFO         m_configInfo;
     PRO_SSL_CLIENT_CONFIG*         m_sslConfig;
-    unsigned long                  m_timerId;
+    PRO_UINT64                     m_timerId;
     CProStlSet<IProConnector*>     m_connectors;
     CProStlSet<IProTcpHandshaker*> m_tcpHandshakers;
     CProStlSet<IProSslHandshaker*> m_sslHandshakers;

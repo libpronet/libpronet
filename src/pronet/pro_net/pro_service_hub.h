@@ -87,8 +87,9 @@ private:
     virtual void PRO_CALLTYPE OnClose(CProServicePipe* pipe);
 
     virtual void PRO_CALLTYPE OnTimer(
-        unsigned long timerId,
-        PRO_INT64     userData
+        void*      factory,
+        PRO_UINT64 timerId,
+        PRO_INT64  userData
         );
 
     void OnAcceptIpc(
@@ -109,7 +110,7 @@ private:
 
     IProReactor*                                m_reactor;
     IProAcceptor*                               m_acceptor;
-    unsigned long                               m_timerId;
+    PRO_UINT64                                  m_timerId;
 
     CProStlSet<PRO_SERVICE_PIPE>                m_allPipes;
     CProStlMap<unsigned char, PRO_SERVICE_PIPE> m_serviceId2Pipe;

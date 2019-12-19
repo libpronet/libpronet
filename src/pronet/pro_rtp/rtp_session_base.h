@@ -206,8 +206,9 @@ protected:
     virtual void PRO_CALLTYPE OnHeartbeat(IProTransport* trans);
 
     virtual void PRO_CALLTYPE OnTimer(
-        unsigned long timerId,
-        PRO_INT64     userData
+        void*      factory,
+        PRO_UINT64 timerId,
+        PRO_INT64  userData
         );
 
     virtual void Fini()
@@ -233,8 +234,8 @@ protected:
     PRO_INT64               m_onSendTick1;      /* for tcp, tcp_ex, ssl_ex */
     PRO_INT64               m_onSendTick2;      /* for tcp, tcp_ex, ssl_ex */
     PRO_INT64               m_peerAliveTick;
-    unsigned long           m_timeoutTimerId;
-    unsigned long           m_onOkTimerId;
+    PRO_UINT64              m_timeoutTimerId;
+    PRO_UINT64              m_onOkTimerId;
     bool                    m_tcpConnected;     /* for tcp, tcp_ex, ssl_ex */
     bool                    m_handshakeOk;      /* for udp_ex, tcp_ex, ssl_ex */
     bool                    m_onOkCalled;

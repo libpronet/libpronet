@@ -640,7 +640,7 @@ public:
 /*
  * rtp重排序器
  *
- * 通常情况下, 用于播放端<<a/v over udp>>
+ * 通常情况下, 用于播放端<<a/v over udp>>, 也可用于去重复
  */
 class IRtpReorder
 {

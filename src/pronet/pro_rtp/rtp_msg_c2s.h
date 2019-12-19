@@ -226,8 +226,9 @@ private:
         );
 
     virtual void PRO_CALLTYPE OnTimer(
-        unsigned long timerId,
-        PRO_INT64     userData
+        void*      factory,
+        PRO_UINT64 timerId,
+        PRO_INT64  userData
         );
 
     void AcceptSession(
@@ -275,38 +276,38 @@ private:
 
 private:
 
-    const RTP_MM_TYPE                                       m_mmType;
-    const PRO_SSL_CLIENT_CONFIG* const                      m_uplinkSslConfig;
-    const CProStlString                                     m_uplinkSslSni;
-    const PRO_SSL_SERVER_CONFIG* const                      m_localSslConfig;
-    const bool                                              m_localSslForced;
+    const RTP_MM_TYPE                                    m_mmType;
+    const PRO_SSL_CLIENT_CONFIG* const                   m_uplinkSslConfig;
+    const CProStlString                                  m_uplinkSslSni;
+    const PRO_SSL_SERVER_CONFIG* const                   m_localSslConfig;
+    const bool                                           m_localSslForced;
 
-    IRtpMsgC2sObserver*                                     m_observer;
-    IProReactor*                                            m_reactor;
-    CProFunctorCommandTask*                                 m_task;
-    CRtpMsgClient*                                          m_msgClient;
-    IRtpService*                                            m_service;
-    unsigned short                                          m_serviceHubPort;
-    unsigned long                                           m_timerId;
-    PRO_INT64                                               m_connectTick;
-    CProStlString                                           m_uplinkIp;
-    unsigned short                                          m_uplinkPort;
-    RTP_MSG_USER                                            m_uplinkUser;
-    CProStlString                                           m_uplinkPassword;
-    CProStlString                                           m_uplinkLocalIp;
-    unsigned long                                           m_uplinkTimeoutInSeconds;
-    unsigned long                                           m_uplinkRedlineBytes;
-    unsigned long                                           m_localTimeoutInSeconds;
-    unsigned long                                           m_localRedlineBytes;
-    RTP_MSG_USER                                            m_myUserNow;
-    RTP_MSG_USER                                            m_myUserBak;
+    IRtpMsgC2sObserver*                                  m_observer;
+    IProReactor*                                         m_reactor;
+    CProFunctorCommandTask*                              m_task;
+    CRtpMsgClient*                                       m_msgClient;
+    IRtpService*                                         m_service;
+    unsigned short                                       m_serviceHubPort;
+    PRO_UINT64                                           m_timerId;
+    PRO_INT64                                            m_connectTick;
+    CProStlString                                        m_uplinkIp;
+    unsigned short                                       m_uplinkPort;
+    RTP_MSG_USER                                         m_uplinkUser;
+    CProStlString                                        m_uplinkPassword;
+    CProStlString                                        m_uplinkLocalIp;
+    unsigned long                                        m_uplinkTimeoutInSeconds;
+    unsigned long                                        m_uplinkRedlineBytes;
+    unsigned long                                        m_localTimeoutInSeconds;
+    unsigned long                                        m_localRedlineBytes;
+    RTP_MSG_USER                                         m_myUserNow;
+    RTP_MSG_USER                                         m_myUserBak;
 
-    CProStlMap<unsigned long, RTP_MSG_AsyncOnAcceptSession> m_timerId2Info;
-    CProStlMap<IRtpSession*, RTP_MSG_USER>                  m_session2User;
-    CProStlMap<RTP_MSG_USER, IRtpSession*>                  m_user2Session;
+    CProStlMap<PRO_UINT64, RTP_MSG_AsyncOnAcceptSession> m_timerId2Info;
+    CProStlMap<IRtpSession*, RTP_MSG_USER>               m_session2User;
+    CProStlMap<RTP_MSG_USER, IRtpSession*>               m_user2Session;
 
-    mutable CProThreadMutex                                 m_lock;
-    CProThreadMutex                                         m_lockUpcall;
+    mutable CProThreadMutex                              m_lock;
+    CProThreadMutex                                      m_lockUpcall;
 
     DECLARE_SGI_POOL(0);
 };

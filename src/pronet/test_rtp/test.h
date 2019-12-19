@@ -159,8 +159,9 @@ private:
     }
 
     virtual void PRO_CALLTYPE OnTimer(
-        unsigned long timerId,
-        PRO_INT64     userData
+        void*      factory,
+        PRO_UINT64 timerId,
+        PRO_INT64  userData
         );
 
     IRtpSession* CreateUdpServer(
@@ -210,9 +211,9 @@ private:
     IProReactor*     m_reactor;
     IRtpSession*     m_udpSession;
     IRtpSession*     m_tcpSession;
-    unsigned long    m_sendTimerId;
-    unsigned long    m_recvTimerId;
-    unsigned long    m_htbtTimerId;
+    PRO_UINT64       m_sendTimerId;
+    PRO_UINT64       m_recvTimerId;
+    PRO_UINT64       m_htbtTimerId;
 
     PRO_UINT16       m_outputSeq;
     PRO_INT64        m_outputTs64;

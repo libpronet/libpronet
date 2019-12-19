@@ -1304,17 +1304,17 @@ CRtpMsgServer::ProcessMsg_client_login(IRtpSession*            session,
         return;
     }
 
-    unsigned int  client_index        = 0;
+    PRO_UINT64    client_index        = 0;
     CProStlString client_id           = "";
     CProStlString client_public_ip    = "";
     CProStlString client_hash_string  = "";
     CProStlString client_nonce_string = "";
 
-    msgStream.GetUint(TAG_client_index       , client_index);
-    msgStream.Get    (TAG_client_id          , client_id);
-    msgStream.Get    (TAG_client_public_ip   , client_public_ip);
-    msgStream.Get    (TAG_client_hash_string , client_hash_string);
-    msgStream.Get    (TAG_client_nonce_string, client_nonce_string);
+    msgStream.GetUint64(TAG_client_index       , client_index);
+    msgStream.Get      (TAG_client_id          , client_id);
+    msgStream.Get      (TAG_client_public_ip   , client_public_ip);
+    msgStream.Get      (TAG_client_hash_string , client_hash_string);
+    msgStream.Get      (TAG_client_nonce_string, client_nonce_string);
 
     RTP_MSG_USER subUser;
     RtpMsgString2User(client_id.c_str(), &subUser);
@@ -1456,9 +1456,9 @@ CRtpMsgServer::ProcessMsg_client_login(IRtpSession*            session,
         RtpMsgUser2String(&subUser, idString);
 
         CProConfigStream msgStream;
-        msgStream.Add    (TAG_msg_name    , MSG_client_login_ok);
-        msgStream.AddUint(TAG_client_index, client_index);
-        msgStream.Add    (TAG_client_id   , idString);
+        msgStream.Add      (TAG_msg_name    , MSG_client_login_ok);
+        msgStream.AddUint64(TAG_client_index, client_index);
+        msgStream.Add      (TAG_client_id   , idString);
 
         CProStlString theString = "";
         msgStream.ToString(theString);
@@ -1468,8 +1468,8 @@ CRtpMsgServer::ProcessMsg_client_login(IRtpSession*            session,
     else
     {
         CProConfigStream msgStream;
-        msgStream.Add    (TAG_msg_name    , MSG_client_login_error);
-        msgStream.AddUint(TAG_client_index, client_index);
+        msgStream.Add      (TAG_msg_name    , MSG_client_login_error);
+        msgStream.AddUint64(TAG_client_index, client_index);
 
         CProStlString theString = "";
         msgStream.ToString(theString);

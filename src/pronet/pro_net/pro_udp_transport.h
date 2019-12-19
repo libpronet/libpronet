@@ -121,7 +121,7 @@ protected:
     pbsd_sockaddr_in        m_localAddr;
     pbsd_sockaddr_in        m_defaultRemoteAddr;
     CProRecvPool            m_recvPool;
-    unsigned long           m_timerId;
+    PRO_UINT64              m_timerId;
     mutable CProThreadMutex m_lock;
 
 private:
@@ -136,8 +136,9 @@ private:
         );
 
     virtual void PRO_CALLTYPE OnTimer(
-        unsigned long timerId,
-        PRO_INT64     userData
+        void*      factory,
+        PRO_UINT64 timerId,
+        PRO_INT64  userData
         );
 
 private:

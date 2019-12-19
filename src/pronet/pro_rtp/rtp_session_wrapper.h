@@ -192,8 +192,9 @@ private:
         );
 
     virtual void PRO_CALLTYPE OnTimer(
-        unsigned long timerId,
-        PRO_INT64     userData
+        void*      factory,
+        PRO_UINT64 timerId,
+        PRO_INT64  userData
         );
 
     bool PushPacket(IRtpPacket* packet);
@@ -213,11 +214,11 @@ private:
     bool                      m_packetErased;
     bool                      m_enableInput;
     bool                      m_enableOutput;
-    unsigned long             m_timerId;
+    PRO_UINT64                m_timerId;
     bool                      m_onOkCalled;
     PRO_INT64                 m_traceTick;
 
-    unsigned long             m_sendTimerId;
+    PRO_UINT64                m_sendTimerId;
     unsigned long             m_sendDurationMs;
     PRO_INT64                 m_pushTick;
     CProStlDeque<IRtpPacket*> m_pushPackets;

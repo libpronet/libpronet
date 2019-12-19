@@ -257,7 +257,7 @@ ProSleep_s(PRO_UINT32 milliseconds);
  * 说明: 无
  */
 PRO_SHARED_API
-unsigned long
+PRO_UINT64
 PRO_CALLTYPE
 ProMakeTimerId();
 
@@ -271,7 +271,7 @@ ProMakeTimerId();
  * 说明: 无
  */
 PRO_SHARED_API
-unsigned long
+PRO_UINT64
 PRO_CALLTYPE
 ProMakeMmTimerId();
 

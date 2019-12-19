@@ -186,7 +186,7 @@ CProTimerFactory::Stop()
     }
 }}
 
-unsigned long
+PRO_UINT64
 CProTimerFactory::ScheduleTimer(IProOnTimer* onTimer,
                                 PRO_UINT64   timeSpan,
                                 bool         recurring,
@@ -232,7 +232,7 @@ CProTimerFactory::ScheduleTimer(IProOnTimer* onTimer,
     return (node.timerId);
 }
 
-unsigned long
+PRO_UINT64
 CProTimerFactory::ScheduleHeartbeatTimer(IProOnTimer* onTimer,
                                          PRO_INT64    userData) /* = 0 */
 {
@@ -303,7 +303,7 @@ CProTimerFactory::ScheduleHeartbeatTimer(IProOnTimer* onTimer,
 }
 
 void
-CProTimerFactory::CancelTimer(unsigned long timerId)
+CProTimerFactory::CancelTimer(PRO_UINT64 timerId)
 {
     if (timerId == 0)
     {
@@ -320,7 +320,7 @@ CProTimerFactory::CancelTimer(unsigned long timerId)
             return;
         }
 
-        CProStlMap<unsigned long, PRO_INT64>::iterator const itr =
+        CProStlMap<PRO_UINT64, PRO_INT64>::iterator const itr =
             m_timerId2ExpireTick.find(timerId);
         if (itr == m_timerId2ExpireTick.end())
         {
@@ -564,7 +564,7 @@ CProTimerFactory::WorkerRun(PRO_INT64* args)
         for (int j = 0; i < c; ++i)
         {
             const PRO_TIMER_NODE& node = timers[i];
-            node.onTimer->OnTimer(node.timerId, node.userData);
+            node.onTimer->OnTimer(this, node.timerId, node.userData);
             node.onTimer->Release();
 
             ++j;
