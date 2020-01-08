@@ -82,33 +82,60 @@ static
 void
 SignalHandler_i(int sig)
 {
+    CProStlString timeString = "";
+    ProGetLocalTimeString(timeString);
+
     switch (sig)
     {
     case SIGHUP:
         {
-            printf("\n pro_service_hub --- SIGHUP, exiting... \n");
+            printf(
+                "\n"
+                "%s \n"
+                " pro_service_hub --- SIGHUP, exiting... \n"
+                ,
+                timeString.c_str()
+                );
             g_s_cond.Signal();
             break;
         }
     case SIGINT:
         {
-            printf("\n pro_service_hub --- SIGINT, exiting... \n");
+            printf(
+                "\n"
+                "%s \n"
+                " pro_service_hub --- SIGINT, exiting... \n"
+                ,
+                timeString.c_str()
+                );
             g_s_cond.Signal();
             break;
         }
     case SIGQUIT:
         {
-            printf("\n pro_service_hub --- SIGQUIT, exiting... \n");
+            printf(
+                "\n"
+                "%s \n"
+                " pro_service_hub --- SIGQUIT, exiting... \n"
+                ,
+                timeString.c_str()
+                );
             g_s_cond.Signal();
             break;
         }
     case SIGTERM:
         {
-            printf("\n pro_service_hub --- SIGTERM, exiting... \n");
+            printf(
+                "\n"
+                "%s \n"
+                " pro_service_hub --- SIGTERM, exiting... \n"
+                ,
+                timeString.c_str()
+                );
             g_s_cond.Signal();
             break;
         }
-    }
+    } /* end of switch (...) */
 }
 
 static
@@ -138,9 +165,11 @@ int main(int argc, char* argv[])
 
     IProReactor*                   reactor    = NULL;
     CProStlString                  portString = "";
-    CProStlString                  timeString = "";
     SERVICE_HUB_CONFIG_INFO        configInfo;
     CProStlVector<IProServiceHub*> hubs;
+
+    CProStlString timeString = "";
+    ProGetLocalTimeString(timeString);
 
     char exeRoot[1024] = "";
     ProGetExeDir_(exeRoot);
@@ -160,9 +189,11 @@ int main(int argc, char* argv[])
 
             printf(
                 "\n"
+                "%s \n"
                 " pro_service_hub --- warning! can't read the config file. \n"
                 " [%s] \n"
                 ,
+                timeString.c_str(),
                 configFileName.c_str()
                 );
         }
@@ -209,7 +240,13 @@ int main(int argc, char* argv[])
 
     if (configInfo.hubs_listen_ports.size() == 0)
     {
-        printf("\n pro_service_hub --- error! \"hubs_listen_port\" is not found. \n");
+        printf(
+            "\n"
+            "%s \n"
+            " pro_service_hub --- error! \"hubs_listen_port\" is not found. \n"
+            ,
+            timeString.c_str()
+            );
 
         goto EXIT;
     }
@@ -217,7 +254,13 @@ int main(int argc, char* argv[])
     reactor = ProCreateReactor(configInfo.hubs_thread_count);
     if (reactor == NULL)
     {
-        printf("\n pro_service_hub --- error! can't create reactor. \n");
+        printf(
+            "\n"
+            "%s \n"
+            " pro_service_hub --- error! can't create reactor. \n"
+            ,
+            timeString.c_str()
+            );
 
         goto EXIT;
     }
@@ -240,9 +283,11 @@ int main(int argc, char* argv[])
             {
                 printf(
                     "\n"
+                    "%s \n"
                     " pro_service_hub --- error! can't create service hub on the port %u. \n"
                     " [maybe the port %u or the file \"/tmp/libpronet_127001_%u\" is busy.] \n"
                     ,
+                    timeString.c_str(),
                     (unsigned int)port,
                     (unsigned int)port,
                     (unsigned int)port
@@ -267,7 +312,6 @@ int main(int argc, char* argv[])
         } /* end of for (...) */
     }
 
-    ProGetLocalTimeString(timeString);
     printf(
         "\n"
         "%s \n"

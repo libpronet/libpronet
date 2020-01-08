@@ -31,6 +31,7 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+#define MAX_TRY_TIMES         100
 #define SEND_SYNC_INTERVAL_MS 300
 #define DEFAULT_TIMEOUT       10
 
@@ -124,9 +125,17 @@ CRtpSessionUdpclientEx::Init(IRtpSessionObserver* observer,
             return (false);
         }
 
-        m_trans = ProCreateUdpTransport(
-            this, reactor, localIp, 0, sockBufSizeRecv, sockBufSizeSend,
-            recvPoolSize, remoteIp, remotePort);
+        for (int i = 0; i < MAX_TRY_TIMES; ++i)
+        {
+            m_trans = ProCreateUdpTransport(
+                this, reactor, localIp, AllocRtpUdpPort(), sockBufSizeRecv,
+                sockBufSizeSend, recvPoolSize, remoteIp, remotePort);
+            if (m_trans != NULL)
+            {
+                break;
+            }
+        }
+
         if (m_trans == NULL)
         {
             return (false);

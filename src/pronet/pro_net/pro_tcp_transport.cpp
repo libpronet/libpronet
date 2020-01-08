@@ -637,7 +637,7 @@ EXIT:
             (recvSize < 0 && errorCode != PBSD_EWOULDBLOCK)
             ||
             recvSize == 0
-            )
+           )
         {
             m_canUpcall = false;
             observer->OnClose(this, errorCode, sslCode);

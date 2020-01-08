@@ -43,11 +43,9 @@ bool
 CRtpPortAllocator::SetPortRange(unsigned short minPort,
                                 unsigned short maxPort)
 {
-    assert(minPort > 0);
-    assert(minPort < maxPort);
-    if (minPort == 0 || minPort >= maxPort)
+    if (minPort == 0)
     {
-        return (false);
+        minPort = 2;
     }
 
     if (minPort % 2 != 0)
@@ -59,7 +57,6 @@ CRtpPortAllocator::SetPortRange(unsigned short minPort,
         --maxPort;
     }
 
-    assert(minPort < maxPort);
     if (minPort >= maxPort)
     {
         return (false);

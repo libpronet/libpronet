@@ -316,7 +316,8 @@ CMsgServer::Reconfig(const MSG_SERVER_CONFIG_INFO& configInfo)
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-            "\n CMsgServer::Reconfig(%u, %d, %d, %d, %d) \n"
+            "\n"
+            " CMsgServer::Reconfig(%u, %d, %d, %d, %d) \n"
             ,
             configInfo.msgs_log_loop_bytes,
             configInfo.msgs_log_level_green,
@@ -324,7 +325,6 @@ CMsgServer::Reconfig(const MSG_SERVER_CONFIG_INFO& configInfo)
             configInfo.msgs_log_level_userin,
             configInfo.msgs_log_level_userout
             );
-        printf("%s", traceInfo);
         m_logFile.Log(traceInfo, configInfo.msgs_log_level_green); /* green */
     }}}
 }
@@ -470,7 +470,8 @@ EXIT:
             snprintf_pro(
                 traceInfo,
                 sizeof(traceInfo),
-                "\n CMsgServer::OnCheckUser(id : %u-" PRO_PRT64U "-%u,"
+                "\n"
+                " CMsgServer::OnCheckUser(id : %u-" PRO_PRT64U "-%u,"
                 " fromIp : %s, fromC2s : %s) ok! \n"
                 ,
                 (unsigned int)user->classId,
@@ -485,7 +486,8 @@ EXIT:
             snprintf_pro(
                 traceInfo,
                 sizeof(traceInfo),
-                "\n CMsgServer::OnCheckUser(id : %u-" PRO_PRT64U "-%u,"
+                "\n"
+                " CMsgServer::OnCheckUser(id : %u-" PRO_PRT64U "-%u,"
                 " fromIp : %s, fromC2s : %s) failed! [%s] \n"
                 ,
                 (unsigned int)user->classId,
@@ -560,7 +562,8 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-            "\n CMsgServer::OnOkUser(id : %u-" PRO_PRT64U "-%u,"
+            "\n"
+            " CMsgServer::OnOkUser(id : %u-" PRO_PRT64U "-%u,"
             " fromIp : %s, fromC2s : %s, sslSuite : %s, users : %u+%u) \n"
             ,
             (unsigned int)user->classId,
@@ -632,7 +635,8 @@ CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-            "\n CMsgServer::OnCloseUser(id : %u-" PRO_PRT64U "-%u,"
+            "\n"
+            " CMsgServer::OnCloseUser(id : %u-" PRO_PRT64U "-%u,"
             " errorCode : [%d, %d], users : %u+%u) \n"
             ,
             (unsigned int)user->classId,

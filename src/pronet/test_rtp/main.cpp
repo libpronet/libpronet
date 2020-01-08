@@ -138,9 +138,18 @@ int main(int argc, char* argv[])
     IProReactor* reactor     = NULL;
     CTest*       tester      = NULL;
 
+    CProStlString timeString = "";
+    ProGetLocalTimeString(timeString);
+
     if (argc < 2)
     {
-        printf("\n test_rtp --- error! too few arguments. \n");
+        printf(
+            "\n"
+            "%s \n"
+            " test_rtp --- error! too few arguments. \n"
+            ,
+            timeString.c_str()
+            );
 
         goto EXIT;
     }
@@ -148,7 +157,13 @@ int main(int argc, char* argv[])
     mode = String2Mode_i(argv[1]);
     if (mode == 0)
     {
-        printf("\n test_rtp --- error! invalid argument <-mode>. \n");
+        printf(
+            "\n"
+            "%s \n"
+            " test_rtp --- error! invalid argument <-mode>. \n"
+            ,
+            timeString.c_str()
+            );
 
         goto EXIT;
     }
@@ -169,7 +184,13 @@ int main(int argc, char* argv[])
             {
                 if (argc < 4)
                 {
-                    printf("\n test_rtp --- error! too few arguments. \n");
+                    printf(
+                        "\n"
+                        "%s \n"
+                        " test_rtp --- error! too few arguments. \n"
+                        ,
+                        timeString.c_str()
+                        );
 
                     goto EXIT;
                 }
@@ -181,7 +202,13 @@ int main(int argc, char* argv[])
             {
                 if (argc < 5)
                 {
-                    printf("\n test_rtp --- error! too few arguments. \n");
+                    printf(
+                        "\n"
+                        "%s \n"
+                        " test_rtp --- error! too few arguments. \n"
+                        ,
+                        timeString.c_str()
+                        );
 
                     goto EXIT;
                 }
@@ -203,7 +230,13 @@ int main(int argc, char* argv[])
             assert(local_port <= 65535);
             if (local_port <= 0 || local_port > 65535)
             {
-                printf("\n test_rtp --- error! invalid argument <local_port>. \n");
+                printf(
+                    "\n"
+                    "%s \n"
+                    " test_rtp --- error! invalid argument <local_port>. \n"
+                    ,
+                    timeString.c_str()
+                    );
 
                 goto EXIT;
             }
@@ -233,7 +266,13 @@ int main(int argc, char* argv[])
 
             if (argc < 5)
             {
-                printf("\n test_rtp --- error! too few arguments. \n");
+                printf(
+                    "\n"
+                    "%s \n"
+                    " test_rtp --- error! too few arguments. \n"
+                    ,
+                    timeString.c_str()
+                    );
 
                 goto EXIT;
             }
@@ -255,7 +294,13 @@ int main(int argc, char* argv[])
             assert(remote_port <= 65535);
             if (remote_port <= 0 || remote_port > 65535)
             {
-                printf("\n test_rtp --- error! invalid argument <remote_port>. \n");
+                printf(
+                    "\n"
+                    "%s \n"
+                    " test_rtp --- error! invalid argument <remote_port>. \n"
+                    ,
+                    timeString.c_str()
+                    );
 
                 goto EXIT;
             }
@@ -291,7 +336,13 @@ int main(int argc, char* argv[])
     reactor = ProCreateReactor(THREAD_COUNT);
     if (reactor == NULL)
     {
-        printf("\n test_rtp --- error! can't create reactor. \n");
+        printf(
+            "\n"
+            "%s \n"
+            " test_rtp --- error! can't create reactor. \n"
+            ,
+            timeString.c_str()
+            );
 
         goto EXIT;
     }
@@ -299,7 +350,13 @@ int main(int argc, char* argv[])
     tester = CTest::CreateInstance(mode);
     if (tester == NULL)
     {
-        printf("\n test_rtp --- error! can't create tester. \n");
+        printf(
+            "\n"
+            "%s \n"
+            " test_rtp --- error! can't create tester. \n"
+            ,
+            timeString.c_str()
+            );
 
         goto EXIT;
     }
@@ -309,7 +366,13 @@ int main(int argc, char* argv[])
     {
         if (!tester->Init(reactor, params.server))
         {
-            printf("\n test_rtp --- error! can't init tester. \n");
+            printf(
+                "\n"
+                "%s \n"
+                " test_rtp --- error! can't init tester. \n"
+                ,
+                timeString.c_str()
+                );
 
             goto EXIT;
         }
@@ -318,7 +381,13 @@ int main(int argc, char* argv[])
     {
         if (!tester->Init(reactor, params.client))
         {
-            printf("\n test_rtp --- error! can't init tester. \n");
+            printf(
+                "\n"
+                "%s \n"
+                " test_rtp --- error! can't init tester. \n"
+                ,
+                timeString.c_str()
+                );
 
             goto EXIT;
         }

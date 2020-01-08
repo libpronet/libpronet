@@ -538,7 +538,7 @@ CTest::CreateTcpClient(IProReactor*   reactor,
 void
 CTest::PrintSessionReady(IRtpSession* session,
                          bool         udp)
-{
+{{{
     assert(session != NULL);
     if (session == NULL)
     {
@@ -566,9 +566,15 @@ CTest::PrintSessionReady(IRtpSession* session,
         strcpy(status, "connecting...");
     }
 
+    CProStlString timeString = "";
+    ProGetLocalTimeString(timeString);
+
     printf(
-        "\n test_rtp [ver-%d.%d.%d] --- [%s, Lc-%s:%u, Rm-%s:%u] --- %s \n"
+        "\n"
+        "%s \n"
+        " test_rtp [ver-%d.%d.%d] --- [%s, Lc-%s:%u, Rm-%s:%u] --- %s \n"
         ,
+        timeString.c_str(),
         PRO_VER_MAJOR,
         PRO_VER_MINOR,
         PRO_VER_PATCH,
@@ -579,12 +585,12 @@ CTest::PrintSessionReady(IRtpSession* session,
         (unsigned int)remotePort,
         status
         );
-}
+}}}
 
 void
 CTest::PrintSessionBroken(IRtpSession* session,
                           bool         udp)
-{
+{{{
     assert(session != NULL);
     if (session == NULL)
     {
@@ -600,9 +606,15 @@ CTest::PrintSessionBroken(IRtpSession* session,
     localPort  = session->GetLocalPort();
     remotePort = session->GetRemotePort();
 
+    CProStlString timeString = "";
+    ProGetLocalTimeString(timeString);
+
     printf(
-        "\n test_rtp [ver-%d.%d.%d] --- [%s, Lc-%s:%u, Rm-%s:%u] --- broken! \n"
+        "\n"
+        "%s \n"
+        " test_rtp [ver-%d.%d.%d] --- [%s, Lc-%s:%u, Rm-%s:%u] --- broken! \n"
         ,
+        timeString.c_str(),
         PRO_VER_MAJOR,
         PRO_VER_MINOR,
         PRO_VER_PATCH,
@@ -612,7 +624,7 @@ CTest::PrintSessionBroken(IRtpSession* session,
         remoteIp,
         (unsigned int)remotePort
         );
-}
+}}}
 
 void
 CTest::Fini()
@@ -691,11 +703,17 @@ CTest::OnOkSession(IRtpSession* session)
         localPort  = session->GetLocalPort();
         remotePort = session->GetRemotePort();
 
+        CProStlString timeString = "";
+        ProGetLocalTimeString(timeString);
+
         if (session == m_udpSession)
-        {
+        {{{
             printf(
-                "\n test_rtp [ver-%d.%d.%d] --- [UDP, Lc-%s:%u, Rm-%s:%u] --- connected! \n\n"
+                "\n"
+                "%s \n"
+                " test_rtp [ver-%d.%d.%d] --- [UDP, Lc-%s:%u, Rm-%s:%u] --- connected! \n\n"
                 ,
+                timeString.c_str(),
                 PRO_VER_MAJOR,
                 PRO_VER_MINOR,
                 PRO_VER_PATCH,
@@ -704,12 +722,15 @@ CTest::OnOkSession(IRtpSession* session)
                 remoteIp,
                 (unsigned int)remotePort
                 );
-        }
+        }}}
         else if (session == m_tcpSession)
-        {
+        {{{
             printf(
-                "\n test_rtp [ver-%d.%d.%d] --- [TCP, Lc-%s:%u, Rm-%s:%u] --- connected! \n\n"
+                "\n"
+                "%s \n"
+                " test_rtp [ver-%d.%d.%d] --- [TCP, Lc-%s:%u, Rm-%s:%u] --- connected! \n\n"
                 ,
+                timeString.c_str(),
                 PRO_VER_MAJOR,
                 PRO_VER_MINOR,
                 PRO_VER_PATCH,
@@ -718,7 +739,7 @@ CTest::OnOkSession(IRtpSession* session)
                 remoteIp,
                 (unsigned int)remotePort
                 );
-        }
+        }}}
         else
         {
             return;
@@ -959,7 +980,7 @@ CTest::OnTimer(void*      factory,
                 NULL, &inputBitRate, &inputLossRate, &inputLossCount);
 
             if (m_mode == TM_UDPE || m_mode == TM_TCPE)
-            {
+            {{{
                 /*
                  * using a single line
                  */
@@ -973,15 +994,16 @@ CTest::OnTimer(void*      factory,
                     (unsigned int)inputLossCount
                     );
                 fflush(stdout);
-            }
+            }}}
             else if (m_echoClient)
-            {
+            {{{
                 inputLossRate  = (float)m_statRttLossRate.CalcLossRate();
                 inputLossCount = (float)m_statRttLossRate.CalcLossCount();
                 rttDelay       = (float)m_statRttDelay.CalcAvgValue();
 
                 printf(
-                    "\n SEND : %9.1f(kbps)\t RECV : %9.1f(kbps)\t"
+                    "\n"
+                    " SEND : %9.1f(kbps)\t RECV : %9.1f(kbps)\t"
                     " LOSS : %5.2f%% [%u]\t RTT' : %u(ms) \n"
                     ,
                     outputBitRate / 1000,
@@ -990,11 +1012,12 @@ CTest::OnTimer(void*      factory,
                     (unsigned int)inputLossCount,
                     (unsigned int)rttDelay
                     );
-            }
+            }}}
             else
-            {
+            {{{
                 printf(
-                    "\n SEND : %9.1f(kbps)\t RECV : %9.1f(kbps)\t"
+                    "\n"
+                    " SEND : %9.1f(kbps)\t RECV : %9.1f(kbps)\t"
                     " LOSS : %5.2f%% [%u] \n"
                     ,
                     outputBitRate / 1000,
@@ -1002,7 +1025,7 @@ CTest::OnTimer(void*      factory,
                     inputLossRate * 100,
                     (unsigned int)inputLossCount
                     );
-            }
+            }}}
         }
         else if (timerId == m_htbtTimerId)
         {

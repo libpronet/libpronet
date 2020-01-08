@@ -25,6 +25,7 @@
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
+#include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_z.h"
 #include <cassert>
 
@@ -805,11 +806,16 @@ CTest::OnRecv(IProTransport*          trans,
             char remoteIp[64] = "";
             trans->GetRemoteIp(remoteIp);
 
+            CProStlString timeString = "";
+            ProGetLocalTimeString(timeString);
+
             printf(
                 "\n"
+                "%s \n"
                 " CTest::OnRecv(peer : %s:%u) \n"
                 "\t %s \n"
                 ,
+                timeString.c_str(),
                 remoteIp,
                 (unsigned int)trans->GetRemotePort(),
                 buf + sizeof(PRO_UINT16)
@@ -855,9 +861,15 @@ CTest::OnClose(IProTransport* trans,
         char remoteIp[64] = "";
         trans->GetRemoteIp(remoteIp);
 
+        CProStlString timeString = "";
+        ProGetLocalTimeString(timeString);
+
         printf(
-            "\n CTest::OnClose(errorCode : [%d, %d], peer : %s:%u) \n"
+            "\n"
+            "%s \n"
+            " CTest::OnClose(errorCode : [%d, %d], peer : %s:%u) \n"
             ,
+            timeString.c_str(),
             (int)errorCode,
             (int)sslCode,
             remoteIp,

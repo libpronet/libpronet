@@ -25,6 +25,7 @@
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
+#include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_timer_factory.h"
 #include "../pro_util/pro_unicode.h"
 #include "../pro_util/pro_z.h"
@@ -392,9 +393,15 @@ CTest::OnConnectOk(IProConnector*   connector,
 
     if (0)
     {{{
+        CProStlString timeString = "";
+        ProGetLocalTimeString(timeString);
+
         printf(
-            "\n CTest::OnConnectOk(server : %s:%u) \n"
+            "\n"
+            "%s \n"
+            " CTest::OnConnectOk(server : %s:%u) \n"
             ,
+            timeString.c_str(),
             remoteIp,
             (unsigned int)remotePort
             );
@@ -501,9 +508,15 @@ CTest::OnConnectError(IProConnector* connector,
 
     if (1)
     {{{
+        CProStlString timeString = "";
+        ProGetLocalTimeString(timeString);
+
         printf(
-            "\n CTest::OnConnectError(server : %s:%u) \n"
+            "\n"
+            "%s \n"
+            " CTest::OnConnectError(server : %s:%u) \n"
             ,
+            timeString.c_str(),
             remoteIp,
             (unsigned int)remotePort
             );
@@ -571,7 +584,16 @@ CTest::OnHandshakeOk(IProTcpHandshaker* handshaker,
 
     if (0)
     {{{
-        printf("\n CTest::OnHandshakeOk() [tcp] \n");
+        CProStlString timeString = "";
+        ProGetLocalTimeString(timeString);
+
+        printf(
+            "\n"
+            "%s \n"
+            " CTest::OnHandshakeOk() [tcp] \n"
+            ,
+            timeString.c_str()
+            );
     }}}
 
     ProDeleteTcpHandshaker(handshaker);
@@ -606,9 +628,15 @@ CTest::OnHandshakeError(IProTcpHandshaker* handshaker,
 
     if (1)
     {{{
+        CProStlString timeString = "";
+        ProGetLocalTimeString(timeString);
+
         printf(
-            "\n CTest::OnHandshakeError(errorCode : %d) [tcp] \n"
+            "\n"
+            "%s \n"
+            " CTest::OnHandshakeError(errorCode : %d) [tcp] \n"
             ,
+            timeString.c_str(),
             (int)errorCode
             );
     }}}
@@ -682,7 +710,16 @@ CTest::OnHandshakeOk(IProSslHandshaker* handshaker,
 
     if (0)
     {{{
-        printf("\n CTest::OnHandshakeOk() [ssl] \n");
+        CProStlString timeString = "";
+        ProGetLocalTimeString(timeString);
+
+        printf(
+            "\n"
+            "%s \n"
+            " CTest::OnHandshakeOk() [ssl] \n"
+            ,
+            timeString.c_str()
+            );
     }}}
 
     ProDeleteSslHandshaker(handshaker);
@@ -718,9 +755,15 @@ CTest::OnHandshakeError(IProSslHandshaker* handshaker,
 
     if (1)
     {{{
+        CProStlString timeString = "";
+        ProGetLocalTimeString(timeString);
+
         printf(
-            "\n CTest::OnHandshakeError(errorCode : [%d, %d]) [ssl] \n"
+            "\n"
+            "%s \n"
+            " CTest::OnHandshakeError(errorCode : [%d, %d]) [ssl] \n"
             ,
+            timeString.c_str(),
             (int)errorCode,
             (int)sslCode
             );
@@ -812,11 +855,16 @@ CTest::OnRecv(IProTransport*          trans,
             trans->GetLocalIp(localIp);
             trans->GetRemoteIp(remoteIp);
 
+            CProStlString timeString = "";
+            ProGetLocalTimeString(timeString);
+
             printf(
                 "\n"
+                "%s \n"
                 " CTest::OnRecv(server : %s:%u, me : %s:%u) \n"
                 "\t %s \n"
                 ,
+                timeString.c_str(),
                 remoteIp,
                 (unsigned int)trans->GetRemotePort(),
                 localIp,
@@ -864,10 +912,16 @@ CTest::OnClose(IProTransport* trans,
         trans->GetLocalIp(localIp);
         trans->GetRemoteIp(remoteIp);
 
+        CProStlString timeString = "";
+        ProGetLocalTimeString(timeString);
+
         printf(
-            "\n CTest::OnClose(errorCode : [%d, %d], server : %s:%u,"
+            "\n"
+            "%s \n"
+            " CTest::OnClose(errorCode : [%d, %d], server : %s:%u,"
             " me : %s:%u) \n"
             ,
+            timeString.c_str(),
             (int)errorCode,
             (int)sslCode,
             remoteIp,

@@ -1721,7 +1721,7 @@ CRtpSessionWrapper::OnTimer(void*      factory,
         {
 #if !defined(_WIN32_WCE)
             do
-            {
+            {{{
                 if (tick - m_traceTick < TRACE_INTERVAL * 1000)
                 {
                     break;
@@ -1888,7 +1888,7 @@ CRtpSessionWrapper::OnTimer(void*      factory,
                 else
                 {
                 }
-            }
+            }}}
             while (0);
 #endif /* _WIN32_WCE */
         }

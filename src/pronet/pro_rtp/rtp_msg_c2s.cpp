@@ -137,7 +137,7 @@ CRtpMsgC2s::Init(IRtpMsgC2sObserver* observer,
         ||
         (uplinkUser->UserId() >= NODE_UID_MIN &&
          uplinkUser->UserId() <= NODE_UID_MAXX)
-        );
+       );
     assert(!uplinkUser->IsRoot());
     assert(localServiceHubPort > 0);
     if (
@@ -872,7 +872,7 @@ CRtpMsgC2s::AcceptSession(IRtpService*            service,
         user.UserId() == 0
         ||
         (user.UserId() >= NODE_UID_MIN && user.UserId() <= NODE_UID_MAXX)
-        );
+       );
     assert(!user.IsRoot());
     if (
         user.classId == 0

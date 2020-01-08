@@ -367,7 +367,8 @@ CC2sServer::Reconfig(const C2S_SERVER_CONFIG_INFO& configInfo)
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-            "\n CC2sServer::Reconfig(%u, %d, %d, %d, %d) \n"
+            "\n"
+            " CC2sServer::Reconfig(%u, %d, %d, %d, %d) \n"
             ,
             configInfo.c2ss_log_loop_bytes,
             configInfo.c2ss_log_level_green,
@@ -375,7 +376,6 @@ CC2sServer::Reconfig(const C2S_SERVER_CONFIG_INFO& configInfo)
             configInfo.c2ss_log_level_userin,
             configInfo.c2ss_log_level_userout
             );
-        printf("%s", traceInfo);
         m_logFile.Log(traceInfo, configInfo.c2ss_log_level_green); /* green */
     }}}
 }
@@ -420,13 +420,19 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
         msgC2s->GetUplinkRemoteIp(remoteIp);
         remotePort = msgC2s->GetUplinkRemotePort();
 
+        CProStlString timeString = "";
+        ProGetLocalTimeString(timeString);
+
         char traceInfo[1024] = "";
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-            "\n CC2sServer::OnOkC2s(id : %u-" PRO_PRT64U "-%u, publicIp : %s,"
+            "\n"
+            "%s \n"
+            " CC2sServer::OnOkC2s(id : %u-" PRO_PRT64U "-%u, publicIp : %s,"
             " sslSuite : %s, server : %s:%u) \n"
             ,
+            timeString.c_str(),
             (unsigned int)myUser->classId,
             myUser->UserId(),
             (unsigned int)myUser->instId,
@@ -436,7 +442,7 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
             (unsigned int)remotePort
             );
         printf("%s", traceInfo);
-        m_logFile.Log(traceInfo, m_configInfo.c2ss_log_level_status);
+        m_logFile.Log(traceInfo, m_configInfo.c2ss_log_level_status, false);
     }}}
 }
 
@@ -478,13 +484,19 @@ CC2sServer::OnCloseC2s(IRtpMsgC2s* msgC2s,
         msgC2s->GetUplinkRemoteIp(remoteIp);
         remotePort = msgC2s->GetUplinkRemotePort();
 
+        CProStlString timeString = "";
+        ProGetLocalTimeString(timeString);
+
         char traceInfo[1024] = "";
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-            "\n CC2sServer::OnCloseC2s(id : %u-" PRO_PRT64U "-%u,"
+            "\n"
+            "%s \n"
+            " CC2sServer::OnCloseC2s(id : %u-" PRO_PRT64U "-%u,"
             " errorCode : [%d, %d], tcpConnected : %d, server : %s:%u) \n"
             ,
+            timeString.c_str(),
             (unsigned int)myUser.classId,
             myUser.UserId(),
             (unsigned int)myUser.instId,
@@ -495,7 +507,7 @@ CC2sServer::OnCloseC2s(IRtpMsgC2s* msgC2s,
             (unsigned int)remotePort
             );
         printf("%s", traceInfo);
-        m_logFile.Log(traceInfo, m_configInfo.c2ss_log_level_status);
+        m_logFile.Log(traceInfo, m_configInfo.c2ss_log_level_status, false);
     }}}
 }
 
@@ -539,7 +551,8 @@ CC2sServer::OnOkUser(IRtpMsgC2s*         msgC2s,
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-            "\n CC2sServer::OnOkUser(id : %u-" PRO_PRT64U "-%u, fromIp : %s,"
+            "\n"
+            " CC2sServer::OnOkUser(id : %u-" PRO_PRT64U "-%u, fromIp : %s,"
             " sslSuite : %s, users : %u) \n"
             ,
             (unsigned int)user->classId,
@@ -589,7 +602,8 @@ CC2sServer::OnCloseUser(IRtpMsgC2s*         msgC2s,
         snprintf_pro(
             traceInfo,
             sizeof(traceInfo),
-            "\n CC2sServer::OnCloseUser(id : %u-" PRO_PRT64U "-%u,"
+            "\n"
+            " CC2sServer::OnCloseUser(id : %u-" PRO_PRT64U "-%u,"
             " errorCode : [%d, %d], users : %u) \n"
             ,
             (unsigned int)user->classId,

@@ -901,7 +901,7 @@ CRtpMsgServer::AsyncOnAcceptSession(PRO_INT64* args)
         ||
         (baseUser.UserId() >= NODE_UID_MIN &&
          baseUser.UserId() <= NODE_UID_MAX)
-        );
+       );
     assert(!baseUser.IsRoot());
     if (
         baseUser.classId == 0
@@ -1324,7 +1324,7 @@ CRtpMsgServer::ProcessMsg_client_login(IRtpSession*            session,
         subUser.UserId() == 0
         ||
         (subUser.UserId() >= NODE_UID_MIN && subUser.UserId() <= NODE_UID_MAX)
-        );
+       );
     assert(!subUser.IsRoot());
     assert(subUser != c2sUser);
     if (

@@ -58,6 +58,9 @@ int main(int argc, char* argv[])
     CProStlString          configFileName = "";
     C2S_SERVER_CONFIG_INFO configInfo;
 
+    CProStlString timeString = "";
+    ProGetLocalTimeString(timeString);
+
     char exeRoot[1024] = "";
     ProGetExeDir_(exeRoot);
 
@@ -80,9 +83,11 @@ int main(int argc, char* argv[])
 
             printf(
                 "\n"
+                "%s \n"
                 " rtp_msg_c2s --- warning! can't read the config file. \n"
                 " [%s] \n"
                 ,
+                timeString.c_str(),
                 configFileName.c_str()
                 );
         }
@@ -380,9 +385,16 @@ int main(int argc, char* argv[])
     reactor = ProCreateReactor(configInfo.c2ss_thread_count);
     if (reactor == NULL)
     {
-        strcpy(s_traceInfo, "\n rtp_msg_c2s --- error! can't create reactor. \n");
+        sprintf(
+            s_traceInfo,
+            "\n"
+            "%s \n"
+            " rtp_msg_c2s --- error! can't create reactor. \n"
+            ,
+            timeString.c_str()
+            );
         printf("%s", s_traceInfo);
-        logFile->Log(s_traceInfo);
+        logFile->Log(s_traceInfo, 0, false);
 
         goto EXIT;
     }
@@ -390,17 +402,31 @@ int main(int argc, char* argv[])
     server = CC2sServer::CreateInstance(*logFile);
     if (server == NULL)
     {
-        strcpy(s_traceInfo, "\n rtp_msg_c2s --- error! can't create server. \n");
+        sprintf(
+            s_traceInfo,
+            "\n"
+            "%s \n"
+            " rtp_msg_c2s --- error! can't create server. \n"
+            ,
+            timeString.c_str()
+            );
         printf("%s", s_traceInfo);
-        logFile->Log(s_traceInfo);
+        logFile->Log(s_traceInfo, 0, false);
 
         goto EXIT;
     }
     if (!server->Init(reactor, configInfo))
     {
-        strcpy(s_traceInfo, "\n rtp_msg_c2s --- error! can't init server. \n");
+        sprintf(
+            s_traceInfo,
+            "\n"
+            "%s \n"
+            " rtp_msg_c2s --- error! can't init server. \n"
+            ,
+            timeString.c_str()
+            );
         printf("%s", s_traceInfo);
-        logFile->Log(s_traceInfo);
+        logFile->Log(s_traceInfo, 0, false);
 
         goto EXIT;
     }
@@ -414,11 +440,13 @@ int main(int argc, char* argv[])
         configInfo.c2ss_uplink_password = "";
     }
 
-    snprintf_pro(
+    sprintf(
         s_traceInfo,
-        sizeof(s_traceInfo),
-        "\n rtp_msg_c2s [ver-%d.%d.%d] --- [port : %u, server : %s:%u, mmType : %u] --- ok! \n"
+        "\n"
+        "%s \n"
+        " rtp_msg_c2s [ver-%d.%d.%d] --- [port : %u, server : %s:%u, mmType : %u] --- ok! \n"
         ,
+        timeString.c_str(),
         PRO_VER_MAJOR,
         PRO_VER_MINOR,
         PRO_VER_PATCH,
@@ -428,7 +456,7 @@ int main(int argc, char* argv[])
         (unsigned int)configInfo.c2ss_mm_type
         );
     printf("%s", s_traceInfo);
-    logFile->Log(s_traceInfo);
+    logFile->Log(s_traceInfo, 0, false);
 
     printf(
         "\n"
@@ -482,6 +510,8 @@ int main(int argc, char* argv[])
             continue;
         }
 
+        ProGetLocalTimeString(timeString);
+
         if (stricmp(p, "help") == 0 || stricmp(p, "--help") == 0)
         {
             printf(
@@ -499,7 +529,16 @@ int main(int argc, char* argv[])
             CProStlVector<PRO_CONFIG_ITEM> configs;
             if (!configFile.Read(configs))
             {
-                printf("\n error! can't read the config file. \n");
+                sprintf(
+                    s_traceInfo,
+                    "\n"
+                    "%s \n"
+                    " reconfig : error! can't read the config file. \n"
+                    ,
+                    timeString.c_str()
+                    );
+                printf("%s", s_traceInfo);
+                logFile->Log(s_traceInfo, 0, false);
                 continue;
             }
 
@@ -540,14 +579,31 @@ int main(int argc, char* argv[])
                 }
             } /* end of for (...) */
 
-            printf("\n reloading... \n");
+            sprintf(
+                s_traceInfo,
+                "\n"
+                "%s \n"
+                " reconfig : reloading... \n"
+                ,
+                timeString.c_str()
+                );
+            printf("%s", s_traceInfo);
+            logFile->Log(s_traceInfo, 0, false);
+
             server->Reconfig(configInfo);
         }
         else if (stricmp(p, "exit") == 0)
         {
-            strcpy(s_traceInfo, "\n exiting... \n");
+            sprintf(
+                s_traceInfo,
+                "\n"
+                "%s \n"
+                " exit : exiting... \n"
+                ,
+                timeString.c_str()
+                );
             printf("%s", s_traceInfo);
-            logFile->Log(s_traceInfo);
+            logFile->Log(s_traceInfo, 0, false);
             break;
         }
         else

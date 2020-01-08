@@ -724,7 +724,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
 
 #if !defined(_WIN32_WCE)
         do
-        {
+        {{{
             if (!enableTrace)
             {
                 break;
@@ -1121,7 +1121,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
             }
 
             ProFree(buffer);
-        }
+        }}}
         while (0);
 #endif /* _WIN32_WCE */
 

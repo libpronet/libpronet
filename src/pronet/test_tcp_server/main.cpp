@@ -45,33 +45,60 @@ static
 void
 SignalHandler_i(int sig)
 {
+    CProStlString timeString = "";
+    ProGetLocalTimeString(timeString);
+
     switch (sig)
     {
     case SIGHUP:
         {
-            printf("\n test_tcp_server --- SIGHUP, exiting... \n");
+            printf(
+                "\n"
+                "%s \n"
+                " test_tcp_server --- SIGHUP, exiting... \n"
+                ,
+                timeString.c_str()
+                );
             g_s_tester->Fini();
             _exit(0);
         }
     case SIGINT:
         {
-            printf("\n test_tcp_server --- SIGINT, exiting... \n");
+            printf(
+                "\n"
+                "%s \n"
+                " test_tcp_server --- SIGINT, exiting... \n"
+                ,
+                timeString.c_str()
+                );
             g_s_tester->Fini();
             _exit(0);
         }
     case SIGQUIT:
         {
-            printf("\n test_tcp_server --- SIGQUIT, exiting... \n");
+            printf(
+                "\n"
+                "%s \n"
+                " test_tcp_server --- SIGQUIT, exiting... \n"
+                ,
+                timeString.c_str()
+                );
             g_s_tester->Fini();
             _exit(0);
         }
     case SIGTERM:
         {
-            printf("\n test_tcp_server --- SIGTERM, exiting... \n");
+            printf(
+                "\n"
+                "%s \n"
+                " test_tcp_server --- SIGTERM, exiting... \n"
+                ,
+                timeString.c_str()
+                );
             g_s_tester->Fini();
             _exit(0);
         }
-    }
+    } /* end of switch (...) */
 }
 
 static
@@ -102,6 +129,9 @@ int main(int argc, char* argv[])
     IProReactor*           reactor = NULL;
     TCP_SERVER_CONFIG_INFO configInfo;
 
+    CProStlString timeString = "";
+    ProGetLocalTimeString(timeString);
+
     char exeRoot[1024] = "";
     ProGetExeDir_(exeRoot);
 
@@ -120,9 +150,11 @@ int main(int argc, char* argv[])
 
             printf(
                 "\n"
+                "%s \n"
                 " test_tcp_server --- warning! can't read the config file. \n"
                 " [%s] \n"
                 ,
+                timeString.c_str(),
                 configFileName.c_str()
                 );
         }
@@ -296,7 +328,13 @@ int main(int argc, char* argv[])
     reactor = ProCreateReactor(configInfo.tcps_thread_count);
     if (reactor == NULL)
     {
-        printf("\n test_tcp_server --- error! can't create reactor. \n");
+        printf(
+            "\n"
+            "%s \n"
+            " test_tcp_server --- error! can't create reactor. \n"
+            ,
+            timeString.c_str()
+            );
 
         goto EXIT;
     }
@@ -309,8 +347,11 @@ int main(int argc, char* argv[])
     if (g_s_tester == NULL)
     {
         printf(
-            "\n test_tcp_server --- error! can't create tester on port %u. \n"
+            "\n"
+            "%s \n"
+            " test_tcp_server --- error! can't create tester on port %u. \n"
             ,
+            timeString.c_str(),
             (unsigned int)configInfo.tcps_port
             );
 
@@ -324,8 +365,11 @@ int main(int argc, char* argv[])
     if (!g_s_tester->Init(reactor, configInfo))
     {
         printf(
-            "\n test_tcp_server --- error! can't init tester on port %u. \n"
+            "\n"
+            "%s \n"
+            " test_tcp_server --- error! can't init tester on port %u. \n"
             ,
+            timeString.c_str(),
             (unsigned int)configInfo.tcps_port
             );
 
@@ -333,8 +377,11 @@ int main(int argc, char* argv[])
     }
 
     printf(
-        "\n test_tcp_server [ver-%d.%d.%d] --- [usingHub : %s, port : %u] --- ok! \n"
+        "\n"
+        "%s \n"
+        " test_tcp_server [ver-%d.%d.%d] --- [usingHub : %s, port : %u] --- ok! \n"
         ,
+        timeString.c_str(),
         PRO_VER_MAJOR,
         PRO_VER_MINOR,
         PRO_VER_PATCH,
@@ -352,7 +399,14 @@ int main(int argc, char* argv[])
         );
 
     reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
-    printf("\n%s\n", s_traceInfo);
+    printf(
+        "\n"
+        "%s \n"
+        "%s \n"
+        ,
+        timeString.c_str(),
+        s_traceInfo
+        );
     printf(" [ HTBT Size ] : %u \n",
         (unsigned int)g_s_tester->GetHeartbeatDataSize());
 
@@ -394,10 +448,19 @@ int main(int argc, char* argv[])
             break;
         }
 
+        ProGetLocalTimeString(timeString);
+
         if (p[0] == '\0')
         {
             reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
-            printf("\n%s\n", s_traceInfo);
+            printf(
+                "\n"
+                "%s \n"
+                "%s \n"
+                ,
+                timeString.c_str(),
+                s_traceInfo
+                );
             printf(" [ HTBT Size ] : %u \n",
                 (unsigned int)g_s_tester->GetHeartbeatDataSize());
             continue;
@@ -425,11 +488,24 @@ int main(int argc, char* argv[])
                 continue;
             }
 
+            printf(
+                "\n"
+                "%s \n"
+                " htbttime : htbttime... \n"
+                ,
+                timeString.c_str()
+                );
             reactor->UpdateHeartbeatTimers(seconds);
-            printf("\n htbttime... \n");
 
             reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
-            printf("\n%s\n", s_traceInfo);
+            printf(
+                "\n"
+                "%s \n"
+                "%s \n"
+                ,
+                timeString.c_str(),
+                s_traceInfo
+                );
             printf(" [ HTBT Size ] : %u \n",
                 (unsigned int)g_s_tester->GetHeartbeatDataSize());
         }
@@ -443,18 +519,38 @@ int main(int argc, char* argv[])
                 continue;
             }
 
+            printf(
+                "\n"
+                "%s \n"
+                " htbtsize : htbtsize... \n"
+                ,
+                timeString.c_str()
+                );
             g_s_tester->SetHeartbeatDataSize(bytes);
-            printf("\n htbtsize... \n");
 
             reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
-            printf("\n%s\n", s_traceInfo);
+            printf(
+                "\n"
+                "%s \n"
+                "%s \n"
+                ,
+                timeString.c_str(),
+                s_traceInfo
+                );
             printf(" [ HTBT Size ] : %u \n",
                 (unsigned int)g_s_tester->GetHeartbeatDataSize());
         }
         else
         {
             reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
-            printf("\n%s\n", s_traceInfo);
+            printf(
+                "\n"
+                "%s \n"
+                "%s \n"
+                ,
+                timeString.c_str(),
+                s_traceInfo
+                );
             printf(" [ HTBT Size ] : %u \n",
                 (unsigned int)g_s_tester->GetHeartbeatDataSize());
         }

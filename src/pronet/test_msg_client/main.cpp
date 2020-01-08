@@ -82,6 +82,9 @@ int main(int argc, char* argv[])
         local_ip = argv[3];
     }
 
+    CProStlString timeString = "";
+    ProGetLocalTimeString(timeString);
+
     char exeRoot[1024] = "";
     ProGetExeDir_(exeRoot);
 
@@ -100,9 +103,11 @@ int main(int argc, char* argv[])
 
             printf(
                 "\n"
+                "%s \n"
                 " test_msg_client --- warning! can't read the config file. \n"
                 " [%s] \n"
                 ,
+                timeString.c_str(),
                 configFileName.c_str()
                 );
         }
@@ -254,7 +259,13 @@ int main(int argc, char* argv[])
     reactor = ProCreateReactor(THREAD_COUNT);
     if (reactor == NULL)
     {
-        printf("\n test_msg_client --- error! can't create reactor. \n");
+        printf(
+            "\n"
+            "%s \n"
+            " test_msg_client --- error! can't create reactor. \n"
+            ,
+            timeString.c_str()
+            );
 
         goto EXIT;
     }
@@ -262,13 +273,25 @@ int main(int argc, char* argv[])
     tester = CTest::CreateInstance();
     if (tester == NULL)
     {
-        printf("\n test_msg_client --- error! can't create tester. \n");
+        printf(
+            "\n"
+            "%s \n"
+            " test_msg_client --- error! can't create tester. \n"
+            ,
+            timeString.c_str()
+            );
 
         goto EXIT;
     }
     if (!tester->Init(reactor, configInfo))
     {
-        printf("\n test_msg_client --- error! can't init tester. \n");
+        printf(
+            "\n"
+            "%s \n"
+            " test_msg_client --- error! can't init tester. \n"
+            ,
+            timeString.c_str()
+            );
 
         goto EXIT;
     }
@@ -281,8 +304,11 @@ int main(int argc, char* argv[])
     }
 
     printf(
-        "\n test_msg_client [ver-%d.%d.%d] --- [server : %s:%u, mmType : %u] --- connecting... \n"
+        "\n"
+        "%s \n"
+        " test_msg_client [ver-%d.%d.%d] --- [server : %s:%u, mmType : %u] --- connecting... \n"
         ,
+        timeString.c_str(),
         PRO_VER_MAJOR,
         PRO_VER_MINOR,
         PRO_VER_PATCH,
@@ -347,6 +373,8 @@ int main(int argc, char* argv[])
             continue;
         }
 
+        ProGetLocalTimeString(timeString);
+
         if (stricmp(p, "help") == 0 || stricmp(p, "--help") == 0 ||
             stricmp(p, "bind") == 0)
         {
@@ -370,17 +398,35 @@ int main(int argc, char* argv[])
                 continue;
             }
 
+            printf(
+                "\n"
+                "%s \n"
+                " bind : binding... \n"
+                ,
+                timeString.c_str()
+                );
             bindUser = user;
-            printf("\n binding... \n");
         }
         else if (stricmp(p, "unbind") == 0)
         {
+            printf(
+                "\n"
+                "%s \n"
+                " unbind : unbinding... \n"
+                ,
+                timeString.c_str()
+                );
             bindUser.Zero();
-            printf("\n unbinding... \n");
         }
         else if (stricmp(p, "reconnect") == 0)
         {
-            printf("\n reconnecting... \n");
+            printf(
+                "\n"
+                "%s \n"
+                " reconnect : reconnecting... \n"
+                ,
+                timeString.c_str()
+                );
             tester->Reconnect();
         }
         else

@@ -227,6 +227,11 @@ struct RTP_MSG_USER
         return (false);
     }
 
+    bool operator>(const RTP_MSG_USER& user) const
+    {
+        return (!(*this < user || *this == user));
+    }
+
     unsigned char classId;
     unsigned char userId1;
     unsigned char userId2;

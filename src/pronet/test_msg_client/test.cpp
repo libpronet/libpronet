@@ -28,6 +28,7 @@
 #include "../pro_util/pro_ssl_util.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
+#include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_unicode.h"
 #include "../pro_util/pro_z.h"
 #include <cassert>
@@ -468,10 +469,16 @@ CTest::OnOkMsg(IRtpMsgClient*      msgClient,
         char suiteName[64] = "";
         msgClient->GetSslSuite(suiteName);
 
+        CProStlString timeString = "";
+        ProGetLocalTimeString(timeString);
+
         printf(
-            "\n CTest::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s,"
+            "\n"
+            "%s \n"
+            " CTest::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s,"
             " sslSuite : %s, server : %s:%u) \n"
             ,
+            timeString.c_str(),
             (unsigned int)myUser->classId,
             myUser->UserId(),
             (unsigned int)myUser->instId,
@@ -525,12 +532,17 @@ CTest::OnRecvMsg(IRtpMsgClient*      msgClient,
         RTP_MSG_USER myUser;
         msgClient->GetUser(&myUser);
 
+        CProStlString timeString = "";
+        ProGetLocalTimeString(timeString);
+
         printf(
             "\n"
+            "%s \n"
             " CTest::OnRecvMsg(from : %u-" PRO_PRT64U "-%u,"
             " me : %u-" PRO_PRT64U "-%u) \n"
             "\t %s \n"
             ,
+            timeString.c_str(),
             (unsigned int)srcUser->classId,
             srcUser->UserId(),
             (unsigned int)srcUser->instId,
@@ -573,10 +585,16 @@ CTest::OnCloseMsg(IRtpMsgClient* msgClient,
         RTP_MSG_USER myUser;
         msgClient->GetUser(&myUser);
 
+        CProStlString timeString = "";
+        ProGetLocalTimeString(timeString);
+
         printf(
-            "\n CTest::OnCloseMsg(id : %u-" PRO_PRT64U "-%u,"
+            "\n"
+            "%s \n"
+            " CTest::OnCloseMsg(id : %u-" PRO_PRT64U "-%u,"
             " errorCode : [%d, %d], tcpConnected : %d, server : %s:%u) \n"
             ,
+            timeString.c_str(),
             (unsigned int)myUser.classId,
             myUser.UserId(),
             (unsigned int)myUser.instId,

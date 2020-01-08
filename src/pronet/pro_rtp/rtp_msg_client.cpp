@@ -108,7 +108,7 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
         user->UserId() == 0
         ||
         (user->UserId() >= NODE_UID_MIN && user->UserId() <= NODE_UID_MAXX)
-        );
+       );
     assert(!user->IsRoot());
     if (
         observer == NULL || reactor == NULL ||

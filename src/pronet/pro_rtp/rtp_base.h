@@ -1145,10 +1145,10 @@ FindRtpStreamFromPacket(const IRtpPacket* packet,
 PRO_RTP_API
 void
 PRO_CALLTYPE
-SetRtpPortRange(unsigned short minUdpPort,
-                unsigned short maxUdpPort,
-                unsigned short minTcpPort,
-                unsigned short maxTcpPort);
+SetRtpPortRange(unsigned short minUdpPort,  /* = 0 */
+                unsigned short maxUdpPort,  /* = 0 */
+                unsigned short minTcpPort,  /* = 0 */
+                unsigned short maxTcpPort); /* = 0 */
 
 /*
  * 功能: 获取rtp端口号的分配范围
