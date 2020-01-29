@@ -286,7 +286,7 @@ CMsgServer::KickoutUsers(const CProStlSet<RTP_MSG_USER>& users)
     }
 
     {{{
-        m_logFile.Log(traceInfo.c_str());
+        m_logFile.Log(traceInfo.c_str(), PRO_LL_INFO, true);
     }}}
 }
 
@@ -301,14 +301,11 @@ CMsgServer::Reconfig(const MSG_SERVER_CONFIG_INFO& configInfo)
             return;
         }
 
-        m_configInfo.msgs_log_loop_bytes    = configInfo.msgs_log_loop_bytes;
-        m_configInfo.msgs_log_level_green   = configInfo.msgs_log_level_green;
-        m_configInfo.msgs_log_level_userchk = configInfo.msgs_log_level_userchk;
-        m_configInfo.msgs_log_level_userin  = configInfo.msgs_log_level_userin;
-        m_configInfo.msgs_log_level_userout = configInfo.msgs_log_level_userout;
+        m_configInfo.msgs_log_loop_bytes  = configInfo.msgs_log_loop_bytes;
+        m_configInfo.msgs_log_level_green = configInfo.msgs_log_level_green;
 
-        m_logFile.SetGreenLevel(configInfo.msgs_log_level_green);
         m_logFile.SetMaxSize(configInfo.msgs_log_loop_bytes);
+        m_logFile.SetGreenLevel(configInfo.msgs_log_level_green);
     }
 
     {{{
@@ -317,15 +314,12 @@ CMsgServer::Reconfig(const MSG_SERVER_CONFIG_INFO& configInfo)
             traceInfo,
             sizeof(traceInfo),
             "\n"
-            " CMsgServer::Reconfig(%u, %d, %d, %d, %d) \n"
+            " CMsgServer::Reconfig(%u, %d) \n"
             ,
             configInfo.msgs_log_loop_bytes,
-            configInfo.msgs_log_level_green,
-            configInfo.msgs_log_level_userchk,
-            configInfo.msgs_log_level_userin,
-            configInfo.msgs_log_level_userout
+            configInfo.msgs_log_level_green
             );
-        m_logFile.Log(traceInfo, configInfo.msgs_log_level_green); /* green */
+        m_logFile.Log(traceInfo, PRO_LL_MAX, true);
     }}}
 }
 
@@ -384,7 +378,7 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
 
         const MSG_USER_CTX* ctx = NULL;
 
-        CProStlMap<PRO_UINT64, MSG_USER_CTX>::const_iterator const itr =
+        CProStlMap<PRO_UINT64, MSG_USER_CTX>::iterator const itr =
             m_uid2Ctx[user->classId].find(user->UserId());
         if (itr != m_uid2Ctx[user->classId].end())
         {
@@ -498,7 +492,7 @@ EXIT:
                 errorString.c_str()
                 );
         }
-        m_logFile.Log(traceInfo, m_configInfo.msgs_log_level_userchk);
+        m_logFile.Log(traceInfo, PRO_LL_DEBUG, true);
     }}}
 
     return (ret);
@@ -575,7 +569,7 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
             (unsigned int)baseUserCount,
             (unsigned int)subUserCount
             );
-        m_logFile.Log(traceInfo, m_configInfo.msgs_log_level_userin);
+        m_logFile.Log(traceInfo, PRO_LL_INFO, true);
     }}}
 }
 
@@ -647,6 +641,6 @@ CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
             (unsigned int)baseUserCount,
             (unsigned int)subUserCount
             );
-        m_logFile.Log(traceInfo, m_configInfo.msgs_log_level_userout);
+        m_logFile.Log(traceInfo, PRO_LL_INFO, true);
     }}}
 }

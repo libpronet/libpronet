@@ -21,7 +21,6 @@
 
 #include "pro_a.h"
 #include "pro_memory_pool.h"
-#include "pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -34,9 +33,9 @@ public:
 
     void SetTimeSpan(unsigned long timeSpanInSeconds); /* = 5 */
 
-    void PushDataBytes(size_t dataBytes);
+    void PushDataBytes(double dataBytes);
 
-    void PushDataBits(size_t dataBits);
+    void PushDataBits(double dataBits);
 
     double CalcBitRate();
 

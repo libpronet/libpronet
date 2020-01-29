@@ -205,8 +205,8 @@ CTest::Fini()
     }
 
     {
-        CProStlSet<IProTransport*>::const_iterator       itr = transports.begin();
-        CProStlSet<IProTransport*>::const_iterator const end = transports.end();
+        CProStlSet<IProTransport*>::iterator       itr = transports.begin();
+        CProStlSet<IProTransport*>::iterator const end = transports.end();
 
         for (; itr != end; ++itr)
         {
@@ -215,8 +215,8 @@ CTest::Fini()
     }
 
     {
-        CProStlSet<IProSslHandshaker*>::const_iterator       itr = sslHandshakers.begin();
-        CProStlSet<IProSslHandshaker*>::const_iterator const end = sslHandshakers.end();
+        CProStlSet<IProSslHandshaker*>::iterator       itr = sslHandshakers.begin();
+        CProStlSet<IProSslHandshaker*>::iterator const end = sslHandshakers.end();
 
         for (; itr != end; ++itr)
         {
@@ -225,8 +225,8 @@ CTest::Fini()
     }
 
     {
-        CProStlSet<IProTcpHandshaker*>::const_iterator       itr = tcpHandshakers.begin();
-        CProStlSet<IProTcpHandshaker*>::const_iterator const end = tcpHandshakers.end();
+        CProStlSet<IProTcpHandshaker*>::iterator       itr = tcpHandshakers.begin();
+        CProStlSet<IProTcpHandshaker*>::iterator const end = tcpHandshakers.end();
 
         for (; itr != end; ++itr)
         {
@@ -235,8 +235,8 @@ CTest::Fini()
     }
 
     {
-        CProStlSet<IProConnector*>::const_iterator       itr = connectors.begin();
-        CProStlSet<IProConnector*>::const_iterator const end = connectors.end();
+        CProStlSet<IProConnector*>::iterator       itr = connectors.begin();
+        CProStlSet<IProConnector*>::iterator const end = connectors.end();
 
         for (; itr != end; ++itr)
         {

@@ -20,7 +20,6 @@
 #include "pro_stat.h"
 #include "pro_memory_pool.h"
 #include "pro_time_util.h"
-#include "pro_z.h"
 #include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
@@ -55,21 +54,20 @@ CProStatBitRate::SetTimeSpan(unsigned long timeSpanInSeconds) /* = 5 */
 }
 
 void
-CProStatBitRate::PushDataBytes(size_t dataBytes)
+CProStatBitRate::PushDataBytes(double dataBytes)
 {
-    if (m_startTick == 0)
-    {
-        m_startTick = ProGetTickCount64() - INIT_TIME_SPAN_MS;
-    }
-
-    m_bits += (double)dataBytes * 8;
-
-    Update();
+    PushDataBits(dataBytes * 8);
 }
 
 void
-CProStatBitRate::PushDataBits(size_t dataBits)
+CProStatBitRate::PushDataBits(double dataBits)
 {
+    assert(dataBits >= 0);
+    if (dataBits < 0)
+    {
+        return;
+    }
+
     if (m_startTick == 0)
     {
         m_startTick = ProGetTickCount64() - INIT_TIME_SPAN_MS;

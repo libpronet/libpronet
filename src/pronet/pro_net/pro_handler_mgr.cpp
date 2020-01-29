@@ -28,8 +28,8 @@
 
 CProHandlerMgr::~CProHandlerMgr()
 {
-    CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::const_iterator       itr = m_sockId2HandlerInfo.begin();
-    CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::const_iterator const end = m_sockId2HandlerInfo.end();
+    CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator       itr = m_sockId2HandlerInfo.begin();
+    CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator const end = m_sockId2HandlerInfo.end();
 
     for (; itr != end; ++itr)
     {

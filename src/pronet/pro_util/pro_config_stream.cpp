@@ -408,6 +408,52 @@ CProConfigStream::AddUint64(const CProStlString&             configName,
 }
 
 void
+CProConfigStream::AddFloat(const CProStlString& configName,
+                           float                configValue)
+{
+    char configValue2[64] = "";
+    sprintf(configValue2, "%f", configValue);
+
+    Add(configName, configValue2);
+}
+
+void
+CProConfigStream::AddFloat(const CProStlString&        configName,
+                           const CProStlVector<float>& configValues)
+{
+    int       i = 0;
+    const int c = (int)configValues.size();
+
+    for (; i < c; ++i)
+    {
+        AddFloat(configName, configValues[i]);
+    }
+}
+
+void
+CProConfigStream::AddFloat64(const CProStlString& configName,
+                             double               configValue)
+{
+    char configValue2[64] = "";
+    sprintf(configValue2, "%lf", configValue);
+
+    Add(configName, configValue2);
+}
+
+void
+CProConfigStream::AddFloat64(const CProStlString&         configName,
+                             const CProStlVector<double>& configValues)
+{
+    int       i = 0;
+    const int c = (int)configValues.size();
+
+    for (; i < c; ++i)
+    {
+        AddFloat64(configName, configValues[i]);
+    }
+}
+
+void
 CProConfigStream::Add(const PRO_CONFIG_ITEM& config)
 {
     Add(config.configName, config.configValue);
@@ -651,6 +697,88 @@ CProConfigStream::GetUint64(const CProStlString&       configName,
 }
 
 void
+CProConfigStream::GetFloat(const CProStlString& configName,
+                           float&               configValue) const
+{
+    configValue = 0;
+
+    CProStlString configValue2 = "";
+    Get(configName, configValue2);
+
+    if (!configValue2.empty())
+    {
+        sscanf(configValue2.c_str(), "%f", &configValue);
+    }
+}
+
+void
+CProConfigStream::GetFloat(const CProStlString&  configName,
+                           CProStlVector<float>& configValues) const
+{
+    configValues.clear();
+
+    CProStlVector<PRO_CONFIG_ITEM> configs;
+    Get_i(configName, configs);
+
+    int       i = 0;
+    const int c = (int)configs.size();
+
+    for (; i < c; ++i)
+    {
+        float configValue = 0;
+
+        const PRO_CONFIG_ITEM& config = configs[i];
+        if (!config.configValue.empty())
+        {
+            sscanf(config.configValue.c_str(), "%f", &configValue);
+        }
+
+        configValues.push_back(configValue);
+    }
+}
+
+void
+CProConfigStream::GetFloat64(const CProStlString& configName,
+                             double&              configValue) const
+{
+    configValue = 0;
+
+    CProStlString configValue2 = "";
+    Get(configName, configValue2);
+
+    if (!configValue2.empty())
+    {
+        sscanf(configValue2.c_str(), "%lf", &configValue);
+    }
+}
+
+void
+CProConfigStream::GetFloat64(const CProStlString&   configName,
+                             CProStlVector<double>& configValues) const
+{
+    configValues.clear();
+
+    CProStlVector<PRO_CONFIG_ITEM> configs;
+    Get_i(configName, configs);
+
+    int       i = 0;
+    const int c = (int)configs.size();
+
+    for (; i < c; ++i)
+    {
+        double configValue = 0;
+
+        const PRO_CONFIG_ITEM& config = configs[i];
+        if (!config.configValue.empty())
+        {
+            sscanf(config.configValue.c_str(), "%lf", &configValue);
+        }
+
+        configValues.push_back(configValue);
+    }
+}
+
+void
 CProConfigStream::Get(CProStlVector<PRO_CONFIG_ITEM>& configs) const
 {
     configs.clear();
@@ -668,8 +796,8 @@ CProConfigStream::Get(CProStlVector<PRO_CONFIG_ITEM>& configs) const
     }
 
     {
-        CProStlMap<unsigned long, CProStlString>::const_iterator       itr = index2Name.begin();
-        CProStlMap<unsigned long, CProStlString>::const_iterator const end = index2Name.end();
+        CProStlMap<unsigned long, CProStlString>::iterator       itr = index2Name.begin();
+        CProStlMap<unsigned long, CProStlString>::iterator const end = index2Name.end();
 
         for (; itr != end; ++itr)
         {

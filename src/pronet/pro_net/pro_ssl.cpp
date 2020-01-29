@@ -526,7 +526,7 @@ ProSni_i(void*                ctx,
 
     const CProStlString sniName((char*)name, nameLen);
 
-    CProStlMap<CProStlString, PRO_SSL_AUTH_ITEM>::const_iterator const itr =
+    CProStlMap<CProStlString, PRO_SSL_AUTH_ITEM>::iterator const itr =
         config->sni2Auth.find(sniName);
     if (itr == config->sni2Auth.end())
     {

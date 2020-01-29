@@ -114,6 +114,26 @@ public:
         const CProStlVector<PRO_UINT64>& configValues
         );
 
+    void AddFloat(
+        const CProStlString& configName,
+        float                configValue
+        );
+
+    void AddFloat(
+        const CProStlString&        configName,
+        const CProStlVector<float>& configValues
+        );
+
+    void AddFloat64(
+        const CProStlString& configName,
+        double               configValue
+        );
+
+    void AddFloat64(
+        const CProStlString&         configName,
+        const CProStlVector<double>& configValues
+        );
+
     void Add(const PRO_CONFIG_ITEM& config);
 
     void Add(const CProStlVector<PRO_CONFIG_ITEM>& configs);
@@ -170,6 +190,26 @@ public:
     void GetUint64(
         const CProStlString&       configName,
         CProStlVector<PRO_UINT64>& configValues
+        ) const;
+
+    void GetFloat(
+        const CProStlString& configName,
+        float&               configValue
+        ) const;
+
+    void GetFloat(
+        const CProStlString&  configName,
+        CProStlVector<float>& configValues
+        ) const;
+
+    void GetFloat64(
+        const CProStlString& configName,
+        double&              configValue
+        ) const;
+
+    void GetFloat64(
+        const CProStlString&   configName,
+        CProStlVector<double>& configValues
         ) const;
 
     void Get(CProStlVector<PRO_CONFIG_ITEM>& configs) const;

@@ -157,8 +157,8 @@ CProTimerFactory::Stop()
 
     m_task->Stop();
 
-    CProStlSet<PRO_TIMER_NODE>::const_iterator       itr = timers.begin();
-    CProStlSet<PRO_TIMER_NODE>::const_iterator const end = timers.end();
+    CProStlSet<PRO_TIMER_NODE>::iterator       itr = timers.begin();
+    CProStlSet<PRO_TIMER_NODE>::iterator const end = timers.end();
 
     for (; itr != end; ++itr)
     {
@@ -498,8 +498,8 @@ CProTimerFactory::WorkerRun(PRO_INT64* args)
 
             const PRO_INT64 tick = ProGetTickCount64();
 
-            CProStlSet<PRO_TIMER_NODE>::const_iterator       itr = m_timers.begin();
-            CProStlSet<PRO_TIMER_NODE>::const_iterator const end = m_timers.end();
+            CProStlSet<PRO_TIMER_NODE>::iterator       itr = m_timers.begin();
+            CProStlSet<PRO_TIMER_NODE>::iterator const end = m_timers.end();
 
             for (; itr != end; ++itr)
             {

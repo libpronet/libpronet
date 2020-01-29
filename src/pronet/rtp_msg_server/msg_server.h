@@ -53,9 +53,6 @@ struct MSG_SERVER_CONFIG_INFO
 
         msgs_log_loop_bytes      = 20 * 1000 * 1000;
         msgs_log_level_green     = 0;
-        msgs_log_level_userchk   = -1;
-        msgs_log_level_userin    = 0;
-        msgs_log_level_userout   = 0;
 
         msgs_ssl_cafiles.push_back("./ca.crt");
         msgs_ssl_cafiles.push_back("");
@@ -87,9 +84,6 @@ struct MSG_SERVER_CONFIG_INFO
 
         configStream.AddUint("msgs_log_loop_bytes"     , msgs_log_loop_bytes);
         configStream.AddInt ("msgs_log_level_green"    , msgs_log_level_green);
-        configStream.AddInt ("msgs_log_level_userchk"  , msgs_log_level_userchk);
-        configStream.AddInt ("msgs_log_level_userin"   , msgs_log_level_userin);
-        configStream.AddInt ("msgs_log_level_userout"  , msgs_log_level_userout);
 
         configStream.Get(configs);
     }
@@ -112,9 +106,6 @@ struct MSG_SERVER_CONFIG_INFO
 
     unsigned int                 msgs_log_loop_bytes;
     int                          msgs_log_level_green;
-    int                          msgs_log_level_userchk;
-    int                          msgs_log_level_userin;
-    int                          msgs_log_level_userout;
 
     DECLARE_SGI_POOL(0);
 };

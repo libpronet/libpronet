@@ -70,8 +70,8 @@ CProChannelTaskPool::Start(unsigned long threadCount)
 
 EXIT:
 
-    CProStlMap<CProFunctorCommandTask*, unsigned long>::const_iterator       itr = task2Channels.begin();
-    CProStlMap<CProFunctorCommandTask*, unsigned long>::const_iterator const end = task2Channels.end();
+    CProStlMap<CProFunctorCommandTask*, unsigned long>::iterator       itr = task2Channels.begin();
+    CProStlMap<CProFunctorCommandTask*, unsigned long>::iterator const end = task2Channels.end();
 
     for (; itr != end; ++itr)
     {
@@ -101,8 +101,8 @@ CProChannelTaskPool::Stop()
         m_task2Channels.clear();
     }
 
-    CProStlMap<CProFunctorCommandTask*, unsigned long>::const_iterator       itr = task2Channels.begin();
-    CProStlMap<CProFunctorCommandTask*, unsigned long>::const_iterator const end = task2Channels.end();
+    CProStlMap<CProFunctorCommandTask*, unsigned long>::iterator       itr = task2Channels.begin();
+    CProStlMap<CProFunctorCommandTask*, unsigned long>::iterator const end = task2Channels.end();
 
     for (; itr != end; ++itr)
     {
@@ -131,8 +131,8 @@ CProChannelTaskPool::AddChannel(PRO_UINT64 channelId)
         CProFunctorCommandTask* task     = NULL;
         unsigned long           channels = 0;
 
-        CProStlMap<CProFunctorCommandTask*, unsigned long>::const_iterator       itr = m_task2Channels.begin();
-        CProStlMap<CProFunctorCommandTask*, unsigned long>::const_iterator const end = m_task2Channels.end();
+        CProStlMap<CProFunctorCommandTask*, unsigned long>::iterator       itr = m_task2Channels.begin();
+        CProStlMap<CProFunctorCommandTask*, unsigned long>::iterator const end = m_task2Channels.end();
 
         for (; itr != end; ++itr)
         {
@@ -191,7 +191,7 @@ CProChannelTaskPool::Put(PRO_UINT64          channelId,
             return (false);
         }
 
-        CProStlMap<PRO_UINT64, CProFunctorCommandTask*>::const_iterator const itr =
+        CProStlMap<PRO_UINT64, CProFunctorCommandTask*>::iterator const itr =
             m_channelId2Task.find(channelId);
         if (itr == m_channelId2Task.end())
         {

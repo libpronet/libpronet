@@ -243,8 +243,8 @@ CRtpMsgServer::Fini()
         m_observer = NULL;
     }
 
-    CProStlMap<IRtpSession*, RTP_MSG_LINK_CTX*>::const_iterator       itr = session2Ctx.begin();
-    CProStlMap<IRtpSession*, RTP_MSG_LINK_CTX*>::const_iterator const end = session2Ctx.end();
+    CProStlMap<IRtpSession*, RTP_MSG_LINK_CTX*>::iterator       itr = session2Ctx.begin();
+    CProStlMap<IRtpSession*, RTP_MSG_LINK_CTX*>::iterator const end = session2Ctx.end();
 
     for (; itr != end; ++itr)
     {
@@ -419,8 +419,8 @@ CRtpMsgServer::AsyncKickoutUser(PRO_INT64* args)
             oldSession = ctx->session;
             oldUsers   = ctx->subUsers;
 
-            CProStlSet<RTP_MSG_USER>::const_iterator       itr2 = oldUsers.begin();
-            CProStlSet<RTP_MSG_USER>::const_iterator const end2 = oldUsers.end();
+            CProStlSet<RTP_MSG_USER>::iterator       itr2 = oldUsers.begin();
+            CProStlSet<RTP_MSG_USER>::iterator const end2 = oldUsers.end();
 
             for (; itr2 != end2; ++itr2)
             {
@@ -447,8 +447,8 @@ CRtpMsgServer::AsyncKickoutUser(PRO_INT64* args)
         observer = m_observer;
     }
 
-    CProStlSet<RTP_MSG_USER>::const_iterator       itr = oldUsers.begin();
-    CProStlSet<RTP_MSG_USER>::const_iterator const end = oldUsers.end();
+    CProStlSet<RTP_MSG_USER>::iterator       itr = oldUsers.begin();
+    CProStlSet<RTP_MSG_USER>::iterator const end = oldUsers.end();
 
     for (; itr != end; ++itr)
     {
@@ -516,7 +516,7 @@ CRtpMsgServer::SendMsg2(const void*         buf1,
                 continue;
             }
 
-            CProStlMap<RTP_MSG_USER, RTP_MSG_LINK_CTX*>::const_iterator const itr =
+            CProStlMap<RTP_MSG_USER, RTP_MSG_LINK_CTX*>::iterator const itr =
                 m_user2Ctx.find(dstUsers[i]);
             if (itr == m_user2Ctx.end())
             {
@@ -568,8 +568,8 @@ CRtpMsgServer::SendMsg2(const void*         buf1,
      * to subUsers
      */
     {
-        CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::const_iterator       itr = session2SubUsers.begin();
-        CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::const_iterator const end = session2SubUsers.end();
+        CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::iterator       itr = session2SubUsers.begin();
+        CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::iterator const end = session2SubUsers.end();
 
         for (; itr != end; ++itr)
         {
@@ -1085,7 +1085,7 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
             return;
         }
 
-        CProStlMap<IRtpSession*, RTP_MSG_LINK_CTX*>::const_iterator const itr =
+        CProStlMap<IRtpSession*, RTP_MSG_LINK_CTX*>::iterator const itr =
             m_session2Ctx.find(session);
         if (itr == m_session2Ctx.end())
         {
@@ -1125,7 +1125,7 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
                 continue;
             }
 
-            CProStlMap<RTP_MSG_USER, RTP_MSG_LINK_CTX*>::const_iterator const itr2 =
+            CProStlMap<RTP_MSG_USER, RTP_MSG_LINK_CTX*>::iterator const itr2 =
                 m_user2Ctx.find(dstUser);
             if (itr2 == m_user2Ctx.end())
             {
@@ -1240,8 +1240,8 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
      * to subUsers
      */
     {
-        CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::const_iterator       itr = session2SubUsers.begin();
-        CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::const_iterator const end = session2SubUsers.end();
+        CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::iterator       itr = session2SubUsers.begin();
+        CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::iterator const end = session2SubUsers.end();
 
         for (; itr != end; ++itr)
         {
@@ -1614,8 +1614,8 @@ CRtpMsgServer::AsyncOnCloseSession(PRO_INT64* args)
         oldUsers = ctx->subUsers;
         oldUsers.insert(ctx->baseUser);
 
-        CProStlSet<RTP_MSG_USER>::const_iterator       itr2 = oldUsers.begin();
-        CProStlSet<RTP_MSG_USER>::const_iterator const end2 = oldUsers.end();
+        CProStlSet<RTP_MSG_USER>::iterator       itr2 = oldUsers.begin();
+        CProStlSet<RTP_MSG_USER>::iterator const end2 = oldUsers.end();
 
         for (; itr2 != end2; ++itr2)
         {
@@ -1629,8 +1629,8 @@ CRtpMsgServer::AsyncOnCloseSession(PRO_INT64* args)
         observer = m_observer;
     }
 
-    CProStlSet<RTP_MSG_USER>::const_iterator       itr = oldUsers.begin();
-    CProStlSet<RTP_MSG_USER>::const_iterator const end = oldUsers.end();
+    CProStlSet<RTP_MSG_USER>::iterator       itr = oldUsers.begin();
+    CProStlSet<RTP_MSG_USER>::iterator const end = oldUsers.end();
 
     for (; itr != end; ++itr)
     {
@@ -1665,7 +1665,7 @@ CRtpMsgServer::OnHeartbeatSession(IRtpSession* session,
             return;
         }
 
-        CProStlMap<IRtpSession*, RTP_MSG_LINK_CTX*>::const_iterator const itr =
+        CProStlMap<IRtpSession*, RTP_MSG_LINK_CTX*>::iterator const itr =
             m_session2Ctx.find(session);
         if (itr == m_session2Ctx.end())
         {
@@ -1744,8 +1744,8 @@ CRtpMsgServer::AddBaseUser(RTP_SESSION_TYPE        sessionType,
                 oldSession = ctx->session;
                 oldUsers   = ctx->subUsers;
 
-                CProStlSet<RTP_MSG_USER>::const_iterator       itr2 = oldUsers.begin();
-                CProStlSet<RTP_MSG_USER>::const_iterator const end2 = oldUsers.end();
+                CProStlSet<RTP_MSG_USER>::iterator       itr2 = oldUsers.begin();
+                CProStlSet<RTP_MSG_USER>::iterator const end2 = oldUsers.end();
 
                 for (; itr2 != end2; ++itr2)
                 {
@@ -1784,8 +1784,8 @@ CRtpMsgServer::AddBaseUser(RTP_SESSION_TYPE        sessionType,
         observer = m_observer;
     }
 
-    CProStlSet<RTP_MSG_USER>::const_iterator       itr = oldUsers.begin();
-    CProStlSet<RTP_MSG_USER>::const_iterator const end = oldUsers.end();
+    CProStlSet<RTP_MSG_USER>::iterator       itr = oldUsers.begin();
+    CProStlSet<RTP_MSG_USER>::iterator const end = oldUsers.end();
 
     for (; itr != end; ++itr)
     {
@@ -1863,8 +1863,8 @@ CRtpMsgServer::AddSubUser(const RTP_MSG_USER&  c2sUser,
                 oldSession = oldCtx->session;
                 oldUsers   = oldCtx->subUsers;
 
-                CProStlSet<RTP_MSG_USER>::const_iterator       itr2 = oldUsers.begin();
-                CProStlSet<RTP_MSG_USER>::const_iterator const end2 = oldUsers.end();
+                CProStlSet<RTP_MSG_USER>::iterator       itr2 = oldUsers.begin();
+                CProStlSet<RTP_MSG_USER>::iterator const end2 = oldUsers.end();
 
                 for (; itr2 != end2; ++itr2)
                 {
@@ -1903,8 +1903,8 @@ CRtpMsgServer::AddSubUser(const RTP_MSG_USER&  c2sUser,
         observer = m_observer;
     }
 
-    CProStlSet<RTP_MSG_USER>::const_iterator       itr = oldUsers.begin();
-    CProStlSet<RTP_MSG_USER>::const_iterator const end = oldUsers.end();
+    CProStlSet<RTP_MSG_USER>::iterator       itr = oldUsers.begin();
+    CProStlSet<RTP_MSG_USER>::iterator const end = oldUsers.end();
 
     for (; itr != end; ++itr)
     {

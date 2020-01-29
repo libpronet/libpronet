@@ -397,8 +397,8 @@ CProSelectReactor::WorkerRun()
 
                 allHandlers = m_handlerMgr.GetAllHandlers();
 
-                CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::const_iterator       itr = allHandlers.begin();
-                CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::const_iterator const end = allHandlers.end();
+                CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator       itr = allHandlers.begin();
+                CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator const end = allHandlers.end();
 
                 for (; itr != end; ++itr)
                 {
@@ -407,8 +407,8 @@ CProSelectReactor::WorkerRun()
                 }
             }
 
-            CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::const_iterator       itr = allHandlers.begin();
-            CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::const_iterator const end = allHandlers.end();
+            CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator       itr = allHandlers.begin();
+            CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator const end = allHandlers.end();
 
             for (; itr != end; ++itr)
             {
@@ -540,8 +540,8 @@ CProSelectReactor::WorkerRun()
             const CProStlMap<PRO_INT64, PRO_HANDLER_INFO>& allHandlers =
                 m_handlerMgr.GetAllHandlers();
 
-            CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::const_iterator       itr = allHandlers.begin();
-            CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::const_iterator const end = allHandlers.end();
+            CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator       itr = allHandlers.begin();
+            CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator const end = allHandlers.end();
 
             for (; itr != end; ++itr)
             {
@@ -576,8 +576,8 @@ CProSelectReactor::WorkerRun()
 #endif /* WIN32, _WIN32_WCE */
         }
 
-        CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::const_iterator       itr = handlers.begin();
-        CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::const_iterator const end = handlers.end();
+        CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator       itr = handlers.begin();
+        CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator const end = handlers.end();
 
         for (; itr != end; ++itr)
         {

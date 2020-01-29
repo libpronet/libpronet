@@ -352,14 +352,11 @@ CC2sServer::Reconfig(const C2S_SERVER_CONFIG_INFO& configInfo)
             return;
         }
 
-        m_configInfo.c2ss_log_loop_bytes    = configInfo.c2ss_log_loop_bytes;
-        m_configInfo.c2ss_log_level_green   = configInfo.c2ss_log_level_green;
-        m_configInfo.c2ss_log_level_status  = configInfo.c2ss_log_level_status;
-        m_configInfo.c2ss_log_level_userin  = configInfo.c2ss_log_level_userin;
-        m_configInfo.c2ss_log_level_userout = configInfo.c2ss_log_level_userout;
+        m_configInfo.c2ss_log_loop_bytes  = configInfo.c2ss_log_loop_bytes;
+        m_configInfo.c2ss_log_level_green = configInfo.c2ss_log_level_green;
 
-        m_logFile.SetGreenLevel(configInfo.c2ss_log_level_green);
         m_logFile.SetMaxSize(configInfo.c2ss_log_loop_bytes);
+        m_logFile.SetGreenLevel(configInfo.c2ss_log_level_green);
     }
 
     {{{
@@ -368,15 +365,12 @@ CC2sServer::Reconfig(const C2S_SERVER_CONFIG_INFO& configInfo)
             traceInfo,
             sizeof(traceInfo),
             "\n"
-            " CC2sServer::Reconfig(%u, %d, %d, %d, %d) \n"
+            " CC2sServer::Reconfig(%u, %d) \n"
             ,
             configInfo.c2ss_log_loop_bytes,
-            configInfo.c2ss_log_level_green,
-            configInfo.c2ss_log_level_status,
-            configInfo.c2ss_log_level_userin,
-            configInfo.c2ss_log_level_userout
+            configInfo.c2ss_log_level_green
             );
-        m_logFile.Log(traceInfo, configInfo.c2ss_log_level_green); /* green */
+        m_logFile.Log(traceInfo, PRO_LL_MAX, true);
     }}}
 }
 
@@ -442,7 +436,7 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
             (unsigned int)remotePort
             );
         printf("%s", traceInfo);
-        m_logFile.Log(traceInfo, m_configInfo.c2ss_log_level_status, false);
+        m_logFile.Log(traceInfo, PRO_LL_INFO, false);
     }}}
 }
 
@@ -507,7 +501,7 @@ CC2sServer::OnCloseC2s(IRtpMsgC2s* msgC2s,
             (unsigned int)remotePort
             );
         printf("%s", traceInfo);
-        m_logFile.Log(traceInfo, m_configInfo.c2ss_log_level_status, false);
+        m_logFile.Log(traceInfo, PRO_LL_ERROR, false);
     }}}
 }
 
@@ -562,7 +556,7 @@ CC2sServer::OnOkUser(IRtpMsgC2s*         msgC2s,
             suiteName,
             (unsigned int)userCount
             );
-        m_logFile.Log(traceInfo, m_configInfo.c2ss_log_level_userin);
+        m_logFile.Log(traceInfo, PRO_LL_INFO, true);
     }}}
 }
 
@@ -613,6 +607,6 @@ CC2sServer::OnCloseUser(IRtpMsgC2s*         msgC2s,
             (int)sslCode,
             (unsigned int)userCount
             );
-        m_logFile.Log(traceInfo, m_configInfo.c2ss_log_level_userout);
+        m_logFile.Log(traceInfo, PRO_LL_INFO, true);
     }}}
 }

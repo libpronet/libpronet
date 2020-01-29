@@ -133,9 +133,9 @@ private:
 #define PBSD_ENOTSOCK     WSAENOTSOCK     /* 10038 */
 #define PBSD_ECONNREFUSED WSAECONNREFUSED /* 10061 */
 #else
-#define PBSD_EINTR        EINTR           /*  4 */
-#define PBSD_EINVAL       EINVAL          /* 22 */
-#define PBSD_ENOTSOCK     ENOTSOCK        /*  8 */
+#define PBSD_EINTR        EINTR           /*   4 */
+#define PBSD_EINVAL       EINVAL          /*  22 */
+#define PBSD_ENOTSOCK     ENOTSOCK        /*   8 */
 #define PBSD_ECONNREFUSED ECONNREFUSED    /* 111 */
 #endif
 

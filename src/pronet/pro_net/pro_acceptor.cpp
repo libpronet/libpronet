@@ -287,8 +287,8 @@ CProAcceptor::Fini()
         m_observer = NULL;
     }
 
-    CProStlMap<IProTcpHandshaker*, PRO_NONCE>::const_iterator       itr = handshaker2Nonce.begin();
-    CProStlMap<IProTcpHandshaker*, PRO_NONCE>::const_iterator const end = handshaker2Nonce.end();
+    CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator       itr = handshaker2Nonce.begin();
+    CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator const end = handshaker2Nonce.end();
 
     for (; itr != end; ++itr)
     {

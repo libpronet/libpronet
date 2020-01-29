@@ -902,11 +902,14 @@ CTest::OnTimer(void*      factory,
             {
                 packetSize = m_outputShaper.GetMaxBitRate() / 8 - 1;
             }
+            if (packetSize < 1)
+            {
+                packetSize = 1;
+            }
 
             while (1)
             {
-                const double greenBits = m_outputShaper.CalcGreenBits();
-                if (greenBits < packetSize * 8)
+                if (m_outputShaper.CalcGreenBits() < packetSize * 8)
                 {
                     break;
                 }
@@ -969,11 +972,11 @@ CTest::OnTimer(void*      factory,
                 return;
             }
 
-            float outputBitRate  = 0;
-            float inputBitRate   = 0;
-            float inputLossRate  = 0;
-            float inputLossCount = 0;
-            float rttDelay       = 0;
+            float      outputBitRate  = 0;
+            float      inputBitRate   = 0;
+            float      inputLossRate  = 0;
+            PRO_UINT64 inputLossCount = 0;
+            float      rttDelay       = 0;
 
             session->GetOutputStat(NULL, &outputBitRate, NULL, NULL);
             session->GetInputStat(
@@ -986,30 +989,30 @@ CTest::OnTimer(void*      factory,
                  */
                 printf(
                     "\r SEND : %9.1f(kbps)\t RECV : %9.1f(kbps)\t"
-                    " LOSS : %5.2f%% [%u] "
+                    " LOSS : %5.2f%% [" PRO_PRT64U "] "
                     ,
                     outputBitRate / 1000,
                     inputBitRate  / 1000,
                     inputLossRate * 100,
-                    (unsigned int)inputLossCount
+                    inputLossCount
                     );
                 fflush(stdout);
             }}}
             else if (m_echoClient)
             {{{
                 inputLossRate  = (float)m_statRttLossRate.CalcLossRate();
-                inputLossCount = (float)m_statRttLossRate.CalcLossCount();
+                inputLossCount = (PRO_UINT64)m_statRttLossRate.CalcLossCount();
                 rttDelay       = (float)m_statRttDelay.CalcAvgValue();
 
                 printf(
                     "\n"
                     " SEND : %9.1f(kbps)\t RECV : %9.1f(kbps)\t"
-                    " LOSS : %5.2f%% [%u]\t RTT' : %u(ms) \n"
+                    " LOSS : %5.2f%% [" PRO_PRT64U "]\t RTT' : %u(ms) \n"
                     ,
                     outputBitRate / 1000,
                     inputBitRate  / 1000,
                     inputLossRate * 100,
-                    (unsigned int)inputLossCount,
+                    inputLossCount,
                     (unsigned int)rttDelay
                     );
             }}}
@@ -1018,12 +1021,12 @@ CTest::OnTimer(void*      factory,
                 printf(
                     "\n"
                     " SEND : %9.1f(kbps)\t RECV : %9.1f(kbps)\t"
-                    " LOSS : %5.2f%% [%u] \n"
+                    " LOSS : %5.2f%% [" PRO_PRT64U "] \n"
                     ,
                     outputBitRate / 1000,
                     inputBitRate  / 1000,
                     inputLossRate * 100,
-                    (unsigned int)inputLossCount
+                    inputLossCount
                     );
             }}}
         }

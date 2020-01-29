@@ -227,8 +227,8 @@ CTest::Fini()
     }
 
     {
-        CProStlSet<IProTransport*>::const_iterator       itr = transports.begin();
-        CProStlSet<IProTransport*>::const_iterator const end = transports.end();
+        CProStlSet<IProTransport*>::iterator       itr = transports.begin();
+        CProStlSet<IProTransport*>::iterator const end = transports.end();
 
         for (; itr != end; ++itr)
         {
@@ -237,8 +237,8 @@ CTest::Fini()
     }
 
     {
-        CProStlMap<IProSslHandshaker*, PRO_NONCE>::const_iterator       itr = sslHandshaker2Nonce.begin();
-        CProStlMap<IProSslHandshaker*, PRO_NONCE>::const_iterator const end = sslHandshaker2Nonce.end();
+        CProStlMap<IProSslHandshaker*, PRO_NONCE>::iterator       itr = sslHandshaker2Nonce.begin();
+        CProStlMap<IProSslHandshaker*, PRO_NONCE>::iterator const end = sslHandshaker2Nonce.end();
 
         for (; itr != end; ++itr)
         {
@@ -247,8 +247,8 @@ CTest::Fini()
     }
 
     {
-        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::const_iterator       itr = tcpHandshaker2Nonce.begin();
-        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::const_iterator const end = tcpHandshaker2Nonce.end();
+        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator       itr = tcpHandshaker2Nonce.begin();
+        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator const end = tcpHandshaker2Nonce.end();
 
         for (; itr != end; ++itr)
         {

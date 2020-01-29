@@ -270,8 +270,8 @@ int main(int argc, char* argv[])
 #endif
 
     {
-        CProStlSet<unsigned short>::const_iterator       itr = configInfo.hubs_listen_ports.begin();
-        CProStlSet<unsigned short>::const_iterator const end = configInfo.hubs_listen_ports.end();
+        CProStlSet<unsigned short>::iterator       itr = configInfo.hubs_listen_ports.begin();
+        CProStlSet<unsigned short>::iterator const end = configInfo.hubs_listen_ports.end();
 
         for (; itr != end; ++itr)
         {

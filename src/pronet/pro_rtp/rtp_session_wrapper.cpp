@@ -1349,10 +1349,10 @@ CRtpSessionWrapper::ResetFlowctrlInfo()
 
 void
 PRO_CALLTYPE
-CRtpSessionWrapper::GetInputStat(float* frameRate,       /* = NULL */
-                                 float* bitRate,         /* = NULL */
-                                 float* lossRate,        /* = NULL */
-                                 float* lossCount) const /* = NULL */
+CRtpSessionWrapper::GetInputStat(float*      frameRate,       /* = NULL */
+                                 float*      bitRate,         /* = NULL */
+                                 float*      lossRate,        /* = NULL */
+                                 PRO_UINT64* lossCount) const /* = NULL */
 {
     {
         CProThreadMutexGuard mon(m_lock);
@@ -1371,17 +1371,17 @@ CRtpSessionWrapper::GetInputStat(float* frameRate,       /* = NULL */
         }
         if (lossCount != NULL)
         {
-            *lossCount = (float)m_statLossRateInput.CalcLossCount();
+            *lossCount = (PRO_UINT64)m_statLossRateInput.CalcLossCount();
         }
     }
 }
 
 void
 PRO_CALLTYPE
-CRtpSessionWrapper::GetOutputStat(float* frameRate,       /* = NULL */
-                                  float* bitRate,         /* = NULL */
-                                  float* lossRate,        /* = NULL */
-                                  float* lossCount) const /* = NULL */
+CRtpSessionWrapper::GetOutputStat(float*      frameRate,       /* = NULL */
+                                  float*      bitRate,         /* = NULL */
+                                  float*      lossRate,        /* = NULL */
+                                  PRO_UINT64* lossCount) const /* = NULL */
 {
     {
         CProThreadMutexGuard mon(m_lock);
@@ -1400,7 +1400,7 @@ CRtpSessionWrapper::GetOutputStat(float* frameRate,       /* = NULL */
         }
         if (lossCount != NULL)
         {
-            *lossCount = (float)m_statLossRateOutput.CalcLossCount();
+            *lossCount = (PRO_UINT64)m_statLossRateOutput.CalcLossCount();
         }
     }
 }

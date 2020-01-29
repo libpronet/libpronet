@@ -61,9 +61,6 @@ struct C2S_SERVER_CONFIG_INFO
 
         c2ss_log_loop_bytes             = 20 * 1000 * 1000;
         c2ss_log_level_green            = 0;
-        c2ss_log_level_status           = 0;
-        c2ss_log_level_userin           = 0;
-        c2ss_log_level_userout          = 0;
 
         RtpMsgString2User("1-10000001-1", &c2ss_uplink_id);
 
@@ -125,9 +122,6 @@ struct C2S_SERVER_CONFIG_INFO
 
         configStream.AddUint("c2ss_log_loop_bytes"            , c2ss_log_loop_bytes);
         configStream.AddInt ("c2ss_log_level_green"           , c2ss_log_level_green);
-        configStream.AddInt ("c2ss_log_level_status"          , c2ss_log_level_status);
-        configStream.AddInt ("c2ss_log_level_userin"          , c2ss_log_level_userin);
-        configStream.AddInt ("c2ss_log_level_userout"         , c2ss_log_level_userout);
 
         configStream.Get(configs);
     }
@@ -161,9 +155,6 @@ struct C2S_SERVER_CONFIG_INFO
 
     unsigned int                 c2ss_log_loop_bytes;
     int                          c2ss_log_level_green;
-    int                          c2ss_log_level_status;
-    int                          c2ss_log_level_userin;
-    int                          c2ss_log_level_userout;
 
     DECLARE_SGI_POOL(0);
 };

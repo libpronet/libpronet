@@ -27,6 +27,17 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+#define PRO_LL_MIN   -9
+#define PRO_LL_DEBUG -1
+#define PRO_LL_INFO   0
+#define PRO_LL_WARN   1
+#define PRO_LL_ERROR  2
+#define PRO_LL_FATAL  3
+#define PRO_LL_MAX    9
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
 class CProLogFile
 {
 public:
@@ -40,10 +51,15 @@ public:
         bool        append = false
         );
 
+    void Renew(const char* fileName);
+
     void SetGreenLevel(long level);
 
     long GetGreenLevel() const;
 
+    /*
+     * the "size" can be <= 0
+     */
     void SetMaxSize(PRO_INT32 size);
 
     PRO_INT32 GetMaxSize() const;
@@ -54,8 +70,8 @@ public:
 
     void Log(
         const char* text,
-        long        level    = 0,
-        bool        showTime = true
+        long        level,
+        bool        showTime
         );
 
 private:

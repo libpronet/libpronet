@@ -40,6 +40,7 @@
 #define LOG_FILE_NAME    "rtp_msg_server.log"
 #define DB_FILE_NAME     "rtp_msg_server.db"
 #define CONFIG_FILE_NAME "rtp_msg_server.cfg"
+#define LOG_LOOP_BYTES   (20 * 1000 * 1000)
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -73,6 +74,15 @@ int main(int argc, char* argv[])
         configFileName += CONFIG_FILE_NAME;
     }
 
+    static char s_traceInfo[1024] = "";
+
+    logFile->Init(logFileName.c_str(), true); /* append mode */
+    logFile->SetMaxSize(LOG_LOOP_BYTES);
+    if (logFile->GetPos() > 0)
+    {
+        logFile->Log("\n\n", PRO_LL_MAX, false);
+    }
+
     {
         CProConfigFile configFile;
         configFile.Init(configFileName.c_str());
@@ -83,7 +93,8 @@ int main(int argc, char* argv[])
             configInfo.ToConfigs(configs);
             configFile.Write(configs);
 
-            printf(
+            sprintf(
+                s_traceInfo,
                 "\n"
                 "%s \n"
                 " rtp_msg_server --- warning! can't read the config file. \n"
@@ -92,6 +103,8 @@ int main(int argc, char* argv[])
                 timeString.c_str(),
                 configFileName.c_str()
                 );
+            printf("%s", s_traceInfo);
+            logFile->Log(s_traceInfo, PRO_LL_WARN, false);
         }
 
         configInfo.msgs_ssl_cafiles.clear();
@@ -252,32 +265,14 @@ int main(int argc, char* argv[])
             {
                 configInfo.msgs_log_level_green    = atoi(configValue.c_str());
             }
-            else if (stricmp(configName.c_str(), "msgs_log_level_userchk") == 0)
-            {
-                configInfo.msgs_log_level_userchk  = atoi(configValue.c_str());
-            }
-            else if (stricmp(configName.c_str(), "msgs_log_level_userin") == 0)
-            {
-                configInfo.msgs_log_level_userin   = atoi(configValue.c_str());
-            }
-            else if (stricmp(configName.c_str(), "msgs_log_level_userout") == 0)
-            {
-                configInfo.msgs_log_level_userout  = atoi(configValue.c_str());
-            }
             else
             {
             }
         } /* end of for (...) */
     }
 
-    static char s_traceInfo[1024] = "";
-
-    logFile->Init(logFileName.c_str(), true); /* append mode */
     logFile->SetMaxSize(configInfo.msgs_log_loop_bytes);
-    if (logFile->GetPos() > 0)
-    {
-        logFile->Log("\n\n", 0, false);
-    }
+    logFile->SetGreenLevel(configInfo.msgs_log_level_green);
 
     if (!db->Open(dbFileName.c_str()))
     {
@@ -290,7 +285,7 @@ int main(int argc, char* argv[])
             timeString.c_str()
             );
         printf("%s", s_traceInfo);
-        logFile->Log(s_traceInfo, 0, false);
+        logFile->Log(s_traceInfo, PRO_LL_FATAL, false);
 
         goto EXIT;
     }
@@ -312,7 +307,7 @@ int main(int argc, char* argv[])
             timeString.c_str()
             );
         printf("%s", s_traceInfo);
-        logFile->Log(s_traceInfo, 0, false);
+        logFile->Log(s_traceInfo, PRO_LL_FATAL, false);
 
         goto EXIT;
     }
@@ -329,7 +324,7 @@ int main(int argc, char* argv[])
             timeString.c_str()
             );
         printf("%s", s_traceInfo);
-        logFile->Log(s_traceInfo, 0, false);
+        logFile->Log(s_traceInfo, PRO_LL_FATAL, false);
 
         goto EXIT;
     }
@@ -344,7 +339,7 @@ int main(int argc, char* argv[])
             timeString.c_str()
             );
         printf("%s", s_traceInfo);
-        logFile->Log(s_traceInfo, 0, false);
+        logFile->Log(s_traceInfo, PRO_LL_FATAL, false);
 
         goto EXIT;
     }
@@ -363,7 +358,7 @@ int main(int argc, char* argv[])
         (unsigned int)configInfo.msgs_mm_type
         );
     printf("%s", s_traceInfo);
-    logFile->Log(s_traceInfo, 0, false);
+    logFile->Log(s_traceInfo, PRO_LL_MAX, false);
 
     printf(
         "\n"
@@ -374,8 +369,6 @@ int main(int argc, char* argv[])
         " reconfig                  : reload logging configs from the file \"rtp_msg_server.cfg\" \n"
         " exit                      : terminate the current process \n"
         );
-
-    logFile->SetGreenLevel(configInfo.msgs_log_level_green);
 
     while (1)
     {
@@ -471,7 +464,7 @@ int main(int argc, char* argv[])
                     timeString.c_str()
                     );
                 printf("%s", s_traceInfo);
-                logFile->Log(s_traceInfo, 0, false);
+                logFile->Log(s_traceInfo, PRO_LL_INFO, false);
 
                 server->KickoutUsers(users);
             }
@@ -533,7 +526,7 @@ int main(int argc, char* argv[])
                     timeString.c_str()
                     );
                 printf("%s", s_traceInfo);
-                logFile->Log(s_traceInfo, 0, false);
+                logFile->Log(s_traceInfo, PRO_LL_INFO, false);
 
                 server->KickoutUsers(users);
             }
@@ -555,7 +548,7 @@ int main(int argc, char* argv[])
                     timeString.c_str()
                     );
                 printf("%s", s_traceInfo);
-                logFile->Log(s_traceInfo, 0, false);
+                logFile->Log(s_traceInfo, PRO_LL_WARN, false);
                 continue;
             }
 
@@ -579,22 +572,10 @@ int main(int argc, char* argv[])
                 {
                     configInfo.msgs_log_level_green    = atoi(configValue.c_str());
                 }
-                else if (stricmp(configName.c_str(), "msgs_log_level_userchk") == 0)
-                {
-                    configInfo.msgs_log_level_userchk  = atoi(configValue.c_str());
-                }
-                else if (stricmp(configName.c_str(), "msgs_log_level_userin") == 0)
-                {
-                    configInfo.msgs_log_level_userin   = atoi(configValue.c_str());
-                }
-                else if (stricmp(configName.c_str(), "msgs_log_level_userout") == 0)
-                {
-                    configInfo.msgs_log_level_userout  = atoi(configValue.c_str());
-                }
                 else
                 {
                 }
-            } /* end of for (...) */
+            }
 
             sprintf(
                 s_traceInfo,
@@ -605,7 +586,7 @@ int main(int argc, char* argv[])
                 timeString.c_str()
                 );
             printf("%s", s_traceInfo);
-            logFile->Log(s_traceInfo, 0, false);
+            logFile->Log(s_traceInfo, PRO_LL_INFO, false);
 
             server->Reconfig(configInfo);
         }
@@ -620,7 +601,7 @@ int main(int argc, char* argv[])
                 timeString.c_str()
                 );
             printf("%s", s_traceInfo);
-            logFile->Log(s_traceInfo, 0, false);
+            logFile->Log(s_traceInfo, PRO_LL_MAX, false);
             break;
         }
         else

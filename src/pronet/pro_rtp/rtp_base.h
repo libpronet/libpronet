@@ -914,17 +914,17 @@ public:
      */
 
     virtual void PRO_CALLTYPE GetInputStat(
-        float* frameRate, /* = NULL */
-        float* bitRate,   /* = NULL */
-        float* lossRate,  /* = NULL */
-        float* lossCount  /* = NULL */
+        float*      frameRate, /* = NULL */
+        float*      bitRate,   /* = NULL */
+        float*      lossRate,  /* = NULL */
+        PRO_UINT64* lossCount  /* = NULL */
         ) const = 0;
 
     virtual void PRO_CALLTYPE GetOutputStat(
-        float* frameRate, /* = NULL */
-        float* bitRate,   /* = NULL */
-        float* lossRate,  /* = NULL */
-        float* lossCount  /* = NULL */
+        float*      frameRate, /* = NULL */
+        float*      bitRate,   /* = NULL */
+        float*      lossRate,  /* = NULL */
+        PRO_UINT64* lossCount  /* = NULL */
         ) const = 0;
 
     virtual void PRO_CALLTYPE ResetInputStat() = 0;

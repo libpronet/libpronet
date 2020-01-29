@@ -98,8 +98,45 @@ CProLogFile::Init(const char* fileName,
 }
 
 void
+CProLogFile::Renew(const char* fileName)
+{
+    assert(fileName != NULL);
+    assert(fileName[0] != '\0');
+    if (fileName == NULL || fileName[0] == '\0')
+    {
+        return;
+    }
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_file != NULL)
+        {
+            fclose(m_file);
+            m_file = NULL;
+        }
+
+        m_file = fopen(fileName, "wb");
+
+#if !defined(WIN32) && !defined(_WIN32_WCE)
+        if (m_file != NULL)
+        {
+            const int fd = fileno(m_file);
+            if (fd >= 0)
+            {
+                pbsd_ioctl_closexec(fd);
+            }
+        }
+#endif
+    }
+}
+
+void
 CProLogFile::SetGreenLevel(long level)
 {
+    level = level < PRO_LL_MIN ? PRO_LL_MIN : level;
+    level = level > PRO_LL_MAX ? PRO_LL_MAX : level;
+
     {
         CProThreadMutexGuard mon(m_lock);
 
@@ -177,9 +214,12 @@ CProLogFile::Rewind()
 
 void
 CProLogFile::Log(const char* text,
-                 long        level,    /* = 0 */
-                 bool        showTime) /* = true */
+                 long        level,
+                 bool        showTime)
 {
+    level = level < PRO_LL_MIN ? PRO_LL_MIN : level;
+    level = level > PRO_LL_MAX ? PRO_LL_MAX : level;
+
     CProStlString totalString = "";
 
     if (showTime)

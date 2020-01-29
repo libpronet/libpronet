@@ -257,8 +257,8 @@ CRtpReorder::Reset()
 void
 CRtpReorder::Clean()
 {
-    CProStlMap<PRO_INT64, IRtpPacket*>::const_iterator       itr = m_seq64ToPacket.begin();
-    CProStlMap<PRO_INT64, IRtpPacket*>::const_iterator const end = m_seq64ToPacket.end();
+    CProStlMap<PRO_INT64, IRtpPacket*>::iterator       itr = m_seq64ToPacket.begin();
+    CProStlMap<PRO_INT64, IRtpPacket*>::iterator const end = m_seq64ToPacket.end();
 
     for (; itr != end; ++itr)
     {

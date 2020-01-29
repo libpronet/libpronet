@@ -339,8 +339,8 @@ CTest::SendMsg(const char* msg)
          */
         users.erase(myUser);
 
-        CProStlSet<RTP_MSG_USER>::const_iterator       itr = users.begin();
-        CProStlSet<RTP_MSG_USER>::const_iterator const end = users.end();
+        CProStlSet<RTP_MSG_USER>::iterator       itr = users.begin();
+        CProStlSet<RTP_MSG_USER>::iterator const end = users.end();
 
         for (; itr != end; ++itr)
         {

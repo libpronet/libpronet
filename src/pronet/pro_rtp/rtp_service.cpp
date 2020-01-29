@@ -139,8 +139,8 @@ CRtpService::Fini()
     }
 
     {
-        CProStlMap<IProSslHandshaker*, PRO_NONCE>::const_iterator       itr = sslHandshaker2Nonce.begin();
-        CProStlMap<IProSslHandshaker*, PRO_NONCE>::const_iterator const end = sslHandshaker2Nonce.end();
+        CProStlMap<IProSslHandshaker*, PRO_NONCE>::iterator       itr = sslHandshaker2Nonce.begin();
+        CProStlMap<IProSslHandshaker*, PRO_NONCE>::iterator const end = sslHandshaker2Nonce.end();
 
         for (; itr != end; ++itr)
         {
@@ -149,8 +149,8 @@ CRtpService::Fini()
     }
 
     {
-        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::const_iterator       itr = tcpHandshaker2Nonce.begin();
-        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::const_iterator const end = tcpHandshaker2Nonce.end();
+        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator       itr = tcpHandshaker2Nonce.begin();
+        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator const end = tcpHandshaker2Nonce.end();
 
         for (; itr != end; ++itr)
         {

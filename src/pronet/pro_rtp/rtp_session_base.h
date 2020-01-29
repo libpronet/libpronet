@@ -163,19 +163,19 @@ protected:
     }
 
     virtual void PRO_CALLTYPE GetInputStat(
-        float* frameRate, /* = NULL */
-        float* bitRate,   /* = NULL */
-        float* lossRate,  /* = NULL */
-        float* lossCount  /* = NULL */
+        float*      frameRate, /* = NULL */
+        float*      bitRate,   /* = NULL */
+        float*      lossRate,  /* = NULL */
+        PRO_UINT64* lossCount  /* = NULL */
         ) const
     {
     }
 
     virtual void PRO_CALLTYPE GetOutputStat(
-        float* frameRate, /* = NULL */
-        float* bitRate,   /* = NULL */
-        float* lossRate,  /* = NULL */
-        float* lossCount  /* = NULL */
+        float*      frameRate, /* = NULL */
+        float*      bitRate,   /* = NULL */
+        float*      lossRate,  /* = NULL */
+        PRO_UINT64* lossCount  /* = NULL */
         ) const
     {
     }

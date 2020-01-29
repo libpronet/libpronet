@@ -301,8 +301,8 @@ CRtpMsgC2s::Fini()
             m_uplinkPassword = "";
         }
 
-        CProStlMap<PRO_UINT64, RTP_MSG_AsyncOnAcceptSession>::const_iterator       itr = m_timerId2Info.begin();
-        CProStlMap<PRO_UINT64, RTP_MSG_AsyncOnAcceptSession>::const_iterator const end = m_timerId2Info.end();
+        CProStlMap<PRO_UINT64, RTP_MSG_AsyncOnAcceptSession>::iterator       itr = m_timerId2Info.begin();
+        CProStlMap<PRO_UINT64, RTP_MSG_AsyncOnAcceptSession>::iterator const end = m_timerId2Info.end();
 
         for (; itr != end; ++itr)
         {
@@ -330,8 +330,8 @@ CRtpMsgC2s::Fini()
         m_observer = NULL;
     }
 
-    CProStlMap<IRtpSession*, RTP_MSG_USER>::const_iterator       itr = session2User.begin();
-    CProStlMap<IRtpSession*, RTP_MSG_USER>::const_iterator const end = session2User.end();
+    CProStlMap<IRtpSession*, RTP_MSG_USER>::iterator       itr = session2User.begin();
+    CProStlMap<IRtpSession*, RTP_MSG_USER>::iterator const end = session2User.end();
 
     for (; itr != end; ++itr)
     {
@@ -1045,7 +1045,7 @@ CRtpMsgC2s::OnRecvSession(IRtpSession* session,
             return;
         }
 
-        CProStlMap<IRtpSession*, RTP_MSG_USER>::const_iterator const itr =
+        CProStlMap<IRtpSession*, RTP_MSG_USER>::iterator const itr =
             m_session2User.find(session);
         if (itr == m_session2User.end() || srcUser != itr->second)
         {
@@ -1062,7 +1062,7 @@ CRtpMsgC2s::OnRecvSession(IRtpSession* session,
                 continue;
             }
 
-            CProStlMap<RTP_MSG_USER, IRtpSession*>::const_iterator const itr2 =
+            CProStlMap<RTP_MSG_USER, IRtpSession*>::iterator const itr2 =
                 m_user2Session.find(dstUser);
             if (itr2 != m_user2Session.end())
             {
@@ -1176,7 +1176,7 @@ CRtpMsgC2s::OnHeartbeatSession(IRtpSession* session,
             return;
         }
 
-        CProStlMap<IRtpSession*, RTP_MSG_USER>::const_iterator const itr =
+        CProStlMap<IRtpSession*, RTP_MSG_USER>::iterator const itr =
             m_session2User.find(session);
         if (itr == m_session2User.end())
         {
@@ -1598,7 +1598,7 @@ CRtpMsgC2s::OnTransferMsg(IRtpMsgClient*      msgClient,
 
         for (int i = 0; i < (int)dstUserCount; ++i)
         {
-            CProStlMap<RTP_MSG_USER, IRtpSession*>::const_iterator const itr =
+            CProStlMap<RTP_MSG_USER, IRtpSession*>::iterator const itr =
                 m_user2Session.find(dstUsers[i]);
             if (itr != m_user2Session.end())
             {
@@ -1649,8 +1649,8 @@ CRtpMsgC2s::OnCloseMsg(IRtpMsgClient* msgClient,
             return;
         }
 
-        CProStlMap<PRO_UINT64, RTP_MSG_AsyncOnAcceptSession>::const_iterator       itr = m_timerId2Info.begin();
-        CProStlMap<PRO_UINT64, RTP_MSG_AsyncOnAcceptSession>::const_iterator const end = m_timerId2Info.end();
+        CProStlMap<PRO_UINT64, RTP_MSG_AsyncOnAcceptSession>::iterator       itr = m_timerId2Info.begin();
+        CProStlMap<PRO_UINT64, RTP_MSG_AsyncOnAcceptSession>::iterator const end = m_timerId2Info.end();
 
         for (; itr != end; ++itr)
         {
@@ -1675,8 +1675,8 @@ CRtpMsgC2s::OnCloseMsg(IRtpMsgClient* msgClient,
         observer = m_observer;
     }
 
-    CProStlMap<IRtpSession*, RTP_MSG_USER>::const_iterator       itr = session2User.begin();
-    CProStlMap<IRtpSession*, RTP_MSG_USER>::const_iterator const end = session2User.end();
+    CProStlMap<IRtpSession*, RTP_MSG_USER>::iterator       itr = session2User.begin();
+    CProStlMap<IRtpSession*, RTP_MSG_USER>::iterator const end = session2User.end();
 
     for (; itr != end; ++itr)
     {
