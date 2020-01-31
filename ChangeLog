@@ -1,3 +1,28 @@
+LibProNet-1.9.0, tag-release-1.9.0, 2020-01-20
+====
+
+Features
+  * Use the three-way handshake in udp-ex sessions
+  * Improve <TEST_RTP> utility
+
+Bugfix
+  * Set heartbeat-packet's mmtype value with the session's mmtype
+  * Modify udp port range to 3000~9999, and limit the port range
+    of CRtpSessionUdpclientEx
+
+Changes
+  * Add some more trace info for ServiceHub
+  * Add time info for tracing
+  * Add OnHeartbeatXxx() callback method for tracing
+  * Adjust the buffer-size of underlying sockets
+  * Add pbsd_getaddrinfo_i() and activate it by default
+  * Add UdpConnResetAsError() method to activate ECONNRESET event
+  * Add IRtpSession::GetSyncId() method for application level
+  * Change the variable type of "timerId" from ulong to uint64,
+    and add the parameter "factory" to OnTimer()
+  * Add CProLogFile::Renew() method and add log levels
+
+
 LibProNet-1.3.0, tag-release-1.3.0, 2019-11-08
 ====
 

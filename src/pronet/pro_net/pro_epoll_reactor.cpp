@@ -71,8 +71,8 @@ CProEpollReactor::~CProEpollReactor()
         const CProStlMap<PRO_INT64, PRO_HANDLER_INFO>& allHandlers =
             m_handlerMgr.GetAllHandlers();
 
-        CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator       itr = allHandlers.begin();
-        CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator const end = allHandlers.end();
+        CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::const_iterator       itr = allHandlers.begin();
+        CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::const_iterator const end = allHandlers.end();
 
         for (; itr != end; ++itr)
         {
