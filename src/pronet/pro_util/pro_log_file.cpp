@@ -30,9 +30,16 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+#define REOPEN_INTERVAL_MS 1000
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
 CProLogFile::CProLogFile()
 {
+    m_fileName   = "";
     m_file       = NULL;
+    m_reopenTick = 0;
     m_greenLevel = 0;
     m_maxSize    = 0;
 }
@@ -47,8 +54,8 @@ CProLogFile::~CProLogFile()
 }
 
 void
-CProLogFile::Init(const char* fileName,
-                  bool        append) /* = false */
+CProLogFile::Reinit(const char* fileName,
+                    bool        append) /* = false */
 {
     assert(fileName != NULL);
     assert(fileName[0] != '\0');
@@ -60,74 +67,8 @@ CProLogFile::Init(const char* fileName,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        assert(m_file == NULL);
-        if (m_file != NULL)
-        {
-            return;
-        }
-
-        if (append)
-        {
-            m_file = fopen(fileName, "r+b");
-            if (m_file == NULL)
-            {
-                m_file = fopen(fileName, "wb");
-            }
-
-            if (m_file != NULL)
-            {
-                fseek(m_file, 0, SEEK_END);
-            }
-        }
-        else
-        {
-            m_file = fopen(fileName, "wb");
-        }
-
-#if !defined(WIN32) && !defined(_WIN32_WCE)
-        if (m_file != NULL)
-        {
-            const int fd = fileno(m_file);
-            if (fd >= 0)
-            {
-                pbsd_ioctl_closexec(fd);
-            }
-        }
-#endif
-    }
-}
-
-void
-CProLogFile::Renew(const char* fileName)
-{
-    assert(fileName != NULL);
-    assert(fileName[0] != '\0');
-    if (fileName == NULL || fileName[0] == '\0')
-    {
-        return;
-    }
-
-    {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_file != NULL)
-        {
-            fclose(m_file);
-            m_file = NULL;
-        }
-
-        m_file = fopen(fileName, "wb");
-
-#if !defined(WIN32) && !defined(_WIN32_WCE)
-        if (m_file != NULL)
-        {
-            const int fd = fileno(m_file);
-            if (fd >= 0)
-            {
-                pbsd_ioctl_closexec(fd);
-            }
-        }
-#endif
+        m_fileName = fileName;
+        Reopen(append); /* open the file at this moment */
     }
 }
 
@@ -183,33 +124,20 @@ CProLogFile::GetMaxSize() const
 }
 
 PRO_INT32
-CProLogFile::GetPos() const
+CProLogFile::GetSize() const
 {
-    PRO_INT32 pos = 0;
+    PRO_INT32 size = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
 
         if (m_file != NULL)
         {
-            pos = (PRO_INT32)ftell(m_file);
+            size = (PRO_INT32)ftell(m_file);
         }
     }
 
-    return (pos);
-}
-
-void
-CProLogFile::Rewind()
-{
-    {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_file != NULL)
-        {
-            fseek(m_file, 0, SEEK_SET);
-        }
-    }
+    return (size);
 }
 
 void
@@ -217,8 +145,10 @@ CProLogFile::Log(const char* text,
                  long        level,
                  bool        showTime)
 {
-    level = level < PRO_LL_MIN ? PRO_LL_MIN : level;
-    level = level > PRO_LL_MAX ? PRO_LL_MAX : level;
+    if (text == NULL || text[0] == '\0')
+    {
+        return;
+    }
 
     CProStlString totalString = "";
 
@@ -231,41 +161,121 @@ CProLogFile::Log(const char* text,
         totalString += timeString;
         totalString += ' ';
 
-        if (text == NULL || text[0] == '\0')
+        if (text[0] != '\r' && text[0] != '\n')
         {
             totalString += '\n';
-        }
-        else if (text[0] != '\r' && text[0] != '\n')
-        {
-            totalString += '\n';
-        }
-        else
-        {
         }
     }
 
-    if (text != NULL)
-    {
-        totalString += text;
-    }
+    totalString += text;
 
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_file != NULL && level >= m_greenLevel)
+        if (level < m_greenLevel)
         {
-            const PRO_INT32 pos = (PRO_INT32)ftell(m_file);
-            if (
-                pos < 0
-                ||
-                (m_maxSize > 0 && pos >= m_maxSize)
-               )
-            {
-                fseek(m_file, 0, SEEK_SET);
-            }
+            return;
+        }
 
-            fwrite(totalString.c_str(), 1, totalString.length(), m_file);
+        if (m_file == NULL &&
+            ProGetTickCount64() - m_reopenTick >= REOPEN_INTERVAL_MS)
+        {
+            Reopen(true); /* reopen the file at this moment */
+        }
+        if (m_file == NULL)
+        {
+            return;
+        }
+
+        const PRO_INT32 pos = (PRO_INT32)ftell(m_file);
+        if (
+            pos < 0
+            ||
+            (m_maxSize > 0 && pos >= m_maxSize)
+           )
+        {
+            fclose(m_file);
+            m_file = NULL;
+
+            Move_1();
+            Reopen(false); /* remake the file at this moment */
+        }
+        if (m_file == NULL)
+        {
+            return;
+        }
+
+        const size_t ret = fwrite(
+            totalString.c_str(), 1, totalString.length(), m_file);
+        if (ret != totalString.length())
+        {
+            fclose(m_file);
+            m_file = NULL;
+        }
+        else
+        {
             fflush(m_file);
         }
     }
+}
+
+void
+CProLogFile::Reopen(bool append)
+{
+    if (m_file != NULL)
+    {
+        fclose(m_file);
+        m_file = NULL;
+    }
+
+    if (append)
+    {
+        m_file = fopen(m_fileName.c_str(), "r+b");
+        if (m_file == NULL)
+        {
+            m_file = fopen(m_fileName.c_str(), "wb");
+        }
+
+        if (m_file != NULL)
+        {
+            fseek(m_file, 0, SEEK_END);
+        }
+    }
+    else
+    {
+        m_file = fopen(m_fileName.c_str(), "wb");
+    }
+
+#if !defined(WIN32) && !defined(_WIN32_WCE)
+    if (m_file != NULL)
+    {
+        /*
+         * Allow other users to access the file. "Write" permissions are required.
+         */
+        chmod(m_fileName.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
+
+        const int fd = fileno(m_file);
+        if (fd >= 0)
+        {
+            pbsd_ioctl_closexec(fd);
+        }
+    }
+#endif
+
+    m_reopenTick = ProGetTickCount64();
+}
+
+void
+CProLogFile::Move_1()
+{
+    if (m_fileName.empty())
+    {
+        return;
+    }
+
+    CProStlString fileName1 = m_fileName;
+    fileName1 += ".1"; /* xxx.log to xxx.log.1 */
+
+    remove(fileName1.c_str());
+    rename(m_fileName.c_str(), fileName1.c_str());
 }

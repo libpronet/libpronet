@@ -184,18 +184,17 @@ int main(int argc, char* argv[])
         CProStlVector<PRO_CONFIG_ITEM> configs;
         if (!configFile.Read(configs))
         {
-            configInfo.ToConfigs(configs);
-            configFile.Write(configs);
-
             printf(
                 "\n"
                 "%s \n"
-                " pro_service_hub --- warning! can't read the config file. \n"
+                " pro_service_hub --- error! can't read the config file. \n"
                 " [%s] \n"
                 ,
                 timeString.c_str(),
                 configFileName.c_str()
                 );
+
+            goto EXIT;
         }
 
         configInfo.hubs_listen_ports.clear();
@@ -338,7 +337,6 @@ EXIT:
     }
 
     ProDeleteReactor(reactor);
-    ProSleep(3000);
 
     return (0);
 }

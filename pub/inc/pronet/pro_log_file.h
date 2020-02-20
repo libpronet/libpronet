@@ -21,6 +21,7 @@
 
 #include "pro_a.h"
 #include "pro_memory_pool.h"
+#include "pro_stl.h"
 #include "pro_thread_mutex.h"
 #include <cstdio>
 
@@ -46,12 +47,10 @@ public:
 
     ~CProLogFile();
 
-    void Init(
+    void Reinit(
         const char* fileName,
         bool        append = false
         );
-
-    void Renew(const char* fileName);
 
     void SetGreenLevel(long level);
 
@@ -64,9 +63,7 @@ public:
 
     PRO_INT32 GetMaxSize() const;
 
-    PRO_INT32 GetPos() const;
-
-    void Rewind();
+    PRO_INT32 GetSize() const;
 
     void Log(
         const char* text,
@@ -76,7 +73,15 @@ public:
 
 private:
 
+    void Reopen(bool append);
+
+    void Move_1();
+
+private:
+
+    CProStlString           m_fileName;
     FILE*                   m_file;
+    PRO_INT64               m_reopenTick;
     long                    m_greenLevel;
     PRO_INT32               m_maxSize;
     mutable CProThreadMutex m_lock;

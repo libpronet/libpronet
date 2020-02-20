@@ -507,13 +507,6 @@ CTest::OnRecvMsg(IRtpMsgClient*      msgClient,
         return;
     }
 
-    CProStlString msg((char*)buf, size);
-#if defined(WIN32)
-    CProStlString tmp = "";
-    ProUtf8ToAnsi(tmp, msg);
-    msg = tmp;
-#endif
-
     {
         CProThreadMutexGuard mon(m_lock);
 
@@ -527,6 +520,13 @@ CTest::OnRecvMsg(IRtpMsgClient*      msgClient,
             return;
         }
     }
+
+    CProStlString msg((char*)buf, size);
+#if defined(WIN32)
+    CProStlString tmp = "";
+    ProUtf8ToAnsi(tmp, msg);
+    msg = tmp;
+#endif
 
     {{{
         RTP_MSG_USER myUser;

@@ -74,9 +74,9 @@ int main(int argc, char* argv[])
 
     static char s_traceInfo[1024] = "";
 
-    logFile->Init(logFileName.c_str(), true); /* append mode */
+    logFile->Reinit(logFileName.c_str(), true); /* append mode */
     logFile->SetMaxSize(LOG_LOOP_BYTES);
-    if (logFile->GetPos() > 0)
+    if (logFile->GetSize() > 0)
     {
         logFile->Log("\n\n", PRO_LL_MAX, false);
     }
@@ -88,21 +88,20 @@ int main(int argc, char* argv[])
         CProStlVector<PRO_CONFIG_ITEM> configs;
         if (!configFile.Read(configs))
         {
-            configInfo.ToConfigs(configs);
-            configFile.Write(configs);
-
             sprintf(
                 s_traceInfo,
                 "\n"
                 "%s \n"
-                " rtp_msg_c2s --- warning! can't read the config file. \n"
+                " rtp_msg_c2s --- error! can't read the config file. \n"
                 " [%s] \n"
                 ,
                 timeString.c_str(),
                 configFileName.c_str()
                 );
             printf("%s", s_traceInfo);
-            logFile->Log(s_traceInfo, PRO_LL_WARN, false);
+            logFile->Log(s_traceInfo, PRO_LL_FATAL, false);
+
+            goto EXIT;
         }
 
         configInfo.c2ss_ssl_uplink_cafiles.clear();
@@ -602,7 +601,6 @@ EXIT:
 
     ProDeleteReactor(reactor);
     delete logFile;
-    ProSleep(3000);
 
     return (0);
 }

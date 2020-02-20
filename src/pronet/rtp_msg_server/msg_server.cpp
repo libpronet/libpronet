@@ -434,7 +434,7 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
             if (user->classId == SERVER_CID &&
                 ctx->iids.find(user->instId) != ctx->iids.end())
             {
-                errorString = "Buzy ID";
+                errorString = "Busy ID";
 
                 goto EXIT;
             }

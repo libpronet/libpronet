@@ -1,0 +1,17 @@
+[Unit]
+Description=pro_service_hub
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+ExecStart=/usr/local/libpronet/bin/pro_service_hub
+ExecStop=/bin/kill $MAINPID
+KillMode=process
+Restart=always
+RestartSec=1s
+
+[Install]
+WantedBy=multi-user.target
