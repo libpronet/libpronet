@@ -252,7 +252,8 @@ CProLogFile::Reopen(bool append)
         /*
          * Allow other users to access the file. "Write" permissions are required.
          */
-        chmod(m_fileName.c_str(), S_IRWXU | S_IRWXG | S_IRWXO);
+        chmod(m_fileName.c_str(),
+            S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 
         const int fd = fileno(m_file);
         if (fd >= 0)

@@ -20,7 +20,8 @@ procfg_DATA = ../../../../pub/cfg/ca.crt                    \
               ../../../../pub/cfg/pro_service_hub.service
 
 install-data-hook:
-	chmod +x ${procfgdir}/set1_sys.sh
-	chmod +x ${procfgdir}/set2_proc.sh
-	chmod +x ${procfgdir}/run-pro_service_hub.sh
-	chmod +x ${procfgdir}/screen-pro_service_hub.sh
+	chmod +x  ${procfgdir}/set1_sys.sh
+	chmod +x  ${procfgdir}/set2_proc.sh
+	chmod +x  ${procfgdir}/run-pro_service_hub.sh
+	chmod +x  ${procfgdir}/screen-pro_service_hub.sh
+	chmod 644 ${procfgdir}/pro_service_hub.service
