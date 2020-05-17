@@ -60,14 +60,22 @@ class CProStlList
 
 template<class ____K, class ____Ty, unsigned long ____poolIndex = 0, class ____Pr = std::less<____K> >
 class CProStlMap
+#if !defined(_MSC_VER) || (_MSC_VER > 1200) /* 1200 is 6.0 */
+: public std::map<____K, ____Ty, ____Pr, std::pro_allocator<std::pair<const ____K, ____Ty>, ____poolIndex> >
+#else
 : public std::map<____K, ____Ty, ____Pr, std::pro_allocator<____Ty, ____poolIndex> >
+#endif
 {
     DECLARE_SGI_POOL(0);
 };
 
 template<class ____K, class ____Ty, unsigned long ____poolIndex = 0, class ____Pr = std::less<____K> >
 class CProStlMultimap
+#if !defined(_MSC_VER) || (_MSC_VER > 1200) /* 1200 is 6.0 */
+: public std::multimap<____K, ____Ty, ____Pr, std::pro_allocator<std::pair<const ____K, ____Ty>, ____poolIndex> >
+#else
 : public std::multimap<____K, ____Ty, ____Pr, std::pro_allocator<____Ty, ____poolIndex> >
+#endif
 {
     DECLARE_SGI_POOL(0);
 };

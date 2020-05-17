@@ -131,25 +131,30 @@ public:
         typedef pro_allocator<____Other, ____poolIndex> other;
     };
 
-    pro_allocator()
+    pro_allocator() : allocator<____Ty>()
     {
     }
 
     pro_allocator(const pro_allocator<____Ty, ____poolIndex>&)
-        : allocator<____Ty>()
+    : allocator<____Ty>()
     {
     }
 
 #if !defined(_MSC_VER) || (_MSC_VER > 1200) /* 1200 is 6.0 */
     template<class ____Other>
-        pro_allocator(const pro_allocator<____Other, ____poolIndex>&)
-        : allocator<____Ty>()
+    pro_allocator(const pro_allocator<____Other, ____poolIndex>&)
     {
+        /*
+         * do nothing
+         */
     }
 
     template<class ____Other> pro_allocator<____Ty, ____poolIndex>&
-        operator=(const pro_allocator<____Other, ____poolIndex>&)
+    operator=(const pro_allocator<____Other, ____poolIndex>&)
     {
+        /*
+         * do nothing
+         */
         return (*this);
     }
 #endif
@@ -211,21 +216,33 @@ public:
 
     pro_allocator()
     {
+        /*
+         * do nothing
+         */
     }
 
     pro_allocator(const pro_allocator<void>&)
     {
+        /*
+         * do nothing
+         */
     }
 
 #if !defined(_MSC_VER) || (_MSC_VER > 1200) /* 1200 is 6.0 */
     template<class ____Other>
-        pro_allocator(const pro_allocator<____Other>&)
+    pro_allocator(const pro_allocator<____Other>&)
     {
+        /*
+         * do nothing
+         */
     }
 
     template<class ____Other> pro_allocator<void>&
-        operator=(const pro_allocator<____Other>&)
+    operator=(const pro_allocator<____Other>&)
     {
+        /*
+         * do nothing
+         */
         return (*this);
     }
 #endif

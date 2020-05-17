@@ -989,7 +989,7 @@ CTest::OnTimer(void*      factory,
                 m_sslHandshakers.size() + m_transports.size() >=
                 m_configInfo.tcpc_connection_count)
             {
-            	break;
+                break;
             }
 
             IProConnector* const connector = ProCreateConnectorEx(

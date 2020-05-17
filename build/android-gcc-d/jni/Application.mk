@@ -18,12 +18,12 @@ APP_MODULES      := mbedtls         \
 
 APP_CFLAGS   := -D_DEBUG          \
                 -D_GNU_SOURCE     \
-		-D_LIBC_REENTRANT \
-		-D_REENTRANT      \
-		-Wall
+                -D_LIBC_REENTRANT \
+                -D_REENTRANT      \
+                -Wall
 APP_CPPFLAGS := -fno-rtti -fexceptions
 APP_OPTIM    := debug
 APP_LDFLAGS  :=
 
 APP_PLATFORM := android-16
-APP_STL      := gnustl_static
+APP_STL      := c++_static

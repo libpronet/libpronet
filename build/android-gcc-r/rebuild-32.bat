@@ -11,7 +11,7 @@ if exist %THIS_DIR%obj\local\x86         rmdir /s /q %THIS_DIR%obj\local\x86
 if exist %THIS_DIR%obj\local\mips        rmdir /s /q %THIS_DIR%obj\local\mips
 
 @echo on
-call ndk-build V=1 APP_ABI="armeabi armeabi-v7a x86 mips"
+call ndk-build -B V=1 APP_ABI="armeabi armeabi-v7a x86 mips"
 @echo off
 
 copy /y %THIS_DIR%obj\local\armeabi\libmbedtls.a      %THIS_DIR%libs\armeabi\
