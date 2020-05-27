@@ -57,8 +57,8 @@ CProConfigFile::Init(const char* fileName)
 
 bool
 CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs,
-                     char                            aroundCharL,       /* = '"' */
-                     char                            aroundCharR) const /* = '"' */
+                     char                            aroundCharL,       /* = '\"' */
+                     char                            aroundCharR) const /* = '\"' */
 {
     configs.clear();
 
@@ -266,8 +266,8 @@ CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs,
 
 bool
 CProConfigFile::Write(const CProStlVector<PRO_CONFIG_ITEM>& configs,
-                      char                                  aroundCharL, /* = '"' */
-                      char                                  aroundCharR) /* = '"' */
+                      char                                  aroundCharL, /* = '\"' */
+                      char                                  aroundCharR) /* = '\"' */
 {
     if (m_fileName.empty())
     {

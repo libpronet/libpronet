@@ -89,7 +89,7 @@ protected:
 
     mutable CRtpFlowStat      m_flowStat;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -107,7 +107,7 @@ public:
 
     virtual bool PRO_CALLTYPE PushBackAddRef(IRtpPacket* packet);
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -174,7 +174,7 @@ private:
 
     mutable CRtpFlowStat           m_flowStat;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

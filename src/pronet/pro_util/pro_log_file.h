@@ -86,7 +86,7 @@ private:
     PRO_INT32               m_maxSize;
     mutable CProThreadMutex m_lock;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

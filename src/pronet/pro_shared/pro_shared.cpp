@@ -19,7 +19,7 @@
 /*
  * reduce the stack size, for ProSleep_s(...)
  */
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 #if defined(PRO_FD_SETSIZE)
 #undef  PRO_FD_SETSIZE
 #endif
@@ -32,7 +32,7 @@
 #include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 #include <windows.h>
 #include <mmsystem.h>
 #else
@@ -48,7 +48,7 @@
 #if defined(_MSC_VER)
 #if defined(_WIN32_WCE)
 #pragma comment(lib, "mmtimer.lib")
-#elif defined(WIN32)
+#elif defined(_WIN32)
 #pragma comment(lib, "winmm.lib")
 #endif
 #endif
@@ -60,7 +60,7 @@ extern "C" {
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 
 class CProThreadMutex_s
 {
@@ -91,7 +91,7 @@ private:
     CRITICAL_SECTION m_cs;
 };
 
-#else  /* WIN32, _WIN32_WCE */
+#else  /* _WIN32, _WIN32_WCE */
 
 class CProThreadMutex_s
 {
@@ -122,12 +122,12 @@ private:
     pthread_mutex_t m_mutext;
 };
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 #define PBSD_EINTR        WSAEINTR        /* 10004 */
 #define PBSD_EINVAL       WSAEINVAL       /* 10022 */
 #define PBSD_ENOTSOCK     WSAENOTSOCK     /* 10038 */
@@ -139,7 +139,7 @@ private:
 #define PBSD_ECONNREFUSED ECONNREFUSED    /* 111 */
 #endif
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 static volatile bool                    g_s_tlsFlag       = false;
 static unsigned long                    g_s_tlsKey0       = (unsigned long)-1;
 static unsigned long                    g_s_tlsKey1       = (unsigned long)-1;
@@ -229,7 +229,7 @@ pbsd_startup_i()
     }
     s_flag = true;
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
     WSADATA wsaData;
     ::WSAStartup(MAKEWORD(2, 2), &wsaData);
 #endif
@@ -242,7 +242,7 @@ pbsd_errno_i()
 {
     int errcode = 0;
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
     errcode = ::WSAGetLastError();
 #else
     errcode = errno;
@@ -267,7 +267,7 @@ pbsd_ioctl_closexec_i(PRO_INT64 fd)
 {
     int retc = -1;
 
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32) && !defined(_WIN32_WCE)
 
     do
     {
@@ -286,7 +286,7 @@ pbsd_ioctl_closexec_i(PRO_INT64 fd)
         while (retc < 0 && pbsd_errno_i() == PBSD_EINTR);
     }
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 
     return (retc);
 }
@@ -300,7 +300,7 @@ pbsd_socket_i(int af,
 {
     PRO_INT64 fd = -1;
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 
     if (sizeof(SOCKET) == 8)
     {
@@ -311,7 +311,7 @@ pbsd_socket_i(int af,
         fd = (PRO_INT32)socket(af, type, protocol);
     }
 
-#else  /* WIN32, _WIN32_WCE */
+#else  /* _WIN32, _WIN32_WCE */
 
 #if defined(SOCK_CLOEXEC)
     static bool s_hasclose = true;
@@ -335,7 +335,7 @@ pbsd_socket_i(int af,
 #endif
     }
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 
     if (fd >= 0)
     {
@@ -360,7 +360,7 @@ pbsd_select_i(PRO_INT64       nfds,
 {
     int retc = -1;
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
     do
     {
         retc = select(0, readfds, writefds, exceptfds, timeout);
@@ -387,7 +387,7 @@ pbsd_closesocket_i(PRO_INT64 fd)
         return;
     }
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
     closesocket((SOCKET)fd);
 #else
     close((int)fd);
@@ -420,7 +420,7 @@ Delay_i(unsigned long milliseconds)
 
     while (1)
     {
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
         ::Sleep(1);
 #else
         usleep(500);
@@ -468,7 +468,7 @@ ProSrand()
         seed = ProGetTickCount64_s();
     }
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
     seed += (PRO_UINT16)::GetCurrentThreadId();
     seed += (PRO_UINT32)::GetCurrentThreadId() << 16;
 #else
@@ -492,7 +492,7 @@ PRO_INT64
 PRO_CALLTYPE
 ProGetTickCount64_s()
 {
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 
     if (!g_s_tlsFlag)
     {
@@ -605,7 +605,7 @@ ProSleep_s(PRO_UINT32 milliseconds)
 {
     if (milliseconds == 0)
     {
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
         ::Sleep(0);
 #else
         usleep(0);
@@ -618,7 +618,7 @@ ProSleep_s(PRO_UINT32 milliseconds)
     {
         while (1)
         {
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
             ::Sleep(-1);
 #else
             usleep(999999);
@@ -664,7 +664,7 @@ ProSleep_s(PRO_UINT32 milliseconds)
             continue;
         }
 
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32) && !defined(_WIN32_WCE)
         /*
          * the descriptor value of the STDIN is less than FD_SETSIZE
          */

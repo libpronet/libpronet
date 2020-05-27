@@ -39,7 +39,7 @@ struct PRO_HANDLER_INFO
     CProEventHandler* handler;
     unsigned long     mask;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -78,7 +78,7 @@ private:
 
     CProStlMap<PRO_INT64, PRO_HANDLER_INFO> m_sockId2HandlerInfo;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

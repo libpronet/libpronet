@@ -45,7 +45,7 @@ pbsd_fd_preset_i(PRO_INT64    fd,
         return (false);
     }
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
     return (fds.fd_count < FD_SETSIZE);
 #else
     return (fd < FD_SETSIZE);
@@ -64,7 +64,7 @@ pbsd_fd_set_i(PRO_INT64    fd,
         return;
     }
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
     if (fds.fd_count < FD_SETSIZE)
     {
         fds.fd_array[fds.fd_count] = (SOCKET)fd;
@@ -90,7 +90,7 @@ pbsd_fd_clr_i(PRO_INT64    fd,
         return;
     }
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
     for (int i = 0; i < (int)fds.fd_count; ++i)
     {
         if (fds.fd_array[i] == (SOCKET)fd)
@@ -458,7 +458,7 @@ CProSelectReactor::WorkerRun()
                 break;
             }
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 
             for (int i = 0; i < (int)m_fdsWr[1].fd_count; ++i)
             {
@@ -535,7 +535,7 @@ CProSelectReactor::WorkerRun()
                 }
             }
 
-#else  /* WIN32, _WIN32_WCE */
+#else  /* _WIN32, _WIN32_WCE */
 
             const CProStlMap<PRO_INT64, PRO_HANDLER_INFO>& allHandlers =
                 m_handlerMgr.GetAllHandlers();
@@ -573,7 +573,7 @@ CProSelectReactor::WorkerRun()
                 }
             } /* end of for (...) */
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
         }
 
         CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator       itr = handlers.begin();

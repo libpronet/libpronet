@@ -514,7 +514,7 @@ CProUdpTransport::UdpConnResetAsError(const pbsd_sockaddr_in* remoteAddr)
 
         m_connResetAsError = true;
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
         long          arg           = 1;
         unsigned long bytesReturned = 0;
         ::WSAIoctl((SOCKET)m_sockId, (unsigned long)SIO_UDP_CONNRESET,

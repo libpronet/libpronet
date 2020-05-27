@@ -74,7 +74,7 @@ struct PRO_TIMER_NODE
     unsigned long htbtIndex;
     PRO_INT64     userData;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -154,7 +154,7 @@ private:
     mutable CProThreadMutex           m_lock;
     CProThreadMutex                   m_lockAtom;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

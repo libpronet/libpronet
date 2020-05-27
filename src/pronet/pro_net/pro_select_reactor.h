@@ -64,7 +64,7 @@ private:
     pbsd_fd_set m_fdsRd[2];
     pbsd_fd_set m_fdsEx[2];
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

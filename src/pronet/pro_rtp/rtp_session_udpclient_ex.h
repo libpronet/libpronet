@@ -70,7 +70,7 @@ private:
     RTP_UDPX_SYNC m_syncToPeer; /* network byte order */
     PRO_UINT64    m_syncTimerId;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

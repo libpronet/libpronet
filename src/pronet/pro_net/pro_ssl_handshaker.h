@@ -97,7 +97,7 @@ private:
     PRO_UINT64                 m_timerId;
     CProThreadMutex            m_lock;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

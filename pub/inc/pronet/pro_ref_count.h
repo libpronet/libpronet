@@ -47,14 +47,14 @@ protected:
 
 private:
 
-#if defined(WIN32) || defined(_WIN32_WCE) || defined(PRO_HAS_ATOMOP)
+#if defined(_WIN32) || defined(_WIN32_WCE) || defined(PRO_HAS_ATOMOP)
     volatile unsigned long m_refCount;
 #else
     unsigned long          m_refCount;
     CProThreadMutex        m_lock;
 #endif
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

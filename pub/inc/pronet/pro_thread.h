@@ -56,7 +56,7 @@ private:
 
 #if defined(_WIN32_WCE)
     static unsigned long __stdcall SvcRun(void* arg);
-#elif defined(WIN32)
+#elif defined(_WIN32)
     static unsigned int __stdcall SvcRun(void* arg);
 #else
     static void* SvcRun(void* arg);
@@ -65,13 +65,13 @@ private:
 private:
 
     unsigned long                m_threadCount;
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32) && !defined(_WIN32_WCE)
     CProStlMap<PRO_UINT64, bool> m_threadId2Realtime;
 #endif
     CProThreadMutexCondition     m_cond;
     mutable CProThreadMutex      m_lock;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

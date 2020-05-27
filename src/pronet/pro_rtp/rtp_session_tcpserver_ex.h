@@ -80,7 +80,7 @@ private:
 
     PRO_SSL_CTX* m_sslCtx;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

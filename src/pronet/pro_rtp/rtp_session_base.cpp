@@ -31,7 +31,7 @@
 #include "../pro_util/pro_timer_factory.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 #include <windows.h>
 #endif
 
@@ -812,7 +812,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (int)(m_onOkCalled   ? 1 : 0),
                     (int)(m_canUpcall    ? 1 : 0)
                     );
-#if defined(WIN32)
+#if defined(_WIN32)
                 ::OutputDebugString(buffer);
 #else
                 printf("%s", buffer);
@@ -883,7 +883,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (int)(m_onOkCalled   ? 1 : 0),
                     (int)(m_canUpcall    ? 1 : 0)
                     );
-#if defined(WIN32)
+#if defined(_WIN32)
                 ::OutputDebugString(buffer);
 #else
                 printf("%s", buffer);
@@ -954,7 +954,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (int)(m_onOkCalled   ? 1 : 0),
                     (int)(m_canUpcall    ? 1 : 0)
                     );
-#if defined(WIN32)
+#if defined(_WIN32)
                 ::OutputDebugString(buffer);
 #else
                 printf("%s", buffer);
@@ -1113,7 +1113,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     freeList[63], (unsigned int)objSize[63], (unsigned int)busyObjNum[63], (unsigned int)totalObjNum[63],
                     (unsigned int)heapBytes
                     );
-#if defined(WIN32)
+#if defined(_WIN32)
                     ::OutputDebugString(buffer);
 #else
                     printf("%s", buffer);

@@ -50,7 +50,7 @@ private:
     bool      m_enableNotify;
     PRO_INT64 m_notifyTick;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

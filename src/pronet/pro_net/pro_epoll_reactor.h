@@ -65,7 +65,7 @@ private:
     int              m_epfd;
     pbsd_epoll_event m_events[PRO_EPOLLFD_GETSIZE]; /* sizeof(epoll_event) is 16 */
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

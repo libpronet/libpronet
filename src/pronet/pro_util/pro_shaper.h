@@ -47,7 +47,7 @@ private:
     double    m_greenBits;
     PRO_INT64 m_startTick;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

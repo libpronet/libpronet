@@ -43,7 +43,7 @@ struct RTP_UDPX_SYNC
     unsigned char nonce[14];
     PRO_UINT16    checksum;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -92,7 +92,7 @@ private:
     RTP_UDPX_SYNC m_syncToPeer; /* network byte order */
     PRO_UINT64    m_syncTimerId;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

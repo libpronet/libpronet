@@ -21,7 +21,7 @@
 #include "pro_memory_pool.h"
 #include "pro_thread_mutex.h"
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 #include <windows.h>
 #endif
 
@@ -32,7 +32,7 @@ unsigned long
 PRO_CALLTYPE
 CProRefCount::AddRef()
 {
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
     const unsigned long refCount = ::InterlockedIncrement((long*)&m_refCount);
 #elif defined(PRO_HAS_ATOMOP)
     const unsigned long refCount = __sync_add_and_fetch(&m_refCount, 1);
@@ -49,7 +49,7 @@ unsigned long
 PRO_CALLTYPE
 CProRefCount::Release()
 {
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
     const unsigned long refCount = ::InterlockedDecrement((long*)&m_refCount);
 #elif defined(PRO_HAS_ATOMOP)
     const unsigned long refCount = __sync_sub_and_fetch(&m_refCount, 1);

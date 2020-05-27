@@ -27,7 +27,7 @@
 #include "pro_z.h"
 #include "../pro_shared/pro_shared.h"
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 #include <windows.h>
 #include <mmsystem.h>
 #endif
@@ -37,7 +37,7 @@
 #if defined(_MSC_VER)
 #if defined(_WIN32_WCE)
 #pragma comment(lib, "mmtimer.lib")
-#elif defined(WIN32)
+#elif defined(_WIN32)
 #pragma comment(lib, "winmm.lib")
 #endif
 #endif
@@ -95,7 +95,7 @@ CProTimerFactory::Start(bool mmTimer)
             return (false);
         }
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
         if (mmTimer)
         {
             TIMECAPS tc;
@@ -169,7 +169,7 @@ CProTimerFactory::Stop()
     {
         CProThreadMutexGuard mon(m_lock);
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
         if (m_mmTimer && m_mmResolution > 0)
         {
             ::timeEndPeriod(m_mmResolution);
@@ -409,10 +409,7 @@ CProTimerFactory::UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds)
             if (node.heartbeat)
             {
                 timers.push_back(node);
-
-                CProStlSet<PRO_TIMER_NODE>::iterator const oldItr = itr;
-                ++itr;
-                m_timers.erase(oldItr);
+                m_timers.erase(itr++);
             }
             else
             {

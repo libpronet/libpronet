@@ -309,7 +309,7 @@ private:
     mutable CProThreadMutex                              m_lock;
     CProThreadMutex                                      m_lockUpcall;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

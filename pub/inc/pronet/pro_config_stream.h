@@ -44,22 +44,22 @@ public:
         const void*                     buf,
         size_t                          size,
         CProStlVector<PRO_CONFIG_ITEM>& configs,
-        char                            aroundCharL = '"',
-        char                            aroundCharR = '"'
+        char                            aroundCharL = '\"',
+        char                            aroundCharR = '\"'
         );
 
     static bool StringToConfigs(
         const CProStlString&            str,
         CProStlVector<PRO_CONFIG_ITEM>& configs,
-        char                            aroundCharL = '"',
-        char                            aroundCharR = '"'
+        char                            aroundCharL = '\"',
+        char                            aroundCharR = '\"'
         );
 
     static void ConfigsToString(
         const CProStlVector<PRO_CONFIG_ITEM>& configs,
         CProStlString&                        str,
-        char                                  aroundCharL = '"',
-        char                                  aroundCharR = '"'
+        char                                  aroundCharL = '\"',
+        char                                  aroundCharR = '\"'
         );
 
     CProConfigStream();
@@ -216,8 +216,8 @@ public:
 
     void ToString(
         CProStlString& str,
-        char           aroundCharL = '"',
-        char           aroundCharR = '"'
+        char           aroundCharL = '\"',
+        char           aroundCharR = '\"'
         ) const;
 
 private:
@@ -233,7 +233,7 @@ private:
     CProStlMap<CProStlString, unsigned long>                   m_name2Index;
     unsigned long                                              m_nextIndex;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

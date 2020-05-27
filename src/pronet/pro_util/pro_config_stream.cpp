@@ -30,8 +30,8 @@ bool
 CProConfigStream::BufToConfigs(const void*                     buf,
                                size_t                          size,
                                CProStlVector<PRO_CONFIG_ITEM>& configs,
-                               char                            aroundCharL, /* = '"' */
-                               char                            aroundCharR) /* = '"' */
+                               char                            aroundCharL, /* = '\"' */
+                               char                            aroundCharR) /* = '\"' */
 {
     configs.clear();
 
@@ -239,8 +239,8 @@ CProConfigStream::BufToConfigs(const void*                     buf,
 bool
 CProConfigStream::StringToConfigs(const CProStlString&            str,
                                   CProStlVector<PRO_CONFIG_ITEM>& configs,
-                                  char                            aroundCharL, /* = '"' */
-                                  char                            aroundCharR) /* = '"' */
+                                  char                            aroundCharL, /* = '\"' */
+                                  char                            aroundCharR) /* = '\"' */
 {
     configs.clear();
 
@@ -258,8 +258,8 @@ CProConfigStream::StringToConfigs(const CProStlString&            str,
 void
 CProConfigStream::ConfigsToString(const CProStlVector<PRO_CONFIG_ITEM>& configs,
                                   CProStlString&                        str,
-                                  char                                  aroundCharL, /* = '"' */
-                                  char                                  aroundCharR) /* = '"' */
+                                  char                                  aroundCharL, /* = '\"' */
+                                  char                                  aroundCharR) /* = '\"' */
 {
     str = "";
 
@@ -816,8 +816,8 @@ CProConfigStream::Get(CProStlVector<PRO_CONFIG_ITEM>& configs) const
 
 void
 CProConfigStream::ToString(CProStlString& str,
-                           char           aroundCharL,       /* = '"' */
-                           char           aroundCharR) const /* = '"' */
+                           char           aroundCharL,       /* = '\"' */
+                           char           aroundCharR) const /* = '\"' */
 {
     CProStlVector<PRO_CONFIG_ITEM> configs;
     Get(configs);

@@ -121,7 +121,7 @@ private:
     mutable CProThreadMutex         m_lock;
     CProThreadMutex                 m_lockAtom;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

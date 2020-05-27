@@ -22,7 +22,7 @@
 #include "pro_a.h"
 #include "pro_memory_pool.h"
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 
 #if !defined(PRO_FD_SETSIZE)
 #define PRO_FD_SETSIZE 1024
@@ -41,7 +41,7 @@
 #include <mswsock.h>
 #include <ws2tcpip.h>
 
-#else  /* WIN32, _WIN32_WCE */
+#else  /* _WIN32, _WIN32_WCE */
 
 #include <errno.h>
 #include <fcntl.h>
@@ -66,12 +66,12 @@
 #endif
 #define PRO_FD_SETSIZE FD_SETSIZE
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 
 #if defined(_MSC_VER)
 #if defined(_WIN32_WCE)
 #pragma comment(lib, "ws2.lib")
-#elif defined(WIN32)
+#elif defined(_WIN32)
 #pragma comment(lib, "mswsock.lib")
 #pragma comment(lib, "ws2_32.lib")
 #endif
@@ -84,7 +84,7 @@ extern "C" {
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 
 #if !defined(AF_UNIX)
 #define AF_UNIX                1
@@ -112,7 +112,7 @@ extern "C" {
 #define PBSD_FD_CLR(fd, set)   FD_CLR(((SOCKET)(fd)), set)
 #define PBSD_FD_ISSET(fd, set) FD_ISSET(((SOCKET)(fd)), set)
 
-#else  /* WIN32, _WIN32_WCE */
+#else  /* _WIN32, _WIN32_WCE */
 
 #define PBSD_EBADF             EBADF          /*   9 */
 #define PBSD_EWOULDBLOCK       EAGAIN         /*  11 */
@@ -126,43 +126,43 @@ extern "C" {
 #define PBSD_FD_CLR(fd, set)   FD_CLR(((int)(fd)), set)
 #define PBSD_FD_ISSET(fd, set) FD_ISSET(((int)(fd)), set)
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 
 struct pbsd_fd_set : public fd_set
 {
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 struct pbsd_sockaddr_in : public sockaddr_in
 {
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 
 struct pbsd_sockaddr_un /* a dummy on Windows */
 {
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 struct pbsd_msghdr      /* a dummy on Windows */
 {
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
-#else  /* WIN32, _WIN32_WCE */
+#else  /* _WIN32, _WIN32_WCE */
 
 struct pbsd_sockaddr_un : public sockaddr_un
 {
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 struct pbsd_msghdr : public msghdr
 {
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 
 #if defined(PRO_HAS_EPOLL)
 
@@ -172,7 +172,7 @@ struct pbsd_msghdr : public msghdr
 
 struct pbsd_epoll_event : public epoll_event
 {
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 #endif /* PRO_HAS_EPOLL */

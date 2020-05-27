@@ -42,20 +42,20 @@
 #include <ctime>
 #include <memory>
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 
 #if !defined(_WIN32_WCE)
 #include <conio.h>
 #endif
 #include <tchar.h>
 
-#else  /* WIN32, _WIN32_WCE */
+#else  /* _WIN32, _WIN32_WCE */
 
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 
 #if defined(__cplusplus)
 extern "C" {
@@ -64,7 +64,7 @@ extern "C" {
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 
 #define strlwr    _strlwr
 #define strupr    _strupr
@@ -76,17 +76,17 @@ extern "C" {
 #define time      _time64
 #endif
 
-#else  /* WIN32, _WIN32_WCE */
+#else  /* _WIN32, _WIN32_WCE */
 
 #define stricmp   strcasecmp
 #define strnicmp  strncasecmp
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32) && !defined(_WIN32_WCE)
 
 char*
 strlwr(char* str);
@@ -94,7 +94,7 @@ strlwr(char* str);
 char*
 strupr(char* str);
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 
 char*
 strncpy_pro(char*       dest,

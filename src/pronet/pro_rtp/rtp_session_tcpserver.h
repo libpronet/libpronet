@@ -83,7 +83,7 @@ private:
 
     IProAcceptor* m_acceptor;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

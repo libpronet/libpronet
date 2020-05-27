@@ -50,7 +50,7 @@ struct RTP_VIDEO_FRAME
     bool       keyFrame;
     CRtpBucket bucket;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

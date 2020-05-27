@@ -108,7 +108,7 @@ struct MSG_CLIENT_CONFIG_INFO
     CProStlString                msgc_ssl_sni;
     bool                         msgc_ssl_aes256;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -182,7 +182,7 @@ private:
     IRtpMsgClient*         m_msgClient;
     CProThreadMutex        m_lock;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

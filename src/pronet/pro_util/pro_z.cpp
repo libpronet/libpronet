@@ -19,7 +19,7 @@
 #include "pro_a.h"
 #include "pro_z.h"
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 #include <windows.h>
 #endif
 
@@ -30,7 +30,7 @@ extern "C" {
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32) && !defined(_WIN32_WCE)
 
 static
 inline
@@ -60,12 +60,12 @@ toupper_i(char c)
     return (c);
 }
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32) && !defined(_WIN32_WCE)
 
 char*
 strlwr(char* str)
@@ -95,7 +95,7 @@ strupr(char* str)
     return (str);
 }
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 
 char*
 strncpy_pro(char*       dest,
@@ -161,7 +161,7 @@ ProGetExeDir_(char buf[1024])
     buf[0]        = '\0';
     buf[size - 1] = '\0';
 
-#if defined(WIN32)
+#if defined(_WIN32)
     ::GetModuleFileNameA(NULL, buf, size - 1);
     ::GetLongPathNameA(buf, buf, size - 1);
     char* const slash = strrchr(buf, '\\');
@@ -206,7 +206,7 @@ ProGetExePath(char buf[1024])
     buf[0]        = '\0';
     buf[size - 1] = '\0';
 
-#if defined(WIN32)
+#if defined(_WIN32)
     ::GetModuleFileNameA(NULL, buf, size - 1);
     ::GetLongPathNameA(buf, buf, size - 1);
 #else

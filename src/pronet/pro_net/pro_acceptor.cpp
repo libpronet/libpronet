@@ -93,7 +93,7 @@ CProAcceptor::~CProAcceptor()
 
     ProCloseSockId(m_sockId);
     ProCloseSockId(m_sockIdUn);
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32) && !defined(_WIN32_WCE)
     if (m_sockIdUn != -1)
     {
         unlink(m_localAddrUn.sun_path);
@@ -169,7 +169,7 @@ CProAcceptor::Init(IProAcceptorObserver* observer,
         pbsd_setsockopt(
             sockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
         if (pbsd_bind(sockId, &localAddr, false) != 0)
 #else
         if (pbsd_bind(sockId, &localAddr, true)  != 0)
@@ -193,7 +193,7 @@ CProAcceptor::Init(IProAcceptorObserver* observer,
             goto EXIT;
         }
 
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32) && !defined(_WIN32_WCE)
 
         sockIdUn = pbsd_socket(AF_LOCAL, SOCK_STREAM, 0);
         if (sockIdUn == -1)
@@ -233,7 +233,7 @@ CProAcceptor::Init(IProAcceptorObserver* observer,
             goto EXIT;
         }
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 
         observer->AddRef();
         m_observer         = observer;
@@ -253,7 +253,7 @@ EXIT:
     reactorTask->RemoveHandler(sockIdUn, this, PRO_MASK_ACCEPT);
     ProCloseSockId(sockId);
     ProCloseSockId(sockIdUn);
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32) && !defined(_WIN32_WCE)
     if (sockIdUn != -1)
     {
         unlink(localAddrUn.sun_path);

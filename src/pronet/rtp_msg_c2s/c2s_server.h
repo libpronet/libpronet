@@ -156,7 +156,7 @@ struct C2S_SERVER_CONFIG_INFO
     unsigned int                 c2ss_log_loop_bytes;
     int                          c2ss_log_level_green;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -239,7 +239,7 @@ private:
     PRO_INT64              m_onOkTick;
     CProThreadMutex        m_lock;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

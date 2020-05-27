@@ -22,7 +22,7 @@
 #include "pro_thread.h"
 #include "pro_z.h"
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 #include <windows.h>
 #else
 #include <pthread.h>
@@ -31,7 +31,7 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 
 class CProThreadMutexImpl
 {
@@ -61,7 +61,7 @@ private:
 
     CRITICAL_SECTION m_cs;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 class CProThreadMutexConditionImpl
@@ -121,10 +121,10 @@ private:
 
     HANDLE m_sem;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
-#else  /* WIN32, _WIN32_WCE */
+#else  /* _WIN32, _WIN32_WCE */
 
 class CProThreadMutexImpl
 {
@@ -156,7 +156,7 @@ private:
 
     pthread_mutex_t m_mutext;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 class CProThreadMutexConditionImpl
@@ -247,10 +247,10 @@ private:
     pthread_cond_t      m_condt;
     CProThreadMutexImpl m_mutex;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -300,7 +300,7 @@ CProNullMutex::CProNullMutex()
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32) && !defined(_WIN32_WCE)
 
 CProRecursiveThreadMutex::CProRecursiveThreadMutex()
 {
@@ -362,7 +362,7 @@ CProRecursiveThreadMutex::Unlock()
     m_mutex->Unlock(); /* ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]] */
 }
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 
 /////////////////////////////////////////////////////////////////////////////
 ////

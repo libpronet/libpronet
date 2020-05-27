@@ -69,7 +69,7 @@ private:
     size_t    m_size;
     PRO_INT64 m_magic;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

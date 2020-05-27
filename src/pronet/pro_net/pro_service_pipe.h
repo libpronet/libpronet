@@ -66,7 +66,7 @@ struct PRO_SERVICE_SOCK
     PRO_INT64 sockId;
     bool      unixSocket;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 struct PRO_SERVICE_PACKET_C2S
@@ -81,7 +81,7 @@ struct PRO_SERVICE_PACKET_C2S
     PRO_UINT64       processId;
     PRO_SERVICE_SOCK oldSock;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 struct PRO_SERVICE_PACKET_S2C
@@ -92,7 +92,7 @@ struct PRO_SERVICE_PACKET_S2C
         serviceOpt = 0;
 
         memset(&nonce, 0, sizeof(PRO_NONCE));
-#if defined(WIN32) && !defined(_WIN32_WCE)
+#if defined(_WIN32) && !defined(_WIN32_WCE)
         memset(&protocolInfo, 0, sizeof(WSAPROTOCOL_INFO));
 #endif
     }
@@ -100,12 +100,12 @@ struct PRO_SERVICE_PACKET_S2C
     unsigned char    serviceId;
     unsigned char    serviceOpt;
     PRO_NONCE        nonce;
-#if defined(WIN32) && !defined(_WIN32_WCE)
+#if defined(_WIN32) && !defined(_WIN32_WCE)
     WSAPROTOCOL_INFO protocolInfo;
 #endif
     PRO_SERVICE_SOCK oldSock;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 struct PRO_SERVICE_PACKET
@@ -129,7 +129,7 @@ struct PRO_SERVICE_PACKET
     PRO_SERVICE_PACKET_S2C s2c;
     char                   magic2[8];
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 struct PRO_SERVICE_PIPE
@@ -159,7 +159,7 @@ struct PRO_SERVICE_PIPE
     unsigned char    serviceId;
     PRO_UINT64       processId;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -257,7 +257,7 @@ private:
     CProStlDeque<PRO_SERVICE_PACKET> m_fdPackets;
     CProThreadMutex                  m_lock;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

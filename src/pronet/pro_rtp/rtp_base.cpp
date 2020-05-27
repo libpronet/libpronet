@@ -30,7 +30,7 @@
 #include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 #include <windows.h>
 #endif
 

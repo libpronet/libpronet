@@ -29,7 +29,7 @@
 #include "../pro_util/pro_timer_factory.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 #include <windows.h>
 #endif
 
@@ -215,7 +215,7 @@ CProServiceHost::OnConnectOk(IProConnector*   connector,
 
         assert(m_pipe == NULL);
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
         const bool recvFdMode = false;
 #else
         const bool recvFdMode = true;
@@ -325,7 +325,7 @@ CProServiceHost::OnRecv(CProServicePipe*          pipe,
             sockId = -1;
         }
     }
-#elif defined(WIN32)
+#elif defined(_WIN32)
     if (sizeof(SOCKET) == 8)
     {
         sockId = (PRO_INT64)::WSASocket(

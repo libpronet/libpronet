@@ -149,7 +149,7 @@ struct PRO_LOCAL_TIME
     unsigned short second;
     unsigned short millisecond;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

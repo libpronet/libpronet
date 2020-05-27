@@ -70,7 +70,7 @@ private:
     PRO_SSL_SUITE_ID m_suiteId;
     char             m_suiteName[64];
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

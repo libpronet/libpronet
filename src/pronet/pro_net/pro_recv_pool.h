@@ -222,7 +222,7 @@ private:
     char*      m_idle;
     size_t     m_idleSize;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

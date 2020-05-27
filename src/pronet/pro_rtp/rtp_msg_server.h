@@ -58,7 +58,7 @@ struct RTP_MSG_AsyncOnAcceptSession
     RTP_SESSION_INFO remoteInfo;
     PRO_NONCE        nonce;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 struct RTP_MSG_AsyncOnRecvSession
@@ -72,7 +72,7 @@ struct RTP_MSG_AsyncOnRecvSession
     RTP_MSG_USER     c2sUser;
     CProConfigStream msgStream;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 struct RTP_MSG_LINK_CTX
@@ -88,7 +88,7 @@ struct RTP_MSG_LINK_CTX
     CProStlSet<RTP_MSG_USER> subUsers;
     bool                     isC2s;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -311,7 +311,7 @@ private:
 
     mutable CProThreadMutex                     m_lock;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

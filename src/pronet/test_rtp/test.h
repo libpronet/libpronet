@@ -52,7 +52,7 @@ struct TEST_SERVER
     unsigned short local_port;
     double         kbps;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 struct TEST_CLIENT
@@ -62,7 +62,7 @@ struct TEST_CLIENT
     double         kbps;
     char           local_ip[64];
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 union TEST_PARAMS
@@ -70,7 +70,7 @@ union TEST_PARAMS
     TEST_SERVER server;
     TEST_CLIENT client;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 struct TEST_PACKET_HDR
@@ -92,7 +92,7 @@ struct TEST_PACKET_HDR
     PRO_UINT16 srcSeq;
     PRO_INT64  srcTick;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -227,7 +227,7 @@ private:
 
     CProThreadMutex  m_lock;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

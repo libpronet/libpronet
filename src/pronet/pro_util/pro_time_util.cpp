@@ -23,7 +23,7 @@
 #include "pro_z.h"
 #include "../pro_shared/pro_shared.h"
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 #include <windows.h>
 #endif
 
@@ -53,7 +53,7 @@ ProGetLocalTime(PRO_LOCAL_TIME& localTime,
 {
     localTime.Zero();
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 
     SYSTEMTIME st;
     ::GetLocalTime(&st);
@@ -88,7 +88,7 @@ ProGetLocalTime(PRO_LOCAL_TIME& localTime,
     localTime.second      = st.wSecond;
     localTime.millisecond = st.wMilliseconds;
 
-#else  /* WIN32, _WIN32_WCE */
+#else  /* _WIN32, _WIN32_WCE */
 
     struct tm theTm;
     memset(&theTm, 0, sizeof(struct tm));
@@ -123,7 +123,7 @@ ProGetLocalTime(PRO_LOCAL_TIME& localTime,
     localTime.minute = theTm.tm_min;
     localTime.second = theTm.tm_sec;
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 }
 
 const char*

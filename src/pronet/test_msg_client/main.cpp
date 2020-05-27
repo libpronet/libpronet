@@ -28,7 +28,7 @@
 #include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #include <windows.h>
 #endif
 
@@ -330,7 +330,7 @@ int main(int argc, char* argv[])
     {
         ProSleep(1);
         RtpMsgUser2String(&bindUser, bindString);
-#if defined(WIN32)
+#if defined(_WIN32)
         printf("\nMSG-Cli-To:%s\\>", bindString);
 #else
         printf("\nMSG-Cli-To:%s~$ ", bindString);

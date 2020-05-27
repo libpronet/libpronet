@@ -173,7 +173,7 @@ the file "build/DEFINE.txt" for more.
 
 5. Android NDK on Windows
 
-   Run the script "build/android-gcc-r/rebuil-all.bat"
+   Run the script "build/android-clang-r/rebuil-all.bat"
 
 6. Xcode on Mac OS X
 

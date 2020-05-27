@@ -68,7 +68,7 @@ private:
     double    m_outBits;
     double    m_outBitRate;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

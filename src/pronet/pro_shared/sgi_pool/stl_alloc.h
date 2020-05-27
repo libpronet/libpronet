@@ -28,7 +28,7 @@
 #if !defined(____STD____)
 #define ____STD____
 #define ____STD_BEGIN namespace std {
-#define ____STD_END   };
+#define ____STD_END   }
 #endif
 
 ____STD_BEGIN

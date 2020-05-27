@@ -175,7 +175,7 @@ protected:
     bool                    m_canUpcall;
     CProThreadMutex         m_lockUpcall;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

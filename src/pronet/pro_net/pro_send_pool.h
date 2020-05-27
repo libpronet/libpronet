@@ -160,7 +160,7 @@ private:
     CProStlDeque<CProBuffer*> m_bufs;
     const char*               m_pendingPos;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

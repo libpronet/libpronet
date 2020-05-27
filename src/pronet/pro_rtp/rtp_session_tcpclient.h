@@ -93,7 +93,7 @@ private:
 
     IProConnector* m_connector;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

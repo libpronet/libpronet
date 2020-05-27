@@ -58,7 +58,7 @@ struct RTP_EXT
 
     PRO_UINT16    hdrAndPayloadSize; /* tcp message boundary */
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 struct RTP_HEADER
@@ -94,7 +94,7 @@ struct RTP_HEADER
         PRO_UINT32     len4;
     };
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 struct RTP_PACKET
@@ -103,7 +103,7 @@ struct RTP_PACKET
     RTP_HEADER* hdr;
     char        dummyBuffer[sizeof(RTP_EXT) + sizeof(RTP_HEADER)];
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -225,7 +225,7 @@ private:
     PRO_INT64               m_magic;
     RTP_PACKET*             m_packet;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

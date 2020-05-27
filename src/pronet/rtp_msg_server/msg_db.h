@@ -75,7 +75,7 @@ struct TBL_MSG_USER_ROW
     CProStlString _passwd_;
     CProStlString _bindedip_;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 struct TBL_MSG_KICKOUT_ROW
@@ -107,7 +107,7 @@ struct TBL_MSG_KICKOUT_ROW
     PRO_INT64 _uid_;
     PRO_INT64 _iid_;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

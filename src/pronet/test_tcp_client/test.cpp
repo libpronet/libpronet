@@ -309,7 +309,7 @@ CTest::SendMsg(const char* msg)
         return;
     }
 
-#if defined(WIN32)
+#if defined(_WIN32)
     CProStlString tmp = "";
     ProAnsiToUtf8(tmp, msg);
     msg = tmp.c_str();

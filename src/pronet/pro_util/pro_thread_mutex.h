@@ -52,7 +52,7 @@ private:
 
     CProThreadMutexImpl* m_impl;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -64,20 +64,20 @@ public:
 
     CProNullMutex();
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 
 class CProRecursiveThreadMutex : public CProThreadMutex
 {
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
-#else  /* WIN32, _WIN32_WCE */
+#else  /* _WIN32, _WIN32_WCE */
 
 class CProRecursiveThreadMutex
 {
@@ -99,10 +99,10 @@ private:
     CProThreadMutexCondition* m_cond;
     CProThreadMutex*          m_mutex;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -130,7 +130,7 @@ private:
     CProThreadMutexCondition* m_cond;
     CProThreadMutex*          m_mutex;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -186,7 +186,7 @@ private:
 
     CProThreadMutexConditionImpl* m_impl;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

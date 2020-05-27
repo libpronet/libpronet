@@ -50,14 +50,14 @@ struct DB_CELL_UNIT
     double        dbl;
     CProStlString txt;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 struct DB_ROW_UNIT
 {
     CProStlVector<DB_CELL_UNIT> cells;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 struct DB_ROW_SET
@@ -65,7 +65,7 @@ struct DB_ROW_SET
     CProStlVector<DB_COLUMN_TYPE> types_in;
     CProStlDeque<DB_ROW_UNIT>     rows_out;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

@@ -67,7 +67,7 @@ private:
     PRO_INT64                          m_lastValidTick;
     CProStlMap<PRO_INT64, IRtpPacket*> m_seq64ToPacket;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

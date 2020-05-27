@@ -41,21 +41,21 @@ template<class ____Ty, unsigned long ____poolIndex = 0>
 class CProStlVector
 : public std::vector<____Ty, std::pro_allocator<____Ty, ____poolIndex> >
 {
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 template<class ____Ty, unsigned long ____poolIndex = 0>
 class CProStlDeque
 : public std::deque<____Ty, std::pro_allocator<____Ty, ____poolIndex> >
 {
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 template<class ____Ty, unsigned long ____poolIndex = 0>
 class CProStlList
 : public std::list<____Ty, std::pro_allocator<____Ty, ____poolIndex> >
 {
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 template<class ____K, class ____Ty, unsigned long ____poolIndex = 0, class ____Pr = std::less<____K> >
@@ -66,7 +66,7 @@ class CProStlMap
 : public std::map<____K, ____Ty, ____Pr, std::pro_allocator<____Ty, ____poolIndex> >
 #endif
 {
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 template<class ____K, class ____Ty, unsigned long ____poolIndex = 0, class ____Pr = std::less<____K> >
@@ -77,21 +77,21 @@ class CProStlMultimap
 : public std::multimap<____K, ____Ty, ____Pr, std::pro_allocator<____Ty, ____poolIndex> >
 #endif
 {
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 template<class ____K, unsigned long ____poolIndex = 0, class ____Pr = std::less<____K> >
 class CProStlSet
 : public std::set<____K, ____Pr, std::pro_allocator<____K, ____poolIndex> >
 {
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 template<class ____K, unsigned long ____poolIndex = 0, class ____Pr = std::less<____K> >
 class CProStlMultiset
 : public std::multiset<____K, ____Pr, std::pro_allocator<____K, ____poolIndex> >
 {
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /*

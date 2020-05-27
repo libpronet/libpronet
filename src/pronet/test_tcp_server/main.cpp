@@ -25,7 +25,7 @@
 #include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #include <windows.h>
 #endif
 
@@ -39,7 +39,7 @@ static CTest* g_s_tester = NULL;
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32) && !defined(_WIN32_WCE)
 
 static
 void
@@ -117,7 +117,7 @@ SetupSignalHandlers_i()
     sigaction(SIGTERM, &sa, NULL);
 }
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -358,7 +358,7 @@ int main(int argc, char* argv[])
         goto EXIT;
     }
 
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32) && !defined(_WIN32_WCE)
     SetupSignalHandlers_i();
 #endif
 
@@ -413,7 +413,7 @@ int main(int argc, char* argv[])
     while (1)
     {
         ProSleep(1);
-#if defined(WIN32)
+#if defined(_WIN32)
         printf("\nTCP-Svr:\\>");
 #else
         printf("\nTCP-Svr:~$ ");

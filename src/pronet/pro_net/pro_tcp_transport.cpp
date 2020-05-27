@@ -43,7 +43,7 @@
 #define DEFAULT_RECV_BUF_SIZE  (1024 * 56)
 #define DEFAULT_SEND_BUF_SIZE  (1024 * 8)
 
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32) && !defined(_WIN32_WCE)
 
 union PRO_CMSG_CTRL
 {
@@ -51,7 +51,7 @@ union PRO_CMSG_CTRL
     char           control[CMSG_SPACE(sizeof(int))];
 };
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -60,7 +60,7 @@ CProTcpTransport*
 CProTcpTransport::CreateInstance(bool   recvFdMode,
                                  size_t recvPoolSize)   /* = 0 */
 {
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
     recvFdMode = false;
 #endif
 
@@ -144,7 +144,7 @@ CProTcpTransport::Init(IProTransportObserver* observer,
             return (false);
         }
 
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32) && !defined(_WIN32_WCE)
         if (unixSocket)
         {
             pbsd_sockaddr_un localAddrUn;
@@ -658,7 +658,7 @@ EXIT:
 void
 CProTcpTransport::OnInputFd(PRO_INT64 sockId)
 {{
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32) && !defined(_WIN32_WCE)
 
     CProThreadMutexGuard mon(m_lockUpcall);
 
@@ -751,7 +751,7 @@ CProTcpTransport::OnInputFd(PRO_INT64 sockId)
         Fini();
     }
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 }}
 
 void
@@ -839,7 +839,7 @@ CProTcpTransport::OnOutput(PRO_INT64 sockId)
         }
         else
         {
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32) && !defined(_WIN32_WCE)
             struct iovec iov;
             iov.iov_base = (void*)theBuf;
             iov.iov_len  = theSize;

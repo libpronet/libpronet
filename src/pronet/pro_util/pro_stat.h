@@ -53,7 +53,7 @@ private:
     double    m_bits;
     double    m_bitRate;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -94,7 +94,7 @@ private:
     double     m_lossCountAll;
     double     m_lossRate;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -127,7 +127,7 @@ private:
     double    m_sum;
     double    m_avgValue;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

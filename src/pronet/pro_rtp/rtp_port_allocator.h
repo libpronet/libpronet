@@ -50,7 +50,7 @@ private:
     unsigned short          m_portItr;
     mutable CProThreadMutex m_lock;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

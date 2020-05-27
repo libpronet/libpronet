@@ -33,7 +33,7 @@
 #include "../pro_util/pro_timer_factory.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 #include <windows.h>
 #endif
 
@@ -1777,7 +1777,7 @@ CRtpSessionWrapper::OnTimer(void*      factory,
                         m_pushTick,
                         tick
                         );
-#if defined(WIN32)
+#if defined(_WIN32)
                     ::OutputDebugString(traceInfo);
 #else
                     printf("%s", traceInfo);
@@ -1827,7 +1827,7 @@ CRtpSessionWrapper::OnTimer(void*      factory,
                         m_pushTick,
                         tick
                         );
-#if defined(WIN32)
+#if defined(_WIN32)
                     ::OutputDebugString(traceInfo);
 #else
                     printf("%s", traceInfo);
@@ -1879,7 +1879,7 @@ CRtpSessionWrapper::OnTimer(void*      factory,
                         m_pushTick,
                         tick
                         );
-#if defined(WIN32)
+#if defined(_WIN32)
                     ::OutputDebugString(traceInfo);
 #else
                     printf("%s", traceInfo);

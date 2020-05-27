@@ -51,7 +51,7 @@ CProConnector::CreateInstance(bool          enableUnixSocket,
                               unsigned char serviceId,
                               unsigned char serviceOpt)
 {
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
     enableUnixSocket = false;
 #endif
 
@@ -591,7 +591,7 @@ CProConnector::OnTimer(void*      factory,
                 break;
             }
 
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32) && !defined(_WIN32_WCE)
             if (m_unixSocket)
             {
                 pbsd_sockaddr_un remoteAddrUn;

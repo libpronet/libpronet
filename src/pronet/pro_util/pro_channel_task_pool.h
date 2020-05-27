@@ -67,7 +67,7 @@ private:
     CProStlMap<PRO_UINT64, CProFunctorCommandTask*>    m_channelId2Task;
     mutable CProThreadMutex                            m_lock;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

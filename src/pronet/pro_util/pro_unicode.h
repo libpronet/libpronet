@@ -25,7 +25,7 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 
 void
 PRO_CALLTYPE
@@ -57,7 +57,7 @@ PRO_CALLTYPE
 ProUtf8ToAnsi(CProStlString&       dst,
               const CProStlString& src);
 
-#endif /* WIN32, _WIN32_WCE */
+#endif /* _WIN32, _WIN32_WCE */
 
 /////////////////////////////////////////////////////////////////////////////
 ////

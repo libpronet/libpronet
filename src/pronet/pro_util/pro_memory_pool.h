@@ -34,7 +34,7 @@
 #if !defined(____STD____)
 #define ____STD____
 #define ____STD_BEGIN namespace std {
-#define ____STD_END   };
+#define ____STD_END   }
 #endif
 
 #if defined(DECLARE_SGI_POOL)
@@ -201,7 +201,7 @@ public:
 #endif
     }
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 template<>
@@ -247,7 +247,7 @@ public:
     }
 #endif
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 ____STD_END

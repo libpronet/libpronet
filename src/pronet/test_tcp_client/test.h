@@ -106,7 +106,7 @@ struct TCP_CLIENT_CONFIG_INFO
     CProStlString                tcpc_ssl_sni;
     bool                         tcpc_ssl_aes256;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -244,7 +244,7 @@ private:
     unsigned long                  m_heartbeatSize; /* 0 ~ 1024 */
     mutable CProThreadMutex        m_lock2;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

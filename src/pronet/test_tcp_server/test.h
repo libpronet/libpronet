@@ -97,7 +97,7 @@ struct TCP_SERVER_CONFIG_INFO
     CProStlVector<CProStlString> tcps_ssl_certfiles;
     CProStlString                tcps_ssl_keyfile;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -225,7 +225,7 @@ private:
     unsigned long                             m_heartbeatSize; /* 0 ~ 1024 */
     mutable CProThreadMutex                   m_lock2;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

@@ -246,7 +246,7 @@ CProLogFile::Reopen(bool append)
         m_file = fopen(m_fileName.c_str(), "wb");
     }
 
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32) && !defined(_WIN32_WCE)
     if (m_file != NULL)
     {
         /*

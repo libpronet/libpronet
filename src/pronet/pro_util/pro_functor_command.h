@@ -181,7 +181,7 @@ private:
     ACTION      m_action;
     PRO_INT64   m_args[10];
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -276,7 +276,7 @@ private:
     ACTION      m_action;
     PRO_INT64   m_args[10];
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

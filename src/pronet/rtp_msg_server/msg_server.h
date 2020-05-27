@@ -107,14 +107,14 @@ struct MSG_SERVER_CONFIG_INFO
     unsigned int                 msgs_log_loop_bytes;
     int                          msgs_log_level_green;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 struct MSG_USER_CTX
 {
     CProStlSet<PRO_UINT16> iids;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -212,7 +212,7 @@ private:
 
     CProThreadMutex                      m_lock;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

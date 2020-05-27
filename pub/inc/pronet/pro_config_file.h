@@ -45,7 +45,7 @@ struct PRO_CONFIG_ITEM
     CProStlString configName;
     CProStlString configValue;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -61,21 +61,21 @@ public:
 
     bool Read(
         CProStlVector<PRO_CONFIG_ITEM>& configs,
-        char                            aroundCharL = '"',
-        char                            aroundCharR = '"'
+        char                            aroundCharL = '\"',
+        char                            aroundCharR = '\"'
         ) const;
 
     bool Write(
         const CProStlVector<PRO_CONFIG_ITEM>& configs,
-        char                                  aroundCharL = '"',
-        char                                  aroundCharR = '"'
+        char                                  aroundCharL = '\"',
+        char                                  aroundCharR = '\"'
         );
 
 private:
 
     CProStlString m_fileName;
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////

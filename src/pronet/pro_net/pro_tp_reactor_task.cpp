@@ -29,7 +29,7 @@
 #include "../pro_util/pro_timer_factory.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 #include <windows.h>
 #endif
 
@@ -584,7 +584,7 @@ CProTpReactorTask::Svc()
     }
     else
     {
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
         ::SetThreadPriority(::GetCurrentThread(), m_ioThreadPriority);
 #endif
 

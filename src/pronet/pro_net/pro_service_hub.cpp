@@ -29,7 +29,7 @@
 #include "../pro_util/pro_timer_factory.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32) || defined(_WIN32_WCE)
 #include <windows.h>
 #endif
 
@@ -215,7 +215,7 @@ CProServiceHub::OnAcceptIpc(PRO_INT64   sockId,
         return;
     }
 
-#if !defined(WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32) && !defined(_WIN32_WCE)
     if (!unixSocket)
     {
         ProCloseSockId(sockId);
@@ -296,7 +296,7 @@ CProServiceHub::OnAcceptOther(PRO_INT64        sockId,
 
 #if defined(_WIN32_WCE)
         sp.pipe->SendData(s2cPacket);
-#elif defined(WIN32)
+#elif defined(_WIN32)
         if (::WSADuplicateSocket((SOCKET)sockId,
             (unsigned long)sp.processId, &s2cPacket.s2c.protocolInfo) != 0)
         {
@@ -520,10 +520,7 @@ CProServiceHub::OnTimer(void*      factory,
                     break;
                 }
 
-                CProStlSet<PRO_SERVICE_SOCK>::iterator const oldItr = itr;
-                ++itr;
-                m_expireSocks.erase(oldItr);
-
+                m_expireSocks.erase(itr++);
                 ProCloseSockId(ss.sockId);
             }
         }
@@ -541,9 +538,7 @@ CProServiceHub::OnTimer(void*      factory,
                 }
                 else
                 {
-                    CProStlSet<PRO_SERVICE_PIPE>::iterator const oldItr = itr;
-                    ++itr;
-                    m_allPipes.erase(oldItr);
+                    m_allPipes.erase(itr++);
 
                     CProStlMap<unsigned char, PRO_SERVICE_PIPE>::iterator const itr2 =
                         m_serviceId2Pipe.find(sp.serviceId);

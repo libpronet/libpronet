@@ -55,7 +55,7 @@ private:
 
     virtual ~CProMcastTransport();
 
-    DECLARE_SGI_POOL(0);
+    DECLARE_SGI_POOL(0)
 };
 
 /////////////////////////////////////////////////////////////////////////////
