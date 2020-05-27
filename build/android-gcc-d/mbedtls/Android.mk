@@ -1,4 +1,4 @@
-LOCAL_PATH := $(PRO_ROOT_DIR)/src/mbedtls/library
+LOCAL_PATH := $(MY_ROOT_DIR)/src/mbedtls/library
 include $(CLEAR_VARS)
 
 LOCAL_MODULE    := mbedtls
@@ -82,7 +82,7 @@ LOCAL_SRC_FILES := aes.c                 \
                    x509write_csr.c       \
                    xtea.c
 
-LOCAL_C_INCLUDES    := $(PRO_ROOT_DIR)/src/mbedtls/include
+LOCAL_C_INCLUDES    := $(MY_ROOT_DIR)/src/mbedtls/include
 LOCAL_CFLAGS        := -fno-strict-aliasing -fvisibility=hidden
 LOCAL_CPPFLAGS      :=
 LOCAL_CPP_EXTENSION := .cpp .cxx .cc

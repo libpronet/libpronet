@@ -1,4 +1,4 @@
-LOCAL_PATH := $(PRO_ROOT_DIR)/src/pronet/pro_util
+LOCAL_PATH := $(MY_ROOT_DIR)/src/pronet/pro_util
 include $(CLEAR_VARS)
 
 LOCAL_MODULE    := pro_util
@@ -22,7 +22,7 @@ LOCAL_SRC_FILES := pro_bsd_wrapper.cpp          \
                    pro_unicode.cpp              \
                    pro_z.cpp
 
-LOCAL_C_INCLUDES    := $(PRO_ROOT_DIR)/src/mbedtls/include
+LOCAL_C_INCLUDES    := $(MY_ROOT_DIR)/src/mbedtls/include
 LOCAL_CFLAGS        := -fno-strict-aliasing -fvisibility=hidden
 LOCAL_CPPFLAGS      :=
 LOCAL_CPP_EXTENSION := .cpp .cxx .cc

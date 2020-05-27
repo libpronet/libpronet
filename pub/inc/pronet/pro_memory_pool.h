@@ -162,7 +162,7 @@ public:
     ____Ty* allocate(size_t ____N)
     {
 #if !defined(PRO_LACKS_SGI_POOL) && !defined(PRO_LACKS_SGI_POOL_STL)
-        ____Ty* const p = (____Ty*)ProPoolMalloc(sizeof(____Ty) * ____N, ____poolIndex);
+        ____Ty* const p = (____Ty*)ProAllocateSgiPoolBuffer(sizeof(____Ty) * ____N, ____poolIndex);
 #else
         ____Ty* const p = (____Ty*)::operator new(sizeof(____Ty) * ____N);
 #endif
@@ -173,7 +173,7 @@ public:
     ____Ty* allocate(size_t ____N, const void*)
     {
 #if !defined(PRO_LACKS_SGI_POOL) && !defined(PRO_LACKS_SGI_POOL_STL)
-        ____Ty* const p = (____Ty*)ProPoolMalloc(sizeof(____Ty) * ____N, ____poolIndex);
+        ____Ty* const p = (____Ty*)ProAllocateSgiPoolBuffer(sizeof(____Ty) * ____N, ____poolIndex);
 #else
         ____Ty* const p = (____Ty*)::operator new(sizeof(____Ty) * ____N);
 #endif
@@ -184,7 +184,7 @@ public:
     char* _Charalloc(size_t ____N)
     {
 #if !defined(PRO_LACKS_SGI_POOL) && !defined(PRO_LACKS_SGI_POOL_STL)
-        char* const p = (char*)ProPoolMalloc(sizeof(char) * ____N, ____poolIndex);
+        char* const p = (char*)ProAllocateSgiPoolBuffer(sizeof(char) * ____N, ____poolIndex);
 #else
         char* const p = (char*)::operator new(sizeof(char) * ____N);
 #endif
@@ -195,7 +195,7 @@ public:
     void deallocate(void* ____P, size_t)
     {
 #if !defined(PRO_LACKS_SGI_POOL) && !defined(PRO_LACKS_SGI_POOL_STL)
-        ProPoolFree(____P, ____poolIndex);
+        ProDeallocateSgiPoolBuffer(____P, ____poolIndex);
 #else
         ::operator delete(____P);
 #endif

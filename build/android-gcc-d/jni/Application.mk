@@ -1,8 +1,8 @@
-PRO_JNI_DIR  := $(call my-dir)
-PRO_ROOT_DIR := $(PRO_JNI_DIR)/../../..
+MY_JNI_DIR  := $(call my-dir)
+MY_ROOT_DIR := $(MY_JNI_DIR)/../../..
 
-APP_PROJECT_PATH := $(PRO_JNI_DIR)/..
-APP_BUILD_SCRIPT := $(PRO_JNI_DIR)/Android.mk
+APP_PROJECT_PATH := $(MY_JNI_DIR)/..
+APP_BUILD_SCRIPT := $(MY_JNI_DIR)/Android.mk
 APP_MODULES      := mbedtls         \
                     pro_shared      \
                     pro_util        \
@@ -16,13 +16,21 @@ APP_MODULES      := mbedtls         \
                     test_tcp_server \
                     test_tcp_client
 
-APP_CFLAGS   := -D_DEBUG          \
-                -D_GNU_SOURCE     \
+APP_OPTIM    := release
+APP_CFLAGS   := -DNDEBUG
+###
+ifdef APP_DEBUG
+ifeq ($(APP_DEBUG),true)
+APP_OPTIM    := debug
+APP_CFLAGS   := -UNDEBUG -D_DEBUG
+endif
+endif
+###
+APP_CFLAGS   += -D_GNU_SOURCE     \
                 -D_LIBC_REENTRANT \
                 -D_REENTRANT      \
                 -Wall
 APP_CPPFLAGS := -fno-rtti -fexceptions
-APP_OPTIM    := debug
 APP_LDFLAGS  :=
 
 APP_PLATFORM := android-16

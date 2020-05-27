@@ -1,4 +1,4 @@
-LOCAL_PATH := $(PRO_ROOT_DIR)/src/pronet/pro_rtp
+LOCAL_PATH := $(MY_ROOT_DIR)/src/pronet/pro_rtp
 include $(CLEAR_VARS)
 
 LOCAL_MODULE    := pro_rtp
@@ -29,7 +29,7 @@ LOCAL_SRC_FILES := rtp_base.cpp                 \
                    rtp_msg_client.cpp           \
                    rtp_msg_server.cpp
 
-LOCAL_C_INCLUDES    := $(PRO_ROOT_DIR)/src/pronet/pro_net
+LOCAL_C_INCLUDES    := $(MY_ROOT_DIR)/src/pronet/pro_net
 LOCAL_CFLAGS        := -DPRO_RTP_EXPORTS \
                        -fno-strict-aliasing -fvisibility=hidden
 LOCAL_CPPFLAGS      :=

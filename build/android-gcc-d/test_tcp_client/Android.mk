@@ -1,4 +1,4 @@
-LOCAL_PATH := $(PRO_ROOT_DIR)/src/pronet/test_tcp_client
+LOCAL_PATH := $(MY_ROOT_DIR)/src/pronet/test_tcp_client
 include $(CLEAR_VARS)
 
 LOCAL_MODULE    := test_tcp_client
