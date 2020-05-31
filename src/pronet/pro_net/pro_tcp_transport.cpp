@@ -34,15 +34,6 @@
 
 #define DEFAULT_RECV_POOL_SIZE (1024 * 65)
 
-/*
- * Linux uses double-size values
- *
- * please refer to "/usr/src/linux-a.b.c.d/net/core/sock.c",
- * sock_setsockopt()
- */
-#define DEFAULT_RECV_BUF_SIZE  (1024 * 56)
-#define DEFAULT_SEND_BUF_SIZE  (1024 * 8)
-
 #if !defined(_WIN32) && !defined(_WIN32_WCE)
 
 union PRO_CMSG_CTRL
@@ -114,15 +105,6 @@ CProTcpTransport::Init(IProTransportObserver* observer,
     if (observer == NULL || reactorTask == NULL || sockId == -1)
     {
         return (false);
-    }
-
-    if (sockBufSizeRecv == 0)
-    {
-        sockBufSizeRecv = DEFAULT_RECV_BUF_SIZE;
-    }
-    if (sockBufSizeSend == 0)
-    {
-        sockBufSizeSend = DEFAULT_SEND_BUF_SIZE;
     }
 
     if (!unixSocket)

@@ -1291,8 +1291,8 @@ GetRtpStatTimeSpan();
  *
  * 参数:
  * mmType          : 媒体类型
- * sockBufSizeRecv : 底层套接字的系统接收缓冲区字节数. 默认(1024 * 56)
- * sockBufSizeSend : 底层套接字的系统发送缓冲区字节数. 默认(1024 * 56)
+ * sockBufSizeRecv : 底层套接字的系统接收缓冲区字节数. 默认auto
+ * sockBufSizeSend : 底层套接字的系统发送缓冲区字节数. 默认auto
  * recvPoolSize    : 底层接收池的字节数. 默认(1024 * 65)
  *
  * 返回值: 无
@@ -1312,8 +1312,8 @@ SetRtpUdpSocketParams(RTP_MM_TYPE   mmType,
  *
  * 参数:
  * mmType          : 媒体类型
- * sockBufSizeRecv : 返回的底层套接字的系统接收缓冲区字节数. 默认(1024 * 56)
- * sockBufSizeSend : 返回的底层套接字的系统发送缓冲区字节数. 默认(1024 * 56)
+ * sockBufSizeRecv : 返回的底层套接字的系统接收缓冲区字节数. 默认auto
+ * sockBufSizeSend : 返回的底层套接字的系统发送缓冲区字节数. 默认auto
  * recvPoolSize    : 返回的底层接收池的字节数. 默认(1024 * 65)
  *
  * 返回值: 无
@@ -1333,8 +1333,8 @@ GetRtpUdpSocketParams(RTP_MM_TYPE    mmType,
  *
  * 参数:
  * mmType          : 媒体类型
- * sockBufSizeRecv : 底层套接字的系统接收缓冲区字节数. 默认(1024 * 56)
- * sockBufSizeSend : 底层套接字的系统发送缓冲区字节数. 默认(1024 * 8)
+ * sockBufSizeRecv : 底层套接字的系统接收缓冲区字节数. 默认auto
+ * sockBufSizeSend : 底层套接字的系统发送缓冲区字节数. 默认auto
  * recvPoolSize    : 底层接收池的字节数. 默认(1024 * 65)
  *
  * 返回值: 无
@@ -1354,8 +1354,8 @@ SetRtpTcpSocketParams(RTP_MM_TYPE   mmType,
  *
  * 参数:
  * mmType          : 媒体类型
- * sockBufSizeRecv : 返回的底层套接字的系统接收缓冲区字节数. 默认(1024 * 56)
- * sockBufSizeSend : 返回的底层套接字的系统发送缓冲区字节数. 默认(1024 * 8)
+ * sockBufSizeRecv : 返回的底层套接字的系统接收缓冲区字节数. 默认auto
+ * sockBufSizeSend : 返回的底层套接字的系统发送缓冲区字节数. 默认auto
  * recvPoolSize    : 返回的底层接收池的字节数. 默认(1024 * 65)
  *
  * 返回值: 无

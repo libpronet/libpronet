@@ -1100,8 +1100,8 @@ ProDeleteSslHandshaker(IProSslHandshaker* handshaker);
  * reactor         : 反应器
  * sockId          : 套接字id. 来源于OnAccept(...)或OnConnectOk(...)
  * unixSocket      : 是否unix套接字
- * sockBufSizeRecv : 套接字的系统接收缓冲区字节数. 默认(1024 * 56)
- * sockBufSizeSend : 套接字的系统发送缓冲区字节数. 默认(1024 * 8)
+ * sockBufSizeRecv : 套接字的系统接收缓冲区字节数. 默认auto
+ * sockBufSizeSend : 套接字的系统发送缓冲区字节数. 默认auto
  * recvPoolSize    : 接收池的字节数. 默认(1024 * 65)
  * suspendRecv     : 是否挂起接收能力
  *
@@ -1129,8 +1129,8 @@ ProCreateTcpTransport(IProTransportObserver* observer,
  * reactor         : 反应器
  * localIp         : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
  * localPort       : 要绑定的本地端口号. 如果为0, 系统将随机分配一个
- * sockBufSizeRecv : 套接字的系统接收缓冲区字节数. 默认(1024 * 56)
- * sockBufSizeSend : 套接字的系统发送缓冲区字节数. 默认(1024 * 56)
+ * sockBufSizeRecv : 套接字的系统接收缓冲区字节数. 默认auto
+ * sockBufSizeSend : 套接字的系统发送缓冲区字节数. 默认auto
  * recvPoolSize    : 接收池的字节数. 默认(1024 * 65)
  * remoteIp        : 默认的远端ip地址或域名
  * remotePort      : 默认的远端端口号
@@ -1161,8 +1161,8 @@ ProCreateUdpTransport(IProTransportObserver* observer,
  * mcastIp         : 要绑定的多播地址
  * mcastPort       : 要绑定的多播端口号. 如果为0, 系统将随机分配一个
  * localBindIp     : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
- * sockBufSizeRecv : 套接字的系统接收缓冲区字节数. 默认(1024 * 56)
- * sockBufSizeSend : 套接字的系统发送缓冲区字节数. 默认(1024 * 56)
+ * sockBufSizeRecv : 套接字的系统接收缓冲区字节数. 默认auto
+ * sockBufSizeSend : 套接字的系统发送缓冲区字节数. 默认auto
  * recvPoolSize    : 接收池的字节数. 默认(1024 * 65)
  *
  * 返回值: 传输器对象或NULL
@@ -1194,8 +1194,8 @@ ProCreateMcastTransport(IProTransportObserver* observer,
  * ctx             : ssl上下文. 来自于IProSslHandshaker的握手结果回调
  * sockId          : 套接字id. 来源于OnAccept(...)或OnConnectOk(...)
  * unixSocket      : 是否unix套接字
- * sockBufSizeRecv : 套接字的系统接收缓冲区字节数. 默认(1024 * 56)
- * sockBufSizeSend : 套接字的系统发送缓冲区字节数. 默认(1024 * 8)
+ * sockBufSizeRecv : 套接字的系统接收缓冲区字节数. 默认auto
+ * sockBufSizeSend : 套接字的系统发送缓冲区字节数. 默认auto
  * recvPoolSize    : 接收池的字节数. 默认(1024 * 65)
  * suspendRecv     : 是否挂起接收能力
  *

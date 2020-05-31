@@ -32,15 +32,6 @@
 
 #define DEFAULT_RECV_POOL_SIZE (1024 * 65) /* EMSGSIZE */
 
-/*
- * Linux uses double-size values
- *
- * please refer to "/usr/src/linux-a.b.c.d/net/core/sock.c",
- * sock_setsockopt()
- */
-#define DEFAULT_RECV_BUF_SIZE  (1024 * 56)
-#define DEFAULT_SEND_BUF_SIZE  (1024 * 56)
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -105,15 +96,6 @@ CProUdpTransport::Init(IProTransportObserver* observer,
     if (defaultRemoteIp == NULL || defaultRemoteIp[0] == '\0')
     {
         defaultRemoteIp = anyIp;
-    }
-
-    if (sockBufSizeRecv == 0)
-    {
-        sockBufSizeRecv = DEFAULT_RECV_BUF_SIZE;
-    }
-    if (sockBufSizeSend == 0)
-    {
-        sockBufSizeSend = DEFAULT_SEND_BUF_SIZE;
     }
 
     pbsd_sockaddr_in localAddr;

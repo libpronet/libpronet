@@ -770,6 +770,32 @@ pbsd_setsockopt(PRO_INT64   fd,
                 const void* optval,
                 int         optlen)
 {
+    while (
+        level == SOL_SOCKET
+        &&
+        (optname == SO_RCVBUF || optname == SO_SNDBUF)
+       )
+    {
+        if (optval == NULL || optlen <= 0)
+        {
+            break;
+        }
+
+        char* const p   = (char*)optval;
+        int         sum = 0;
+
+        for (int i = 0; i < optlen; ++i)
+        {
+            sum += p[i];
+        }
+
+        if (sum == 0)
+        {
+            return (0);
+        }
+        break;
+    }
+
     int retc = -1;
 
 #if defined(_WIN32) || defined(_WIN32_WCE)

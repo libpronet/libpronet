@@ -44,9 +44,9 @@ struct TCP_CLIENT_CONFIG_INFO
         tcpc_handshake_timeout   = 20;
         tcpc_heartbeat_interval  = 200;
         tcpc_heartbeat_bytes     = 0;
-        tcpc_sockbuf_size_recv   = 2048;
-        tcpc_sockbuf_size_send   = 2048;
-        tcpc_recvpool_size       = 2048;
+        tcpc_sockbuf_size_recv   = 0;
+        tcpc_sockbuf_size_send   = 0;
+        tcpc_recvpool_size       = 0;
 
         tcpc_enable_ssl          = false;
         tcpc_ssl_enable_sha1cert = true;
@@ -95,9 +95,9 @@ struct TCP_CLIENT_CONFIG_INFO
     unsigned int                 tcpc_handshake_timeout;
     unsigned int                 tcpc_heartbeat_interval;
     unsigned int                 tcpc_heartbeat_bytes;   /* 0 ~ 1024 */
-    unsigned int                 tcpc_sockbuf_size_recv; /* >= 1024 */
-    unsigned int                 tcpc_sockbuf_size_send; /* >= 1024 */
-    unsigned int                 tcpc_recvpool_size;     /* >= 1024 */
+    unsigned int                 tcpc_sockbuf_size_recv; /* 0 or >= 1024 */
+    unsigned int                 tcpc_sockbuf_size_send; /* 0 or >= 1024 */
+    unsigned int                 tcpc_recvpool_size;     /* 0 or >= 1024 */
 
     bool                         tcpc_enable_ssl;
     bool                         tcpc_ssl_enable_sha1cert;

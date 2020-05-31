@@ -40,7 +40,7 @@
 #define LOG_FILE_NAME    "rtp_msg_server.log"
 #define DB_FILE_NAME     "rtp_msg_server.db"
 #define CONFIG_FILE_NAME "rtp_msg_server.cfg"
-#define LOG_LOOP_BYTES   (20 * 1000 * 1000)
+#define LOG_LOOP_BYTES   (50 * 1000 * 1000)
 
 /////////////////////////////////////////////////////////////////////////////
 ////

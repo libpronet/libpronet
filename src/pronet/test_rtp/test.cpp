@@ -43,8 +43,6 @@
 #endif
 #define GOP_FRAMES             30
 
-#define RECV_BUF_SIZE          (1024 * 1024 * 2) /* for udp */
-#define SEND_BUF_SIZE          (1024 * 1024 * 2) /* for udp */
 #define STD_PACKET_SIZE        1024
 #define LOW_PACKET_SIZE        160
 #define LOW_BIT_RATE           64000
@@ -329,18 +327,6 @@ CTest::CreateUdpServer(IProReactor*   reactor,
         RTP_ST_UDPSERVER_EX, &initArgs, &localInfo);
     if (session != NULL)
     {
-        const PRO_INT64 sockId = session->GetSockId();
-        if (sockId != -1)
-        {
-            int option;
-            option = RECV_BUF_SIZE;
-            pbsd_setsockopt(
-                sockId, SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
-            option = SEND_BUF_SIZE;
-            pbsd_setsockopt(
-                sockId, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
-        }
-
         session->SetOutputRedline(
             REDLINE_BYTES, REDLINE_FRAMES, REDLINE_DELAY_MS);
 
@@ -461,18 +447,6 @@ CTest::CreateUdpClient(IProReactor*   reactor,
         RTP_ST_UDPCLIENT_EX, &initArgs, &localInfo);
     if (session != NULL)
     {
-        const PRO_INT64 sockId = session->GetSockId();
-        if (sockId != -1)
-        {
-            int option;
-            option = RECV_BUF_SIZE;
-            pbsd_setsockopt(
-                sockId, SOL_SOCKET, SO_RCVBUF, &option, sizeof(int));
-            option = SEND_BUF_SIZE;
-            pbsd_setsockopt(
-                sockId, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
-        }
-
         session->SetOutputRedline(
             REDLINE_BYTES, REDLINE_FRAMES, REDLINE_DELAY_MS);
 

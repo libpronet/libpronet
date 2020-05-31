@@ -27,16 +27,7 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define MULTICAST_TTL         32 /* 0 ~ 255 */
-
-/*
- * Linux uses double-size values
- *
- * please refer to "/usr/src/linux-a.b.c.d/net/core/sock.c",
- * sock_setsockopt()
- */
-#define DEFAULT_RECV_BUF_SIZE (1024 * 56)
-#define DEFAULT_SEND_BUF_SIZE (1024 * 56)
+#define MULTICAST_TTL 32 /* 0 ~ 255 */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -102,15 +93,6 @@ CProMcastTransport::Init(IProTransportObserver* observer,
     if (localBindIp == NULL || localBindIp[0] == '\0')
     {
         localBindIp = anyIp;
-    }
-
-    if (sockBufSizeRecv == 0)
-    {
-        sockBufSizeRecv = DEFAULT_RECV_BUF_SIZE;
-    }
-    if (sockBufSizeSend == 0)
-    {
-        sockBufSizeSend = DEFAULT_SEND_BUF_SIZE;
     }
 
     pbsd_sockaddr_in localAddr;

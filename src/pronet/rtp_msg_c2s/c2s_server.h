@@ -59,7 +59,7 @@ struct C2S_SERVER_CONFIG_INFO
         c2ss_ssl_local_enable_sha1cert  = true;
         c2ss_ssl_local_keyfile          = "./server.key";
 
-        c2ss_log_loop_bytes             = 20 * 1000 * 1000;
+        c2ss_log_loop_bytes             = 50 * 1000 * 1000;
         c2ss_log_level_green            = 0;
 
         RtpMsgString2User("1-10000001-1", &c2ss_uplink_id);

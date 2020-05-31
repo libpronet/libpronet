@@ -83,12 +83,12 @@ ProRtpInit()
 
     for (int i = 0; i < 256; ++i)
     {
-        g_s_udpSockBufSizeRecv[i] = 1024 * 56;
-        g_s_udpSockBufSizeSend[i] = 1024 * 56;
+        g_s_udpSockBufSizeRecv[i] = 0;
+        g_s_udpSockBufSizeSend[i] = 0;
         g_s_udpRecvPoolSize[i]    = 1024 * 65;
 
-        g_s_tcpSockBufSizeRecv[i] = 1024 * 56;
-        g_s_tcpSockBufSizeSend[i] = 1024 * 8;
+        g_s_tcpSockBufSizeRecv[i] = 0;
+        g_s_tcpSockBufSizeSend[i] = 0;
         g_s_tcpRecvPoolSize[i]    = 1024 * 65;
     }
 

@@ -40,9 +40,9 @@ struct TCP_SERVER_CONFIG_INFO
         tcps_handshake_timeout   = 20;
         tcps_heartbeat_interval  = 200;
         tcps_heartbeat_bytes     = 0;
-        tcps_sockbuf_size_recv   = 2048;
-        tcps_sockbuf_size_send   = 2048;
-        tcps_recvpool_size       = 2048;
+        tcps_sockbuf_size_recv   = 0;
+        tcps_sockbuf_size_send   = 0;
+        tcps_recvpool_size       = 0;
 
         tcps_enable_ssl          = true;
         tcps_ssl_enable_sha1cert = true;
@@ -86,9 +86,9 @@ struct TCP_SERVER_CONFIG_INFO
     unsigned int                 tcps_handshake_timeout;
     unsigned int                 tcps_heartbeat_interval;
     unsigned int                 tcps_heartbeat_bytes;   /* 0 ~ 1024 */
-    unsigned int                 tcps_sockbuf_size_recv; /* >= 1024 */
-    unsigned int                 tcps_sockbuf_size_send; /* >= 1024 */
-    unsigned int                 tcps_recvpool_size;     /* >= 1024 */
+    unsigned int                 tcps_sockbuf_size_recv; /* 0 or >= 1024 */
+    unsigned int                 tcps_sockbuf_size_send; /* 0 or >= 1024 */
+    unsigned int                 tcps_recvpool_size;     /* 0 or >= 1024 */
 
     bool                         tcps_enable_ssl;
     bool                         tcps_ssl_enable_sha1cert;

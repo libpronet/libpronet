@@ -51,7 +51,7 @@ struct MSG_SERVER_CONFIG_INFO
         msgs_ssl_enable_sha1cert = true;
         msgs_ssl_keyfile         = "./server.key";
 
-        msgs_log_loop_bytes      = 20 * 1000 * 1000;
+        msgs_log_loop_bytes      = 50 * 1000 * 1000;
         msgs_log_level_green     = 0;
 
         msgs_ssl_cafiles.push_back("./ca.crt");
