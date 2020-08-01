@@ -49,7 +49,8 @@ libpro_util_a_SOURCES = ../../../../src/pronet/pro_util/pro_bsd_wrapper.cpp     
                         ../../../../src/pronet/pro_util/pro_unicode.cpp              \
                         ../../../../src/pronet/pro_util/pro_z.cpp
 
-libpro_util_a_CPPFLAGS = -I../../../../src/mbedtls/include
+libpro_util_a_CPPFLAGS = -I../../../../src/mbedtls/include \
+                         -I../../../../src/pronet/pro_util
 
 libpro_util_a_CFLAGS   = -fno-strict-aliasing -fPIC -fvisibility=hidden
 libpro_util_a_CXXFLAGS = -fno-strict-aliasing -fPIC -fvisibility=hidden

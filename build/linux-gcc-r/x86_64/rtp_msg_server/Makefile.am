@@ -11,7 +11,8 @@ rtp_msg_server_SOURCES = ../../../../src/pronet/rtp_msg_server/main.cpp         
                          ../../../../src/pronet/rtp_msg_server/db_connection.cpp \
                          ../../../../src/pronet/rtp_msg_server/sqlite3.c
 
-rtp_msg_server_CPPFLAGS = -DSQLITE_THREADSAFE=1 \
+rtp_msg_server_CPPFLAGS = -DSQLITE_THREADSAFE=1             \
+                          -I../../../../src/pronet/pro_util \
                           -I../../../../src/pronet/pro_net
 
 rtp_msg_server_CFLAGS   = -fno-strict-aliasing

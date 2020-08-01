@@ -5,7 +5,7 @@ LOCAL_MODULE    := test_tcp_client
 LOCAL_SRC_FILES := main.cpp \
                    test.cpp
 
-LOCAL_C_INCLUDES    :=
+LOCAL_C_INCLUDES    := $(MY_ROOT_DIR)/src/pronet/pro_util
 LOCAL_CFLAGS        := -fno-strict-aliasing
 LOCAL_CPPFLAGS      :=
 LOCAL_CPP_EXTENSION := .cpp .cxx .cc

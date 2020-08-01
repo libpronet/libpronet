@@ -8,7 +8,7 @@ probin_PROGRAMS = test_tcp_server
 test_tcp_server_SOURCES = ../../../../src/pronet/test_tcp_server/main.cpp \
                           ../../../../src/pronet/test_tcp_server/test.cpp
 
-test_tcp_server_CPPFLAGS =
+test_tcp_server_CPPFLAGS = -I../../../../src/pronet/pro_util
 
 test_tcp_server_CFLAGS   = -fno-strict-aliasing
 test_tcp_server_CXXFLAGS = -fno-strict-aliasing

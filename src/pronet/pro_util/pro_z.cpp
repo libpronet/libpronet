@@ -228,5 +228,5 @@ ProGetExePath(char buf[1024])
 ////
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif

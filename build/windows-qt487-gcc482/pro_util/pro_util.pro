@@ -19,7 +19,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 CONFIG(debug  , debug | release) : DEFINES += _DEBUG _WIN32_WINNT=0x0501
 CONFIG(release, debug | release) : DEFINES += NDEBUG _WIN32_WINNT=0x0501
 
-INCLUDEPATH += ../../../src/mbedtls/include
+INCLUDEPATH += \
+    ../../../src/mbedtls/include \
+    ../../../src/pronet/pro_util
 
 # You can also make your code fail to compile if you use deprecated APIs.
 # In order to do so, uncomment the following line.

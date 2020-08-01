@@ -745,5 +745,5 @@ ProCloseSockId(PRO_INT64 sockId,
 ////
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif

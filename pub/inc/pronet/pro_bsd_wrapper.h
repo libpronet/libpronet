@@ -439,7 +439,7 @@ ProGetLocalIpList(char localIpList[8][64]);
 ////
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif
 
 #endif /* ____PRO_BSD_WRAPPER_H____ */

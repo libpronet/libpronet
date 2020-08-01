@@ -9,7 +9,8 @@ proinc_HEADERS = ../../../../src/pronet/pro_shared/pro_shared.h
 
 libpro_shared_so_SOURCES = ../../../../src/pronet/pro_shared/pro_shared.cpp
 
-libpro_shared_so_CPPFLAGS = -DPRO_SHARED_EXPORTS
+libpro_shared_so_CPPFLAGS = -DPRO_SHARED_EXPORTS \
+                            -I../../../../src/pronet/pro_util
 
 libpro_shared_so_CFLAGS   = -fno-strict-aliasing -fPIC -fvisibility=hidden
 libpro_shared_so_CXXFLAGS = -fno-strict-aliasing -fPIC -fvisibility=hidden

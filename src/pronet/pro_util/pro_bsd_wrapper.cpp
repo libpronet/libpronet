@@ -1550,5 +1550,5 @@ ProGetLocalIpList(char localIpList[8][64])
 ////
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif

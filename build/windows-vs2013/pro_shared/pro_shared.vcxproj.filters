@@ -34,11 +34,11 @@
     <ClInclude Include="..\..\..\src\pronet\pro_shared\pro_shared.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\pronet\pro_shared\sgi_pool\stl_alloc.h">
-      <Filter>sgi_pool</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\pronet\pro_shared\resource.h">
       <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pronet\pro_shared\stl_alloc.h">
+      <Filter>sgi_pool</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

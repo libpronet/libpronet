@@ -54,7 +54,7 @@ extern CProFileMonitor g_fileMonitor;
 #endif
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif
 
 /////////////////////////////////////////////////////////////////////////////

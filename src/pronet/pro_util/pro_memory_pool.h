@@ -113,7 +113,7 @@ ProDeallocateSgiPoolBuffer(void*         buf,
                            unsigned long poolIndex); /* 0 ~ 9 */
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif
 
 /////////////////////////////////////////////////////////////////////////////

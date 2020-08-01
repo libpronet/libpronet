@@ -995,7 +995,7 @@ RtpMsgString2User(const char*   idString,
 ////
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif
 
 #endif /* ____RTP_MSG_H____ */

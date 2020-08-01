@@ -7,7 +7,7 @@ probin_PROGRAMS = pro_service_hub
 
 pro_service_hub_SOURCES = ../../../../src/pronet/pro_service_hub/main.cpp
 
-pro_service_hub_CPPFLAGS =
+pro_service_hub_CPPFLAGS = -I../../../../src/pronet/pro_util
 
 pro_service_hub_CFLAGS   = -fno-strict-aliasing
 pro_service_hub_CXXFLAGS = -fno-strict-aliasing

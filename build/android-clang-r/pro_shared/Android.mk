@@ -4,7 +4,7 @@ include $(CLEAR_VARS)
 LOCAL_MODULE    := pro_shared
 LOCAL_SRC_FILES := pro_shared.cpp
 
-LOCAL_C_INCLUDES    :=
+LOCAL_C_INCLUDES    := $(MY_ROOT_DIR)/src/pronet/pro_util
 LOCAL_CFLAGS        := -DPRO_SHARED_EXPORTS \
                        -fno-strict-aliasing -fvisibility=hidden
 LOCAL_CPPFLAGS      :=

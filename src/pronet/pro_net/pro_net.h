@@ -84,112 +84,8 @@
 #if !defined(____PRO_NET_H____)
 #define ____PRO_NET_H____
 
+#include "pro_a.h"
 #include <cstddef>
-
-#if !defined(____PRO_A_H____)
-#define ____PRO_A_H____
-#define PRO_INT16_VCC    short
-#define PRO_INT32_VCC    int
-#if defined(_MSC_VER)
-#define PRO_INT64_VCC    __int64
-#define PRO_PRT64D_VCC   "%I64d"
-#else
-#define PRO_INT64_VCC    long long
-#define PRO_PRT64D_VCC   "%lld"
-#endif
-#define PRO_UINT16_VCC   unsigned short
-#define PRO_UINT32_VCC   unsigned int
-#if defined(_MSC_VER)
-#define PRO_UINT64_VCC   unsigned __int64
-#define PRO_PRT64U_VCC   "%I64u"
-#else
-#define PRO_UINT64_VCC   unsigned long long
-#define PRO_PRT64U_VCC   "%llu"
-#endif
-#define PRO_CALLTYPE_VCC __stdcall
-#define PRO_EXPORT_VCC   __declspec(dllexport)
-#define PRO_IMPORT_VCC
-#define PRO_INT16_GCC    short
-#define PRO_INT32_GCC    int
-#define PRO_INT64_GCC    long long
-#define PRO_PRT64D_GCC   "%lld"
-#define PRO_UINT16_GCC   unsigned short
-#define PRO_UINT32_GCC   unsigned int
-#define PRO_UINT64_GCC   unsigned long long
-#define PRO_PRT64U_GCC   "%llu"
-#define PRO_CALLTYPE_GCC
-#define PRO_EXPORT_GCC   __attribute__((visibility("default")))
-#define PRO_IMPORT_GCC
-#if defined(_MSC_VER) || defined(__MINGW32__) || defined(__CYGWIN__)
-#if !defined(PRO_INT16)
-#define PRO_INT16    PRO_INT16_VCC
-#endif
-#if !defined(PRO_INT32)
-#define PRO_INT32    PRO_INT32_VCC
-#endif
-#if !defined(PRO_INT64)
-#define PRO_INT64    PRO_INT64_VCC
-#endif
-#if !defined(PRO_PRT64D)
-#define PRO_PRT64D   PRO_PRT64D_VCC
-#endif
-#if !defined(PRO_UINT16)
-#define PRO_UINT16   PRO_UINT16_VCC
-#endif
-#if !defined(PRO_UINT32)
-#define PRO_UINT32   PRO_UINT32_VCC
-#endif
-#if !defined(PRO_UINT64)
-#define PRO_UINT64   PRO_UINT64_VCC
-#endif
-#if !defined(PRO_PRT64U)
-#define PRO_PRT64U   PRO_PRT64U_VCC
-#endif
-#if !defined(PRO_CALLTYPE)
-#define PRO_CALLTYPE PRO_CALLTYPE_VCC
-#endif
-#if !defined(PRO_EXPORT)
-#define PRO_EXPORT   PRO_EXPORT_VCC
-#endif
-#if !defined(PRO_IMPORT)
-#define PRO_IMPORT   PRO_IMPORT_VCC
-#endif
-#else  /* _MSC_VER, __MINGW32__, __CYGWIN__ */
-#if !defined(PRO_INT16)
-#define PRO_INT16    PRO_INT16_GCC
-#endif
-#if !defined(PRO_INT32)
-#define PRO_INT32    PRO_INT32_GCC
-#endif
-#if !defined(PRO_INT64)
-#define PRO_INT64    PRO_INT64_GCC
-#endif
-#if !defined(PRO_PRT64D)
-#define PRO_PRT64D   PRO_PRT64D_GCC
-#endif
-#if !defined(PRO_UINT16)
-#define PRO_UINT16   PRO_UINT16_GCC
-#endif
-#if !defined(PRO_UINT32)
-#define PRO_UINT32   PRO_UINT32_GCC
-#endif
-#if !defined(PRO_UINT64)
-#define PRO_UINT64   PRO_UINT64_GCC
-#endif
-#if !defined(PRO_PRT64U)
-#define PRO_PRT64U   PRO_PRT64U_GCC
-#endif
-#if !defined(PRO_CALLTYPE)
-#define PRO_CALLTYPE PRO_CALLTYPE_GCC
-#endif
-#if !defined(PRO_EXPORT)
-#define PRO_EXPORT   PRO_EXPORT_GCC
-#endif
-#if !defined(PRO_IMPORT)
-#define PRO_IMPORT   PRO_IMPORT_GCC
-#endif
-#endif /* _MSC_VER, __MINGW32__, __CYGWIN__ */
-#endif /* ____PRO_A_H____ */
 
 #if defined(__cplusplus)
 extern "C" {
@@ -198,11 +94,9 @@ extern "C" {
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if defined(PRO_NET_LIB)
-#define PRO_NET_API
-#elif defined(PRO_NET_EXPORTS)
+#if defined(PRO_NET_EXPORTS)
 #if defined(_MSC_VER)
-#define PRO_NET_API /* .def */
+#define PRO_NET_API /* using xxx.def */
 #else
 #define PRO_NET_API PRO_EXPORT
 #endif
@@ -1361,7 +1255,7 @@ ProCloseSockId(PRO_INT64 sockId,
 ////
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif
 
 #endif /* ____PRO_NET_H____ */

@@ -28,8 +28,9 @@ libpro_net_so_SOURCES = ../../../../src/pronet/pro_net/pro_acceptor.cpp        \
                         ../../../../src/pronet/pro_net/pro_tp_reactor_task.cpp \
                         ../../../../src/pronet/pro_net/pro_udp_transport.cpp
 
-libpro_net_so_CPPFLAGS = -DPRO_NET_EXPORTS \
-                         -I../../../../src/mbedtls/include
+libpro_net_so_CPPFLAGS = -DPRO_NET_EXPORTS                 \
+                         -I../../../../src/mbedtls/include \
+                         -I../../../../src/pronet/pro_util
 
 libpro_net_so_CFLAGS   = -fno-strict-aliasing -fPIC -fvisibility=hidden
 libpro_net_so_CXXFLAGS = -fno-strict-aliasing -fPIC -fvisibility=hidden

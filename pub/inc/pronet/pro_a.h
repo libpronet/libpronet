@@ -22,6 +22,7 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+#define PRO_INT8_VCC     char
 #define PRO_INT16_VCC    short
 #define PRO_INT32_VCC    int
 #if defined(_MSC_VER)
@@ -31,6 +32,8 @@
 #define PRO_INT64_VCC    long long
 #define PRO_PRT64D_VCC   "%lld"
 #endif
+
+#define PRO_UINT8_VCC    unsigned char
 #define PRO_UINT16_VCC   unsigned short
 #define PRO_UINT32_VCC   unsigned int
 #if defined(_MSC_VER)
@@ -40,24 +43,32 @@
 #define PRO_UINT64_VCC   unsigned long long
 #define PRO_PRT64U_VCC   "%llu"
 #endif
+
 #define PRO_CALLTYPE_VCC __stdcall
 #define PRO_EXPORT_VCC   __declspec(dllexport)
 #define PRO_IMPORT_VCC
 
+#define PRO_INT8_GCC     char
 #define PRO_INT16_GCC    short
 #define PRO_INT32_GCC    int
 #define PRO_INT64_GCC    long long
 #define PRO_PRT64D_GCC   "%lld"
+
+#define PRO_UINT8_GCC    unsigned char
 #define PRO_UINT16_GCC   unsigned short
 #define PRO_UINT32_GCC   unsigned int
 #define PRO_UINT64_GCC   unsigned long long
 #define PRO_PRT64U_GCC   "%llu"
+
 #define PRO_CALLTYPE_GCC
 #define PRO_EXPORT_GCC   __attribute__((visibility("default")))
 #define PRO_IMPORT_GCC
 
 #if defined(_MSC_VER) || defined(__MINGW32__) || defined(__CYGWIN__)
 
+#if !defined(PRO_INT8)
+#define PRO_INT8     PRO_INT8_VCC
+#endif
 #if !defined(PRO_INT16)
 #define PRO_INT16    PRO_INT16_VCC
 #endif
@@ -69,6 +80,10 @@
 #endif
 #if !defined(PRO_PRT64D)
 #define PRO_PRT64D   PRO_PRT64D_VCC
+#endif
+
+#if !defined(PRO_UINT8)
+#define PRO_UINT8    PRO_UINT8_VCC
 #endif
 #if !defined(PRO_UINT16)
 #define PRO_UINT16   PRO_UINT16_VCC
@@ -82,6 +97,7 @@
 #if !defined(PRO_PRT64U)
 #define PRO_PRT64U   PRO_PRT64U_VCC
 #endif
+
 #if !defined(PRO_CALLTYPE)
 #define PRO_CALLTYPE PRO_CALLTYPE_VCC
 #endif
@@ -94,6 +110,9 @@
 
 #else  /* _MSC_VER, __MINGW32__, __CYGWIN__ */
 
+#if !defined(PRO_INT8)
+#define PRO_INT8     PRO_INT8_GCC
+#endif
 #if !defined(PRO_INT16)
 #define PRO_INT16    PRO_INT16_GCC
 #endif
@@ -105,6 +124,10 @@
 #endif
 #if !defined(PRO_PRT64D)
 #define PRO_PRT64D   PRO_PRT64D_GCC
+#endif
+
+#if !defined(PRO_UINT8)
+#define PRO_UINT8    PRO_UINT8_GCC
 #endif
 #if !defined(PRO_UINT16)
 #define PRO_UINT16   PRO_UINT16_GCC
@@ -118,6 +141,7 @@
 #if !defined(PRO_PRT64U)
 #define PRO_PRT64U   PRO_PRT64U_GCC
 #endif
+
 #if !defined(PRO_CALLTYPE)
 #define PRO_CALLTYPE PRO_CALLTYPE_GCC
 #endif

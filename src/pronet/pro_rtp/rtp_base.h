@@ -86,11 +86,9 @@ extern "C" {
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if defined(PRO_RTP_LIB)
-#define PRO_RTP_API
-#elif defined(PRO_RTP_EXPORTS)
+#if defined(PRO_RTP_EXPORTS)
 #if defined(_MSC_VER)
-#define PRO_RTP_API /* .def */
+#define PRO_RTP_API /* using xxx.def */
 #else
 #define PRO_RTP_API PRO_EXPORT
 #endif
@@ -1541,7 +1539,7 @@ DeleteRtpReorder(IRtpReorder* reorder);
 ////
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif
 
 #endif /* ____RTP_BASE_H____ */

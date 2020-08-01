@@ -123,7 +123,7 @@ ProGetExePath(char buf[1024]);
 ////
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif
 
 #endif /* ____PRO_Z_H____ */

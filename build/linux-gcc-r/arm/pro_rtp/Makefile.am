@@ -35,7 +35,8 @@ libpro_rtp_so_SOURCES = ../../../../src/pronet/pro_rtp/rtp_base.cpp             
                         ../../../../src/pronet/pro_rtp/rtp_msg_client.cpp           \
                         ../../../../src/pronet/pro_rtp/rtp_msg_server.cpp
 
-libpro_rtp_so_CPPFLAGS = -DPRO_RTP_EXPORTS \
+libpro_rtp_so_CPPFLAGS = -DPRO_RTP_EXPORTS                 \
+                         -I../../../../src/pronet/pro_util \
                          -I../../../../src/pronet/pro_net
 
 libpro_rtp_so_CFLAGS   = -fno-strict-aliasing -fPIC -fvisibility=hidden

@@ -8,7 +8,8 @@ probin_PROGRAMS = test_msg_client
 test_msg_client_SOURCES = ../../../../src/pronet/test_msg_client/main.cpp \
                           ../../../../src/pronet/test_msg_client/test.cpp
 
-test_msg_client_CPPFLAGS = -I../../../../src/pronet/pro_net
+test_msg_client_CPPFLAGS = -I../../../../src/pronet/pro_util \
+                           -I../../../../src/pronet/pro_net
 
 test_msg_client_CFLAGS   = -fno-strict-aliasing
 test_msg_client_CXXFLAGS = -fno-strict-aliasing

@@ -27,7 +27,7 @@
 #endif
 
 #include "pro_shared.h"
-#include "sgi_pool/stl_alloc.h"
+#include "stl_alloc.h"
 #include "../pro_util/pro_bsd_wrapper.h"
 #include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
@@ -1172,5 +1172,5 @@ ProGetSgiPoolInfo(void*         freeList[64],
 ////
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif

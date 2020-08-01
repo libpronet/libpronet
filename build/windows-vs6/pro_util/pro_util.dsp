@@ -45,7 +45,7 @@ RSC=rc.exe
 MTL=midl.exe
 LINK32=link.exe -lib
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "../../../src/mbedtls/include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_release/pro_util_s-mt.pdb" /FD /c
+# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "../../../src/mbedtls/include" /I "../../../src/pronet/pro_util" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_release/pro_util_s-mt.pdb" /FD /c
 # ADD BASE RSC /l 0x804 /d "NDEBUG"
 # ADD RSC /l 0x804 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -70,7 +70,7 @@ LIB32=link.exe -lib
 MTL=midl.exe
 LINK32=link.exe -lib
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "../../../src/mbedtls/include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_debug/pro_util_s-mt.pdb" /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "../../../src/mbedtls/include" /I "../../../src/pronet/pro_util" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_debug/pro_util_s-mt.pdb" /FD /GZ /c
 # ADD BASE RSC /l 0x804 /d "_DEBUG"
 # ADD RSC /l 0x804 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -95,7 +95,7 @@ LIB32=link.exe -lib
 MTL=midl.exe
 LINK32=link.exe -lib
 # ADD BASE CPP /nologo /MT /W3 /GX /Zi /O2 /I "../../../src/mbedtls/include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_release/pro_util_s.pdb" /FD /c
-# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "../../../src/mbedtls/include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_release-md/pro_util_s-md.pdb" /FD /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "../../../src/mbedtls/include" /I "../../../src/pronet/pro_util" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_release-md/pro_util_s-md.pdb" /FD /c
 # ADD BASE RSC /l 0x804 /d "NDEBUG"
 # ADD RSC /l 0x804 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -120,7 +120,7 @@ LIB32=link.exe -lib
 MTL=midl.exe
 LINK32=link.exe -lib
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "../../../src/mbedtls/include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_debug/pro_util_s.pdb" /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../src/mbedtls/include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_debug-md/pro_util_s-md.pdb" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../src/mbedtls/include" /I "../../../src/pronet/pro_util" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_debug-md/pro_util_s-md.pdb" /FD /GZ /c
 # ADD BASE RSC /l 0x804 /d "_DEBUG"
 # ADD RSC /l 0x804 /d "_DEBUG"
 BSC32=bscmake.exe

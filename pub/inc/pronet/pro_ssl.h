@@ -592,7 +592,7 @@ ProSslCtx_GetAlpn(PRO_SSL_CTX* ctx);
 ////
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif
 
 #endif /* ____PRO_SSL_H____ */

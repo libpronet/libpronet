@@ -159,5 +159,5 @@ ProPoolFree(void*         p,
 ////
 
 #if defined(__cplusplus)
-}
+} /* extern "C" */
 #endif
