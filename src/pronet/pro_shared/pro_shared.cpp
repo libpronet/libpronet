@@ -17,7 +17,7 @@
  */
 
 /*
- * reduce the stack size, for ProSleep_s(...)
+ * use a smaller stack size, for ProSleep_s(...)
  */
 #if defined(_WIN32) || defined(_WIN32_WCE)
 #if defined(PRO_FD_SETSIZE)
@@ -472,8 +472,8 @@ ProSrand()
     seed += (PRO_UINT16)::GetCurrentThreadId();
     seed += (PRO_UINT32)::GetCurrentThreadId() << 16;
 #else
-    seed += (PRO_UINT16)pthread_self();
-    seed += (PRO_UINT32)pthread_self() << 16;
+    seed += (PRO_UINT16)(PRO_UINT64)pthread_self();
+    seed += (PRO_UINT32)(PRO_UINT64)pthread_self() << 16;
 #endif
 
     srand((unsigned int)seed);
@@ -519,8 +519,8 @@ ProGetTickCount64_s()
         tick1 = (PRO_UINT32)(g_s_globalTick >> 32);
         g_s_lock.Unlock();
 
-        ::TlsSetValue(g_s_tlsKey0, (void*)tick0);
-        ::TlsSetValue(g_s_tlsKey1, (void*)tick1);
+        ::TlsSetValue(g_s_tlsKey0, (void*)(PRO_UINT64)tick0);
+        ::TlsSetValue(g_s_tlsKey1, (void*)(PRO_UINT64)tick1);
 
         updateGlobalTick = true;
     }
@@ -529,14 +529,14 @@ ProGetTickCount64_s()
     if (tick > tick0)
     {
         tick0 = tick;
-        ::TlsSetValue(g_s_tlsKey0, (void*)tick0);
+        ::TlsSetValue(g_s_tlsKey0, (void*)(PRO_UINT64)tick0);
     }
     else if (tick < tick0)
     {
         tick0 = tick;
         ++tick1;
-        ::TlsSetValue(g_s_tlsKey0, (void*)tick0);
-        ::TlsSetValue(g_s_tlsKey1, (void*)tick1);
+        ::TlsSetValue(g_s_tlsKey0, (void*)(PRO_UINT64)tick0);
+        ::TlsSetValue(g_s_tlsKey1, (void*)(PRO_UINT64)tick1);
 
         updateGlobalTick = true;
     }

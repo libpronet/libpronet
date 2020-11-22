@@ -125,7 +125,7 @@ CProThreadBase::Spawn(bool realtime)
 
             if (retc == 0)
             {
-                m_threadId2Realtime[threadId] = realtime;
+                m_threadId2Realtime[(PRO_UINT64)threadId] = realtime;
                 break;
             }
 
@@ -260,7 +260,7 @@ CProThreadBase::SvcRun(void* arg)
     }
 
 #if !defined(_WIN32) && !defined(_WIN32_WCE)
-    pthread_detach(threadId);
+    pthread_detach((pthread_t)threadId);
 #endif
 
     return (0);

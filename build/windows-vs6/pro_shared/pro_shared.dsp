@@ -110,6 +110,10 @@ SOURCE=..\..\..\src\pronet\pro_shared\pro_shared.def
 
 SOURCE=..\..\..\src\pronet\pro_shared\pro_shared.h
 # End Source File
+# Begin Source File
+
+SOURCE=..\..\..\src\pronet\pro_shared\stl_alloc.h
+# End Source File
 # End Group
 # Begin Group "Resource Files"
 
@@ -125,14 +129,6 @@ SOURCE=..\..\..\src\pronet\pro_shared\pro_shared.rc
 # Begin Source File
 
 SOURCE=..\..\..\src\pronet\pro_shared\resource.h
-# End Source File
-# End Group
-# Begin Group "sgi_pool"
-
-# PROP Default_Filter ""
-# Begin Source File
-
-SOURCE=..\..\..\src\pronet\pro_shared\sgi_pool\stl_alloc.h
 # End Source File
 # End Group
 # End Target
