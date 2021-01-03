@@ -159,11 +159,11 @@ the file "build/DEFINE.txt" for more.
 
    2) Open the workspace file "build/windows-vs6/pronet.dsw"
 
-3. VS2010/VS2013 on Windows
+3. VS2010/VS2015 on Windows
 
    The solution file for VS2010 is "build/windows-vs2010/pronet.sln"
 
-   The solution file for VS2013 is "build/windows-vs2013/pronet.sln"
+   The solution file for VS2015 is "build/windows-vs2015/pronet.sln"
 
 4. Qt Creator on Windows
 
@@ -244,23 +244,23 @@ which we call "${install}".
 How to run the messaging system on Windows(64bit)?
 ====
 
-1) Run the script "pub/lib-r/_get-win-vs2010.bat",
-   and run the script "pub_test/_get-vs2010-x86_64-r.bat"
+1) Run the script "pub/lib-r/_get-win-vs2015.bat",
+   and run the script "pub_test/_get-vs2015-x86_64-r.bat"
 
-2) Adjust the config file "pub_test/vs2010-x86_64-r/pro_service_hub.cfg",
-   and start a "pub_test/vs2010-x86_64-r/pro_service_hub.exe" process
+2) Adjust the config file "pub_test/vs2015-x86_64-r/pro_service_hub.cfg",
+   and start a "pub_test/vs2015-x86_64-r/pro_service_hub.exe" process
 
-   > cd pub_test\vs2010-x86_64-r
+   > cd pub_test\vs2015-x86_64-r
 
    > pro_service_hub
 
-3) Adjust the config file "pub_test/vs2010-x86_64-r/rtp_msg_server.cfg",
-   and start a "pub_test/vs2010-x86_64-r/rtp_msg_server.exe" process
+3) Adjust the config file "pub_test/vs2015-x86_64-r/rtp_msg_server.cfg",
+   and start a "pub_test/vs2015-x86_64-r/rtp_msg_server.exe" process
 
    > rtp_msg_server
 
-4) Adjust the config file "pub_test/vs2010-x86_64-r/test_msg_client.cfg",
-   and start some "pub_test/vs2010-x86_64-r/test_msg_client.exe" processes
+4) Adjust the config file "pub_test/vs2015-x86_64-r/test_msg_client.cfg",
+   and start some "pub_test/vs2015-x86_64-r/test_msg_client.exe" processes
 
    > test_msg_client
 
@@ -268,18 +268,18 @@ How to run the messaging system on Windows(64bit)?
 How to run the tests on Windows(64bit)?
 ====
 
-1) Run the script "pub/lib-r/_get-win-vs2010.bat",
-   and run the script "pub_test/_get-vs2010-x86_64-r.bat"
+1) Run the script "pub/lib-r/_get-win-vs2015.bat",
+   and run the script "pub_test/_get-vs2015-x86_64-r.bat"
 
-2) Adjust the config file "pub_test/vs2010-x86_64-r/test_tcp_server.cfg",
-   and start a "pub_test/vs2010-x86_64-r/test_tcp_server.exe" process
+2) Adjust the config file "pub_test/vs2015-x86_64-r/test_tcp_server.cfg",
+   and start a "pub_test/vs2015-x86_64-r/test_tcp_server.exe" process
 
-   > cd pub_test\vs2010-x86_64-r
+   > cd pub_test\vs2015-x86_64-r
 
    > test_tcp_server
 
-3) Adjust the config file "pub_test/vs2010-x86_64-r/test_tcp_client.cfg",
-   and start some "pub_test/vs2010-x86_64-r/test_tcp_client.exe" processes
+3) Adjust the config file "pub_test/vs2015-x86_64-r/test_tcp_client.cfg",
+   and start some "pub_test/vs2015-x86_64-r/test_tcp_client.exe" processes
 
    > test_tcp_client
    or
