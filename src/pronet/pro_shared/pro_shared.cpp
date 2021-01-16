@@ -152,67 +152,67 @@ static volatile bool                    g_s_socketFlag    = false;
 static PRO_INT64                        g_s_sockId        = -1;
 static PRO_UINT64                       g_s_nextTimerId   = 1;
 static PRO_UINT64                       g_s_nextMmTimerId = 2;
-static CProThreadMutex_s                g_s_lock;
+static CProThreadMutex_s*               g_s_lock          = NULL;
 
 /*
  * pool-0
  */
 static std::__default_alloc_template<0> g_s_allocator0;
-static CProThreadMutex_s                g_s_lock0;
+static CProThreadMutex_s*               g_s_lock0         = NULL;
 
 /*
  * pool-1
  */
 static std::__default_alloc_template<1> g_s_allocator1;
-static CProThreadMutex_s                g_s_lock1;
+static CProThreadMutex_s*               g_s_lock1         = NULL;
 
 /*
  * pool-2
  */
 static std::__default_alloc_template<2> g_s_allocator2;
-static CProThreadMutex_s                g_s_lock2;
+static CProThreadMutex_s*               g_s_lock2         = NULL;
 
 /*
  * pool-3
  */
 static std::__default_alloc_template<3> g_s_allocator3;
-static CProThreadMutex_s                g_s_lock3;
+static CProThreadMutex_s*               g_s_lock3         = NULL;
 
 /*
  * pool-4
  */
 static std::__default_alloc_template<4> g_s_allocator4;
-static CProThreadMutex_s                g_s_lock4;
+static CProThreadMutex_s*               g_s_lock4         = NULL;
 
 /*
  * pool-5
  */
 static std::__default_alloc_template<5> g_s_allocator5;
-static CProThreadMutex_s                g_s_lock5;
+static CProThreadMutex_s*               g_s_lock5         = NULL;
 
 /*
  * pool-6
  */
 static std::__default_alloc_template<6> g_s_allocator6;
-static CProThreadMutex_s                g_s_lock6;
+static CProThreadMutex_s*               g_s_lock6         = NULL;
 
 /*
  * pool-7
  */
 static std::__default_alloc_template<7> g_s_allocator7;
-static CProThreadMutex_s                g_s_lock7;
+static CProThreadMutex_s*               g_s_lock7         = NULL;
 
 /*
  * pool-8
  */
 static std::__default_alloc_template<8> g_s_allocator8;
-static CProThreadMutex_s                g_s_lock8;
+static CProThreadMutex_s*               g_s_lock8         = NULL;
 
 /*
  * pool-9
  */
 static std::__default_alloc_template<9> g_s_allocator9;
-static CProThreadMutex_s                g_s_lock9;
+static CProThreadMutex_s*               g_s_lock9         = NULL;
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -397,6 +397,57 @@ pbsd_closesocket_i(PRO_INT64 fd)
 static
 void
 PRO_CALLTYPE
+Init_i()
+{
+    if (g_s_lock  == NULL)
+    {
+        g_s_lock  = new CProThreadMutex_s;
+    }
+    if (g_s_lock0 == NULL)
+    {
+        g_s_lock0 = new CProThreadMutex_s;
+    }
+    if (g_s_lock1 == NULL)
+    {
+        g_s_lock1 = new CProThreadMutex_s;
+    }
+    if (g_s_lock2 == NULL)
+    {
+        g_s_lock2 = new CProThreadMutex_s;
+    }
+    if (g_s_lock3 == NULL)
+    {
+        g_s_lock3 = new CProThreadMutex_s;
+    }
+    if (g_s_lock4 == NULL)
+    {
+        g_s_lock4 = new CProThreadMutex_s;
+    }
+    if (g_s_lock5 == NULL)
+    {
+        g_s_lock5 = new CProThreadMutex_s;
+    }
+    if (g_s_lock6 == NULL)
+    {
+        g_s_lock6 = new CProThreadMutex_s;
+    }
+    if (g_s_lock7 == NULL)
+    {
+        g_s_lock7 = new CProThreadMutex_s;
+    }
+    if (g_s_lock8 == NULL)
+    {
+        g_s_lock8 = new CProThreadMutex_s;
+    }
+    if (g_s_lock9 == NULL)
+    {
+        g_s_lock9 = new CProThreadMutex_s;
+    }
+}
+
+static
+void
+PRO_CALLTYPE
 InitSocket_i()
 {
     g_s_sockId = pbsd_socket_i(AF_INET, SOCK_DGRAM, 0);
@@ -492,11 +543,13 @@ PRO_INT64
 PRO_CALLTYPE
 ProGetTickCount64_s()
 {
+    Init_i();
+
 #if defined(_WIN32) || defined(_WIN32_WCE)
 
     if (!g_s_tlsFlag)
     {
-        g_s_lock.Lock();
+        g_s_lock->Lock();
         if (!g_s_tlsFlag) /* double check */
         {
             g_s_tlsKey0    = ::TlsAlloc(); /* dynamic TLS */
@@ -505,19 +558,19 @@ ProGetTickCount64_s()
 
             g_s_tlsFlag = true;
         }
-        g_s_lock.Unlock();
+        g_s_lock->Unlock();
     }
 
     bool updateGlobalTick = false;
 
-    PRO_UINT32 tick0 = (PRO_UINT32)::TlsGetValue(g_s_tlsKey0);
-    PRO_UINT32 tick1 = (PRO_UINT32)::TlsGetValue(g_s_tlsKey1);
+    PRO_UINT32 tick0 = (PRO_UINT32)(PRO_UINT64)::TlsGetValue(g_s_tlsKey0);
+    PRO_UINT32 tick1 = (PRO_UINT32)(PRO_UINT64)::TlsGetValue(g_s_tlsKey1);
     if (tick0 == 0 && tick1 == 0)
     {
-        g_s_lock.Lock();
+        g_s_lock->Lock();
         tick0 = (PRO_UINT32)g_s_globalTick;
         tick1 = (PRO_UINT32)(g_s_globalTick >> 32);
-        g_s_lock.Unlock();
+        g_s_lock->Unlock();
 
         ::TlsSetValue(g_s_tlsKey0, (void*)(PRO_UINT64)tick0);
         ::TlsSetValue(g_s_tlsKey1, (void*)(PRO_UINT64)tick1);
@@ -550,12 +603,12 @@ ProGetTickCount64_s()
 
     if (updateGlobalTick)
     {
-        g_s_lock.Lock();
+        g_s_lock->Lock();
         if (ret > g_s_globalTick)
         {
             g_s_globalTick = ret;
         }
-        g_s_lock.Unlock();
+        g_s_lock->Unlock();
     }
 
     return (ret);
@@ -575,14 +628,14 @@ ProGetTickCount64_s()
 
     if (!g_s_timebaseFlag)
     {
-        g_s_lock.Lock();
+        g_s_lock->Lock();
         if (!g_s_timebaseFlag) /* double check */
         {
             mach_timebase_info(&g_s_timebaseInfo);
 
             g_s_timebaseFlag = true;
         }
-        g_s_lock.Unlock();
+        g_s_lock->Unlock();
     }
 
     PRO_INT64 ret = mach_absolute_time();
@@ -603,6 +656,8 @@ void
 PRO_CALLTYPE
 ProSleep_s(PRO_UINT32 milliseconds)
 {
+    Init_i();
+
     if (milliseconds == 0)
     {
 #if defined(_WIN32) || defined(_WIN32_WCE)
@@ -628,7 +683,7 @@ ProSleep_s(PRO_UINT32 milliseconds)
 
     if (!g_s_socketFlag)
     {
-        g_s_lock.Lock();
+        g_s_lock->Lock();
         if (!g_s_socketFlag) /* double check */
         {
             /*
@@ -639,7 +694,7 @@ ProSleep_s(PRO_UINT32 milliseconds)
             InitSocket_i();
             g_s_socketFlag = true;
         }
-        g_s_lock.Unlock();
+        g_s_lock->Unlock();
     }
 
     const PRO_INT64 te = ProGetTickCount64_s() + milliseconds;
@@ -655,10 +710,10 @@ ProSleep_s(PRO_UINT32 milliseconds)
         PRO_INT64 sockId = g_s_sockId;
         if (sockId == -1)
         {
-            g_s_lock.Lock();
+            g_s_lock->Lock();
             FiniSocket_i();
             InitSocket_i();
-            g_s_lock.Unlock();
+            g_s_lock->Unlock();
 
             Delay_i(1);
             continue;
@@ -695,10 +750,10 @@ ProSleep_s(PRO_UINT32 milliseconds)
         assert(retc == 0);
         if (retc != 0)
         {
-            g_s_lock.Lock();
+            g_s_lock->Lock();
             FiniSocket_i();
             InitSocket_i();
-            g_s_lock.Unlock();
+            g_s_lock->Unlock();
 
             Delay_i(1);
         }
@@ -710,12 +765,14 @@ PRO_UINT64
 PRO_CALLTYPE
 ProMakeTimerId()
 {
-    g_s_lock.Lock();
+    Init_i();
+
+    g_s_lock->Lock();
 
     const PRO_UINT64 timerId = g_s_nextTimerId;
     g_s_nextTimerId += 2;
 
-    g_s_lock.Unlock();
+    g_s_lock->Unlock();
 
     return (timerId);
 }
@@ -725,7 +782,9 @@ PRO_UINT64
 PRO_CALLTYPE
 ProMakeMmTimerId()
 {
-    g_s_lock.Lock();
+    Init_i();
+
+    g_s_lock->Lock();
 
     const PRO_UINT64 timerId = g_s_nextMmTimerId;
     g_s_nextMmTimerId += 2;
@@ -734,7 +793,7 @@ ProMakeMmTimerId()
         g_s_nextMmTimerId += 2;
     }
 
-    g_s_lock.Unlock();
+    g_s_lock->Unlock();
 
     return (timerId);
 }
@@ -745,6 +804,8 @@ PRO_CALLTYPE
 ProAllocateSgiPoolBuffer(size_t        size,
                          unsigned long poolIndex) /* 0 ~ 9 */
 {
+    Init_i();
+
     assert(poolIndex <= 9);
     if (poolIndex > 9)
     {
@@ -766,72 +827,72 @@ ProAllocateSgiPoolBuffer(size_t        size,
     {
     case 0:
         {
-            g_s_lock0.Lock();
+            g_s_lock0->Lock();
             p = (PRO_UINT32*)g_s_allocator0.allocate(size);
-            g_s_lock0.Unlock();
+            g_s_lock0->Unlock();
             break;
         }
     case 1:
         {
-            g_s_lock1.Lock();
+            g_s_lock1->Lock();
             p = (PRO_UINT32*)g_s_allocator1.allocate(size);
-            g_s_lock1.Unlock();
+            g_s_lock1->Unlock();
             break;
         }
     case 2:
         {
-            g_s_lock2.Lock();
+            g_s_lock2->Lock();
             p = (PRO_UINT32*)g_s_allocator2.allocate(size);
-            g_s_lock2.Unlock();
+            g_s_lock2->Unlock();
             break;
         }
     case 3:
         {
-            g_s_lock3.Lock();
+            g_s_lock3->Lock();
             p = (PRO_UINT32*)g_s_allocator3.allocate(size);
-            g_s_lock3.Unlock();
+            g_s_lock3->Unlock();
             break;
         }
     case 4:
         {
-            g_s_lock4.Lock();
+            g_s_lock4->Lock();
             p = (PRO_UINT32*)g_s_allocator4.allocate(size);
-            g_s_lock4.Unlock();
+            g_s_lock4->Unlock();
             break;
         }
     case 5:
         {
-            g_s_lock5.Lock();
+            g_s_lock5->Lock();
             p = (PRO_UINT32*)g_s_allocator5.allocate(size);
-            g_s_lock5.Unlock();
+            g_s_lock5->Unlock();
             break;
         }
     case 6:
         {
-            g_s_lock6.Lock();
+            g_s_lock6->Lock();
             p = (PRO_UINT32*)g_s_allocator6.allocate(size);
-            g_s_lock6.Unlock();
+            g_s_lock6->Unlock();
             break;
         }
     case 7:
         {
-            g_s_lock7.Lock();
+            g_s_lock7->Lock();
             p = (PRO_UINT32*)g_s_allocator7.allocate(size);
-            g_s_lock7.Unlock();
+            g_s_lock7->Unlock();
             break;
         }
     case 8:
         {
-            g_s_lock8.Lock();
+            g_s_lock8->Lock();
             p = (PRO_UINT32*)g_s_allocator8.allocate(size);
-            g_s_lock8.Unlock();
+            g_s_lock8->Unlock();
             break;
         }
     case 9:
         {
-            g_s_lock9.Lock();
+            g_s_lock9->Lock();
             p = (PRO_UINT32*)g_s_allocator9.allocate(size);
-            g_s_lock9.Unlock();
+            g_s_lock9->Unlock();
             break;
         }
     } /* end of switch (...) */
@@ -853,6 +914,8 @@ ProReallocateSgiPoolBuffer(void*         buf,
                            size_t        newSize,
                            unsigned long poolIndex) /* 0 ~ 9 */
 {
+    Init_i();
+
     assert(poolIndex <= 9);
     if (poolIndex > 9)
     {
@@ -885,72 +948,72 @@ ProReallocateSgiPoolBuffer(void*         buf,
     {
     case 0:
         {
-            g_s_lock0.Lock();
+            g_s_lock0->Lock();
             q = (PRO_UINT32*)g_s_allocator0.reallocate(p, *p, newSize);
-            g_s_lock0.Unlock();
+            g_s_lock0->Unlock();
             break;
         }
     case 1:
         {
-            g_s_lock1.Lock();
+            g_s_lock1->Lock();
             q = (PRO_UINT32*)g_s_allocator1.reallocate(p, *p, newSize);
-            g_s_lock1.Unlock();
+            g_s_lock1->Unlock();
             break;
         }
     case 2:
         {
-            g_s_lock2.Lock();
+            g_s_lock2->Lock();
             q = (PRO_UINT32*)g_s_allocator2.reallocate(p, *p, newSize);
-            g_s_lock2.Unlock();
+            g_s_lock2->Unlock();
             break;
         }
     case 3:
         {
-            g_s_lock3.Lock();
+            g_s_lock3->Lock();
             q = (PRO_UINT32*)g_s_allocator3.reallocate(p, *p, newSize);
-            g_s_lock3.Unlock();
+            g_s_lock3->Unlock();
             break;
         }
     case 4:
         {
-            g_s_lock4.Lock();
+            g_s_lock4->Lock();
             q = (PRO_UINT32*)g_s_allocator4.reallocate(p, *p, newSize);
-            g_s_lock4.Unlock();
+            g_s_lock4->Unlock();
             break;
         }
     case 5:
         {
-            g_s_lock5.Lock();
+            g_s_lock5->Lock();
             q = (PRO_UINT32*)g_s_allocator5.reallocate(p, *p, newSize);
-            g_s_lock5.Unlock();
+            g_s_lock5->Unlock();
             break;
         }
     case 6:
         {
-            g_s_lock6.Lock();
+            g_s_lock6->Lock();
             q = (PRO_UINT32*)g_s_allocator6.reallocate(p, *p, newSize);
-            g_s_lock6.Unlock();
+            g_s_lock6->Unlock();
             break;
         }
     case 7:
         {
-            g_s_lock7.Lock();
+            g_s_lock7->Lock();
             q = (PRO_UINT32*)g_s_allocator7.reallocate(p, *p, newSize);
-            g_s_lock7.Unlock();
+            g_s_lock7->Unlock();
             break;
         }
     case 8:
         {
-            g_s_lock8.Lock();
+            g_s_lock8->Lock();
             q = (PRO_UINT32*)g_s_allocator8.reallocate(p, *p, newSize);
-            g_s_lock8.Unlock();
+            g_s_lock8->Unlock();
             break;
         }
     case 9:
         {
-            g_s_lock9.Lock();
+            g_s_lock9->Lock();
             q = (PRO_UINT32*)g_s_allocator9.reallocate(p, *p, newSize);
-            g_s_lock9.Unlock();
+            g_s_lock9->Unlock();
             break;
         }
     } /* end of switch (...) */
@@ -971,6 +1034,8 @@ PRO_CALLTYPE
 ProDeallocateSgiPoolBuffer(void*         buf,
                            unsigned long poolIndex) /* 0 ~ 9 */
 {
+    Init_i();
+
     assert(poolIndex <= 9);
     if (buf == NULL || poolIndex > 9)
     {
@@ -987,72 +1052,72 @@ ProDeallocateSgiPoolBuffer(void*         buf,
     {
     case 0:
         {
-            g_s_lock0.Lock();
+            g_s_lock0->Lock();
             g_s_allocator0.deallocate(p, *p);
-            g_s_lock0.Unlock();
+            g_s_lock0->Unlock();
             break;
         }
     case 1:
         {
-            g_s_lock1.Lock();
+            g_s_lock1->Lock();
             g_s_allocator1.deallocate(p, *p);
-            g_s_lock1.Unlock();
+            g_s_lock1->Unlock();
             break;
         }
     case 2:
         {
-            g_s_lock2.Lock();
+            g_s_lock2->Lock();
             g_s_allocator2.deallocate(p, *p);
-            g_s_lock2.Unlock();
+            g_s_lock2->Unlock();
             break;
         }
     case 3:
         {
-            g_s_lock3.Lock();
+            g_s_lock3->Lock();
             g_s_allocator3.deallocate(p, *p);
-            g_s_lock3.Unlock();
+            g_s_lock3->Unlock();
             break;
         }
     case 4:
         {
-            g_s_lock4.Lock();
+            g_s_lock4->Lock();
             g_s_allocator4.deallocate(p, *p);
-            g_s_lock4.Unlock();
+            g_s_lock4->Unlock();
             break;
         }
     case 5:
         {
-            g_s_lock5.Lock();
+            g_s_lock5->Lock();
             g_s_allocator5.deallocate(p, *p);
-            g_s_lock5.Unlock();
+            g_s_lock5->Unlock();
             break;
         }
     case 6:
         {
-            g_s_lock6.Lock();
+            g_s_lock6->Lock();
             g_s_allocator6.deallocate(p, *p);
-            g_s_lock6.Unlock();
+            g_s_lock6->Unlock();
             break;
         }
     case 7:
         {
-            g_s_lock7.Lock();
+            g_s_lock7->Lock();
             g_s_allocator7.deallocate(p, *p);
-            g_s_lock7.Unlock();
+            g_s_lock7->Unlock();
             break;
         }
     case 8:
         {
-            g_s_lock8.Lock();
+            g_s_lock8->Lock();
             g_s_allocator8.deallocate(p, *p);
-            g_s_lock8.Unlock();
+            g_s_lock8->Unlock();
             break;
         }
     case 9:
         {
-            g_s_lock9.Lock();
+            g_s_lock9->Lock();
             g_s_allocator9.deallocate(p, *p);
-            g_s_lock9.Unlock();
+            g_s_lock9->Unlock();
             break;
         }
     } /* end of switch (...) */
@@ -1068,6 +1133,8 @@ ProGetSgiPoolInfo(void*         freeList[64],
                   size_t*       heapBytes, /* = NULL */
                   unsigned long poolIndex) /* 0 ~ 9 */
 {
+    Init_i();
+
     memset(freeList   , 0, sizeof(void*)  * 64);
     memset(objSize    , 0, sizeof(size_t) * 64);
     memset(busyObjNum , 0, sizeof(size_t) * 64);
@@ -1087,86 +1154,101 @@ ProGetSgiPoolInfo(void*         freeList[64],
     {
     case 0:
         {
-            g_s_lock0.Lock();
+            g_s_lock0->Lock();
             g_s_allocator0.get_info(
                 freeList, objSize, busyObjNum, totalObjNum, heapBytes);
-            g_s_lock0.Unlock();
+            g_s_lock0->Unlock();
             break;
         }
     case 1:
         {
-            g_s_lock1.Lock();
+            g_s_lock1->Lock();
             g_s_allocator1.get_info(
                 freeList, objSize, busyObjNum, totalObjNum, heapBytes);
-            g_s_lock1.Unlock();
+            g_s_lock1->Unlock();
             break;
         }
     case 2:
         {
-            g_s_lock2.Lock();
+            g_s_lock2->Lock();
             g_s_allocator2.get_info(
                 freeList, objSize, busyObjNum, totalObjNum, heapBytes);
-            g_s_lock2.Unlock();
+            g_s_lock2->Unlock();
             break;
         }
     case 3:
         {
-            g_s_lock3.Lock();
+            g_s_lock3->Lock();
             g_s_allocator3.get_info(
                 freeList, objSize, busyObjNum, totalObjNum, heapBytes);
-            g_s_lock3.Unlock();
+            g_s_lock3->Unlock();
             break;
         }
     case 4:
         {
-            g_s_lock4.Lock();
+            g_s_lock4->Lock();
             g_s_allocator4.get_info(
                 freeList, objSize, busyObjNum, totalObjNum, heapBytes);
-            g_s_lock4.Unlock();
+            g_s_lock4->Unlock();
             break;
         }
     case 5:
         {
-            g_s_lock5.Lock();
+            g_s_lock5->Lock();
             g_s_allocator5.get_info(
                 freeList, objSize, busyObjNum, totalObjNum, heapBytes);
-            g_s_lock5.Unlock();
+            g_s_lock5->Unlock();
             break;
         }
     case 6:
         {
-            g_s_lock6.Lock();
+            g_s_lock6->Lock();
             g_s_allocator6.get_info(
                 freeList, objSize, busyObjNum, totalObjNum, heapBytes);
-            g_s_lock6.Unlock();
+            g_s_lock6->Unlock();
             break;
         }
     case 7:
         {
-            g_s_lock7.Lock();
+            g_s_lock7->Lock();
             g_s_allocator7.get_info(
                 freeList, objSize, busyObjNum, totalObjNum, heapBytes);
-            g_s_lock7.Unlock();
+            g_s_lock7->Unlock();
             break;
         }
     case 8:
         {
-            g_s_lock8.Lock();
+            g_s_lock8->Lock();
             g_s_allocator8.get_info(
                 freeList, objSize, busyObjNum, totalObjNum, heapBytes);
-            g_s_lock8.Unlock();
+            g_s_lock8->Unlock();
             break;
         }
     case 9:
         {
-            g_s_lock9.Lock();
+            g_s_lock9->Lock();
             g_s_allocator9.get_info(
                 freeList, objSize, busyObjNum, totalObjNum, heapBytes);
-            g_s_lock9.Unlock();
+            g_s_lock9->Unlock();
             break;
         }
     } /* end of switch (...) */
 }
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
+class CProSharedDotCpp
+{
+public:
+
+    CProSharedDotCpp()
+    {
+        Init_i();
+    }
+};
+
+static volatile CProSharedDotCpp g_s_initiator;
 
 /////////////////////////////////////////////////////////////////////////////
 ////
