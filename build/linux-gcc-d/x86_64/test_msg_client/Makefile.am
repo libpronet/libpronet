@@ -11,8 +11,8 @@ test_msg_client_SOURCES = ../../../../src/pronet/test_msg_client/main.cpp \
 test_msg_client_CPPFLAGS = -I../../../../src/pronet/pro_util \
                            -I../../../../src/pronet/pro_net
 
-test_msg_client_CFLAGS   = -fno-strict-aliasing
-test_msg_client_CXXFLAGS = -fno-strict-aliasing
+test_msg_client_CFLAGS   =
+test_msg_client_CXXFLAGS =
 
 test_msg_client_LDFLAGS = -Wl,-rpath,.:../lib:${prolibdir} -Wl,--no-undefined
 test_msg_client_LDADD   =

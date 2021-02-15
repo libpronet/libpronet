@@ -10,8 +10,8 @@ test_tcp_client_SOURCES = ../../../../src/pronet/test_tcp_client/main.cpp \
 
 test_tcp_client_CPPFLAGS = -I../../../../src/pronet/pro_util
 
-test_tcp_client_CFLAGS   = -fno-strict-aliasing
-test_tcp_client_CXXFLAGS = -fno-strict-aliasing
+test_tcp_client_CFLAGS   =
+test_tcp_client_CXXFLAGS =
 
 test_tcp_client_LDFLAGS = -Wl,-rpath,.:../lib:${prolibdir} -Wl,--no-undefined
 test_tcp_client_LDADD   =

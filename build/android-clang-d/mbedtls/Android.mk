@@ -83,7 +83,7 @@ LOCAL_SRC_FILES := aes.c                 \
                    xtea.c
 
 LOCAL_C_INCLUDES    := $(MY_ROOT_DIR)/src/mbedtls/include
-LOCAL_CFLAGS        := -fno-strict-aliasing -fvisibility=hidden
+LOCAL_CFLAGS        :=
 LOCAL_CPPFLAGS      :=
 LOCAL_CPP_EXTENSION := .cpp .cxx .cc
 

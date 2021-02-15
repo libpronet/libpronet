@@ -11,8 +11,8 @@ test_rtp_SOURCES = ../../../../src/pronet/test_rtp/main.cpp \
 test_rtp_CPPFLAGS = -I../../../../src/pronet/pro_util \
                     -I../../../../src/pronet/pro_net
 
-test_rtp_CFLAGS   = -fno-strict-aliasing
-test_rtp_CXXFLAGS = -fno-strict-aliasing
+test_rtp_CFLAGS   =
+test_rtp_CXXFLAGS =
 
 test_rtp_LDFLAGS = -Wl,-rpath,.:../lib:${prolibdir} -Wl,--no-undefined
 test_rtp_LDADD   =

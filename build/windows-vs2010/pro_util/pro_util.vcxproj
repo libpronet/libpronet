@@ -160,35 +160,35 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)_debug\</OutDir>
-    <TargetName>pro_util_s-mt</TargetName>
+    <OutDir>$(SolutionDir)_debug32\</OutDir>
+    <TargetName>pro_util_s</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|Win32'">
-    <OutDir>$(SolutionDir)_debug-md\</OutDir>
+    <OutDir>$(SolutionDir)_debug32-md\</OutDir>
     <TargetName>pro_util_s-md</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>$(SolutionDir)_debug64x\</OutDir>
-    <TargetName>pro_util_s-mt</TargetName>
+    <OutDir>$(SolutionDir)_debug64\</OutDir>
+    <TargetName>pro_util_s</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|x64'">
-    <OutDir>$(SolutionDir)_debug64x-md\</OutDir>
+    <OutDir>$(SolutionDir)_debug64-md\</OutDir>
     <TargetName>pro_util_s-md</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>$(SolutionDir)_release64x\</OutDir>
-    <TargetName>pro_util_s-mt</TargetName>
+    <OutDir>$(SolutionDir)_release64\</OutDir>
+    <TargetName>pro_util_s</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|x64'">
-    <OutDir>$(SolutionDir)_release64x-md\</OutDir>
+    <OutDir>$(SolutionDir)_release64-md\</OutDir>
     <TargetName>pro_util_s-md</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)_release\</OutDir>
-    <TargetName>pro_util_s-mt</TargetName>
+    <OutDir>$(SolutionDir)_release32\</OutDir>
+    <TargetName>pro_util_s</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|Win32'">
-    <OutDir>$(SolutionDir)_release-md\</OutDir>
+    <OutDir>$(SolutionDir)_release32-md\</OutDir>
     <TargetName>pro_util_s-md</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -200,7 +200,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_shared;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -216,7 +216,7 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_shared;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -232,7 +232,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_shared;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -248,7 +248,7 @@
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_shared;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -266,7 +266,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_shared;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -286,7 +286,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_shared;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -306,7 +306,7 @@
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_shared;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -326,7 +326,7 @@
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
       <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_shared;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

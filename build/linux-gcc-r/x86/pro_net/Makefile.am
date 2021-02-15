@@ -32,8 +32,8 @@ libpro_net_so_CPPFLAGS = -DPRO_NET_EXPORTS                 \
                          -I../../../../src/mbedtls/include \
                          -I../../../../src/pronet/pro_util
 
-libpro_net_so_CFLAGS   = -fno-strict-aliasing -fPIC -fvisibility=hidden
-libpro_net_so_CXXFLAGS = -fno-strict-aliasing -fPIC -fvisibility=hidden
+libpro_net_so_CFLAGS   = -fPIC
+libpro_net_so_CXXFLAGS = -fPIC
 
 libpro_net_so_LDFLAGS = -shared -Wl,-soname,libpro_net.so \
                         -Wl,-rpath,. -Wl,--no-undefined

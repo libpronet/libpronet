@@ -24,8 +24,7 @@ LOCAL_SRC_FILES := pro_acceptor.cpp        \
 
 LOCAL_C_INCLUDES    := $(MY_ROOT_DIR)/src/mbedtls/include \
                        $(MY_ROOT_DIR)/src/pronet/pro_util
-LOCAL_CFLAGS        := -DPRO_NET_EXPORTS \
-                       -fno-strict-aliasing -fvisibility=hidden
+LOCAL_CFLAGS        := -DPRO_NET_EXPORTS
 LOCAL_CPPFLAGS      :=
 LOCAL_CPP_EXTENSION := .cpp .cxx .cc
 

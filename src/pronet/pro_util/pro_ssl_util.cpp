@@ -19,9 +19,9 @@
 #include "pro_a.h"
 #include "pro_ssl_util.h"
 #include "pro_memory_pool.h"
+#include "pro_shared.h"
 #include "pro_stl.h"
 #include "pro_z.h"
-#include "../pro_shared/pro_shared.h"
 
 #include "mbedtls/md.h"
 #include "mbedtls/platform_util.h"

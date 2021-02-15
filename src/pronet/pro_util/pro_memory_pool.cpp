@@ -18,8 +18,8 @@
 
 #include "pro_a.h"
 #include "pro_memory_pool.h"
+#include "pro_shared.h"
 #include "pro_z.h"
-#include "../pro_shared/pro_shared.h"
 
 #if defined(_MSC_VER)
 #pragma warning(disable : 4786)

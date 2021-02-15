@@ -22,9 +22,10 @@ LOCAL_SRC_FILES := pro_bsd_wrapper.cpp          \
                    pro_unicode.cpp              \
                    pro_z.cpp
 
-LOCAL_C_INCLUDES    := $(MY_ROOT_DIR)/src/mbedtls/include \
+LOCAL_C_INCLUDES    := $(MY_ROOT_DIR)/src/mbedtls/include   \
+                       $(MY_ROOT_DIR)/src/pronet/pro_shared \
                        $(MY_ROOT_DIR)/src/pronet/pro_util
-LOCAL_CFLAGS        := -fno-strict-aliasing -fvisibility=hidden
+LOCAL_CFLAGS        :=
 LOCAL_CPPFLAGS      :=
 LOCAL_CPP_EXTENSION := .cpp .cxx .cc
 

@@ -13,9 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="sgi_pool">
-      <UniqueIdentifier>{311ecad3-8120-47c2-b54f-dc71f96e6b6d}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\pronet\pro_shared\pro_shared.cpp">
@@ -38,7 +35,7 @@
       <Filter>Resource Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\pronet\pro_shared\stl_alloc.h">
-      <Filter>sgi_pool</Filter>
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

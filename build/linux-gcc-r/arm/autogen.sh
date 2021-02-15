@@ -39,9 +39,9 @@ automake --add-missing --force-missing --foreign
 # combinations" from the file "/usr/share/automake-1.11/config.sub",
 # and insert "arm-none-linux-gnueabi" into the file.
 #
-./configure                                 \
---build=i686-pc-linux-gnu                   \
---host=arm-none-linux-gnueabi               \
+./configure \
+--build=i686-pc-linux-gnu     \
+--host=arm-none-linux-gnueabi \
 CPPFLAGS="-DNDEBUG                          \
           -D_GNU_SOURCE                     \
           -D_LIBC_REENTRANT                 \
@@ -50,8 +50,8 @@ CPPFLAGS="-DNDEBUG                          \
           -DPRO_HAS_ACCEPT4                 \
           -DPRO_HAS_EPOLL                   \
           -DPRO_HAS_PTHREAD_EXPLICIT_SCHED" \
-CFLAGS="  -O2 -Wall"                        \
-CXXFLAGS="-O2 -Wall"                        \
+CFLAGS="  -O2 -Wall -fno-strict-aliasing -fvisibility=hidden" \
+CXXFLAGS="-O2 -Wall -fno-strict-aliasing -fvisibility=hidden" \
 LDFLAGS="" $@
 
 rm -f ./configure

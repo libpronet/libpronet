@@ -39,13 +39,13 @@ RSC=rc.exe
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "../_release"
+# PROP Output_Dir "../_release32"
 # PROP Intermediate_Dir "Release"
 # PROP Target_Dir ""
 MTL=midl.exe
 LINK32=link.exe -lib
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /YX /FD /c
-# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "../../../src/mbedtls/include" /I "../../../src/pronet/pro_util" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_release/pro_util_s-mt.pdb" /FD /c
+# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "../../../src/mbedtls/include" /I "../../../src/pronet/pro_shared" /I "../../../src/pronet/pro_util" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_release32/pro_util_s.pdb" /FD /c
 # ADD BASE RSC /l 0x804 /d "NDEBUG"
 # ADD RSC /l 0x804 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -53,7 +53,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"../_release/pro_util_s-mt.lib"
+# ADD LIB32 /nologo /out:"../_release32/pro_util_s.lib"
 
 !ELSEIF  "$(CFG)" == "03_pro_util - Win32 Debug"
 
@@ -64,13 +64,13 @@ LIB32=link.exe -lib
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "../_debug"
+# PROP Output_Dir "../_debug32"
 # PROP Intermediate_Dir "Debug"
 # PROP Target_Dir ""
 MTL=midl.exe
 LINK32=link.exe -lib
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /YX /FD /GZ /c
-# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "../../../src/mbedtls/include" /I "../../../src/pronet/pro_util" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_debug/pro_util_s-mt.pdb" /FD /GZ /c
+# ADD CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "../../../src/mbedtls/include" /I "../../../src/pronet/pro_shared" /I "../../../src/pronet/pro_util" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_debug32/pro_util_s.pdb" /FD /GZ /c
 # ADD BASE RSC /l 0x804 /d "_DEBUG"
 # ADD RSC /l 0x804 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -78,7 +78,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo
-# ADD LIB32 /nologo /out:"../_debug/pro_util_s-mt.lib"
+# ADD LIB32 /nologo /out:"../_debug32/pro_util_s.lib"
 
 !ELSEIF  "$(CFG)" == "03_pro_util - Win32 Release_MD"
 
@@ -89,13 +89,13 @@ LIB32=link.exe -lib
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 0
-# PROP Output_Dir "../_release-md"
+# PROP Output_Dir "../_release32-md"
 # PROP Intermediate_Dir "Release_MD"
 # PROP Target_Dir ""
 MTL=midl.exe
 LINK32=link.exe -lib
 # ADD BASE CPP /nologo /MT /W3 /GX /Zi /O2 /I "../../../src/mbedtls/include" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_release/pro_util_s.pdb" /FD /c
-# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "../../../src/mbedtls/include" /I "../../../src/pronet/pro_util" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_release-md/pro_util_s-md.pdb" /FD /c
+# ADD CPP /nologo /MD /W3 /GX /Zi /O2 /I "../../../src/mbedtls/include" /I "../../../src/pronet/pro_shared" /I "../../../src/pronet/pro_util" /D "WIN32" /D "NDEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_release32-md/pro_util_s-md.pdb" /FD /c
 # ADD BASE RSC /l 0x804 /d "NDEBUG"
 # ADD RSC /l 0x804 /d "NDEBUG"
 BSC32=bscmake.exe
@@ -103,7 +103,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo /out:"../_release/pro_util_s-mt.lib"
-# ADD LIB32 /nologo /out:"../_release-md/pro_util_s-md.lib"
+# ADD LIB32 /nologo /out:"../_release32-md/pro_util_s-md.lib"
 
 !ELSEIF  "$(CFG)" == "03_pro_util - Win32 Debug_MD"
 
@@ -114,13 +114,13 @@ LIB32=link.exe -lib
 # PROP BASE Target_Dir ""
 # PROP Use_MFC 0
 # PROP Use_Debug_Libraries 1
-# PROP Output_Dir "../_debug-md"
+# PROP Output_Dir "../_debug32-md"
 # PROP Intermediate_Dir "Debug_MD"
 # PROP Target_Dir ""
 MTL=midl.exe
 LINK32=link.exe -lib
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /I "../../../src/mbedtls/include" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_debug/pro_util_s.pdb" /FD /GZ /c
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../src/mbedtls/include" /I "../../../src/pronet/pro_util" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_debug-md/pro_util_s-md.pdb" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "../../../src/mbedtls/include" /I "../../../src/pronet/pro_shared" /I "../../../src/pronet/pro_util" /D "WIN32" /D "_DEBUG" /D "_MBCS" /D "_LIB" /D _WIN32_WINNT=0x0501 /D for="if (0) {} else for" /FR /Fd"../_debug32-md/pro_util_s-md.pdb" /FD /GZ /c
 # ADD BASE RSC /l 0x804 /d "_DEBUG"
 # ADD RSC /l 0x804 /d "_DEBUG"
 BSC32=bscmake.exe
@@ -128,7 +128,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LIB32=link.exe -lib
 # ADD BASE LIB32 /nologo /out:"../_debug/pro_util_s-mt.lib"
-# ADD LIB32 /nologo /out:"../_debug-md/pro_util_s-md.lib"
+# ADD LIB32 /nologo /out:"../_debug32-md/pro_util_s-md.lib"
 
 !ENDIF 
 

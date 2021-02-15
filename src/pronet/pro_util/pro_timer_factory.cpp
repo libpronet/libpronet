@@ -21,11 +21,11 @@
 #include "pro_functor_command.h"
 #include "pro_functor_command_task.h"
 #include "pro_memory_pool.h"
+#include "pro_shared.h"
 #include "pro_stl.h"
 #include "pro_thread_mutex.h"
 #include "pro_time_util.h"
 #include "pro_z.h"
-#include "../pro_shared/pro_shared.h"
 
 #if defined(_WIN32) || defined(_WIN32_WCE)
 #include <windows.h>

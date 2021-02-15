@@ -15,8 +15,8 @@ rtp_msg_server_CPPFLAGS = -DSQLITE_THREADSAFE=1             \
                           -I../../../../src/pronet/pro_util \
                           -I../../../../src/pronet/pro_net
 
-rtp_msg_server_CFLAGS   = -fno-strict-aliasing
-rtp_msg_server_CXXFLAGS = -fno-strict-aliasing
+rtp_msg_server_CFLAGS   =
+rtp_msg_server_CXXFLAGS =
 
 rtp_msg_server_LDFLAGS = -Wl,-rpath,.:../lib:${prolibdir} -Wl,--no-undefined
 rtp_msg_server_LDADD   =

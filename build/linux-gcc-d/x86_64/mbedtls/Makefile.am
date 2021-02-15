@@ -167,5 +167,5 @@ libmbedtls_a_SOURCES = ../../../../src/mbedtls/library/aes.c                 \
 
 libmbedtls_a_CPPFLAGS = -I../../../../src/mbedtls/include
 
-libmbedtls_a_CFLAGS   = -fno-strict-aliasing -fPIC -fvisibility=hidden
-libmbedtls_a_CXXFLAGS = -fno-strict-aliasing -fPIC -fvisibility=hidden
+libmbedtls_a_CFLAGS   = -fPIC
+libmbedtls_a_CXXFLAGS = -fPIC

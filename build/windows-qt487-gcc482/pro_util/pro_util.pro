@@ -21,6 +21,7 @@ CONFIG(release, debug | release) : DEFINES += NDEBUG _WIN32_WINNT=0x0501
 
 INCLUDEPATH += \
     ../../../src/mbedtls/include \
+    ../../../src/pronet/pro_shared \
     ../../../src/pronet/pro_util
 
 # You can also make your code fail to compile if you use deprecated APIs.

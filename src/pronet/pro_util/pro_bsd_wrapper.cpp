@@ -19,10 +19,10 @@
 #include "pro_a.h"
 #include "pro_bsd_wrapper.h"
 #include "pro_memory_pool.h"
+#include "pro_shared.h"
 #include "pro_stl.h"
 #include "pro_time_util.h"
 #include "pro_z.h"
-#include "../pro_shared/pro_shared.h"
 
 #if defined(__cplusplus)
 extern "C" {

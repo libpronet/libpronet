@@ -115,49 +115,49 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)_debug\</OutDir>
+    <OutDir>$(SolutionDir)_debug32\</OutDir>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>test_tcp_server</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)_debug-md\</OutDir>
+    <OutDir>$(SolutionDir)_debug32-md\</OutDir>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>test_tcp_server</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)_debug64x\</OutDir>
+    <OutDir>$(SolutionDir)_debug64\</OutDir>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>test_tcp_server</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(SolutionDir)_debug64x-md\</OutDir>
+    <OutDir>$(SolutionDir)_debug64-md\</OutDir>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>test_tcp_server</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)_release\</OutDir>
+    <OutDir>$(SolutionDir)_release32\</OutDir>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>test_tcp_server</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)_release-md\</OutDir>
+    <OutDir>$(SolutionDir)_release32-md\</OutDir>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>test_tcp_server</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)_release64x\</OutDir>
+    <OutDir>$(SolutionDir)_release64\</OutDir>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>test_tcp_server</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)_release64x-md\</OutDir>
+    <OutDir>$(SolutionDir)_release64-md\</OutDir>
     <GenerateManifest>false</GenerateManifest>
     <TargetName>test_tcp_server</TargetName>
   </PropertyGroup>

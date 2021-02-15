@@ -29,9 +29,9 @@ endif
 APP_CFLAGS   += -D_GNU_SOURCE     \
                 -D_LIBC_REENTRANT \
                 -D_REENTRANT      \
-                -Wall
+                -Wall -fno-strict-aliasing -fvisibility=hidden
 APP_CPPFLAGS := -fno-rtti -fexceptions
 APP_LDFLAGS  :=
 
-APP_PLATFORM := android-16
+APP_PLATFORM := android-21
 APP_STL      := c++_static

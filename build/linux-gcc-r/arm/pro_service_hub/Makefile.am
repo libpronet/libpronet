@@ -9,8 +9,8 @@ pro_service_hub_SOURCES = ../../../../src/pronet/pro_service_hub/main.cpp
 
 pro_service_hub_CPPFLAGS = -I../../../../src/pronet/pro_util
 
-pro_service_hub_CFLAGS   = -fno-strict-aliasing
-pro_service_hub_CXXFLAGS = -fno-strict-aliasing
+pro_service_hub_CFLAGS   =
+pro_service_hub_CXXFLAGS =
 
 pro_service_hub_LDFLAGS = -Wl,-rpath,.:../lib:${prolibdir} -Wl,--no-undefined
 pro_service_hub_LDADD   =

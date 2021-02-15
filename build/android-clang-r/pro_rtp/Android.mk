@@ -31,8 +31,7 @@ LOCAL_SRC_FILES := rtp_base.cpp                 \
 
 LOCAL_C_INCLUDES    := $(MY_ROOT_DIR)/src/pronet/pro_util \
                        $(MY_ROOT_DIR)/src/pronet/pro_net
-LOCAL_CFLAGS        := -DPRO_RTP_EXPORTS \
-                       -fno-strict-aliasing -fvisibility=hidden
+LOCAL_CFLAGS        := -DPRO_RTP_EXPORTS
 LOCAL_CPPFLAGS      :=
 LOCAL_CPP_EXTENSION := .cpp .cxx .cc
 

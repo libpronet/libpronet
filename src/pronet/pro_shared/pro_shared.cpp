@@ -26,11 +26,12 @@
 #define PRO_FD_SETSIZE 64
 #endif
 
+#include "pro_a.h"
 #include "pro_shared.h"
+#include "pro_bsd_wrapper.h"
+#include "pro_version.h"
+#include "pro_z.h"
 #include "stl_alloc.h"
-#include "../pro_util/pro_bsd_wrapper.h"
-#include "../pro_util/pro_version.h"
-#include "../pro_util/pro_z.h"
 
 #if defined(_WIN32) || defined(_WIN32_WCE)
 #include <windows.h>

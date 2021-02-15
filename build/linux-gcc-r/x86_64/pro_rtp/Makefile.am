@@ -39,8 +39,8 @@ libpro_rtp_so_CPPFLAGS = -DPRO_RTP_EXPORTS                 \
                          -I../../../../src/pronet/pro_util \
                          -I../../../../src/pronet/pro_net
 
-libpro_rtp_so_CFLAGS   = -fno-strict-aliasing -fPIC -fvisibility=hidden
-libpro_rtp_so_CXXFLAGS = -fno-strict-aliasing -fPIC -fvisibility=hidden
+libpro_rtp_so_CFLAGS   = -fPIC
+libpro_rtp_so_CXXFLAGS = -fPIC
 
 libpro_rtp_so_LDFLAGS = -shared -Wl,-soname,libpro_rtp.so \
                         -Wl,-rpath,. -Wl,--no-undefined
