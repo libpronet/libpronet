@@ -206,14 +206,11 @@ CRtpSessionTcpclient::Release()
 
 void
 PRO_CALLTYPE
-CRtpSessionTcpclient::OnConnectOk(IProConnector*   connector,
-                                  PRO_INT64        sockId,
-                                  bool             unixSocket,
-                                  const char*      remoteIp,
-                                  unsigned short   remotePort,
-                                  unsigned char    serviceId,
-                                  unsigned char    serviceOpt,
-                                  const PRO_NONCE* nonce)
+CRtpSessionTcpclient::OnConnectOk(IProConnector* connector,
+                                  PRO_INT64      sockId,
+                                  bool           unixSocket,
+                                  const char*    remoteIp,
+                                  unsigned short remotePort)
 {{
     CProThreadMutexGuard mon(m_lockUpcall);
 
@@ -305,8 +302,6 @@ PRO_CALLTYPE
 CRtpSessionTcpclient::OnConnectError(IProConnector* connector,
                                      const char*    remoteIp,
                                      unsigned short remotePort,
-                                     unsigned char  serviceId,
-                                     unsigned char  serviceOpt,
                                      bool           timeout)
 {{
     CProThreadMutexGuard mon(m_lockUpcall);

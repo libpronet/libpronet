@@ -223,21 +223,21 @@ CRtpSessionTcpserver::Release()
 
 void
 PRO_CALLTYPE
-CRtpSessionTcpserver::OnAccept(IProAcceptor*    acceptor,
-                               PRO_INT64        sockId,
-                               bool             unixSocket,
-                               const char*      remoteIp,
-                               unsigned short   remotePort,
-                               unsigned char    serviceId,
-                               unsigned char    serviceOpt,
-                               const PRO_NONCE* nonce)
+CRtpSessionTcpserver::OnAccept(IProAcceptor*  acceptor,
+                               PRO_INT64      sockId,
+                               bool           unixSocket,
+                               const char*    localIp,
+                               const char*    remoteIp,
+                               unsigned short remotePort)
 {{
     CProThreadMutexGuard mon(m_lockUpcall);
 
     assert(acceptor != NULL);
     assert(sockId != -1);
+    assert(localIp != NULL);
     assert(remoteIp != NULL);
-    if (acceptor == NULL || sockId == -1 || remoteIp == NULL)
+    if (acceptor == NULL || sockId == -1 || localIp == NULL ||
+        remoteIp == NULL)
     {
         return;
     }

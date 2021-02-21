@@ -67,6 +67,25 @@ protected:
     virtual ~CRtpSessionTcpclientEx();
 
     virtual void PRO_CALLTYPE OnConnectOk(
+        IProConnector* connector,
+        PRO_INT64      sockId,
+        bool           unixSocket,
+        const char*    remoteIp,
+        unsigned short remotePort
+        )
+    {
+    }
+
+    virtual void PRO_CALLTYPE OnConnectError(
+        IProConnector* connector,
+        const char*    remoteIp,
+        unsigned short remotePort,
+        bool           timeout
+        )
+    {
+    }
+
+    virtual void PRO_CALLTYPE OnConnectOk(
         IProConnector*   connector,
         PRO_INT64        sockId,
         bool             unixSocket,

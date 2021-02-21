@@ -160,7 +160,7 @@ CTest::Init(IProReactor*                  reactor,
 
         if (configInfo.tcps_using_hub)
         {
-            service  = ProCreateServiceHost(
+            service  = ProCreateServiceHostEx(
                 this, reactor, configInfo.tcps_port, 1); /* serviceId is 1 */
         }
         else
@@ -332,6 +332,7 @@ PRO_CALLTYPE
 CTest::OnAccept(IProAcceptor*    acceptor,
                 PRO_INT64        sockId,
                 bool             unixSocket,
+                const char*      localIp,
                 const char*      remoteIp,
                 unsigned short   remotePort,
                 unsigned char    serviceId,
@@ -433,6 +434,7 @@ PRO_CALLTYPE
 CTest::OnServiceAccept(IProServiceHost* serviceHost,
                        PRO_INT64        sockId,
                        bool             unixSocket,
+                       const char*      localIp,
                        const char*      remoteIp,
                        unsigned short   remotePort,
                        unsigned char    serviceId,

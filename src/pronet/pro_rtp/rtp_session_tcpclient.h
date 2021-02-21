@@ -65,6 +65,21 @@ private:
     virtual ~CRtpSessionTcpclient();
 
     virtual void PRO_CALLTYPE OnConnectOk(
+        IProConnector* connector,
+        PRO_INT64      sockId,
+        bool           unixSocket,
+        const char*    remoteIp,
+        unsigned short remotePort
+        );
+
+    virtual void PRO_CALLTYPE OnConnectError(
+        IProConnector* connector,
+        const char*    remoteIp,
+        unsigned short remotePort,
+        bool           timeout
+        );
+
+    virtual void PRO_CALLTYPE OnConnectOk(
         IProConnector*   connector,
         PRO_INT64        sockId,
         bool             unixSocket,
@@ -73,7 +88,9 @@ private:
         unsigned char    serviceId,
         unsigned char    serviceOpt,
         const PRO_NONCE* nonce
-        );
+        )
+    {
+    }
 
     virtual void PRO_CALLTYPE OnConnectError(
         IProConnector* connector,
@@ -82,7 +99,9 @@ private:
         unsigned char  serviceId,
         unsigned char  serviceOpt,
         bool           timeout
-        );
+        )
+    {
+    }
 
     virtual void PRO_CALLTYPE OnRecv(
         IProTransport*          trans,

@@ -69,6 +69,18 @@ private:
         IProServiceHost* serviceHost,
         PRO_INT64        sockId,
         bool             unixSocket,
+        const char*      localIp,
+        const char*      remoteIp,
+        unsigned short   remotePort
+        )
+    {
+    }
+
+    virtual void PRO_CALLTYPE OnServiceAccept(
+        IProServiceHost* serviceHost,
+        PRO_INT64        sockId,
+        bool             unixSocket,
+        const char*      localIp,
         const char*      remoteIp,
         unsigned short   remotePort,
         unsigned char    serviceId,

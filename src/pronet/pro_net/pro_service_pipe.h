@@ -73,12 +73,14 @@ struct PRO_SERVICE_PACKET_C2S
 {
     PRO_SERVICE_PACKET_C2S()
     {
-        serviceId = 0;
-        processId = 0;
+        serviceId  = 0;
+        processId  = 0;
+        totalSocks = 0;
     }
 
     unsigned char    serviceId;
     PRO_UINT64       processId;
+    PRO_UINT32       totalSocks;
     PRO_SERVICE_SOCK oldSock;
 
     DECLARE_SGI_POOL(0)
@@ -88,7 +90,6 @@ struct PRO_SERVICE_PACKET_S2C
 {
     PRO_SERVICE_PACKET_S2C()
     {
-        serviceId  = 0;
         serviceOpt = 0;
 
         memset(&nonce, 0, sizeof(PRO_NONCE));
@@ -97,7 +98,6 @@ struct PRO_SERVICE_PACKET_S2C
 #endif
     }
 
-    unsigned char    serviceId;
     unsigned char    serviceOpt;
     PRO_NONCE        nonce;
 #if defined(_WIN32) && !defined(_WIN32_WCE)
@@ -137,10 +137,15 @@ struct PRO_SERVICE_PIPE
     PRO_SERVICE_PIPE()
     {
         pipe       = NULL;
-        pending    = true;
-        expireTick = 0;
-        serviceId  = 0;
         processId  = 0;
+        expireTick = 0;
+    }
+
+    PRO_SERVICE_PIPE(CProServicePipe* __pipe)
+    {
+        pipe       = __pipe;
+        processId  = 0;
+        expireTick = 0;
     }
 
     bool operator<(const PRO_SERVICE_PIPE& sp) const
@@ -154,10 +159,8 @@ struct PRO_SERVICE_PIPE
     }
 
     CProServicePipe* pipe;
-    bool             pending;
-    PRO_INT64        expireTick;
-    unsigned char    serviceId;
     PRO_UINT64       processId;
+    PRO_INT64        expireTick;
 
     DECLARE_SGI_POOL(0)
 };

@@ -42,18 +42,23 @@
 #define RECONNECT_INTERVAL 5
 #define PIPE_TIMEOUT       10
 
+static CProStlSet<CProServiceHost*>            g_s_hosts;
+static CProStlMap<PRO_INT64, CProServiceHost*> g_s_sockId2Host;
+static CProThreadMutex                         g_s_lock;
+
 /////////////////////////////////////////////////////////////////////////////
 ////
 
 CProServiceHost*
-CProServiceHost::CreateInstance()
+CProServiceHost::CreateInstance(unsigned char serviceId) /* = 0 */
 {
-    CProServiceHost* const host = new CProServiceHost;
+    CProServiceHost* const host = new CProServiceHost(serviceId);
 
     return (host);
 }
 
-CProServiceHost::CProServiceHost()
+CProServiceHost::CProServiceHost(unsigned char serviceId)
+: m_serviceId(serviceId)
 {
     m_observer    = NULL;
     m_reactor     = NULL;
@@ -62,7 +67,6 @@ CProServiceHost::CProServiceHost()
     m_timerId     = 0;
 
     m_servicePort = 0;
-    m_serviceId   = 0;
     m_connectTick = 0;
 }
 
@@ -74,15 +78,12 @@ CProServiceHost::~CProServiceHost()
 bool
 CProServiceHost::Init(IProServiceHostObserver* observer,
                       IProReactor*             reactor,
-                      unsigned short           servicePort,
-                      unsigned char            serviceId)
+                      unsigned short           servicePort)
 {
     assert(observer != NULL);
     assert(reactor != NULL);
     assert(servicePort > 0);
-    assert(serviceId > 0);
-    if (observer == NULL || reactor == NULL || servicePort == 0 ||
-        serviceId == 0)
+    if (observer == NULL || reactor == NULL || servicePort == 0)
     {
         return (false);
     }
@@ -102,8 +103,8 @@ CProServiceHost::Init(IProServiceHostObserver* observer,
 
         m_connector = ProCreateConnectorEx(
             true, /* enable unixSocket */
-            0,    /* serviceId.  [0 for ipc-pipe, !0 for media-link] */
-            0,    /* serviceOpt. [0 for tcp     , !0 for ssl] */
+            0,    /* 0 for ipc-pipe, !0 for media-link */
+            0,    /* 0 for tcp     , !0 for ssl */
             this,
             reactor,
             "127.0.0.1",
@@ -121,8 +122,11 @@ CProServiceHost::Init(IProServiceHostObserver* observer,
         m_reactor     = reactor;
         m_timerId     = reactor->ScheduleTimer(this, HEARTBEAT_INTERVAL * 1000, true);
         m_servicePort = servicePort;
-        m_serviceId   = serviceId;
         m_connectTick = ProGetTickCount64();
+
+        g_s_lock.Lock();
+        g_s_hosts.insert(this);
+        g_s_lock.Unlock();
     }
 
     return (true);
@@ -153,6 +157,10 @@ CProServiceHost::Fini()
         m_reactor = NULL;
         observer = m_observer;
         m_observer = NULL;
+
+        g_s_lock.Lock();
+        g_s_hosts.erase(this);
+        g_s_lock.Unlock();
     }
 
     ProDeleteServicePipe(pipe);
@@ -176,6 +184,19 @@ CProServiceHost::Release()
     const unsigned long refCount = CProRefCount::Release();
 
     return (refCount);
+}
+
+void
+CProServiceHost::DecServiceLoad(PRO_INT64 sockId)
+{
+    if (sockId == -1)
+    {
+        return;
+    }
+
+    m_onlineLock.Lock();
+    m_onlineSockIds.erase(sockId);
+    m_onlineLock.Unlock();
 }
 
 void
@@ -230,12 +251,17 @@ CProServiceHost::OnConnectOk(IProConnector*   connector,
         }
         else
         {
+            m_onlineLock.Lock();
+            const PRO_UINT32 totalSocks = (PRO_UINT32)m_onlineSockIds.size();
+            m_onlineLock.Unlock();
+
             /*
-             * todo...
+             * register this host
              */
             PRO_SERVICE_PACKET c2sPacket;
-            c2sPacket.c2s.serviceId = m_serviceId;
-            c2sPacket.c2s.processId = ProGetProcessId();
+            c2sPacket.c2s.serviceId  = m_serviceId;
+            c2sPacket.c2s.processId  = ProGetProcessId();
+            c2sPacket.c2s.totalSocks = totalSocks;
             m_pipe->SendData(c2sPacket);
         }
 
@@ -303,7 +329,7 @@ CProServiceHost::OnRecv(CProServicePipe*          pipe,
             return;
         }
 
-        if (pipe != m_pipe || s2cPacket.s2c.serviceId != m_serviceId)
+        if (pipe != m_pipe)
         {
             return;
         }
@@ -313,15 +339,16 @@ CProServiceHost::OnRecv(CProServicePipe*          pipe,
     }
 
     PRO_INT64        sockId = -1;
+    pbsd_sockaddr_in localAddr;
     pbsd_sockaddr_in remoteAddr;
 
 #if defined(_WIN32_WCE)
     sockId = s2cPacket.s2c.oldSock.sockId;
     if (sockId != -1)
     {
-        if (pbsd_getpeername(sockId, &remoteAddr) != 0)
+        if (pbsd_getsockname(sockId, &localAddr)  != 0 ||
+            pbsd_getpeername(sockId, &remoteAddr) != 0)
         {
-            ProCloseSockId(sockId);
             sockId = -1;
         }
     }
@@ -354,22 +381,15 @@ CProServiceHost::OnRecv(CProServicePipe*          pipe,
     }
     else
     {
-        if (pbsd_getpeername(sockId, &remoteAddr) != 0)
+        if (pbsd_getsockname(sockId, &localAddr)  != 0 ||
+            pbsd_getpeername(sockId, &remoteAddr) != 0)
         {
             ProCloseSockId(sockId);
             sockId = -1;
         }
     }
 #else
-    sockId = s2cPacket.s2c.oldSock.sockId;
-    if (sockId != -1 && !s2cPacket.s2c.oldSock.unixSocket)
-    {
-        if (pbsd_getpeername(sockId, &remoteAddr) != 0)
-        {
-            ProCloseSockId(sockId);
-            sockId = -1;
-        }
-    }
+    assert(0);
 #endif
 
     if (sockId == -1)
@@ -379,36 +399,64 @@ CProServiceHost::OnRecv(CProServicePipe*          pipe,
         return;
     }
 
+    g_s_lock.Lock();
+    g_s_sockId2Host[sockId] = this;
+    g_s_lock.Unlock();
+
+    m_onlineLock.Lock();
+    m_onlineSockIds.insert(sockId);
+    const PRO_UINT32 totalSocks = (PRO_UINT32)m_onlineSockIds.size();
+    m_onlineLock.Unlock();
+
     /*
      * 1. notify the hub
      */
     PRO_SERVICE_PACKET c2sPacket;
-    c2sPacket.c2s.serviceId = s2cPacket.s2c.serviceId;
-    c2sPacket.c2s.processId = ProGetProcessId();
-    c2sPacket.c2s.oldSock   = s2cPacket.s2c.oldSock;
+    c2sPacket.c2s.serviceId  = m_serviceId;
+    c2sPacket.c2s.processId  = ProGetProcessId();
+    c2sPacket.c2s.totalSocks = totalSocks;
+    c2sPacket.c2s.oldSock    = s2cPacket.s2c.oldSock;
     pipe->SendData(c2sPacket);
 
     /*
      * 2. make a callback
      */
+    char           localIp[64]  = "127.0.0.1"; /* a dummy for unix socket */
     char           remoteIp[64] = "127.0.0.1"; /* a dummy for unix socket */
     unsigned short remotePort   = 65535;       /* a dummy for unix socket */
     if (!s2cPacket.s2c.oldSock.unixSocket)
     {
+        pbsd_inet_ntoa(localAddr.sin_addr.s_addr , localIp);
         pbsd_inet_ntoa(remoteAddr.sin_addr.s_addr, remoteIp);
         remotePort = pbsd_ntoh16(remoteAddr.sin_port);
     }
 
-    observer->OnServiceAccept(
-        (IProServiceHost*)this,
-        sockId,
-        s2cPacket.s2c.oldSock.unixSocket,
-        remoteIp,
-        remotePort,
-        s2cPacket.s2c.serviceId,
-        s2cPacket.s2c.serviceOpt,
-        &s2cPacket.s2c.nonce
-        );
+    if (m_serviceId == 0)
+    {
+        observer->OnServiceAccept(
+            (IProServiceHost*)this,
+            sockId,
+            s2cPacket.s2c.oldSock.unixSocket,
+            localIp,
+            remoteIp,
+            remotePort
+            );
+    }
+    else
+    {
+        observer->OnServiceAccept(
+            (IProServiceHost*)this,
+            sockId,
+            s2cPacket.s2c.oldSock.unixSocket,
+            localIp,
+            remoteIp,
+            remotePort,
+            m_serviceId,
+            s2cPacket.s2c.serviceOpt,
+            &s2cPacket.s2c.nonce
+            );
+    }
+
     observer->Release();
 }
 
@@ -439,7 +487,7 @@ CProServiceHost::OnRecvFd(CProServicePipe*          pipe,
             return;
         }
 
-        if (pipe != m_pipe || s2cPacket.s2c.serviceId != m_serviceId)
+        if (pipe != m_pipe)
         {
             ProCloseSockId(fd);
 
@@ -450,11 +498,13 @@ CProServiceHost::OnRecvFd(CProServicePipe*          pipe,
         observer = m_observer;
     }
 
+    pbsd_sockaddr_in localAddr;
     pbsd_sockaddr_in remoteAddr;
 
     if (!unixSocket)
     {
-        if (pbsd_getpeername(fd, &remoteAddr) != 0)
+        if (pbsd_getsockname(fd, &localAddr)  != 0 ||
+            pbsd_getpeername(fd, &remoteAddr) != 0)
         {
             ProCloseSockId(fd);
             fd = -1;
@@ -468,36 +518,64 @@ CProServiceHost::OnRecvFd(CProServicePipe*          pipe,
         return;
     }
 
+    g_s_lock.Lock();
+    g_s_sockId2Host[fd] = this;
+    g_s_lock.Unlock();
+
+    m_onlineLock.Lock();
+    m_onlineSockIds.insert(fd);
+    const PRO_UINT32 totalSocks = (PRO_UINT32)m_onlineSockIds.size();
+    m_onlineLock.Unlock();
+
     /*
      * 1. notify the hub
      */
     PRO_SERVICE_PACKET c2sPacket;
-    c2sPacket.c2s.serviceId = s2cPacket.s2c.serviceId;
-    c2sPacket.c2s.processId = ProGetProcessId();
-    c2sPacket.c2s.oldSock   = s2cPacket.s2c.oldSock;
+    c2sPacket.c2s.serviceId  = m_serviceId;
+    c2sPacket.c2s.processId  = ProGetProcessId();
+    c2sPacket.c2s.totalSocks = totalSocks;
+    c2sPacket.c2s.oldSock    = s2cPacket.s2c.oldSock;
     pipe->SendData(c2sPacket);
 
     /*
      * 2. make a callback
      */
+    char           localIp[64]  = "127.0.0.1"; /* a dummy for unix socket */
     char           remoteIp[64] = "127.0.0.1"; /* a dummy for unix socket */
     unsigned short remotePort   = 65535;       /* a dummy for unix socket */
     if (!unixSocket)
     {
+        pbsd_inet_ntoa(localAddr.sin_addr.s_addr , localIp);
         pbsd_inet_ntoa(remoteAddr.sin_addr.s_addr, remoteIp);
         remotePort = pbsd_ntoh16(remoteAddr.sin_port);
     }
 
-    observer->OnServiceAccept(
-        (IProServiceHost*)this,
-        fd,
-        unixSocket,
-        remoteIp,
-        remotePort,
-        s2cPacket.s2c.serviceId,
-        s2cPacket.s2c.serviceOpt,
-        &s2cPacket.s2c.nonce
-        );
+    if (m_serviceId == 0)
+    {
+        observer->OnServiceAccept(
+            (IProServiceHost*)this,
+            fd,
+            unixSocket,
+            localIp,
+            remoteIp,
+            remotePort
+            );
+    }
+    else
+    {
+        observer->OnServiceAccept(
+            (IProServiceHost*)this,
+            fd,
+            unixSocket,
+            localIp,
+            remoteIp,
+            remotePort,
+            m_serviceId,
+            s2cPacket.s2c.serviceOpt,
+            &s2cPacket.s2c.nonce
+            );
+    }
+
     observer->Release();
 }
 
@@ -577,16 +655,57 @@ CProServiceHost::OnTimer(void*      factory,
         }
         else if (m_pipe != NULL)
         {
-            /*
-             * todo...
-             */
+            m_onlineLock.Lock();
+            const PRO_UINT32 totalSocks = (PRO_UINT32)m_onlineSockIds.size();
+            m_onlineLock.Unlock();
+
             PRO_SERVICE_PACKET c2sPacket;
-            c2sPacket.c2s.serviceId = m_serviceId;
-            c2sPacket.c2s.processId = ProGetProcessId();
+            c2sPacket.c2s.serviceId  = m_serviceId;
+            c2sPacket.c2s.processId  = ProGetProcessId();
+            c2sPacket.c2s.totalSocks = totalSocks;
             m_pipe->SendData(c2sPacket);
         }
         else
         {
         }
     }
+}
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
+void
+PRO_CALLTYPE
+ProDecServiceLoad(PRO_INT64 sockId)
+{
+    if (sockId == -1)
+    {
+        return;
+    }
+
+    CProServiceHost* host = NULL;
+
+    {
+        CProThreadMutexGuard mon(g_s_lock);
+
+        CProStlMap<PRO_INT64, CProServiceHost*>::iterator const itr =
+            g_s_sockId2Host.find(sockId);
+        if (itr == g_s_sockId2Host.end())
+        {
+            return;
+        }
+
+        host = itr->second;
+        g_s_sockId2Host.erase(itr);
+
+        if (g_s_hosts.find(host) == g_s_hosts.end())
+        {
+            return;
+        }
+
+        host->AddRef();
+    }
+
+    host->DecServiceLoad(sockId);
+    host->Release();
 }

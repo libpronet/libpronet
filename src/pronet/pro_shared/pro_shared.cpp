@@ -395,6 +395,10 @@ pbsd_closesocket_i(PRO_INT64 fd)
 #endif
 }
 
+/*
+ * Be sure to initialize important global data first to prevent crashes
+ * caused by it being used before entering main()!!!
+ */
 static
 void
 PRO_CALLTYPE

@@ -22,8 +22,10 @@ EXPORTS
     ProCreateSslTransport
     ProDeleteTransport
     ProCreateServiceHub
+    ProCreateServiceHubEx
     ProDeleteServiceHub
     ProCreateServiceHost
+    ProCreateServiceHostEx
     ProDeleteServiceHost
     ProOpenTcpSockId
     ProOpenUdpSockId

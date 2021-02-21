@@ -300,21 +300,10 @@ EXIT:
     char remoteIp[64] = "";
     pbsd_inet_ntoa(m_remoteAddr.sin_addr.s_addr, remoteIp);
 
-    if (sockId != -1)
+    if (m_enableServiceExt)
     {
-        observer->OnConnectOk(
-            (IProConnector*)this,
-            sockId,
-            m_unixSocket,
-            remoteIp,
-            pbsd_ntoh16(m_remoteAddr.sin_port),
-            m_serviceId,
-            m_serviceOpt,
-            NULL  /* nonce */
-            );
-    }
-    else
-    {
+        assert(sockId == -1);
+
         observer->OnConnectError(
             (IProConnector*)this,
             remoteIp,
@@ -323,6 +312,28 @@ EXIT:
             m_serviceOpt,
             false /* isn't a timeout */
             );
+    }
+    else
+    {
+        if (sockId != -1)
+        {
+            observer->OnConnectOk(
+                (IProConnector*)this,
+                sockId,
+                m_unixSocket,
+                remoteIp,
+                pbsd_ntoh16(m_remoteAddr.sin_port)
+                );
+        }
+        else
+        {
+            observer->OnConnectError(
+                (IProConnector*)this,
+                remoteIp,
+                pbsd_ntoh16(m_remoteAddr.sin_port),
+                false /* isn't a timeout */
+                );
+        }
     }
 
     observer->Release();
@@ -376,14 +387,27 @@ CProConnector::OnError(PRO_INT64 sockId,
     char remoteIp[64] = "";
     pbsd_inet_ntoa(m_remoteAddr.sin_addr.s_addr, remoteIp);
 
-    observer->OnConnectError(
-        (IProConnector*)this,
-        remoteIp,
-        pbsd_ntoh16(m_remoteAddr.sin_port),
-        m_serviceId,
-        m_serviceOpt,
-        false /* isn't a timeout */
-        );
+    if (m_enableServiceExt)
+    {
+        observer->OnConnectError(
+            (IProConnector*)this,
+            remoteIp,
+            pbsd_ntoh16(m_remoteAddr.sin_port),
+            m_serviceId,
+            m_serviceOpt,
+            false /* isn't a timeout */
+            );
+    }
+    else
+    {
+        observer->OnConnectError(
+            (IProConnector*)this,
+            remoteIp,
+            pbsd_ntoh16(m_remoteAddr.sin_port),
+            false /* isn't a timeout */
+            );
+    }
+
     observer->Release();
 }
 
@@ -444,32 +468,57 @@ CProConnector::OnHandshakeOk(IProTcpHandshaker* handshaker,
     char remoteIp[64] = "";
     pbsd_inet_ntoa(m_remoteAddr.sin_addr.s_addr, remoteIp);
 
-    if (sockId != -1)
+    if (m_enableServiceExt)
     {
-        PRO_NONCE nonce;
-        memcpy(&nonce, buf, size);
+        if (sockId != -1)
+        {
+            PRO_NONCE nonce;
+            memcpy(&nonce, buf, size);
 
-        observer->OnConnectOk(
-            (IProConnector*)this,
-            sockId,
-            unixSocket,
-            remoteIp,
-            pbsd_ntoh16(m_remoteAddr.sin_port),
-            m_serviceId,
-            m_serviceOpt,
-            &nonce
-            );
+            observer->OnConnectOk(
+                (IProConnector*)this,
+                sockId,
+                unixSocket,
+                remoteIp,
+                pbsd_ntoh16(m_remoteAddr.sin_port),
+                m_serviceId,
+                m_serviceOpt,
+                &nonce
+                );
+        }
+        else
+        {
+            observer->OnConnectError(
+                (IProConnector*)this,
+                remoteIp,
+                pbsd_ntoh16(m_remoteAddr.sin_port),
+                m_serviceId,
+                m_serviceOpt,
+                false /* isn't a timeout */
+                );
+        }
     }
     else
     {
-        observer->OnConnectError(
-            (IProConnector*)this,
-            remoteIp,
-            pbsd_ntoh16(m_remoteAddr.sin_port),
-            m_serviceId,
-            m_serviceOpt,
-            false /* isn't a timeout */
-            );
+        if (sockId != -1)
+        {
+            observer->OnConnectOk(
+                (IProConnector*)this,
+                sockId,
+                unixSocket,
+                remoteIp,
+                pbsd_ntoh16(m_remoteAddr.sin_port)
+                );
+        }
+        else
+        {
+            observer->OnConnectError(
+                (IProConnector*)this,
+                remoteIp,
+                pbsd_ntoh16(m_remoteAddr.sin_port),
+                false /* isn't a timeout */
+                );
+        }
     }
 
     observer->Release();
@@ -517,14 +566,27 @@ CProConnector::OnHandshakeError(IProTcpHandshaker* handshaker,
     char remoteIp[64] = "";
     pbsd_inet_ntoa(m_remoteAddr.sin_addr.s_addr, remoteIp);
 
-    observer->OnConnectError(
-        (IProConnector*)this,
-        remoteIp,
-        pbsd_ntoh16(m_remoteAddr.sin_port),
-        m_serviceId,
-        m_serviceOpt,
-        errorCode == PBSD_ETIMEDOUT
-        );
+    if (m_enableServiceExt)
+    {
+        observer->OnConnectError(
+            (IProConnector*)this,
+            remoteIp,
+            pbsd_ntoh16(m_remoteAddr.sin_port),
+            m_serviceId,
+            m_serviceOpt,
+            errorCode == PBSD_ETIMEDOUT
+            );
+    }
+    else
+    {
+        observer->OnConnectError(
+            (IProConnector*)this,
+            remoteIp,
+            pbsd_ntoh16(m_remoteAddr.sin_port),
+            errorCode == PBSD_ETIMEDOUT
+            );
+    }
+
     observer->Release();
     ProDeleteTcpHandshaker(handshaker);
 }
@@ -660,14 +722,27 @@ CProConnector::OnTimer(void*      factory,
     char remoteIp[64] = "";
     pbsd_inet_ntoa(m_remoteAddr.sin_addr.s_addr, remoteIp);
 
-    observer->OnConnectError(
-        (IProConnector*)this,
-        remoteIp,
-        pbsd_ntoh16(m_remoteAddr.sin_port),
-        m_serviceId,
-        m_serviceOpt,
-        !error /* is a timeout? */
-        );
+    if (m_enableServiceExt)
+    {
+        observer->OnConnectError(
+            (IProConnector*)this,
+            remoteIp,
+            pbsd_ntoh16(m_remoteAddr.sin_port),
+            m_serviceId,
+            m_serviceOpt,
+            !error /* is a timeout? */
+            );
+    }
+    else
+    {
+        observer->OnConnectError(
+            (IProConnector*)this,
+            remoteIp,
+            pbsd_ntoh16(m_remoteAddr.sin_port),
+            !error /* is a timeout? */
+            );
+    }
+
     ProDeleteTcpHandshaker(handshaker);
     observer->Release();
 }

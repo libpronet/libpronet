@@ -208,7 +208,7 @@ private:
     PRO_SSL_SERVER_CONFIG*               m_sslConfig;
     IRtpMsgServer*                       m_msgServer;
 
-    CProStlMap<PRO_UINT64, MSG_USER_CTX> m_uid2Ctx[256]; /* cid[0]<> ~ cid[255]<> */
+    CProStlMap<PRO_UINT64, MSG_USER_CTX> m_uid2Ctx[256]; /* cid0 ~ cid255 */
 
     CProThreadMutex                      m_lock;
 

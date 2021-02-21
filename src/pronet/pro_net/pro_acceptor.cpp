@@ -60,13 +60,25 @@ MakeNonce_i(PRO_NONCE& nonce)
 CProAcceptor*
 CProAcceptor::CreateInstance(bool enableServiceExt)
 {
-    CProAcceptor* const acceptor = new CProAcceptor(enableServiceExt);
+    CProAcceptor* const acceptor =
+        new CProAcceptor(enableServiceExt, enableServiceExt);
 
     return (acceptor);
 }
 
-CProAcceptor::CProAcceptor(bool enableServiceExt)
-: m_enableServiceExt(enableServiceExt)
+CProAcceptor*
+CProAcceptor::CreateInstanceOnlyLoopExt()
+{
+    CProAcceptor* const acceptor = new CProAcceptor(false, true);
+
+    return (acceptor);
+}
+
+CProAcceptor::CProAcceptor(bool nonloopExt,
+                           bool loopExt)
+                           :
+m_nonloopExt(nonloopExt),
+m_loopExt(loopExt)
 {
     m_observer         = NULL;
     m_reactorTask      = NULL;
@@ -330,6 +342,7 @@ CProAcceptor::OnInput(PRO_INT64 sockId)
     IProTcpHandshaker*    handshaker = NULL;
     PRO_INT64             newSockId  = -1;
     bool                  unixSocket = false;
+    pbsd_sockaddr_in      localAddr;
     pbsd_sockaddr_in      remoteAddr;
 
     {
@@ -344,6 +357,19 @@ CProAcceptor::OnInput(PRO_INT64 sockId)
         {
             newSockId  = pbsd_accept(m_sockId, &remoteAddr);
             unixSocket = false;
+
+            if (newSockId != -1)
+            {
+                const int option = 1;
+                pbsd_setsockopt(
+                    newSockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
+
+                if (pbsd_getsockname(newSockId, &localAddr) != 0)
+                {
+                    ProCloseSockId(newSockId);
+                    newSockId = -1;
+                }
+            }
         }
         else if (sockId == m_sockIdUn)
         {
@@ -361,13 +387,6 @@ CProAcceptor::OnInput(PRO_INT64 sockId)
             return;
         }
 
-        if (!unixSocket)
-        {
-            const int option = 1;
-            pbsd_setsockopt(
-                newSockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
-        }
-
         /*
          * ddos?
          */
@@ -378,7 +397,18 @@ CProAcceptor::OnInput(PRO_INT64 sockId)
             return;
         }
 
-        if (m_enableServiceExt)
+        bool isLoop = false;
+        if (unixSocket ||
+            localAddr.sin_addr.s_addr == pbsd_inet_aton("127.0.0.1"))
+        {
+            isLoop = true;
+        }
+
+        if (
+            (isLoop  && m_loopExt)
+            ||
+            (!isLoop && m_nonloopExt)
+           )
         {
             PRO_NONCE nonce;
             MakeNonce_i(nonce);
@@ -403,17 +433,19 @@ CProAcceptor::OnInput(PRO_INT64 sockId)
                 ProCloseSockId(newSockId);
             }
 
-            return;
+            return; /* return now */
         }
 
         m_observer->AddRef();
         observer = m_observer;
     }
 
+    char           localIp[64]  = "127.0.0.1"; /* a dummy for unix socket */
     char           remoteIp[64] = "127.0.0.1"; /* a dummy for unix socket */
     unsigned short remotePort   = 65535;       /* a dummy for unix socket */
     if (!unixSocket)
     {
+        pbsd_inet_ntoa(localAddr.sin_addr.s_addr , localIp);
         pbsd_inet_ntoa(remoteAddr.sin_addr.s_addr, remoteIp);
         remotePort = pbsd_ntoh16(remoteAddr.sin_port);
     }
@@ -422,11 +454,9 @@ CProAcceptor::OnInput(PRO_INT64 sockId)
         (IProAcceptor*)this,
         newSockId,
         unixSocket,
+        localIp,
         remoteIp,
-        remotePort,
-        0,   /* serviceId */
-        0,   /* serviceOpt */
-        NULL /* nonce */
+        remotePort
         );
     observer->Release();
 }
@@ -450,6 +480,7 @@ CProAcceptor::OnHandshakeOk(IProTcpHandshaker* handshaker,
 
     IProAcceptorObserver* observer = NULL;
     PRO_NONCE             nonce;
+    pbsd_sockaddr_in      localAddr;
     pbsd_sockaddr_in      remoteAddr;
 
     {
@@ -471,10 +502,14 @@ CProAcceptor::OnHandshakeOk(IProTcpHandshaker* handshaker,
             return;
         }
 
-        if (!unixSocket && pbsd_getpeername(sockId, &remoteAddr) != 0)
+        if (!unixSocket)
         {
-            ProCloseSockId(sockId);
-            sockId = -1;
+            if (pbsd_getsockname(sockId, &localAddr)  != 0 ||
+                pbsd_getpeername(sockId, &remoteAddr) != 0)
+            {
+                ProCloseSockId(sockId);
+                sockId = -1;
+            }
         }
 
         assert(serviceData != NULL);
@@ -503,12 +538,14 @@ CProAcceptor::OnHandshakeOk(IProTcpHandshaker* handshaker,
         return;
     }
 
+    char                localIp[64]  = "127.0.0.1"; /* a dummy for unix socket */
     char                remoteIp[64] = "127.0.0.1"; /* a dummy for unix socket */
     unsigned short      remotePort   = 65535;       /* a dummy for unix socket */
     const unsigned char serviceId    = serviceData[0];
     const unsigned char serviceOpt   = serviceData[1];
     if (!unixSocket)
     {
+        pbsd_inet_ntoa(localAddr.sin_addr.s_addr , localIp);
         pbsd_inet_ntoa(remoteAddr.sin_addr.s_addr, remoteIp);
         remotePort = pbsd_ntoh16(remoteAddr.sin_port);
     }
@@ -517,6 +554,7 @@ CProAcceptor::OnHandshakeOk(IProTcpHandshaker* handshaker,
         (IProAcceptor*)this,
         sockId,
         unixSocket,
+        localIp,
         remoteIp,
         remotePort,
         serviceId,

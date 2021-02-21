@@ -38,13 +38,12 @@ public CProRefCount
 {
 public:
 
-    static CProServiceHost* CreateInstance();
+    static CProServiceHost* CreateInstance(unsigned char serviceId); /* = 0 */
 
     bool Init(
         IProServiceHostObserver* observer,
         IProReactor*             reactor,
-        unsigned short           servicePort,
-        unsigned char            serviceId
+        unsigned short           servicePort
         );
 
     void Fini();
@@ -53,11 +52,32 @@ public:
 
     virtual unsigned long PRO_CALLTYPE Release();
 
+    void DecServiceLoad(PRO_INT64 sockId);
+
 private:
 
-    CProServiceHost();
+    CProServiceHost(unsigned char serviceId);
 
     virtual ~CProServiceHost();
+
+    virtual void PRO_CALLTYPE OnConnectOk(
+        IProConnector* connector,
+        PRO_INT64      sockId,
+        bool           unixSocket,
+        const char*    remoteIp,
+        unsigned short remotePort
+        )
+    {
+    }
+
+    virtual void PRO_CALLTYPE OnConnectError(
+        IProConnector* connector,
+        const char*    remoteIp,
+        unsigned short remotePort,
+        bool           timeout
+        )
+    {
+    }
 
     virtual void PRO_CALLTYPE OnConnectOk(
         IProConnector*   connector,
@@ -101,20 +121,28 @@ private:
 
 private:
 
+    const unsigned char      m_serviceId;
     IProServiceHostObserver* m_observer;
     IProReactor*             m_reactor;
     IProConnector*           m_connector;
     CProServicePipe*         m_pipe;
     PRO_UINT64               m_timerId;
-
     unsigned short           m_servicePort;
-    unsigned char            m_serviceId;
     PRO_INT64                m_connectTick;
-
     CProThreadMutex          m_lock;
+
+    CProStlSet<PRO_INT64>    m_onlineSockIds;
+    CProThreadMutex          m_onlineLock;
 
     DECLARE_SGI_POOL(0)
 };
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
+void
+PRO_CALLTYPE
+ProDecServiceLoad(PRO_INT64 sockId);
 
 /////////////////////////////////////////////////////////////////////////////
 ////

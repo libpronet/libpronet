@@ -559,11 +559,43 @@ IProServiceHub*
 PRO_CALLTYPE
 ProCreateServiceHub(IProReactor*   reactor,
                     unsigned short servicePort,
-                    unsigned long  timeoutInSeconds) /* = 0 */
+                    bool           enableLoadBalance) /* = false */
 {
     ProNetInit();
 
-    CProServiceHub* const hub = CProServiceHub::CreateInstance();
+    CProServiceHub* const hub = CProServiceHub::CreateInstance(
+        false, /* enableServiceExt is false */
+        enableLoadBalance
+        );
+    if (hub == NULL)
+    {
+        return (NULL);
+    }
+
+    if (!hub->Init(reactor, servicePort, 0))
+    {
+        hub->Release();
+
+        return (NULL);
+    }
+
+    return ((IProServiceHub*)hub);
+}
+
+PRO_NET_API
+IProServiceHub*
+PRO_CALLTYPE
+ProCreateServiceHubEx(IProReactor*   reactor,
+                      unsigned short servicePort,
+                      bool           enableLoadBalance, /* = false */
+                      unsigned long  timeoutInSeconds)  /* = 0 */
+{
+    ProNetInit();
+
+    CProServiceHub* const hub = CProServiceHub::CreateInstance(
+        true, /* enableServiceExt is true */
+        enableLoadBalance
+        );
     if (hub == NULL)
     {
         return (NULL);
@@ -599,18 +631,49 @@ IProServiceHost*
 PRO_CALLTYPE
 ProCreateServiceHost(IProServiceHostObserver* observer,
                      IProReactor*             reactor,
-                     unsigned short           servicePort,
-                     unsigned char            serviceId)
+                     unsigned short           servicePort)
 {
     ProNetInit();
 
-    CProServiceHost* const host = CProServiceHost::CreateInstance();
+    CProServiceHost* const host = CProServiceHost::CreateInstance(0); /* serviceId is 0 */
     if (host == NULL)
     {
         return (NULL);
     }
 
-    if (!host->Init(observer, reactor, servicePort, serviceId))
+    if (!host->Init(observer, reactor, servicePort))
+    {
+        host->Release();
+
+        return (NULL);
+    }
+
+    return ((IProServiceHost*)host);
+}
+
+PRO_NET_API
+IProServiceHost*
+PRO_CALLTYPE
+ProCreateServiceHostEx(IProServiceHostObserver* observer,
+                       IProReactor*             reactor,
+                       unsigned short           servicePort,
+                       unsigned char            serviceId)
+{
+    ProNetInit();
+
+    assert(serviceId > 0);
+    if (serviceId == 0)
+    {
+        return (NULL);
+    }
+
+    CProServiceHost* const host = CProServiceHost::CreateInstance(serviceId);
+    if (host == NULL)
+    {
+        return (NULL);
+    }
+
+    if (!host->Init(observer, reactor, servicePort))
     {
         host->Release();
 
@@ -738,6 +801,7 @@ ProCloseSockId(PRO_INT64 sockId,
         return;
     }
 
+    ProDecServiceLoad(sockId); /* for load-balance */
     pbsd_closesocket(sockId, linger);
 }
 

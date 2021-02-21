@@ -42,7 +42,10 @@ struct SERVICE_HUB_CONFIG_INFO
         hubs_thread_count      = 10;
         hubs_handshake_timeout = 10;
 
-        hubs_listen_ports.insert(3000);
+        hubs_tcpex_port_a.insert(3000);
+        hubs_tcpex_port_b.insert(0);
+        hubs_tcp_port_a.insert(0);
+        hubs_tcp_port_b.insert(0);
     }
 
     void ToConfigs(CProStlVector<PRO_CONFIG_ITEM>& configs) const
@@ -52,12 +55,36 @@ struct SERVICE_HUB_CONFIG_INFO
         configStream.AddUint    ("hubs_thread_count"     , hubs_thread_count);
         configStream.AddUint    ("hubs_handshake_timeout", hubs_handshake_timeout);
 
-        CProStlSet<unsigned short>::const_iterator       itr = hubs_listen_ports.begin();
-        CProStlSet<unsigned short>::const_iterator const end = hubs_listen_ports.end();
+        CProStlSet<unsigned short>::const_iterator itr = hubs_tcpex_port_a.begin();
+        CProStlSet<unsigned short>::const_iterator end = hubs_tcpex_port_a.end();
 
         for (; itr != end; ++itr)
         {
-            configStream.AddUint("hubs_listen_port"      , *itr);
+            configStream.AddUint("hubs_tcpex_port_a"     , *itr);
+        }
+
+        itr = hubs_tcpex_port_b.begin();
+        end = hubs_tcpex_port_b.end();
+
+        for (; itr != end; ++itr)
+        {
+            configStream.AddUint("hubs_tcpex_port_b"     , *itr);
+        }
+
+        itr = hubs_tcp_port_a.begin();
+        end = hubs_tcp_port_a.end();
+
+        for (; itr != end; ++itr)
+        {
+            configStream.AddUint("hubs_tcp_port_a"       , *itr);
+        }
+
+        itr = hubs_tcp_port_b.begin();
+        end = hubs_tcp_port_b.end();
+
+        for (; itr != end; ++itr)
+        {
+            configStream.AddUint("hubs_tcp_port_b"       , *itr);
         }
 
         configStream.Get(configs);
@@ -66,7 +93,10 @@ struct SERVICE_HUB_CONFIG_INFO
     unsigned int               hubs_thread_count; /* 1 ~ 100 */
     unsigned int               hubs_handshake_timeout;
 
-    CProStlSet<unsigned short> hubs_listen_ports;
+    CProStlSet<unsigned short> hubs_tcpex_port_a; /* class-a port with tcpex protocol, active-standby mode */
+    CProStlSet<unsigned short> hubs_tcpex_port_b; /* class-b port with tcpex protocol, load-balance mode */
+    CProStlSet<unsigned short> hubs_tcp_port_a;   /* class-a port with tcp protocol, active-standby mode */
+    CProStlSet<unsigned short> hubs_tcp_port_b;   /* class-b port with tcp protocol, load-balance mode */
 
     DECLARE_SGI_POOL(0)
 };
@@ -197,7 +227,10 @@ int main(int argc, char* argv[])
             goto EXIT;
         }
 
-        configInfo.hubs_listen_ports.clear();
+        configInfo.hubs_tcpex_port_a.clear();
+        configInfo.hubs_tcpex_port_b.clear();
+        configInfo.hubs_tcp_port_a.clear();
+        configInfo.hubs_tcp_port_b.clear();
 
         int       i = 0;
         const int c = (int)configs.size();
@@ -223,31 +256,42 @@ int main(int argc, char* argv[])
                     configInfo.hubs_handshake_timeout = value;
                 }
             }
-            else if (stricmp(configName.c_str(), "hubs_listen_port") == 0)
+            else if (stricmp(configName.c_str(), "hubs_tcpex_port_a") == 0)
             {
                 const int value = atoi(configValue.c_str());
                 if (value > 0 && value <= 65535)
                 {
-                    configInfo.hubs_listen_ports.insert((unsigned short)value);
+                    configInfo.hubs_tcpex_port_a.insert((unsigned short)value);
+                }
+            }
+            else if (stricmp(configName.c_str(), "hubs_tcpex_port_b") == 0)
+            {
+                const int value = atoi(configValue.c_str());
+                if (value > 0 && value <= 65535)
+                {
+                    configInfo.hubs_tcpex_port_b.insert((unsigned short)value);
+                }
+            }
+            else if (stricmp(configName.c_str(), "hubs_tcp_port_a") == 0)
+            {
+                const int value = atoi(configValue.c_str());
+                if (value > 0 && value <= 65535)
+                {
+                    configInfo.hubs_tcp_port_a.insert((unsigned short)value);
+                }
+            }
+            else if (stricmp(configName.c_str(), "hubs_tcp_port_b") == 0)
+            {
+                const int value = atoi(configValue.c_str());
+                if (value > 0 && value <= 65535)
+                {
+                    configInfo.hubs_tcp_port_b.insert((unsigned short)value);
                 }
             }
             else
             {
             }
         } /* end of for (...) */
-    }
-
-    if (configInfo.hubs_listen_ports.size() == 0)
-    {
-        printf(
-            "\n"
-            "%s \n"
-            " pro_service_hub --- error! \"hubs_listen_port\" is not found. \n"
-            ,
-            timeString.c_str()
-            );
-
-        goto EXIT;
     }
 
     reactor = ProCreateReactor(configInfo.hubs_thread_count);
@@ -268,16 +312,56 @@ int main(int argc, char* argv[])
     SetupSignalHandlers_i();
 #endif
 
+    for (int i = 1; i <= 4; ++i)
     {
-        CProStlSet<unsigned short>::iterator       itr = configInfo.hubs_listen_ports.begin();
-        CProStlSet<unsigned short>::iterator const end = configInfo.hubs_listen_ports.end();
+        CProStlSet<unsigned short>::iterator itr;
+        CProStlSet<unsigned short>::iterator end;
+
+        if (i == 1)
+        {
+            itr = configInfo.hubs_tcpex_port_a.begin();
+            end = configInfo.hubs_tcpex_port_a.end();
+        }
+        else if (i == 2)
+        {
+            itr = configInfo.hubs_tcpex_port_b.begin();
+            end = configInfo.hubs_tcpex_port_b.end();
+        }
+        else if (i== 3)
+        {
+            itr = configInfo.hubs_tcp_port_a.begin();
+            end = configInfo.hubs_tcp_port_a.end();
+        }
+        else
+        {
+            itr = configInfo.hubs_tcp_port_b.begin();
+            end = configInfo.hubs_tcp_port_b.end();
+        }
 
         for (; itr != end; ++itr)
         {
             const unsigned short port = *itr;
 
-            IProServiceHub* const hub = ProCreateServiceHub(
-                reactor, port, configInfo.hubs_handshake_timeout);
+            IProServiceHub* hub = NULL;
+
+            if (i == 1 || i == 2)
+            {
+                hub = ProCreateServiceHubEx(
+                    reactor,
+                    port,
+                    i == 2, /* enableLoadBalance */
+                    configInfo.hubs_handshake_timeout
+                    );
+            }
+            else
+            {
+                hub = ProCreateServiceHub(
+                    reactor,
+                    port,
+                    i == 4  /* enableLoadBalance */
+                    );
+            }
+
             if (hub == NULL)
             {
                 printf(
@@ -299,6 +383,7 @@ int main(int argc, char* argv[])
 
             char info[64] = "";
             sprintf(info, "%u", (unsigned int)port);
+
             if (portString.empty())
             {
                 portString =  info;

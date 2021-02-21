@@ -17,6 +17,7 @@
  */
 
 #include "pro_service_hub.h"
+#include "pro_acceptor.h"
 #include "pro_service_pipe.h"
 #include "../pro_net/pro_net.h"
 #include "../pro_util/pro_bsd_wrapper.h"
@@ -46,14 +47,20 @@
 ////
 
 CProServiceHub*
-CProServiceHub::CreateInstance()
+CProServiceHub::CreateInstance(bool enableServiceExt,
+                               bool enableLoadBalance)
 {
-    CProServiceHub* const hub = new CProServiceHub;
+    CProServiceHub* const hub =
+        new CProServiceHub(enableServiceExt, enableLoadBalance);
 
     return (hub);
 }
 
-CProServiceHub::CProServiceHub()
+CProServiceHub::CProServiceHub(bool enableServiceExt,
+                               bool enableLoadBalance)
+                               :
+m_enableServiceExt(enableServiceExt),
+m_enableLoadBalance(enableLoadBalance)
 {
     m_reactor  = NULL;
     m_acceptor = NULL;
@@ -87,8 +94,27 @@ CProServiceHub::Init(IProReactor*   reactor,
             return (false);
         }
 
-        m_acceptor = ProCreateAcceptorEx(
-            this, reactor, "0.0.0.0", servicePort, timeoutInSeconds);
+        if (m_enableServiceExt)
+        {
+            m_acceptor = ProCreateAcceptorEx(
+                this, reactor, "0.0.0.0", servicePort, timeoutInSeconds);
+        }
+        else
+        {
+            CProAcceptor* acceptor = CProAcceptor::CreateInstanceOnlyLoopExt();
+            if (acceptor != NULL)
+            {
+                if (!acceptor->Init(this, (CProTpReactorTask*)reactor,
+                    "0.0.0.0", servicePort, timeoutInSeconds))
+                {
+                    acceptor->Release();
+                    acceptor = NULL;
+                }
+            }
+
+            m_acceptor = (IProAcceptor*)acceptor;
+        }
+
         if (m_acceptor == NULL)
         {
             return (false);
@@ -104,9 +130,9 @@ CProServiceHub::Init(IProReactor*   reactor,
 void
 CProServiceHub::Fini()
 {
-    IProAcceptor*                acceptor = NULL;
-    CProStlSet<PRO_SERVICE_PIPE> allPipes;
-    CProStlSet<PRO_SERVICE_SOCK> expireSocks;
+    IProAcceptor*                               acceptor = NULL;
+    CProStlMap<PRO_SERVICE_PIPE, unsigned char> pipe2ServiceId;
+    CProStlSet<PRO_SERVICE_SOCK>                expireSocks;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -119,11 +145,15 @@ CProServiceHub::Fini()
         m_reactor->CancelTimer(m_timerId);
         m_timerId = 0;
 
+        for (int i = 0; i < 256; ++i)
+        {
+            m_readyPipe2Socks[i].clear();
+        }
+
         expireSocks = m_expireSocks;
         m_expireSocks.clear();
-        m_serviceId2Pipe.clear();
-        allPipes = m_allPipes;
-        m_allPipes.clear();
+        pipe2ServiceId = m_pipe2ServiceId;
+        m_pipe2ServiceId.clear();
         acceptor = m_acceptor;
         m_acceptor = NULL;
         m_reactor = NULL;
@@ -140,12 +170,12 @@ CProServiceHub::Fini()
     }
 
     {
-        CProStlSet<PRO_SERVICE_PIPE>::iterator       itr = allPipes.begin();
-        CProStlSet<PRO_SERVICE_PIPE>::iterator const end = allPipes.end();
+        CProStlMap<PRO_SERVICE_PIPE, unsigned char>::iterator       itr = pipe2ServiceId.begin();
+        CProStlMap<PRO_SERVICE_PIPE, unsigned char>::iterator const end = pipe2ServiceId.end();
 
         for (; itr != end; ++itr)
         {
-            ProDeleteServicePipe(itr->pipe);
+            ProDeleteServicePipe(itr->first.pipe);
         }
     }
 
@@ -172,9 +202,33 @@ CProServiceHub::Release()
 
 void
 PRO_CALLTYPE
+CProServiceHub::OnAccept(IProAcceptor*  acceptor,
+                         PRO_INT64      sockId,
+                         bool           unixSocket,
+                         const char*    localIp,
+                         const char*    remoteIp,
+                         unsigned short remotePort)
+{
+    assert(acceptor != NULL);
+    assert(sockId != -1);
+    assert(localIp != NULL);
+    if (acceptor == NULL || sockId == -1 || localIp == NULL)
+    {
+        return;
+    }
+
+    PRO_NONCE nonce;
+    memset(&nonce, 0, sizeof(PRO_NONCE));
+
+    AcceptApp(acceptor, sockId, unixSocket, 0, 0, nonce);
+}
+
+void
+PRO_CALLTYPE
 CProServiceHub::OnAccept(IProAcceptor*    acceptor,
                          PRO_INT64        sockId,
                          bool             unixSocket,
+                         const char*      localIp,
                          const char*      remoteIp,
                          unsigned short   remotePort,
                          unsigned char    serviceId,
@@ -183,39 +237,46 @@ CProServiceHub::OnAccept(IProAcceptor*    acceptor,
 {
     assert(acceptor != NULL);
     assert(sockId != -1);
-    assert(remoteIp != NULL);
+    assert(localIp != NULL);
     assert(nonce != NULL);
-    if (acceptor == NULL || sockId == -1 || remoteIp == NULL || nonce == NULL)
+    if (acceptor == NULL || sockId == -1 || localIp == NULL || nonce == NULL)
     {
         return;
+    }
+
+    if (!m_enableServiceExt)
+    {
+        assert(serviceId == 0);
+        if (serviceId != 0)
+        {
+            ProCloseSockId(sockId);
+
+            return;
+        }
     }
 
     if (serviceId == 0)
     {
-        OnAcceptIpc(sockId, unixSocket, remoteIp);
+        AcceptIpc(acceptor, sockId, unixSocket, localIp);
     }
     else
     {
-        OnAcceptOther(sockId, unixSocket, serviceId, serviceOpt, *nonce);
+        AcceptApp(acceptor, sockId, unixSocket, serviceId, serviceOpt, *nonce);
     }
 }
 
 void
-CProServiceHub::OnAcceptIpc(PRO_INT64   sockId,
-                            bool        unixSocket,
-                            const char* remoteIp)
+CProServiceHub::AcceptIpc(IProAcceptor* acceptor,
+                          PRO_INT64     sockId,
+                          bool          unixSocket,
+                          const char*   localIp)
 {
+    assert(acceptor != NULL);
     assert(sockId != -1);
-    assert(remoteIp != NULL);
-
-    if (pbsd_inet_aton(remoteIp) != pbsd_inet_aton("127.0.0.1"))
-    {
-        ProCloseSockId(sockId);
-
-        return;
-    }
+    assert(localIp != NULL);
 
 #if !defined(_WIN32) && !defined(_WIN32_WCE)
+    assert(unixSocket);
     if (!unixSocket)
     {
         ProCloseSockId(sockId);
@@ -224,10 +285,25 @@ CProServiceHub::OnAcceptIpc(PRO_INT64   sockId,
     }
 #endif
 
+    assert(strcmp(localIp, "127.0.0.1") == 0);
+    if (strcmp(localIp, "127.0.0.1") != 0)
+    {
+        ProCloseSockId(sockId);
+
+        return;
+    }
+
     {
         CProThreadMutexGuard mon(m_lock);
 
         if (m_reactor == NULL || m_acceptor == NULL)
+        {
+            ProCloseSockId(sockId);
+
+            return;
+        }
+
+        if (acceptor != m_acceptor)
         {
             ProCloseSockId(sockId);
 
@@ -245,22 +321,25 @@ CProServiceHub::OnAcceptIpc(PRO_INT64   sockId,
 
         PRO_SERVICE_PIPE sp;
         sp.pipe       = pipe;
-        sp.pending    = true;
         sp.expireTick = ProGetTickCount64() + PIPE_TIMEOUT * 1000;
 
-        m_allPipes.insert(sp);
+        /*
+         * add a pending pipe
+         */
+        m_pipe2ServiceId[sp] = 0;
     }
 }
 
 void
-CProServiceHub::OnAcceptOther(PRO_INT64        sockId,
-                              bool             unixSocket,
-                              unsigned char    serviceId,
-                              unsigned char    serviceOpt,
-                              const PRO_NONCE& nonce)
+CProServiceHub::AcceptApp(IProAcceptor*    acceptor,
+                          PRO_INT64        sockId,
+                          bool             unixSocket,
+                          unsigned char    serviceId,
+                          unsigned char    serviceOpt,
+                          const PRO_NONCE& nonce)
 {
+    assert(acceptor != NULL);
     assert(sockId != -1);
-    assert(serviceId > 0);
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -272,22 +351,47 @@ CProServiceHub::OnAcceptOther(PRO_INT64        sockId,
             return;
         }
 
-        CProStlMap<unsigned char, PRO_SERVICE_PIPE>::iterator const itr =
-            m_serviceId2Pipe.find(serviceId);
-        if (itr == m_serviceId2Pipe.end())
+        if (acceptor != m_acceptor)
         {
             ProCloseSockId(sockId);
 
             return;
         }
 
-        const PRO_SERVICE_PIPE& sp = itr->second;
-        assert(sp.pipe != NULL);
-        assert(!sp.pending);
-        assert(sp.serviceId == serviceId);
+        CProServicePipe* pipe  = NULL;
+        PRO_UINT32       socks = 0;
+
+        CProStlMap<CProServicePipe*, PRO_UINT32>::iterator       itr = m_readyPipe2Socks[serviceId].begin();
+        CProStlMap<CProServicePipe*, PRO_UINT32>::iterator const end = m_readyPipe2Socks[serviceId].end();
+
+        for (; itr != end; ++itr)
+        {
+            if (pipe == NULL || itr->second < socks)
+            {
+                pipe  = itr->first;
+                socks = itr->second;
+            }
+        }
+
+        if (pipe == NULL)
+        {
+            ProCloseSockId(sockId);
+
+            return;
+        }
+
+        CProStlMap<PRO_SERVICE_PIPE, unsigned char>::iterator const itr2 =
+            m_pipe2ServiceId.find(pipe);
+        if (itr2 == m_pipe2ServiceId.end())
+        {
+            ProCloseSockId(sockId);
+
+            return;
+        }
+
+        const PRO_SERVICE_PIPE& sp = itr2->first;
 
         PRO_SERVICE_PACKET s2cPacket;
-        s2cPacket.s2c.serviceId          = serviceId;
         s2cPacket.s2c.serviceOpt         = serviceOpt;
         s2cPacket.s2c.nonce              = nonce;
         s2cPacket.s2c.oldSock.expireTick = ProGetTickCount64() + SOCK_TIMEOUT * 1000;
@@ -295,7 +399,7 @@ CProServiceHub::OnAcceptOther(PRO_INT64        sockId,
         s2cPacket.s2c.oldSock.unixSocket = unixSocket;
 
 #if defined(_WIN32_WCE)
-        sp.pipe->SendData(s2cPacket);
+        pipe->SendData(s2cPacket);
 #elif defined(_WIN32)
         if (::WSADuplicateSocket((SOCKET)sockId,
             (unsigned long)sp.processId, &s2cPacket.s2c.protocolInfo) != 0)
@@ -305,9 +409,9 @@ CProServiceHub::OnAcceptOther(PRO_INT64        sockId,
             return;
         }
 
-        sp.pipe->SendData(s2cPacket);
+        pipe->SendData(s2cPacket);
 #else
-        sp.pipe->SendFd(s2cPacket);
+        pipe->SendFd(s2cPacket);
 #endif
 
         m_expireSocks.insert(s2cPacket.s2c.oldSock);
@@ -326,6 +430,23 @@ CProServiceHub::OnRecv(CProServicePipe*          pipe,
         return;
     }
 
+    if (m_enableServiceExt)
+    {
+        assert(packet.c2s.serviceId > 0);
+        if (packet.c2s.serviceId == 0)
+        {
+            return;
+        }
+    }
+    else
+    {
+        assert(packet.c2s.serviceId == 0);
+        if (packet.c2s.serviceId != 0)
+        {
+            return;
+        }
+    }
+
     {
         CProThreadMutexGuard mon(m_lock);
 
@@ -334,22 +455,24 @@ CProServiceHub::OnRecv(CProServicePipe*          pipe,
             return;
         }
 
-        PRO_SERVICE_PIPE sp;
-        sp.pipe = pipe;
-
-        CProStlSet<PRO_SERVICE_PIPE>::iterator const itr = m_allPipes.find(sp);
-        if (itr == m_allPipes.end())
+        CProStlMap<PRO_SERVICE_PIPE, unsigned char>::iterator const itr =
+            m_pipe2ServiceId.find(pipe);
+        if (itr == m_pipe2ServiceId.end())
         {
             return;
         }
 
-        sp = *itr;
-        assert(sp.pipe == pipe);
+        PRO_SERVICE_PIPE& sp = (PRO_SERVICE_PIPE&)itr->first;
 
-        if (sp.pending)
+        /*
+         * register or update a service host
+         */
+        CProStlMap<CProServicePipe*, PRO_UINT32>::iterator const itr2 =
+            m_readyPipe2Socks[packet.c2s.serviceId].find(pipe);
+        if (itr2 == m_readyPipe2Socks[packet.c2s.serviceId].end())
         {
-            if (m_serviceId2Pipe.find(packet.c2s.serviceId) !=
-                m_serviceId2Pipe.end())
+            if (!m_enableLoadBalance &&
+                m_readyPipe2Socks[packet.c2s.serviceId].size() > 0)
             {
                 return;
             }
@@ -362,12 +485,14 @@ CProServiceHub::OnRecv(CProServicePipe*          pipe,
             }
 #endif
 
-            sp.pending    = false;
-            sp.expireTick = ProGetTickCount64() + PIPE_TIMEOUT * 1000;
-            sp.serviceId  = packet.c2s.serviceId;
             sp.processId  = packet.c2s.processId;
+            sp.expireTick = ProGetTickCount64() + PIPE_TIMEOUT * 1000;
 
-            m_serviceId2Pipe[sp.serviceId] = sp;
+            /*
+             * activate the pipe
+             */
+            itr->second                                   = packet.c2s.serviceId;
+            m_readyPipe2Socks[packet.c2s.serviceId][pipe] = 0;
 
             {{{
                 CProStlString timeString = "";
@@ -381,39 +506,35 @@ CProServiceHub::OnRecv(CProServicePipe*          pipe,
                     ,
                     timeString.c_str(),
                     (unsigned int)ProGetAcceptorPort(m_acceptor),
-                    (unsigned int)sp.serviceId,
-                    (unsigned int)sp.processId,
-                    (unsigned int)sp.processId
+                    (unsigned int)packet.c2s.serviceId,
+                    (unsigned int)packet.c2s.processId,
+                    (unsigned int)packet.c2s.processId
                     );
             }}}
         }
         else
         {
-            assert(packet.c2s.serviceId == sp.serviceId);
             assert(packet.c2s.processId == sp.processId);
-            if (packet.c2s.serviceId != sp.serviceId ||
-                packet.c2s.processId != sp.processId)
+            if (packet.c2s.processId != sp.processId)
             {
                 return;
             }
 
+            /*
+             * update the pipe
+             */
             sp.expireTick = ProGetTickCount64() + PIPE_TIMEOUT * 1000;
+            itr2->second  = packet.c2s.totalSocks;
 
             if (packet.c2s.oldSock.sockId != -1)
             {
                 m_expireSocks.erase(packet.c2s.oldSock);
 
 #if !defined(_WIN32_WCE)
-                ProCloseSockId(packet.c2s.oldSock.sockId, true); /* true!!! */
+                ProCloseSockId(packet.c2s.oldSock.sockId, true); /* linger is true!!! */
 #endif
             }
         }
-
-        /*
-         * update pipes
-         */
-        m_allPipes.erase(itr);
-        m_allPipes.insert(sp);
     }
 }
 
@@ -435,23 +556,23 @@ CProServiceHub::OnClose(CProServicePipe* pipe)
             return;
         }
 
-        PRO_SERVICE_PIPE sp;
-        sp.pipe = pipe;
-
-        CProStlSet<PRO_SERVICE_PIPE>::iterator const itr = m_allPipes.find(sp);
-        if (itr == m_allPipes.end())
+        CProStlMap<PRO_SERVICE_PIPE, unsigned char>::iterator const itr =
+            m_pipe2ServiceId.find(pipe);
+        if (itr == m_pipe2ServiceId.end())
         {
             return;
         }
 
-        sp = *itr;
-        assert(sp.pipe == pipe);
+        const PRO_SERVICE_PIPE sp = itr->first;
+        const unsigned char    id = itr->second;
 
-        CProStlMap<unsigned char, PRO_SERVICE_PIPE>::iterator const itr2 =
-            m_serviceId2Pipe.find(sp.serviceId);
-        if (itr2 != m_serviceId2Pipe.end() && itr2->second.pipe == pipe)
+        m_pipe2ServiceId.erase(itr);
+
+        CProStlMap<CProServicePipe*, PRO_UINT32>::iterator const itr2 =
+            m_readyPipe2Socks[id].find(pipe);
+        if (itr2 != m_readyPipe2Socks[id].end())
         {
-            m_serviceId2Pipe.erase(itr2);
+            m_readyPipe2Socks[id].erase(itr2);
 
             {{{
                 CProStlString timeString = "";
@@ -465,14 +586,12 @@ CProServiceHub::OnClose(CProServicePipe* pipe)
                     ,
                     timeString.c_str(),
                     (unsigned int)ProGetAcceptorPort(m_acceptor),
-                    (unsigned int)sp.serviceId,
+                    (unsigned int)id,
                     (unsigned int)sp.processId,
                     (unsigned int)sp.processId
                     );
             }}}
         }
-
-        m_allPipes.erase(itr);
     }
 
     ProDeleteServicePipe(pipe);
@@ -526,49 +645,50 @@ CProServiceHub::OnTimer(void*      factory,
         }
 
         {
-            CProStlSet<PRO_SERVICE_PIPE>::iterator       itr = m_allPipes.begin();
-            CProStlSet<PRO_SERVICE_PIPE>::iterator const end = m_allPipes.end();
+            CProStlMap<PRO_SERVICE_PIPE, unsigned char>::iterator       itr = m_pipe2ServiceId.begin();
+            CProStlMap<PRO_SERVICE_PIPE, unsigned char>::iterator const end = m_pipe2ServiceId.end();
 
             while (itr != end)
             {
-                const PRO_SERVICE_PIPE sp = *itr;
+                const PRO_SERVICE_PIPE sp = itr->first;
+                const unsigned char    id = itr->second;
+
                 if (sp.expireTick > tick)
                 {
                     ++itr;
+                    continue;
                 }
-                else
+
+                m_pipe2ServiceId.erase(itr++);
+                pipes.insert(sp.pipe);
+
+                CProStlMap<CProServicePipe*, PRO_UINT32>::iterator const itr2 =
+                    m_readyPipe2Socks[id].find(sp.pipe);
+                if (itr2 == m_readyPipe2Socks[id].end())
                 {
-                    m_allPipes.erase(itr++);
-
-                    CProStlMap<unsigned char, PRO_SERVICE_PIPE>::iterator const itr2 =
-                        m_serviceId2Pipe.find(sp.serviceId);
-                    if (itr2 != m_serviceId2Pipe.end() &&
-                        itr2->second.pipe == sp.pipe)
-                    {
-                        m_serviceId2Pipe.erase(itr2);
-
-                        {{{
-                            CProStlString timeString = "";
-                            ProGetLocalTimeString(timeString);
-
-                            printf(
-                                "\n"
-                                "%s \n"
-                                " CProServiceHub::OnTimer(port : %u,"
-                                " serviceId : %u, processId : %u/0x%X)"
-                                " [timeout] \n"
-                                ,
-                                timeString.c_str(),
-                                (unsigned int)ProGetAcceptorPort(m_acceptor),
-                                (unsigned int)sp.serviceId,
-                                (unsigned int)sp.processId,
-                                (unsigned int)sp.processId
-                                );
-                        }}}
-                    }
-
-                    pipes.insert(sp.pipe);
+                    continue;
                 }
+
+                m_readyPipe2Socks[id].erase(itr2);
+
+                {{{
+                    CProStlString timeString = "";
+                    ProGetLocalTimeString(timeString);
+
+                    printf(
+                        "\n"
+                        "%s \n"
+                        " CProServiceHub::OnTimer(port : %u,"
+                        " serviceId : %u, processId : %u/0x%X)"
+                        " [timeout] \n"
+                        ,
+                        timeString.c_str(),
+                        (unsigned int)ProGetAcceptorPort(m_acceptor),
+                        (unsigned int)id,
+                        (unsigned int)sp.processId,
+                        (unsigned int)sp.processId
+                        );
+                }}}
             } /* end of while (...) */
         }
     }

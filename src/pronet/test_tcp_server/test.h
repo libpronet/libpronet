@@ -140,9 +140,21 @@ private:
     virtual ~CTest();
 
     virtual void PRO_CALLTYPE OnAccept(
+        IProAcceptor*  acceptor,
+        PRO_INT64      sockId,
+        bool           unixSocket,
+        const char*    localIp,
+        const char*    remoteIp,
+        unsigned short remotePort
+        )
+    {
+    }
+
+    virtual void PRO_CALLTYPE OnAccept(
         IProAcceptor*    acceptor,
         PRO_INT64        sockId,
         bool             unixSocket,
+        const char*      localIp,
         const char*      remoteIp,
         unsigned short   remotePort,
         unsigned char    serviceId,
@@ -154,6 +166,18 @@ private:
         IProServiceHost* serviceHost,
         PRO_INT64        sockId,
         bool             unixSocket,
+        const char*      localIp,
+        const char*      remoteIp,
+        unsigned short   remotePort
+        )
+    {
+    }
+
+    virtual void PRO_CALLTYPE OnServiceAccept(
+        IProServiceHost* serviceHost,
+        PRO_INT64        sockId,
+        bool             unixSocket,
+        const char*      localIp,
         const char*      remoteIp,
         unsigned short   remotePort,
         unsigned char    serviceId,

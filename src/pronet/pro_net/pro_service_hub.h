@@ -39,7 +39,10 @@ public CProRefCount
 {
 public:
 
-    static CProServiceHub* CreateInstance();
+    static CProServiceHub* CreateInstance(
+        bool enableServiceExt,
+        bool enableLoadBalance
+        );
 
     bool Init(
         IProReactor*   reactor,
@@ -55,14 +58,27 @@ public:
 
 private:
 
-    CProServiceHub();
+    CProServiceHub(
+        bool enableServiceExt,
+        bool enableLoadBalance
+        );
 
     virtual ~CProServiceHub();
+
+    virtual void PRO_CALLTYPE OnAccept(
+        IProAcceptor*  acceptor,
+        PRO_INT64      sockId,
+        bool           unixSocket,
+        const char*    localIp,
+        const char*    remoteIp,
+        unsigned short remotePort
+        );
 
     virtual void PRO_CALLTYPE OnAccept(
         IProAcceptor*    acceptor,
         PRO_INT64        sockId,
         bool             unixSocket,
+        const char*      localIp,
         const char*      remoteIp,
         unsigned short   remotePort,
         unsigned char    serviceId,
@@ -92,13 +108,15 @@ private:
         PRO_INT64  userData
         );
 
-    void OnAcceptIpc(
-        PRO_INT64   sockId,
-        bool        unixSocket,
-        const char* remoteIp
+    void AcceptIpc(
+        IProAcceptor* acceptor,
+        PRO_INT64     sockId,
+        bool          unixSocket,
+        const char*   localIp
         );
 
-    void OnAcceptOther(
+    void AcceptApp(
+        IProAcceptor*    acceptor,
         PRO_INT64        sockId,
         bool             unixSocket,
         unsigned char    serviceId,
@@ -108,12 +126,14 @@ private:
 
 private:
 
+    const bool                                  m_enableServiceExt;
+    const bool                                  m_enableLoadBalance;
     IProReactor*                                m_reactor;
     IProAcceptor*                               m_acceptor;
     PRO_UINT64                                  m_timerId;
 
-    CProStlSet<PRO_SERVICE_PIPE>                m_allPipes;
-    CProStlMap<unsigned char, PRO_SERVICE_PIPE> m_serviceId2Pipe;
+    CProStlMap<PRO_SERVICE_PIPE, unsigned char> m_pipe2ServiceId;       /* all pipes */
+    CProStlMap<CProServicePipe*, PRO_UINT32>    m_readyPipe2Socks[256]; /* serviceId0 ~ serviceId255 */
     CProStlSet<PRO_SERVICE_SOCK>                m_expireSocks;
 
     CProThreadMutex                             m_lock;

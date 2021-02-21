@@ -255,19 +255,36 @@ public:
     virtual unsigned long PRO_CALLTYPE Release() = 0;
 
     /*
-     * 有连接进入时, 该函数将被回调
+     * 有原始连接进入时, 该函数将被回调
      *
+     * 该回调适用于ProCreateAcceptor(...)创建的接受器.
+     * 使用者负责sockId的资源维护
+     */
+    virtual void PRO_CALLTYPE OnAccept(
+        IProAcceptor*  acceptor,
+        PRO_INT64      sockId,     /* 套接字id */
+        bool           unixSocket, /* 是否unix套接字 */
+        const char*    localIp,    /* 本地的ip地址. != NULL */
+        const char*    remoteIp,   /* 远端的ip地址. != NULL */
+        unsigned short remotePort  /* 远端的端口号. > 0 */
+        ) = 0;
+
+    /*
+     * 有扩展协议连接进入时, 该函数将被回调
+     *
+     * 该回调适用于ProCreateAcceptorEx(...)创建的接受器.
      * 使用者负责sockId的资源维护
      */
     virtual void PRO_CALLTYPE OnAccept(
         IProAcceptor*    acceptor,
         PRO_INT64        sockId,     /* 套接字id */
         bool             unixSocket, /* 是否unix套接字 */
+        const char*      localIp,    /* 本地的ip地址. != NULL */
         const char*      remoteIp,   /* 远端的ip地址. != NULL */
         unsigned short   remotePort, /* 远端的端口号. > 0 */
-        unsigned char    serviceId,  /* 允许服务扩展时, 远端请求的服务id */
-        unsigned char    serviceOpt, /* 允许服务扩展时, 远端请求的服务选项 */
-        const PRO_NONCE* nonce       /* 允许服务扩展时, 会话随机数 */
+        unsigned char    serviceId,  /* 远端请求的服务id */
+        unsigned char    serviceOpt, /* 远端请求的服务选项 */
+        const PRO_NONCE* nonce       /* 会话随机数 */
         ) = 0;
 };
 
@@ -285,14 +302,31 @@ public:
     virtual unsigned long PRO_CALLTYPE Release() = 0;
 
     /*
-     * 有连接进入时, 该函数将被回调
+     * 有原始连接进入时, 该函数将被回调
      *
+     * 该回调适用于ProCreateServiceHost(...)创建的服务host.
      * 使用者负责sockId的资源维护
      */
     virtual void PRO_CALLTYPE OnServiceAccept(
         IProServiceHost* serviceHost,
         PRO_INT64        sockId,     /* 套接字id */
         bool             unixSocket, /* 是否unix套接字 */
+        const char*      localIp,    /* 本地的ip地址. != NULL */
+        const char*      remoteIp,   /* 远端的ip地址. != NULL */
+        unsigned short   remotePort  /* 远端的端口号. > 0 */
+        ) = 0;
+
+    /*
+     * 有扩展协议连接进入时, 该函数将被回调
+     *
+     * 该回调适用于ProCreateServiceHostEx(...)创建的服务host.
+     * 使用者负责sockId的资源维护
+     */
+    virtual void PRO_CALLTYPE OnServiceAccept(
+        IProServiceHost* serviceHost,
+        PRO_INT64        sockId,     /* 套接字id */
+        bool             unixSocket, /* 是否unix套接字 */
+        const char*      localIp,    /* 本地的ip地址.     != NULL */
         const char*      remoteIp,   /* 远端的ip地址.     != NULL */
         unsigned short   remotePort, /* 远端的端口号.     > 0 */
         unsigned char    serviceId,  /* 远端请求的服务id. > 0 */
@@ -318,8 +352,35 @@ public:
     virtual unsigned long PRO_CALLTYPE Release() = 0;
 
     /*
-     * 连接成功时, 该函数将被回调
+     * 原始连接成功时, 该函数将被回调
      *
+     * 该回调适用于ProCreateConnector(...)创建的连接器.
+     * 使用者负责sockId的资源维护
+     */
+    virtual void PRO_CALLTYPE OnConnectOk(
+        IProConnector* connector,
+        PRO_INT64      sockId,     /* 套接字id */
+        bool           unixSocket, /* 是否unix套接字 */
+        const char*    remoteIp,   /* 远端的ip地址. != NULL */
+        unsigned short remotePort  /* 远端的端口号. > 0 */
+        ) = 0;
+
+    /*
+     * 原始连接出错或超时时, 该函数将被回调
+     *
+     * 该回调适用于ProCreateConnector(...)创建的连接器
+     */
+    virtual void PRO_CALLTYPE OnConnectError(
+        IProConnector* connector,
+        const char*    remoteIp,   /* 远端的ip地址. != NULL */
+        unsigned short remotePort, /* 远端的端口号. > 0 */
+        bool           timeout     /* 是否连接超时 */
+        ) = 0;
+
+    /*
+     * 扩展协议连接成功时, 该函数将被回调
+     *
+     * 该回调适用于ProCreateConnectorEx(...)创建的连接器
      * 使用者负责sockId的资源维护
      */
     virtual void PRO_CALLTYPE OnConnectOk(
@@ -328,20 +389,22 @@ public:
         bool             unixSocket, /* 是否unix套接字 */
         const char*      remoteIp,   /* 远端的ip地址. != NULL */
         unsigned short   remotePort, /* 远端的端口号. > 0 */
-        unsigned char    serviceId,  /* 允许服务扩展时, 请求的服务id */
-        unsigned char    serviceOpt, /* 允许服务扩展时, 请求的服务选项 */
-        const PRO_NONCE* nonce       /* 允许服务扩展时, 会话随机数 */
+        unsigned char    serviceId,  /* 请求的服务id */
+        unsigned char    serviceOpt, /* 请求的服务选项 */
+        const PRO_NONCE* nonce       /* 会话随机数 */
         ) = 0;
 
     /*
-     * 连接出错或超时时, 该函数将被回调
+     * 扩展协议连接出错或超时时, 该函数将被回调
+     *
+     * 该回调适用于ProCreateConnectorEx(...)创建的连接器
      */
     virtual void PRO_CALLTYPE OnConnectError(
         IProConnector* connector,
         const char*    remoteIp,   /* 远端的ip地址. != NULL */
         unsigned short remotePort, /* 远端的端口号. > 0 */
-        unsigned char  serviceId,  /* 允许服务扩展时, 请求的服务id */
-        unsigned char  serviceOpt, /* 允许服务扩展时, 请求的服务选项 */
+        unsigned char  serviceId,  /* 请求的服务id */
+        unsigned char  serviceOpt, /* 请求的服务选项 */
         bool           timeout     /* 是否连接超时 */
         ) = 0;
 };
@@ -738,7 +801,7 @@ PRO_CALLTYPE
 ProDeleteReactor(IProReactor* reactor);
 
 /*
- * 功能: 创建一个接受器
+ * 功能: 创建一个原始的接受器
  *
  * 参数:
  * observer  : 回调目标
@@ -759,7 +822,7 @@ ProCreateAcceptor(IProAcceptorObserver* observer,
                   unsigned short        localPort = 0);
 
 /*
- * 功能: 创建一个扩展协议接受器
+ * 功能: 创建一个扩展协议的接受器
  *
  * 参数:
  * observer         : 回调目标
@@ -816,7 +879,7 @@ PRO_CALLTYPE
 ProDeleteAcceptor(IProAcceptor* acceptor);
 
 /*
- * 功能: 创建一个连接器
+ * 功能: 创建一个原始的连接器
  *
  * 参数:
  * enableUnixSocket : 是否允许unix套接字. 仅用于Linux家族的127.0.0.1连接
@@ -843,7 +906,7 @@ ProCreateConnector(bool                   enableUnixSocket,
                    unsigned long          timeoutInSeconds = 0);
 
 /*
- * 功能: 创建一个扩展协议连接器
+ * 功能: 创建一个扩展协议的连接器
  *
  * 参数:
  * enableUnixSocket : 是否允许unix套接字. 仅用于Linux家族的127.0.0.1连接
@@ -1128,25 +1191,54 @@ PRO_CALLTYPE
 ProDeleteTransport(IProTransport* trans);
 
 /*
- * 功能: 创建一个服务hub
+ * 功能: 创建一个原始的服务hub
  *
  * 参数:
- * reactor          : 反应器
- * servicePort      : 服务端口号
- * timeoutInSeconds : 握手超时. 默认10秒
+ * reactor           : 反应器
+ * servicePort       : 服务端口号. 该端口工作在原始模式
+ * enableLoadBalance : 该端口是否开启负载均衡. 如果开启, 该端口支持多个服务host
  *
  * 返回值: 服务hub对象或NULL
  *
- * 说明: 服务hub可以将不同服务id的连接请求派发给对应的服务host,
- *       并允许跨越进程边界(WinCE不能跨进程)!!!
+ * 说明: 该服务hub可以将连接请求派发给对应的一个或多个服务host,
+ *       并允许跨越进程边界(WinCE不能跨进程)
  *       服务hub与服务host配合, 可以将接受器的功能延伸到不同的位置
+ *
+ *       注意, 对原始的服务hub来说, 回环地址(127.0.0.1)专用于IPC通道, 不能对外
+ *       提供服务; 扩展协议的服务hub无此限制
  */
 PRO_NET_API
 IProServiceHub*
 PRO_CALLTYPE
 ProCreateServiceHub(IProReactor*   reactor,
                     unsigned short servicePort,
-                    unsigned long  timeoutInSeconds = 0);
+                    bool           enableLoadBalance = false);
+
+/*
+ * 功能: 创建一个扩展协议的服务hub
+ *
+ * 参数:
+ * reactor           : 反应器
+ * servicePort       : 服务端口号. 该端口工作在扩展协议模式
+ * enableLoadBalance : 该端口是否开启负载均衡. 如果开启, 该端口支持多个服务host
+ * timeoutInSeconds  : 握手超时. 默认10秒
+ *
+ * 返回值: 服务hub对象或NULL
+ *
+ * 说明: 该服务hub可以根据服务id将连接请求派发给对应的一个或多个服务host,
+ *       并允许跨越进程边界(WinCE不能跨进程)
+ *       服务hub与服务host配合, 可以将接受器的功能延伸到不同的位置
+ *
+ *       注意, 对原始的服务hub来说, 回环地址(127.0.0.1)专用于IPC通道, 不能对外
+ *       提供服务; 扩展协议的服务hub无此限制
+ */
+PRO_NET_API
+IProServiceHub*
+PRO_CALLTYPE
+ProCreateServiceHubEx(IProReactor*   reactor,
+                      unsigned short servicePort,
+                      bool           enableLoadBalance = false,
+                      unsigned long  timeoutInSeconds  = 0);
 
 /*
  * 功能: 删除一个服务hub
@@ -1164,7 +1256,26 @@ PRO_CALLTYPE
 ProDeleteServiceHub(IProServiceHub* hub);
 
 /*
- * 功能: 创建一个服务host
+ * 功能: 创建一个原始的服务host
+ *
+ * 参数:
+ * observer    : 回调目标
+ * reactor     : 反应器
+ * servicePort : 服务端口号
+ *
+ * 返回值: 服务host对象或NULL
+ *
+ * 说明: 该服务host可以看作是一个服务接受器
+ */
+PRO_NET_API
+IProServiceHost*
+PRO_CALLTYPE
+ProCreateServiceHost(IProServiceHostObserver* observer,
+                     IProReactor*             reactor,
+                     unsigned short           servicePort);
+
+/*
+ * 功能: 创建一个扩展协议的服务host
  *
  * 参数:
  * observer    : 回调目标
@@ -1174,15 +1285,15 @@ ProDeleteServiceHub(IProServiceHub* hub);
  *
  * 返回值: 服务host对象或NULL
  *
- * 说明: 服务host可以看作是一个特定服务id的接受器
+ * 说明: 该服务host可以看作是一个特定服务id的服务接受器
  */
 PRO_NET_API
 IProServiceHost*
 PRO_CALLTYPE
-ProCreateServiceHost(IProServiceHostObserver* observer,
-                     IProReactor*             reactor,
-                     unsigned short           servicePort,
-                     unsigned char            serviceId);
+ProCreateServiceHostEx(IProServiceHostObserver* observer,
+                       IProReactor*             reactor,
+                       unsigned short           servicePort,
+                       unsigned char            serviceId);
 
 /*
  * 功能: 删除一个服务host

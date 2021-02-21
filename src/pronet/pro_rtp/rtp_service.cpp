@@ -95,7 +95,7 @@ CRtpService::Init(IRtpServiceObserver* observer,
             return (false);
         }
 
-        m_serviceHost = ProCreateServiceHost(
+        m_serviceHost = ProCreateServiceHostEx(
             this, reactor, serviceHubPort, m_mmType);
         if (m_serviceHost == NULL)
         {
@@ -185,6 +185,7 @@ PRO_CALLTYPE
 CRtpService::OnServiceAccept(IProServiceHost* serviceHost,
                              PRO_INT64        sockId,
                              bool             unixSocket,
+                             const char*      localIp,
                              const char*      remoteIp,
                              unsigned short   remotePort,
                              unsigned char    serviceId,

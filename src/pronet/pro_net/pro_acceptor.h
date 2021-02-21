@@ -40,6 +40,8 @@ public:
 
     static CProAcceptor* CreateInstance(bool enableServiceExt);
 
+    static CProAcceptor* CreateInstanceOnlyLoopExt();
+
     bool Init(
         IProAcceptorObserver* observer,
         CProTpReactorTask*    reactorTask,
@@ -58,7 +60,10 @@ public:
 
 private:
 
-    CProAcceptor(bool enableServiceExt);
+    CProAcceptor(
+        bool nonloopExt,
+        bool loopExt
+        );
 
     virtual ~CProAcceptor();
 
@@ -86,7 +91,8 @@ private:
 
 private:
 
-    const bool                                m_enableServiceExt;
+    const bool                                m_nonloopExt;
+    const bool                                m_loopExt;
     IProAcceptorObserver*                     m_observer;
     CProTpReactorTask*                        m_reactorTask;
     PRO_INT64                                 m_sockId;
