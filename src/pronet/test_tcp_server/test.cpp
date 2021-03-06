@@ -396,7 +396,7 @@ CTest::OnAccept(IProAcceptor*    acceptor,
             }
 
             PRO_SSL_CTX* const sslCtx =
-                ProSslCtx_Creates(m_sslConfig, sockId, nonce);
+                ProSslCtx_CreateS(m_sslConfig, sockId, nonce);
             if (sslCtx == NULL)
             {
                 ProCloseSockId(sockId);
@@ -498,7 +498,7 @@ CTest::OnServiceAccept(IProServiceHost* serviceHost,
             }
 
             PRO_SSL_CTX* const sslCtx =
-                ProSslCtx_Creates(m_sslConfig, sockId, nonce);
+                ProSslCtx_CreateS(m_sslConfig, sockId, nonce);
             if (sslCtx == NULL)
             {
                 ProCloseSockId(sockId);

@@ -93,8 +93,8 @@ CRtpSessionTcpserverEx::Init(IRtpSessionObserver* observer,
         return (false);
     }
 
-    unsigned long sockBufSizeRecv = 0;
-    unsigned long sockBufSizeSend = 0;
+    unsigned long sockBufSizeRecv = 0; /* zero by default */
+    unsigned long sockBufSizeSend = 0; /* zero by default */
     unsigned long recvPoolSize    = 0;
     GetRtpTcpSocketParams(
         m_info.mmType, &sockBufSizeRecv, &sockBufSizeSend, &recvPoolSize);
@@ -230,6 +230,7 @@ CRtpSessionTcpserverEx::OnRecv(IProTransport*          trans,
         IRtpSessionObserver* observer = NULL;
         CRtpPacket*          packet   = NULL;
         bool                 error    = false;
+        bool                 leave    = false;
 
         {
             CProThreadMutexGuard mon(m_lock);
@@ -248,15 +249,15 @@ CRtpSessionTcpserverEx::OnRecv(IProTransport*          trans,
 
             if (m_info.packMode == RTP_EPM_DEFAULT)
             {
-                error = !Recv0(packet);
+                error = !Recv0(packet, leave);
             }
             else if (m_info.packMode == RTP_EPM_TCP2)
             {
-                error = !Recv2(packet);
+                error = !Recv2(packet, leave);
             }
             else
             {
-                error = !Recv4(packet);
+                error = !Recv4(packet, leave);
             }
 
             m_observer->AddRef();
@@ -298,7 +299,7 @@ CRtpSessionTcpserverEx::OnRecv(IProTransport*          trans,
             break;
         }
 
-        if (error || packet == NULL)
+        if (error || packet == NULL || leave)
         {
             break;
         }
@@ -306,13 +307,15 @@ CRtpSessionTcpserverEx::OnRecv(IProTransport*          trans,
 }}
 
 bool
-CRtpSessionTcpserverEx::Recv0(CRtpPacket*& packet)
+CRtpSessionTcpserverEx::Recv0(CRtpPacket*& packet,
+                              bool&        leave)
 {{
     assert(m_info.packMode == RTP_EPM_DEFAULT);
     assert(m_trans != NULL);
     assert(m_handshakeOk);
 
     packet = NULL;
+    leave  = false;
 
     bool ret = true;
 
@@ -323,6 +326,7 @@ CRtpSessionTcpserverEx::Recv0(CRtpPacket*& packet)
 
         if (dataSize < sizeof(RTP_EXT))
         {
+            leave = true;
             break;
         }
 
@@ -331,6 +335,7 @@ CRtpSessionTcpserverEx::Recv0(CRtpPacket*& packet)
         ext.hdrAndPayloadSize = pbsd_ntoh16(ext.hdrAndPayloadSize);
         if (dataSize < sizeof(RTP_EXT) + ext.hdrAndPayloadSize)
         {
+            leave = true;
             break;
         }
 
@@ -388,13 +393,15 @@ CRtpSessionTcpserverEx::Recv0(CRtpPacket*& packet)
 }}
 
 bool
-CRtpSessionTcpserverEx::Recv2(CRtpPacket*& packet)
+CRtpSessionTcpserverEx::Recv2(CRtpPacket*& packet,
+                              bool&        leave)
 {{
     assert(m_info.packMode == RTP_EPM_TCP2);
     assert(m_trans != NULL);
     assert(m_handshakeOk);
 
     packet = NULL;
+    leave  = false;
 
     bool ret = true;
 
@@ -405,6 +412,7 @@ CRtpSessionTcpserverEx::Recv2(CRtpPacket*& packet)
 
         if (dataSize < sizeof(PRO_UINT16))
         {
+            leave = true;
             break;
         }
 
@@ -413,6 +421,7 @@ CRtpSessionTcpserverEx::Recv2(CRtpPacket*& packet)
         packetSize = pbsd_ntoh16(packetSize);
         if (dataSize < sizeof(PRO_UINT16) + packetSize) /* 2 + ... */
         {
+            leave = true;
             break;
         }
 
@@ -442,13 +451,15 @@ CRtpSessionTcpserverEx::Recv2(CRtpPacket*& packet)
 }}
 
 bool
-CRtpSessionTcpserverEx::Recv4(CRtpPacket*& packet)
+CRtpSessionTcpserverEx::Recv4(CRtpPacket*& packet,
+                              bool&        leave)
 {{
     assert(m_info.packMode == RTP_EPM_TCP4);
     assert(m_trans != NULL);
     assert(m_handshakeOk);
 
     packet = NULL;
+    leave  = false;
 
     bool ret = true;
 
@@ -465,6 +476,7 @@ CRtpSessionTcpserverEx::Recv4(CRtpPacket*& packet)
              */
             if (dataSize < sizeof(PRO_UINT32))
             {
+                leave = true;
                 break;
             }
 
@@ -501,6 +513,7 @@ CRtpSessionTcpserverEx::Recv4(CRtpPacket*& packet)
             }
             else if (dataSize < sizeof(PRO_UINT32) + packetSize) /* 4 + ... */
             {
+                leave = true;
                 break;
             }
             else
@@ -529,6 +542,7 @@ CRtpSessionTcpserverEx::Recv4(CRtpPacket*& packet)
              */
             if (dataSize == 0)
             {
+                leave = true;
                 break;
             }
 

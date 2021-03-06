@@ -448,7 +448,7 @@ ProThreadingMutexUnlock_i(mbedtls_threading_mutex_t* mutex)
 
 static
 int
-ProEntropys_i(void*          ctx,
+ProEntropyS_i(void*          ctx,
               unsigned char* buf,
               size_t         size)
 {
@@ -463,7 +463,7 @@ ProEntropys_i(void*          ctx,
 
 static
 int
-ProEntropyc_i(void*          ctx,
+ProEntropyC_i(void*          ctx,
               unsigned char* buf,
               size_t         size)
 {
@@ -478,7 +478,7 @@ ProEntropyc_i(void*          ctx,
 
 static
 int
-ProRngs_i(void*          ctx,
+ProRngS_i(void*          ctx,
           unsigned char* buf,
           size_t         size)
 {
@@ -493,7 +493,7 @@ ProRngs_i(void*          ctx,
 
 static
 int
-ProRngc_i(void*          ctx,
+ProRngC_i(void*          ctx,
           unsigned char* buf,
           size_t         size)
 {
@@ -762,13 +762,13 @@ ProSslServerConfig_Create()
         return (NULL);
     }
 
-    if (mbedtls_ctr_drbg_seed(&config->rng, &ProEntropys_i, config,
+    if (mbedtls_ctr_drbg_seed(&config->rng, &ProEntropyS_i, config,
         (unsigned char*)pers, strlen(pers)) != 0)
     {
         goto EXIT;
     }
 
-    mbedtls_ssl_conf_rng(config, &ProRngs_i, config);
+    mbedtls_ssl_conf_rng(config, &ProRngS_i, config);
 
     if (mbedtls_ssl_config_defaults(config, MBEDTLS_SSL_IS_SERVER,
         MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT) != 0)
@@ -1424,13 +1424,13 @@ ProSslClientConfig_Create()
         return (NULL);
     }
 
-    if (mbedtls_ctr_drbg_seed(&config->rng, &ProEntropyc_i, config,
+    if (mbedtls_ctr_drbg_seed(&config->rng, &ProEntropyC_i, config,
         (unsigned char*)pers, strlen(pers)) != 0)
     {
         goto EXIT;
     }
 
-    mbedtls_ssl_conf_rng(config, &ProRngc_i, config);
+    mbedtls_ssl_conf_rng(config, &ProRngC_i, config);
 
     if (mbedtls_ssl_config_defaults(config, MBEDTLS_SSL_IS_CLIENT,
         MBEDTLS_SSL_TRANSPORT_STREAM, MBEDTLS_SSL_PRESET_DEFAULT) != 0)
@@ -1809,7 +1809,7 @@ ProSslClientConfig_SetAuthLevel(PRO_SSL_CLIENT_CONFIG* config,
 PRO_NET_API
 PRO_SSL_CTX*
 PRO_CALLTYPE
-ProSslCtx_Creates(const PRO_SSL_SERVER_CONFIG* config,
+ProSslCtx_CreateS(const PRO_SSL_SERVER_CONFIG* config,
                   PRO_INT64                    sockId,
                   const PRO_NONCE*             nonce) /* = NULL */
 {
@@ -1839,7 +1839,7 @@ ProSslCtx_Creates(const PRO_SSL_SERVER_CONFIG* config,
 PRO_NET_API
 PRO_SSL_CTX*
 PRO_CALLTYPE
-ProSslCtx_Createc(const PRO_SSL_CLIENT_CONFIG* config,
+ProSslCtx_CreateC(const PRO_SSL_CLIENT_CONFIG* config,
                   const char*                  serverHostName, /* = NULL */
                   PRO_INT64                    sockId,
                   const PRO_NONCE*             nonce)          /* = NULL */

@@ -791,7 +791,7 @@ pbsd_setsockopt(PRO_INT64   fd,
 
         if (sum == 0)
         {
-            return (0);
+            return (0); /* do nothing */
         }
         break;
     }

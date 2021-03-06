@@ -65,11 +65,20 @@ private:
         const pbsd_sockaddr_in* remoteAddr
         );
 
-    bool Recv0(CRtpPacket*& packet);
+    bool Recv0(
+        CRtpPacket*& packet,
+        bool&        leave
+        );
 
-    bool Recv2(CRtpPacket*& packet);
+    bool Recv2(
+        CRtpPacket*& packet,
+        bool&        leave
+        );
 
-    bool Recv4(CRtpPacket*& packet);
+    bool Recv4(
+        CRtpPacket*& packet,
+        bool&        leave
+        );
 
     bool DoHandshake(
         bool useAckData,

@@ -108,6 +108,11 @@ private:
         const pbsd_sockaddr_in* remoteAddr
         );
 
+    bool Recv(
+        CRtpPacket*& packet,
+        bool&        leave
+        );
+
 private:
 
     IProConnector* m_connector;

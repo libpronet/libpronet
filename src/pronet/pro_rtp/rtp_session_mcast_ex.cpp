@@ -81,8 +81,8 @@ CRtpSessionMcastEx::Init(IRtpSessionObserver* observer,
         return (false);
     }
 
-    unsigned long sockBufSizeRecv = 0;
-    unsigned long sockBufSizeSend = 0;
+    unsigned long sockBufSizeRecv = 0; /* zero by default */
+    unsigned long sockBufSizeSend = 0; /* zero by default */
     unsigned long recvPoolSize    = 0;
     GetRtpUdpSocketParams(
         m_info.mmType, &sockBufSizeRecv, &sockBufSizeSend, &recvPoolSize);
@@ -253,7 +253,7 @@ CRtpSessionMcastEx::OnRecv(IProTransport*          trans,
             RTP_EXT ext;
             recvPool.PeekData(&ext, sizeof(RTP_EXT));
             ext.hdrAndPayloadSize = pbsd_ntoh16(ext.hdrAndPayloadSize);
-            if (dataSize < sizeof(RTP_EXT) + ext.hdrAndPayloadSize)
+            if (dataSize != sizeof(RTP_EXT) + ext.hdrAndPayloadSize)
             {
                 recvPool.Flush(dataSize);
                 break;
@@ -263,14 +263,15 @@ CRtpSessionMcastEx::OnRecv(IProTransport*          trans,
             {
                 m_peerAliveTick = ProGetTickCount64();
 
-                recvPool.Flush(sizeof(RTP_EXT));
-                continue;
+                recvPool.Flush(dataSize);
+                break;
             }
 
             packet = CRtpPacket::CreateInstance(
                 sizeof(RTP_EXT) + ext.hdrAndPayloadSize, RTP_EPM_DEFAULT);
             if (packet == NULL)
             {
+                recvPool.Flush(dataSize);
                 error = true;
             }
             else
@@ -279,6 +280,7 @@ CRtpSessionMcastEx::OnRecv(IProTransport*          trans,
                     packet->GetPayloadBuffer(),
                     sizeof(RTP_EXT) + ext.hdrAndPayloadSize
                     );
+                recvPool.Flush(dataSize);
 
                 if (!CRtpPacket::ParseExtBuffer(
                     (char*)packet->GetPayloadBuffer(),
@@ -287,7 +289,6 @@ CRtpSessionMcastEx::OnRecv(IProTransport*          trans,
                 {
                     packet->Release();
                     packet = NULL;
-                    recvPool.Flush(dataSize);
                     break;
                 }
 
@@ -312,12 +313,9 @@ CRtpSessionMcastEx::OnRecv(IProTransport*          trans,
                 {
                     packet->Release();
                     packet = NULL;
-                    recvPool.Flush(dataSize);
                     break;
                 }
             }
-
-            recvPool.Flush(sizeof(RTP_EXT) + ext.hdrAndPayloadSize);
 
             m_observer->AddRef();
             observer = m_observer;
@@ -355,7 +353,7 @@ CRtpSessionMcastEx::OnRecv(IProTransport*          trans,
         if (!m_canUpcall)
         {
             Fini();
-            break;
         }
+        break;
     } /* end of while (...) */
 }}

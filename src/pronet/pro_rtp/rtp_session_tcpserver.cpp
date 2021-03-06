@@ -242,8 +242,8 @@ CRtpSessionTcpserver::OnAccept(IProAcceptor*  acceptor,
         return;
     }
 
-    unsigned long sockBufSizeRecv = 0;
-    unsigned long sockBufSizeSend = 0;
+    unsigned long sockBufSizeRecv = 0; /* zero by default */
+    unsigned long sockBufSizeSend = 0; /* zero by default */
     unsigned long recvPoolSize    = 0;
     GetRtpTcpSocketParams(
         m_info.mmType, &sockBufSizeRecv, &sockBufSizeSend, &recvPoolSize);
@@ -339,6 +339,7 @@ CRtpSessionTcpserver::OnRecv(IProTransport*          trans,
         IRtpSessionObserver* observer = NULL;
         CRtpPacket*          packet   = NULL;
         bool                 error    = false;
+        bool                 leave    = false;
 
         {
             CProThreadMutexGuard mon(m_lock);
@@ -355,75 +356,7 @@ CRtpSessionTcpserver::OnRecv(IProTransport*          trans,
 
             m_peerAliveTick = ProGetTickCount64();
 
-            IProRecvPool&       recvPool = *m_trans->GetRecvPool();
-            const unsigned long dataSize = recvPool.PeekDataSize();
-
-            if (dataSize < sizeof(PRO_UINT16))
-            {
-                break;
-            }
-
-            PRO_UINT16 packetSize = 0;
-            recvPool.PeekData(&packetSize, sizeof(PRO_UINT16));
-            packetSize = pbsd_ntoh16(packetSize);
-            if (dataSize < sizeof(PRO_UINT16) + packetSize) /* 2 + ... */
-            {
-                break;
-            }
-
-            recvPool.Flush(sizeof(PRO_UINT16));
-
-            if (packetSize == 0)
-            {
-                continue;
-            }
-
-            packet = CRtpPacket::CreateInstance(packetSize, RTP_EPM_DEFAULT);
-            if (packet == NULL)
-            {
-                error = true;
-            }
-            else
-            {
-                recvPool.PeekData(packet->GetPayloadBuffer(), packetSize);
-
-                RTP_HEADER  hdr;
-                const char* payloadBuffer = NULL;
-                PRO_UINT16  payloadSize   = 0;
-
-                const bool ret = CRtpPacket::ParseRtpBuffer(
-                    (char*)packet->GetPayloadBuffer(),
-                    packet->GetPayloadSize16(),
-                    hdr,
-                    payloadBuffer,
-                    payloadSize
-                    );
-                if (!ret || payloadBuffer == NULL || payloadSize == 0)
-                {
-                    packet->Release();
-                    packet = NULL;
-                    recvPool.Flush(packetSize);
-                    continue;
-                }
-
-                hdr.v  = 2;
-                hdr.p  = 0;
-                hdr.x  = 0;
-                hdr.cc = 0;
-
-                RTP_PACKET& magicPacket = packet->GetPacket();
-
-                magicPacket.ext = (RTP_EXT*)(payloadBuffer - sizeof(RTP_HEADER) - sizeof(RTP_EXT));
-                magicPacket.hdr = (RTP_HEADER*)(magicPacket.ext + 1);
-
-                magicPacket.ext->mmId              = pbsd_hton32(m_info.inSrcMmId);
-                magicPacket.ext->mmType            = m_info.mmType;
-                magicPacket.ext->hdrAndPayloadSize = pbsd_hton16(sizeof(RTP_HEADER) + payloadSize);
-
-                *magicPacket.hdr = hdr;
-            }
-
-            recvPool.Flush(packetSize);
+            error = !Recv(packet, leave);
 
             m_observer->AddRef();
             observer = m_observer;
@@ -457,5 +390,97 @@ CRtpSessionTcpserver::OnRecv(IProTransport*          trans,
             Fini();
             break;
         }
+
+        if (error || packet == NULL || leave)
+        {
+            break;
+        }
     } /* end of while (...) */
+}}
+
+bool
+CRtpSessionTcpserver::Recv(CRtpPacket*& packet,
+                           bool&        leave)
+{{
+    assert(m_trans != NULL);
+
+    packet = NULL;
+    leave  = false;
+
+    bool ret = true;
+
+    while (1)
+    {
+        IProRecvPool&       recvPool = *m_trans->GetRecvPool();
+        const unsigned long dataSize = recvPool.PeekDataSize();
+
+        if (dataSize < sizeof(PRO_UINT16))
+        {
+            leave = true;
+            break;
+        }
+
+        PRO_UINT16 packetSize = 0;
+        recvPool.PeekData(&packetSize, sizeof(PRO_UINT16));
+        packetSize = pbsd_ntoh16(packetSize);
+        if (dataSize < sizeof(PRO_UINT16) + packetSize) /* 2 + ... */
+        {
+            leave = true;
+            break;
+        }
+
+        if (packetSize == 0)
+        {
+            recvPool.Flush(sizeof(PRO_UINT16));
+            continue;
+        }
+
+        packet = CRtpPacket::CreateInstance(packetSize, RTP_EPM_DEFAULT);
+        if (packet == NULL)
+        {
+            ret = false;
+            break;
+        }
+
+        recvPool.Flush(sizeof(PRO_UINT16));
+        recvPool.PeekData(packet->GetPayloadBuffer(), packetSize);
+        recvPool.Flush(packetSize);
+
+        RTP_HEADER  hdr;
+        const char* payloadBuffer = NULL;
+        PRO_UINT16  payloadSize   = 0;
+
+        const bool ret2 = CRtpPacket::ParseRtpBuffer(
+            (char*)packet->GetPayloadBuffer(),
+            packet->GetPayloadSize16(),
+            hdr,
+            payloadBuffer,
+            payloadSize
+            );
+        if (!ret2 || payloadBuffer == NULL || payloadSize == 0)
+        {
+            packet->Release();
+            packet = NULL;
+            continue;
+        }
+
+        hdr.v  = 2;
+        hdr.p  = 0;
+        hdr.x  = 0;
+        hdr.cc = 0;
+
+        RTP_PACKET& magicPacket = packet->GetPacket();
+
+        magicPacket.ext = (RTP_EXT*)(payloadBuffer - sizeof(RTP_HEADER) - sizeof(RTP_EXT));
+        magicPacket.hdr = (RTP_HEADER*)(magicPacket.ext + 1);
+
+        magicPacket.ext->mmId              = pbsd_hton32(m_info.inSrcMmId);
+        magicPacket.ext->mmType            = m_info.mmType;
+        magicPacket.ext->hdrAndPayloadSize = pbsd_hton16(sizeof(RTP_HEADER) + payloadSize);
+
+        *magicPacket.hdr = hdr;
+        break;
+    } /* end of while (...) */
+
+    return (ret);
 }}

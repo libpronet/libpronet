@@ -51,8 +51,8 @@ EXPORTS
     ProSslClientConfig_SetCaList
     ProSslClientConfig_SetCertChain
     ProSslClientConfig_SetAuthLevel
-    ProSslCtx_Creates
-    ProSslCtx_Createc
+    ProSslCtx_CreateS
+    ProSslCtx_CreateC
     ProSslCtx_Delete
     ProSslCtx_GetSuite
     ProSslCtx_GetAlpn

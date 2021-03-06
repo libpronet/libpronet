@@ -89,8 +89,8 @@ CRtpSessionUdpserverEx::Init(IRtpSessionObserver* observer,
         timeoutInSeconds = DEFAULT_TIMEOUT;
     }
 
-    unsigned long sockBufSizeRecv = 0;
-    unsigned long sockBufSizeSend = 0;
+    unsigned long sockBufSizeRecv = 0; /* zero by default */
+    unsigned long sockBufSizeSend = 0; /* zero by default */
     unsigned long recvPoolSize    = 0;
     GetRtpUdpSocketParams(
         m_info.mmType, &sockBufSizeRecv, &sockBufSizeSend, &recvPoolSize);
@@ -237,7 +237,7 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
             RTP_EXT ext;
             recvPool.PeekData(&ext, sizeof(RTP_EXT));
             ext.hdrAndPayloadSize = pbsd_ntoh16(ext.hdrAndPayloadSize);
-            if (dataSize < sizeof(RTP_EXT) + ext.hdrAndPayloadSize)
+            if (dataSize != sizeof(RTP_EXT) + ext.hdrAndPayloadSize)
             {
                 recvPool.Flush(dataSize);
                 break;
@@ -260,10 +260,10 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                 char             buffer[size];
 
                 recvPool.PeekData(buffer, size);
+                recvPool.Flush(dataSize);
 
                 if (!CRtpPacket::ParseExtBuffer(buffer, size))
                 {
-                    recvPool.Flush(dataSize);
                     break;
                 }
 
@@ -277,14 +277,12 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                     );
                 if (pbsd_hton16(sync.CalcChecksum()) != sync.checksum)
                 {
-                    recvPool.Flush(dataSize);
                     break;
                 }
 
                 if (m_syncReceived)
                 {
-                    recvPool.Flush(size);
-                    continue;
+                    break;
                 }
 
                 memcpy(
@@ -308,10 +306,10 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                 {
                     m_peerAliveTick = ProGetTickCount64();
 
+                    recvPool.Flush(dataSize);
                     if (m_handshakeOk)
                     {
-                        recvPool.Flush(sizeof(RTP_EXT));
-                        continue;
+                        break;
                     }
                 }
                 else
@@ -320,6 +318,7 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                         sizeof(RTP_EXT) + ext.hdrAndPayloadSize, RTP_EPM_DEFAULT);
                     if (packet == NULL)
                     {
+                        recvPool.Flush(dataSize);
                         error = true;
                     }
                     else
@@ -328,6 +327,7 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                             packet->GetPayloadBuffer(),
                             sizeof(RTP_EXT) + ext.hdrAndPayloadSize
                             );
+                        recvPool.Flush(dataSize);
 
                         if (!CRtpPacket::ParseExtBuffer(
                             (char*)packet->GetPayloadBuffer(),
@@ -336,7 +336,6 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                         {
                             packet->Release();
                             packet = NULL;
-                            recvPool.Flush(dataSize);
                             break;
                         }
 
@@ -361,7 +360,6 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                         {
                             packet->Release();
                             packet = NULL;
-                            recvPool.Flush(dataSize);
                             break;
                         }
                     }
@@ -380,8 +378,6 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                     m_trans->UdpConnResetAsError(&m_remoteAddr);
                 }
             }
-
-            recvPool.Flush(sizeof(RTP_EXT) + ext.hdrAndPayloadSize);
 
             m_observer->AddRef();
             observer = m_observer;
@@ -422,8 +418,8 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
         if (!m_canUpcall)
         {
             Fini();
-            break;
         }
+        break;
     } /* end of while (...) */
 }}
 
@@ -445,7 +441,7 @@ CRtpSessionUdpserverEx::OnTimer(void*      factory,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_trans == NULL)
         {
             return;
         }

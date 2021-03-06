@@ -512,7 +512,7 @@ ProSslClientConfig_SetAuthLevel(PRO_SSL_CLIENT_CONFIG* config,
 PRO_NET_API
 PRO_SSL_CTX*
 PRO_CALLTYPE
-ProSslCtx_Creates(const PRO_SSL_SERVER_CONFIG* config,
+ProSslCtx_CreateS(const PRO_SSL_SERVER_CONFIG* config,
                   PRO_INT64                    sockId,
                   const PRO_NONCE*             nonce); /* = NULL */
 
@@ -536,7 +536,7 @@ ProSslCtx_Creates(const PRO_SSL_SERVER_CONFIG* config,
 PRO_NET_API
 PRO_SSL_CTX*
 PRO_CALLTYPE
-ProSslCtx_Createc(const PRO_SSL_CLIENT_CONFIG* config,
+ProSslCtx_CreateC(const PRO_SSL_CLIENT_CONFIG* config,
                   const char*                  serverHostName, /* = NULL */
                   PRO_INT64                    sockId,
                   const PRO_NONCE*             nonce);         /* = NULL */

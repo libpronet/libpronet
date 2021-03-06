@@ -75,8 +75,8 @@ CRtpSessionUdpclient::Init(IRtpSessionObserver* observer,
         return (false);
     }
 
-    unsigned long sockBufSizeRecv = 0;
-    unsigned long sockBufSizeSend = 0;
+    unsigned long sockBufSizeRecv = 0; /* zero by default */
+    unsigned long sockBufSizeSend = 0; /* zero by default */
     unsigned long recvPoolSize    = 0;
     GetRtpUdpSocketParams(
         m_info.mmType, &sockBufSizeRecv, &sockBufSizeSend, &recvPoolSize);
@@ -260,11 +260,13 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
             packet = CRtpPacket::CreateInstance(dataSize, RTP_EPM_DEFAULT);
             if (packet == NULL)
             {
+                recvPool.Flush(dataSize);
                 error = true;
             }
             else
             {
                 recvPool.PeekData(packet->GetPayloadBuffer(), dataSize);
+                recvPool.Flush(dataSize);
 
                 RTP_HEADER  hdr;
                 const char* payloadBuffer = NULL;
@@ -281,7 +283,6 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
                 {
                     packet->Release();
                     packet = NULL;
-                    recvPool.Flush(dataSize);
                     break;
                 }
 
@@ -292,7 +293,6 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
                 {
                     packet->Release();
                     packet = NULL;
-                    recvPool.Flush(dataSize);
                     break;
                 }
 
@@ -312,8 +312,6 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
 
                 *magicPacket.hdr = hdr;
             }
-
-            recvPool.Flush(dataSize);
 
             m_observer->AddRef();
             observer = m_observer;

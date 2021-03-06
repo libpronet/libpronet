@@ -389,8 +389,8 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProTcpHandshaker* handshaker,
         return;
     }
 
-    unsigned long sockBufSizeRecv = 0;
-    unsigned long sockBufSizeSend = 0;
+    unsigned long sockBufSizeRecv = 0; /* zero by default */
+    unsigned long sockBufSizeSend = 0; /* zero by default */
     unsigned long recvPoolSize    = 0;
     GetRtpTcpSocketParams(
         m_info.mmType, &sockBufSizeRecv, &sockBufSizeSend, &recvPoolSize);
@@ -569,8 +569,8 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProSslHandshaker* handshaker,
         return;
     }
 
-    unsigned long sockBufSizeRecv = 0;
-    unsigned long sockBufSizeSend = 0;
+    unsigned long sockBufSizeRecv = 0; /* zero by default */
+    unsigned long sockBufSizeSend = 0; /* zero by default */
     unsigned long recvPoolSize    = 0;
     GetRtpTcpSocketParams(
         m_info.mmType, &sockBufSizeRecv, &sockBufSizeSend, &recvPoolSize);
@@ -758,6 +758,7 @@ CRtpSessionTcpclientEx::OnRecv(IProTransport*          trans,
         IRtpSessionObserver* observer = NULL;
         CRtpPacket*          packet   = NULL;
         bool                 error    = false;
+        bool                 leave    = false;
 
         {
             CProThreadMutexGuard mon(m_lock);
@@ -776,15 +777,15 @@ CRtpSessionTcpclientEx::OnRecv(IProTransport*          trans,
 
             if (m_info.packMode == RTP_EPM_DEFAULT)
             {
-                error = !Recv0(packet);
+                error = !Recv0(packet, leave);
             }
             else if (m_info.packMode == RTP_EPM_TCP2)
             {
-                error = !Recv2(packet);
+                error = !Recv2(packet, leave);
             }
             else
             {
-                error = !Recv4(packet);
+                error = !Recv4(packet, leave);
             }
 
             m_observer->AddRef();
@@ -820,7 +821,7 @@ CRtpSessionTcpclientEx::OnRecv(IProTransport*          trans,
             break;
         }
 
-        if (error || packet == NULL)
+        if (error || packet == NULL || leave)
         {
             break;
         }
@@ -828,13 +829,15 @@ CRtpSessionTcpclientEx::OnRecv(IProTransport*          trans,
 }}
 
 bool
-CRtpSessionTcpclientEx::Recv0(CRtpPacket*& packet)
+CRtpSessionTcpclientEx::Recv0(CRtpPacket*& packet,
+                              bool&        leave)
 {{
     assert(m_info.packMode == RTP_EPM_DEFAULT);
     assert(m_trans != NULL);
     assert(m_handshakeOk);
 
     packet = NULL;
+    leave  = false;
 
     bool ret = true;
 
@@ -845,6 +848,7 @@ CRtpSessionTcpclientEx::Recv0(CRtpPacket*& packet)
 
         if (dataSize < sizeof(RTP_EXT))
         {
+            leave = true;
             break;
         }
 
@@ -853,6 +857,7 @@ CRtpSessionTcpclientEx::Recv0(CRtpPacket*& packet)
         ext.hdrAndPayloadSize = pbsd_ntoh16(ext.hdrAndPayloadSize);
         if (dataSize < sizeof(RTP_EXT) + ext.hdrAndPayloadSize)
         {
+            leave = true;
             break;
         }
 
@@ -910,13 +915,15 @@ CRtpSessionTcpclientEx::Recv0(CRtpPacket*& packet)
 }}
 
 bool
-CRtpSessionTcpclientEx::Recv2(CRtpPacket*& packet)
+CRtpSessionTcpclientEx::Recv2(CRtpPacket*& packet,
+                              bool&        leave)
 {{
     assert(m_info.packMode == RTP_EPM_TCP2);
     assert(m_trans != NULL);
     assert(m_handshakeOk);
 
     packet = NULL;
+    leave  = false;
 
     bool ret = true;
 
@@ -927,6 +934,7 @@ CRtpSessionTcpclientEx::Recv2(CRtpPacket*& packet)
 
         if (dataSize < sizeof(PRO_UINT16))
         {
+            leave = true;
             break;
         }
 
@@ -935,6 +943,7 @@ CRtpSessionTcpclientEx::Recv2(CRtpPacket*& packet)
         packetSize = pbsd_ntoh16(packetSize);
         if (dataSize < sizeof(PRO_UINT16) + packetSize) /* 2 + ... */
         {
+            leave = true;
             break;
         }
 
@@ -964,13 +973,15 @@ CRtpSessionTcpclientEx::Recv2(CRtpPacket*& packet)
 }}
 
 bool
-CRtpSessionTcpclientEx::Recv4(CRtpPacket*& packet)
+CRtpSessionTcpclientEx::Recv4(CRtpPacket*& packet,
+                              bool&        leave)
 {{
     assert(m_info.packMode == RTP_EPM_TCP4);
     assert(m_trans != NULL);
     assert(m_handshakeOk);
 
     packet = NULL;
+    leave  = false;
 
     bool ret = true;
 
@@ -987,6 +998,7 @@ CRtpSessionTcpclientEx::Recv4(CRtpPacket*& packet)
              */
             if (dataSize < sizeof(PRO_UINT32))
             {
+                leave = true;
                 break;
             }
 
@@ -1023,6 +1035,7 @@ CRtpSessionTcpclientEx::Recv4(CRtpPacket*& packet)
             }
             else if (dataSize < sizeof(PRO_UINT32) + packetSize) /* 4 + ... */
             {
+                leave = true;
                 break;
             }
             else
@@ -1051,6 +1064,7 @@ CRtpSessionTcpclientEx::Recv4(CRtpPacket*& packet)
              */
             if (dataSize == 0)
             {
+                leave = true;
                 break;
             }
 
@@ -1121,7 +1135,7 @@ CRtpSessionTcpclientEx::DoHandshake(PRO_INT64        sockId,
 
     if (m_sslConfig != NULL)
     {
-        PRO_SSL_CTX* const sslCtx = ProSslCtx_Createc(
+        PRO_SSL_CTX* const sslCtx = ProSslCtx_CreateC(
             m_sslConfig, m_sslSni.c_str(), sockId, &nonce);
         if (sslCtx != NULL)
         {

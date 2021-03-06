@@ -426,7 +426,7 @@ CTest::DoHandshake(PRO_INT64        sockId,
 
     if (m_sslConfig != NULL)
     {
-        PRO_SSL_CTX* const sslCtx = ProSslCtx_Createc(
+        PRO_SSL_CTX* const sslCtx = ProSslCtx_CreateC(
             m_sslConfig, m_configInfo.tcpc_ssl_sni.c_str(), sockId, &nonce);
         if (sslCtx != NULL)
         {
