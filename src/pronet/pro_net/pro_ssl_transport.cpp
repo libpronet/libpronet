@@ -464,6 +464,7 @@ CProSslTransport::DoSend(PRO_INT64 sockId)
                 onSendBuf = m_sendPool.OnSendBuf();
                 if (onSendBuf != NULL)
                 {
+                    actionId = onSendBuf->GetMagic();
                     m_sendPool.PostSend();
                     m_pendingWr = false;
                 }
@@ -490,10 +491,6 @@ CProSslTransport::DoSend(PRO_INT64 sockId)
 
         requestOnSend = m_requestOnSend;
         m_requestOnSend = false;
-        if (onSendBuf != NULL)
-        {
-            actionId = onSendBuf->GetMagic();
-        }
 
         m_observer->AddRef();
         observer = m_observer;
