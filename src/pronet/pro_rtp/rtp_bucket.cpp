@@ -19,6 +19,7 @@
 #include "rtp_bucket.h"
 #include "rtp_base.h"
 #include "rtp_flow_stat.h"
+#include "rtp_packet.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_time_util.h"
@@ -116,15 +117,15 @@ CRtpBucket::PushBackAddRef(IRtpPacket* packet)
      * arrival time
      */
     const PRO_INT64 tick = ProGetTickCount64();
-    packet->SetMagic(tick);
+    ((CRtpPacket*)packet)->SetMagic2(tick);
 
     /*
      * remove old packets
      */
     while (m_packets.size() > 0)
     {
-        IRtpPacket* const packet2 = m_packets.front();
-        if (tick - packet2->GetMagic() > m_redlineDelayMs &&
+        CRtpPacket* const packet2 = (CRtpPacket*)m_packets.front();
+        if (tick - packet2->GetMagic2() > m_redlineDelayMs &&
             m_redlineDelayMs > 0)
         {
             m_packets.pop_front();
@@ -285,15 +286,15 @@ CRtpAudioBucket::PushBackAddRef(IRtpPacket* packet)
      * arrival time
      */
     const PRO_INT64 tick = ProGetTickCount64();
-    packet->SetMagic(tick);
+    ((CRtpPacket*)packet)->SetMagic2(tick);
 
     /*
      * remove old packets
      */
     while (m_packets.size() > 0)
     {
-        IRtpPacket* const packet2 = m_packets.front();
-        if (tick - packet2->GetMagic() > m_redlineDelayMs ||
+        CRtpPacket* const packet2 = (CRtpPacket*)m_packets.front();
+        if (tick - packet2->GetMagic2() > m_redlineDelayMs ||
             m_totalBytes + size > m_redlineBytes)
         {
             m_packets.pop_front();

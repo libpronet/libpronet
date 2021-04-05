@@ -193,6 +193,10 @@ public:
 
     virtual PRO_INT64 PRO_CALLTYPE GetMagic() const;
 
+    void SetMagic2(PRO_INT64 magic2);
+
+    PRO_INT64 GetMagic2() const;
+
     void SetUdpxSync(bool sync);
 
     bool GetUdpxSync() const;
@@ -223,6 +227,7 @@ private:
     const RTP_EXT_PACK_MODE m_packMode;
     PRO_UINT32              m_ssrc; /* for RTP_EPM_TCP2, RTP_EPM_TCP4 */
     PRO_INT64               m_magic;
+    PRO_INT64               m_magic2;
     RTP_PACKET*             m_packet;
 
     DECLARE_SGI_POOL(0)

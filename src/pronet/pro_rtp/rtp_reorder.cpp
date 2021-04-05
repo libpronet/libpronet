@@ -18,6 +18,7 @@
 
 #include "rtp_reorder.h"
 #include "rtp_base.h"
+#include "rtp_packet.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_time_util.h"
@@ -115,7 +116,7 @@ CRtpReorder::PushBackAddRef(IRtpPacket* packet)
     {
         Clean();
 
-        packet->SetMagic(tick);
+        ((CRtpPacket*)packet)->SetMagic2(tick);
         packet->AddRef();
         m_seq64ToPacket[seq16] = packet;
 
@@ -182,7 +183,7 @@ CRtpReorder::PushBackAddRef(IRtpPacket* packet)
     {
         Clean();
 
-        packet->SetMagic(tick);
+        ((CRtpPacket*)packet)->SetMagic2(tick);
         packet->AddRef();
         m_seq64ToPacket[seq16] = packet;
 
@@ -193,7 +194,7 @@ CRtpReorder::PushBackAddRef(IRtpPacket* packet)
     {
         if (m_seq64ToPacket.find(seq64) == m_seq64ToPacket.end())
         {
-            packet->SetMagic(tick);
+            ((CRtpPacket*)packet)->SetMagic2(tick);
             packet->AddRef();
             m_seq64ToPacket[seq64] = packet;
 
@@ -226,11 +227,11 @@ CRtpReorder::PopFront(bool force)
     }
 
     const PRO_INT64   seq64  = itr->first;
-    IRtpPacket* const packet = itr->second;
+    CRtpPacket* const packet = (CRtpPacket*)itr->second;
 
     if (seq64 == m_minSeq64                        ||
         m_seq64ToPacket.size() > m_heightInPackets ||
-        tick - packet->GetMagic() > m_heightInMs   ||
+        tick - packet->GetMagic2() > m_heightInMs  ||
         force)
     {
         m_seq64ToPacket.erase(itr);

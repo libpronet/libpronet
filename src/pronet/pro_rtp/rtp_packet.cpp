@@ -151,6 +151,7 @@ CRtpPacket::Clone(const IRtpPacket* packet)
     {
         newPacket->m_ssrc         = packet2->m_ssrc;
         newPacket->m_magic        = packet2->m_magic;
+        newPacket->m_magic2       = packet2->m_magic2;
         *newPacket->m_packet->ext = *packet2->m_packet->ext;
         *newPacket->m_packet->hdr = *packet2->m_packet->hdr;
     }
@@ -307,6 +308,7 @@ CRtpPacket::CRtpPacket(RTP_EXT_PACK_MODE packMode)
 {
     m_ssrc   = 0;
     m_magic  = 0;
+    m_magic2 = 0;
     m_packet = NULL;
 }
 
@@ -595,6 +597,18 @@ PRO_CALLTYPE
 CRtpPacket::GetMagic() const
 {
     return (m_magic);
+}
+
+void
+CRtpPacket::SetMagic2(PRO_INT64 magic2)
+{
+    m_magic2 = magic2;
+}
+
+PRO_INT64
+CRtpPacket::GetMagic2() const
+{
+    return (m_magic2);
 }
 
 void
