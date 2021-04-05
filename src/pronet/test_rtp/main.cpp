@@ -42,7 +42,7 @@ String2Mode_i(const char* modeString)
     assert(modeString[0] != '\0');
     if (modeString == NULL || modeString[0] == '\0')
     {
-        return mode;
+        return (mode);
     }
 
     if (stricmp(modeString, "-udpecho")  == 0 ||
@@ -100,41 +100,49 @@ int main(int argc, char* argv[])
     printf(
         "\n"
         " usage [server-side]: \n"
-        " test_rtp -udpecho <local_ip> <local_port> \n"
-        " test_rtp -tcpecho <local_ip> <local_port> \n"
-        " test_rtp -udps    <local_ip> <local_port> <kbps> \n"
-        " test_rtp -tcps    <local_ip> <local_port> <kbps> \n"
+        " test_rtp -udpecho [ <local_ip> <local_port> [-scroll] ] \n"
+        " test_rtp -tcpecho [ <local_ip> <local_port> [-scroll] ] \n"
+        " test_rtp -udps    [ <local_ip> <local_port> <kbps> [packet_size] ] \n"
+        " test_rtp -tcps    [ <local_ip> <local_port> <kbps> [packet_size] ] \n"
         "\n"
         " usage [client-side]: \n"
-        " test_rtp -udpc    <remote_ip> <remote_port> <kbps> [local_ip] \n"
-        " test_rtp -tcpc    <remote_ip> <remote_port> <kbps> [local_ip] \n"
+        " test_rtp -udpc    <remote_ip> <remote_port> <kbps> [ <packet_size> [local_ip] ] \n"
+        " test_rtp -tcpc    <remote_ip> <remote_port> <kbps> [ <packet_size> [local_ip] ] \n"
         "\n"
         " for example [server-side on host 192.168.0.101]: \n"
-        " test_rtp -udpecho 0.0.0.0       1234 \n"
-        " test_rtp -udpecho 192.168.0.101 1234 \n"
-        " test_rtp -tcpecho 0.0.0.0       1234 \n"
-        " test_rtp -tcpecho 192.168.0.101 1234 \n"
-        " test_rtp -udps    0.0.0.0       1234 512 \n"
-        " test_rtp -udps    192.168.0.101 1234 512 \n"
-        " test_rtp -tcps    0.0.0.0       1234 512 \n"
-        " test_rtp -tcps    192.168.0.101 1234 512 \n"
+        " test_rtp -udpecho                            \n"
+        " test_rtp -udpecho 0.0.0.0       1234         \n"
+        " test_rtp -udpecho 192.168.0.101 1234 -scroll \n"
+        " test_rtp -tcpecho                            \n"
+        " test_rtp -tcpecho 0.0.0.0       1234 -scroll \n"
+        " test_rtp -tcpecho 192.168.0.101 1234         \n"
+        " test_rtp -udps                               \n"
+        " test_rtp -udps    0.0.0.0       1234 512     \n"
+        " test_rtp -udps    192.168.0.101 1234 512 850 \n"
+        " test_rtp -tcps                               \n"
+        " test_rtp -tcps    0.0.0.0       1234 512 850 \n"
+        " test_rtp -tcps    192.168.0.101 1234 512     \n"
         "\n"
         " for example [client-side on host 192.168.0.102]: \n"
-        " test_rtp -udpc    192.168.0.101 1234 512               \n"
-        " test_rtp -udpc    192.168.0.101 1234 512 192.168.0.102 \n"
-        " test_rtp -tcpc    192.168.0.101 1234 512               \n"
-        " test_rtp -tcpc    192.168.0.101 1234 512 192.168.0.102 \n"
+        " test_rtp -udpc    192.168.0.101 1234 512                   \n"
+        " test_rtp -udpc    192.168.0.101 1234 512 850               \n"
+        " test_rtp -udpc    192.168.0.101 1234 512 850 192.168.0.102 \n"
+        " test_rtp -tcpc    192.168.0.101 1234 512                   \n"
+        " test_rtp -tcpc    192.168.0.101 1234 512 850               \n"
+        " test_rtp -tcpc    192.168.0.101 1234 512 850 0.0.0.0       \n"
         );
 
     ProNetInit();
     ProRtpInit();
 
     TEST_MODE    mode        = 0;
-    const char*  local_ip    = NULL;
-    int          local_port  = 0;
+    const char*  local_ip    = "0.0.0.0";
+    int          local_port  = 1234;
     const char*  remote_ip   = NULL;
     int          remote_port = 0;
-    int          kbps        = 0;
+    int          kbps        = 512;
+    int          packet_size = 850;
+    bool         scroll      = false;
     IProReactor* reactor     = NULL;
     CTest*       tester      = NULL;
 
@@ -180,7 +188,11 @@ int main(int argc, char* argv[])
         {
             TEST_SERVER& prm = params.server;
 
-            if (mode == TM_UDPE || mode == TM_TCPE)
+            if (
+                (mode == TM_UDPE || mode == TM_TCPE)
+                &&
+                argc > 2
+               )
             {
                 if (argc < 4)
                 {
@@ -197,8 +209,18 @@ int main(int argc, char* argv[])
 
                 local_ip   = argv[2];
                 local_port = atoi(argv[3]);
+                if (argc >= 5)
+                {
+                    scroll =
+                        stricmp(argv[4], "-scroll")  == 0 ||
+                        stricmp(argv[4], "--scroll") == 0;
+                }
             }
-            else
+            else if (
+                (mode == TM_UDPS || mode == TM_TCPS)
+                &&
+                argc > 2
+               )
             {
                 if (argc < 5)
                 {
@@ -213,9 +235,16 @@ int main(int argc, char* argv[])
                     goto EXIT;
                 }
 
-                local_ip   = argv[2];
-                local_port = atoi(argv[3]);
-                kbps       = atoi(argv[4]);
+                local_ip        = argv[2];
+                local_port      = atoi(argv[3]);
+                kbps            = atoi(argv[4]);
+                if (argc >= 6)
+                {
+                    packet_size = atoi(argv[5]);
+                }
+            }
+            else
+            {
             }
 
             /*
@@ -257,6 +286,24 @@ int main(int argc, char* argv[])
                 kbps = 1024000;
             }
             prm.kbps = kbps;
+
+            /*
+             * packet_size
+             */
+            if (packet_size < 1)
+            {
+                packet_size = 1;
+            }
+            if (packet_size > 1500)
+            {
+                packet_size = 1500;
+            }
+            prm.packet_size = packet_size;
+
+            /*
+             * scroll
+             */
+            prm.scroll = scroll;
             break;
         }
     case TM_UDPC:
@@ -277,10 +324,17 @@ int main(int argc, char* argv[])
                 goto EXIT;
             }
 
-            remote_ip   = argv[2];
-            remote_port = atoi(argv[3]);
-            kbps        = atoi(argv[4]);
-            local_ip    = argc >= 6 ? argv[5] : NULL;
+            remote_ip       = argv[2];
+            remote_port     = atoi(argv[3]);
+            kbps            = atoi(argv[4]);
+            if (argc >= 6)
+            {
+                packet_size = atoi(argv[5]);
+            }
+            if (argc >= 7)
+            {
+                local_ip    = argv[6];
+            }
 
             /*
              * remote_ip
@@ -323,12 +377,22 @@ int main(int argc, char* argv[])
             prm.kbps = kbps;
 
             /*
+             * packet_size
+             */
+            if (packet_size < 1)
+            {
+                packet_size = 1;
+            }
+            if (packet_size > 1500)
+            {
+                packet_size = 1500;
+            }
+            prm.packet_size = packet_size;
+
+            /*
              * local_ip
              */
-            if (local_ip != NULL)
-            {
-                strncpy_pro(prm.local_ip, sizeof(prm.local_ip), local_ip);
-            }
+            strncpy_pro(prm.local_ip, sizeof(prm.local_ip), local_ip);
             break;
         }
     } /* end of switch (...) */

@@ -50,7 +50,9 @@ struct TEST_SERVER
 {
     char           local_ip[64];
     unsigned short local_port;
-    double         kbps;
+    unsigned long  kbps;
+    unsigned long  packet_size; /* offset is N */
+    bool           scroll;
 
     DECLARE_SGI_POOL(0)
 };
@@ -59,7 +61,8 @@ struct TEST_CLIENT
 {
     char           remote_ip[64];
     unsigned short remote_port;
-    double         kbps;
+    unsigned long  kbps;
+    unsigned long  packet_size; /* offset is N */
     char           local_ip[64];
 
     DECLARE_SGI_POOL(0)
@@ -81,15 +84,13 @@ struct TEST_PACKET_HDR
         ack       = false;
         reserved1 = 0;
         reserved2 = 0;
-        srcSeq    = 0;
         srcTick   = ProGetTickCount64();
     }
 
     PRO_UINT16 version;
     bool       ack;
     char       reserved1;
-    PRO_UINT16 reserved2;
-    PRO_UINT16 srcSeq;
+    PRO_UINT32 reserved2;
     PRO_INT64  srcTick;
 
     DECLARE_SGI_POOL(0)
@@ -167,34 +168,35 @@ private:
     IRtpSession* CreateUdpServer(
         IProReactor*   reactor,
         const char*    localIp,
-        unsigned short localPort,
-        bool           printReady
+        unsigned short localPort
         );
 
     IRtpSession* CreateTcpServer(
         IProReactor*   reactor,
         const char*    localIp,
-        unsigned short localPort,
-        bool           printReady
+        unsigned short localPort
         );
 
     IRtpSession* CreateUdpClient(
         IProReactor*   reactor,
         const char*    remoteIp,
         unsigned short remotePort,
-        const char*    localIp,
-        bool           printReady
+        const char*    localIp
         );
 
     IRtpSession* CreateTcpClient(
         IProReactor*   reactor,
         const char*    remoteIp,
         unsigned short remotePort,
-        const char*    localIp,
-        bool           printReady
+        const char*    localIp
         );
 
     void PrintSessionReady(
+        IRtpSession* session,
+        bool         udp
+        );
+
+    void PrintSessionConnected(
         IRtpSession* session,
         bool         udp
         );
@@ -219,11 +221,10 @@ private:
     PRO_INT64        m_outputTs64;
     PRO_UINT32       m_outputSsrc;
     unsigned long    m_outputPacketCount;
-    unsigned long    m_outputFrameIndex;
+    unsigned long    m_outputFrameSeq;
     CProShaper       m_outputShaper;
     bool             m_echoClient;
-    CProStatLossRate m_statRttLossRate;
-    CProStatAvgValue m_statRttDelay;
+    CProStatAvgValue m_statRttxDelay;
 
     CProThreadMutex  m_lock;
 

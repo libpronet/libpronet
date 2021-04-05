@@ -36,18 +36,17 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if defined(USING_VIDEO_BUCKET)
+#define USING_VIDEO_BUCKET     0
+
+#if USING_VIDEO_BUCKET
 #define FRAME_PACKETS          10
 #else
 #define FRAME_PACKETS          1
 #endif
 #define GOP_FRAMES             30
 
-#define STD_PACKET_SIZE        1024
-#define LOW_PACKET_SIZE        160
-#define LOW_BIT_RATE           64000
 #define REDLINE_BYTES          (1024 * 512)
-#define REDLINE_FRAMES         (REDLINE_BYTES / STD_PACKET_SIZE / FRAME_PACKETS + 1)
+#define REDLINE_FRAMES         30
 #define REDLINE_DELAY_MS       1200
 #define MEDIA_PAYLOAD_TYPE     109
 #define MEDIA_MM_TYPE          RTP_MMT_VIDEO
@@ -118,7 +117,7 @@ CTest::CTest(TEST_MODE mode)
     m_outputTs64        = -1;
     m_outputSsrc        = (PRO_UINT32)(ProRand_0_1() * (PRO_UINT32)-1);
     m_outputPacketCount = 0;
-    m_outputFrameIndex  = 0;
+    m_outputFrameSeq    = 0;
     m_echoClient        = false;
 
     memset(&m_params, 0, sizeof(TEST_PARAMS));
@@ -165,7 +164,7 @@ CTest::Init(IProReactor*       reactor,
         if (m_mode == TM_UDPE || m_mode == TM_UDPS)
         {
             udpSession = CreateUdpServer(
-                reactor, param.local_ip, param.local_port, true);
+                reactor, param.local_ip, param.local_port);
             if (udpSession == NULL)
             {
                 goto EXIT;
@@ -174,7 +173,7 @@ CTest::Init(IProReactor*       reactor,
         else
         {
             tcpSession = CreateTcpServer(
-                reactor, param.local_ip, param.local_port, true);
+                reactor, param.local_ip, param.local_port);
             if (tcpSession == NULL)
             {
                 goto EXIT;
@@ -233,7 +232,7 @@ CTest::Init(IProReactor*       reactor,
         if (m_mode == TM_UDPC)
         {
             udpSession = CreateUdpClient(reactor,
-                param.remote_ip, param.remote_port, param.local_ip, true);
+                param.remote_ip, param.remote_port, param.local_ip);
             if (udpSession == NULL)
             {
                 goto EXIT;
@@ -242,7 +241,7 @@ CTest::Init(IProReactor*       reactor,
         else
         {
             tcpSession = CreateTcpClient(reactor,
-                param.remote_ip, param.remote_port, param.local_ip, true);
+                param.remote_ip, param.remote_port, param.local_ip);
             if (tcpSession == NULL)
             {
                 goto EXIT;
@@ -272,19 +271,16 @@ EXIT:
 IRtpSession*
 CTest::CreateUdpServer(IProReactor*   reactor,
                        const char*    localIp,
-                       unsigned short localPort,
-                       bool           printReady)
+                       unsigned short localPort)
 {
     assert(reactor != NULL);
-    assert(localIp != NULL);
-    assert(localPort > 0);
-    if (reactor == NULL || localIp == NULL || localPort == 0)
+    if (reactor == NULL)
     {
         return (NULL);
     }
 
     CProStlString theLocalIp = "";
-    if (localIp[0] == '\0')
+    if (localIp == NULL || localIp[0] == '\0')
     {
         char localFirstIp[64] = "";
         ProGetLocalFirstIp(localFirstIp);
@@ -315,7 +311,7 @@ CTest::CreateUdpServer(IProReactor*   reactor,
     initArgs.udpserverEx.reactor          = reactor;
     initArgs.udpserverEx.localPort        = localPort;
     initArgs.udpserverEx.timeoutInSeconds = UDP_SERVER_TIMEOUT;
-#if defined(USING_VIDEO_BUCKET)
+#if USING_VIDEO_BUCKET
     initArgs.udpserverEx.bucket           = CreateRtpVideoBucket();
 #else
     initArgs.udpserverEx.bucket           = CreateRtpBaseBucket();
@@ -329,11 +325,7 @@ CTest::CreateUdpServer(IProReactor*   reactor,
     {
         session->SetOutputRedline(
             REDLINE_BYTES, REDLINE_FRAMES, REDLINE_DELAY_MS);
-
-        if (printReady)
-        {
-            PrintSessionReady(session, true);
-        }
+        PrintSessionReady(session, true);
     }
 
     return (session);
@@ -342,13 +334,10 @@ CTest::CreateUdpServer(IProReactor*   reactor,
 IRtpSession*
 CTest::CreateTcpServer(IProReactor*   reactor,
                        const char*    localIp,
-                       unsigned short localPort,
-                       bool           printReady)
+                       unsigned short localPort)
 {
     assert(reactor != NULL);
-    assert(localIp != NULL);
-    assert(localPort > 0);
-    if (reactor == NULL || localIp == NULL || localPort == 0)
+    if (reactor == NULL)
     {
         return (NULL);
     }
@@ -364,8 +353,11 @@ CTest::CreateTcpServer(IProReactor*   reactor,
     initArgs.tcpserver.localPort        = localPort;
     initArgs.tcpserver.timeoutInSeconds = TCP_SERVER_TIMEOUT;
     initArgs.tcpserver.bucket           = CreateRtpBaseBucket();
-    strncpy_pro(initArgs.tcpserver.localIp,
-        sizeof(initArgs.tcpserver.localIp), localIp);
+    if (localIp != NULL)
+    {
+        strncpy_pro(initArgs.tcpserver.localIp,
+            sizeof(initArgs.tcpserver.localIp), localIp);
+    }
 
     IRtpSession* const session = CreateRtpSessionWrapper(
         RTP_ST_TCPSERVER, &initArgs, &localInfo);
@@ -373,11 +365,7 @@ CTest::CreateTcpServer(IProReactor*   reactor,
     {
         session->SetOutputRedline(
             REDLINE_BYTES, REDLINE_FRAMES, REDLINE_DELAY_MS);
-
-        if (printReady)
-        {
-            PrintSessionReady(session, false);
-        }
+        PrintSessionReady(session, false);
     }
 
     return (session);
@@ -387,22 +375,20 @@ IRtpSession*
 CTest::CreateUdpClient(IProReactor*   reactor,
                        const char*    remoteIp,
                        unsigned short remotePort,
-                       const char*    localIp,
-                       bool           printReady)
+                       const char*    localIp)
 {
     assert(reactor != NULL);
     assert(remoteIp != NULL);
     assert(remoteIp[0] != '\0');
     assert(remotePort > 0);
-    assert(localIp != NULL);
     if (reactor == NULL || remoteIp == NULL || remoteIp[0] == '\0' ||
-        remotePort == 0 || localIp == NULL)
+        remotePort == 0)
     {
         return (NULL);
     }
 
     CProStlString theLocalIp = "";
-    if (localIp[0] == '\0')
+    if (localIp == NULL || localIp[0] == '\0')
     {
         char localFirstIp[64] = "";
         ProGetLocalFirstIp(localFirstIp, remoteIp);
@@ -433,15 +419,18 @@ CTest::CreateUdpClient(IProReactor*   reactor,
     initArgs.udpclientEx.reactor          = reactor;
     initArgs.udpclientEx.remotePort       = remotePort;
     initArgs.udpclientEx.timeoutInSeconds = UDP_CLIENT_TIMEOUT;
-#if defined(USING_VIDEO_BUCKET)
+#if USING_VIDEO_BUCKET
     initArgs.udpclientEx.bucket           = CreateRtpVideoBucket();
 #else
     initArgs.udpclientEx.bucket           = CreateRtpBaseBucket();
 #endif
     strncpy_pro(initArgs.udpclientEx.remoteIp,
         sizeof(initArgs.udpclientEx.remoteIp), remoteIp);
-    strncpy_pro(initArgs.udpclientEx.localIp,
-        sizeof(initArgs.udpclientEx.localIp), theLocalIp.c_str());
+    if (localIp != NULL)
+    {
+        strncpy_pro(initArgs.udpclientEx.localIp,
+            sizeof(initArgs.udpclientEx.localIp), theLocalIp.c_str());
+    }
 
     IRtpSession* const session = CreateRtpSessionWrapper(
         RTP_ST_UDPCLIENT_EX, &initArgs, &localInfo);
@@ -449,11 +438,7 @@ CTest::CreateUdpClient(IProReactor*   reactor,
     {
         session->SetOutputRedline(
             REDLINE_BYTES, REDLINE_FRAMES, REDLINE_DELAY_MS);
-
-        if (printReady)
-        {
-            PrintSessionReady(session, true);
-        }
+        PrintSessionReady(session, true);
     }
 
     return (session);
@@ -463,16 +448,14 @@ IRtpSession*
 CTest::CreateTcpClient(IProReactor*   reactor,
                        const char*    remoteIp,
                        unsigned short remotePort,
-                       const char*    localIp,
-                       bool           printReady)
+                       const char*    localIp)
 {
     assert(reactor != NULL);
     assert(remoteIp != NULL);
     assert(remoteIp[0] != '\0');
     assert(remotePort > 0);
-    assert(localIp != NULL);
     if (reactor == NULL || remoteIp == NULL || remoteIp[0] == '\0' ||
-        remotePort == 0 || localIp == NULL)
+        remotePort == 0)
     {
         return (NULL);
     }
@@ -490,8 +473,11 @@ CTest::CreateTcpClient(IProReactor*   reactor,
     initArgs.tcpclient.bucket           = CreateRtpBaseBucket();
     strncpy_pro(initArgs.tcpclient.remoteIp,
         sizeof(initArgs.tcpclient.remoteIp), remoteIp);
-    strncpy_pro(initArgs.tcpclient.localIp,
-        sizeof(initArgs.tcpclient.localIp), localIp);
+    if (localIp != NULL)
+    {
+        strncpy_pro(initArgs.tcpclient.localIp,
+            sizeof(initArgs.tcpclient.localIp), localIp);
+    }
 
     IRtpSession* const session = CreateRtpSessionWrapper(
         RTP_ST_TCPCLIENT, &initArgs, &localInfo);
@@ -499,106 +485,11 @@ CTest::CreateTcpClient(IProReactor*   reactor,
     {
         session->SetOutputRedline(
             REDLINE_BYTES, REDLINE_FRAMES, REDLINE_DELAY_MS);
-
-        if (printReady)
-        {
-            PrintSessionReady(session, false);
-        }
+        PrintSessionReady(session, false);
     }
 
     return (session);
 }
-
-void
-CTest::PrintSessionReady(IRtpSession* session,
-                         bool         udp)
-{{{
-    assert(session != NULL);
-    if (session == NULL)
-    {
-        return;
-    }
-
-    char           localIp[64]  = "";
-    char           remoteIp[64] = "";
-    unsigned short localPort    = 0;
-    unsigned short remotePort   = 0;
-    session->GetLocalIp(localIp);
-    session->GetRemoteIp(remoteIp);
-    localPort  = session->GetLocalPort();
-    remotePort = session->GetRemotePort();
-
-    char status[64] = "";
-    if (m_mode == TM_UDPE || m_mode == TM_TCPE ||
-        m_mode == TM_UDPS || m_mode == TM_TCPS)
-    {
-        static int count = 0;
-        sprintf(status, "waiting...[%d]", ++count);
-    }
-    else
-    {
-        strcpy(status, "connecting...");
-    }
-
-    CProStlString timeString = "";
-    ProGetLocalTimeString(timeString);
-
-    printf(
-        "\n"
-        "%s \n"
-        " test_rtp [ver-%d.%d.%d] --- [%s, Lc-%s:%u, Rm-%s:%u] --- %s \n"
-        ,
-        timeString.c_str(),
-        PRO_VER_MAJOR,
-        PRO_VER_MINOR,
-        PRO_VER_PATCH,
-        udp ? "UDP" : "TCP",
-        localIp,
-        (unsigned int)localPort,
-        remoteIp,
-        (unsigned int)remotePort,
-        status
-        );
-}}}
-
-void
-CTest::PrintSessionBroken(IRtpSession* session,
-                          bool         udp)
-{{{
-    assert(session != NULL);
-    if (session == NULL)
-    {
-        return;
-    }
-
-    char           localIp[64]  = "";
-    char           remoteIp[64] = "";
-    unsigned short localPort    = 0;
-    unsigned short remotePort   = 0;
-    session->GetLocalIp(localIp);
-    session->GetRemoteIp(remoteIp);
-    localPort  = session->GetLocalPort();
-    remotePort = session->GetRemotePort();
-
-    CProStlString timeString = "";
-    ProGetLocalTimeString(timeString);
-
-    printf(
-        "\n"
-        "%s \n"
-        " test_rtp [ver-%d.%d.%d] --- [%s, Lc-%s:%u, Rm-%s:%u] --- broken! \n"
-        ,
-        timeString.c_str(),
-        PRO_VER_MAJOR,
-        PRO_VER_MINOR,
-        PRO_VER_PATCH,
-        udp ? "UDP" : "TCP",
-        localIp,
-        (unsigned int)localPort,
-        remoteIp,
-        (unsigned int)remotePort
-        );
-}}}
 
 void
 CTest::Fini()
@@ -651,6 +542,136 @@ CTest::Release()
 }
 
 void
+CTest::PrintSessionReady(IRtpSession* session,
+                         bool         udp)
+{{{
+    assert(session != NULL);
+    if (session == NULL)
+    {
+        return;
+    }
+
+    char           localIp[64]  = "";
+    char           remoteIp[64] = "";
+    unsigned short localPort    = 0;
+    unsigned short remotePort   = 0;
+    session->GetLocalIp(localIp);
+    session->GetRemoteIp(remoteIp);
+    localPort  = session->GetLocalPort();
+    remotePort = session->GetRemotePort();
+
+    char status[64] = "";
+    if (m_mode == TM_UDPE || m_mode == TM_TCPE ||
+        m_mode == TM_UDPS || m_mode == TM_TCPS)
+    {
+        static int count = 0;
+        sprintf(status, "waiting...[%d]", ++count);
+    }
+    else
+    {
+        strcpy(status, "connecting...");
+    }
+
+    CProStlString timeString = "";
+    ProGetLocalTimeString(timeString);
+
+    printf(
+        "\n\n"
+        "%s \n"
+        " test_rtp [ver-%d.%d.%d] --- [%s, Lc-%s:%u, Rm-%s:%u] --- %s \n"
+        ,
+        timeString.c_str(),
+        PRO_VER_MAJOR,
+        PRO_VER_MINOR,
+        PRO_VER_PATCH,
+        udp ? "UDP" : "TCP",
+        localIp,
+        (unsigned int)localPort,
+        remoteIp,
+        (unsigned int)remotePort,
+        status
+        );
+}}}
+
+void
+CTest::PrintSessionConnected(IRtpSession* session,
+                             bool         udp)
+{{{
+    assert(session != NULL);
+    if (session == NULL)
+    {
+        return;
+    }
+
+    char           localIp[64]  = "";
+    char           remoteIp[64] = "";
+    unsigned short localPort    = 0;
+    unsigned short remotePort   = 0;
+    session->GetLocalIp(localIp);
+    session->GetRemoteIp(remoteIp);
+    localPort  = session->GetLocalPort();
+    remotePort = session->GetRemotePort();
+
+    CProStlString timeString = "";
+    ProGetLocalTimeString(timeString);
+
+    printf(
+        "\n\n"
+        "%s \n"
+        " test_rtp [ver-%d.%d.%d] --- [%s, Lc-%s:%u, Rm-%s:%u] --- connected! \n"
+        ,
+        timeString.c_str(),
+        PRO_VER_MAJOR,
+        PRO_VER_MINOR,
+        PRO_VER_PATCH,
+        udp ? "UDP" : "TCP",
+        localIp,
+        (unsigned int)localPort,
+        remoteIp,
+        (unsigned int)remotePort
+        );
+}}}
+
+void
+CTest::PrintSessionBroken(IRtpSession* session,
+                          bool         udp)
+{{{
+    assert(session != NULL);
+    if (session == NULL)
+    {
+        return;
+    }
+
+    char           localIp[64]  = "";
+    char           remoteIp[64] = "";
+    unsigned short localPort    = 0;
+    unsigned short remotePort   = 0;
+    session->GetLocalIp(localIp);
+    session->GetRemoteIp(remoteIp);
+    localPort  = session->GetLocalPort();
+    remotePort = session->GetRemotePort();
+
+    CProStlString timeString = "";
+    ProGetLocalTimeString(timeString);
+
+    printf(
+        "\n\n"
+        "%s \n"
+        " test_rtp [ver-%d.%d.%d] --- [%s, Lc-%s:%u, Rm-%s:%u] --- broken! \n"
+        ,
+        timeString.c_str(),
+        PRO_VER_MAJOR,
+        PRO_VER_MINOR,
+        PRO_VER_PATCH,
+        udp ? "UDP" : "TCP",
+        localIp,
+        (unsigned int)localPort,
+        remoteIp,
+        (unsigned int)remotePort
+        );
+}}}
+
+void
 PRO_CALLTYPE
 CTest::OnOkSession(IRtpSession* session)
 {
@@ -668,52 +689,14 @@ CTest::OnOkSession(IRtpSession* session)
             return;
         }
 
-        char           localIp[64]  = "";
-        char           remoteIp[64] = "";
-        unsigned short localPort    = 0;
-        unsigned short remotePort   = 0;
-        session->GetLocalIp(localIp);
-        session->GetRemoteIp(remoteIp);
-        localPort  = session->GetLocalPort();
-        remotePort = session->GetRemotePort();
-
-        CProStlString timeString = "";
-        ProGetLocalTimeString(timeString);
-
         if (session == m_udpSession)
-        {{{
-            printf(
-                "\n"
-                "%s \n"
-                " test_rtp [ver-%d.%d.%d] --- [UDP, Lc-%s:%u, Rm-%s:%u] --- connected! \n\n"
-                ,
-                timeString.c_str(),
-                PRO_VER_MAJOR,
-                PRO_VER_MINOR,
-                PRO_VER_PATCH,
-                localIp,
-                (unsigned int)localPort,
-                remoteIp,
-                (unsigned int)remotePort
-                );
-        }}}
+        {
+            PrintSessionConnected(session, true);
+        }
         else if (session == m_tcpSession)
-        {{{
-            printf(
-                "\n"
-                "%s \n"
-                " test_rtp [ver-%d.%d.%d] --- [TCP, Lc-%s:%u, Rm-%s:%u] --- connected! \n\n"
-                ,
-                timeString.c_str(),
-                PRO_VER_MAJOR,
-                PRO_VER_MINOR,
-                PRO_VER_PATCH,
-                localIp,
-                (unsigned int)localPort,
-                remoteIp,
-                (unsigned int)remotePort
-                );
-        }}}
+        {
+            PrintSessionConnected(session, false);
+        }
         else
         {
             return;
@@ -737,12 +720,10 @@ CTest::OnRecvSession(IRtpSession* session,
         return;
     }
 
-    TEST_PACKET_HDR* const ptr =
-        (TEST_PACKET_HDR*)packet->GetPayloadBuffer();
+    TEST_PACKET_HDR* const ptr = (TEST_PACKET_HDR*)packet->GetPayloadBuffer();
 
     TEST_PACKET_HDR hdr = *ptr;
     hdr.version = pbsd_ntoh16(hdr.version);
-    hdr.srcSeq  = pbsd_ntoh16(hdr.srcSeq);
     hdr.srcTick = pbsd_ntoh64(hdr.srcTick);
 
     {
@@ -764,14 +745,15 @@ CTest::OnRecvSession(IRtpSession* session,
         if (m_mode == TM_UDPE || m_mode == TM_TCPE)
         {
             ptr->ack = true;
+
+            packet->SetSequence(m_outputSeq++);
             session->SendPacket(packet);
         }
         else if (m_mode == TM_UDPC || m_mode == TM_TCPC)
         {
             if (hdr.ack)
             {
-                m_statRttLossRate.PushData(hdr.srcSeq);
-                m_statRttDelay.PushData((double)(tick - hdr.srcTick));
+                m_statRttxDelay.PushData((double)(tick - hdr.srcTick));
             }
 
             m_echoClient = hdr.ack;
@@ -824,7 +806,7 @@ CTest::OnCloseSession(IRtpSession* session,
         m_outputSeq         = 0;
         m_outputTs64        = -1;
         m_outputPacketCount = 0;
-        m_outputFrameIndex  = 0;
+        m_outputFrameSeq    = 0;
     }
 
     DeleteRtpSessionWrapper(session);
@@ -867,18 +849,14 @@ CTest::OnTimer(void*      factory,
                 return;
             }
 
-            double packetSize = STD_PACKET_SIZE;
-            if (m_outputShaper.GetMaxBitRate() <= LOW_BIT_RATE)
-            {
-                packetSize = LOW_PACKET_SIZE;
-            }
+            double packetSize = m_params.server.packet_size;
             if (packetSize > m_outputShaper.GetMaxBitRate() / 8 - 1)
             {
                 packetSize = m_outputShaper.GetMaxBitRate() / 8 - 1;
             }
-            if (packetSize < 1)
+            if (packetSize < sizeof(TEST_PACKET_HDR))
             {
-                packetSize = 1;
+                packetSize = sizeof(TEST_PACKET_HDR);
             }
 
             while (1)
@@ -919,19 +897,20 @@ CTest::OnTimer(void*      factory,
                 packet->SetTimeStamp((PRO_UINT32)m_outputTs64);
                 packet->SetSsrc(m_outputSsrc);
                 packet->SetMmType(MEDIA_MM_TYPE);
-                packet->SetKeyFrame(m_outputFrameIndex % GOP_FRAMES == 0);
+                packet->SetKeyFrame(m_outputFrameSeq % GOP_FRAMES == 0);
                 if (packet->GetMarker())
                 {
                     m_outputTs64 = -1;
-                    ++m_outputFrameIndex;
+                    ++m_outputFrameSeq;
                 }
 
                 TEST_PACKET_HDR hdr;
                 hdr.version = pbsd_hton16(hdr.version);
-                hdr.srcSeq  = pbsd_hton16(packet->GetSequence());
                 hdr.srcTick = pbsd_hton64(tick);
-                memcpy(packet->GetPayloadBuffer(), &hdr,
-                    sizeof(TEST_PACKET_HDR));
+
+                TEST_PACKET_HDR* const ptr =
+                    (TEST_PACKET_HDR*)packet->GetPayloadBuffer();
+                *ptr = hdr;
 
                 session->SendPacket(packet);
                 packet->Release();
@@ -946,11 +925,11 @@ CTest::OnTimer(void*      factory,
                 return;
             }
 
-            float      outputBitRate  = 0;
-            float      inputBitRate   = 0;
-            float      inputLossRate  = 0;
-            PRO_UINT64 inputLossCount = 0;
-            float      rttDelay       = 0;
+            float         outputBitRate  = 0;
+            float         inputBitRate   = 0;
+            float         inputLossRate  = 0;
+            PRO_UINT64    inputLossCount = 0;
+            unsigned long rttxDelay      = 0;
 
             session->GetOutputStat(NULL, &outputBitRate, NULL, NULL);
             session->GetInputStat(
@@ -959,43 +938,41 @@ CTest::OnTimer(void*      factory,
             if (m_mode == TM_UDPE || m_mode == TM_TCPE)
             {{{
                 /*
-                 * using a single line
+                 * use a single line if "scroll" is false
                  */
                 printf(
-                    "\r SEND : %9.1f(kbps)\t RECV : %9.1f(kbps)\t"
-                    " LOSS : %5.2f%% [" PRO_PRT64U "] "
+                    "%s SEND : %.1f(kbps)  RECV : %.1f(kbps) "
+                    " LOSS : %.2f%% [" PRO_PRT64U "]    %s"
                     ,
+                    m_params.server.scroll ? "\n" : "\r",
                     outputBitRate / 1000,
                     inputBitRate  / 1000,
                     inputLossRate * 100,
-                    inputLossCount
+                    inputLossCount,
+                    m_params.server.scroll ? "\n" : "\r"
                     );
                 fflush(stdout);
             }}}
             else if (m_echoClient)
             {{{
-                inputLossRate  = (float)m_statRttLossRate.CalcLossRate();
-                inputLossCount = (PRO_UINT64)m_statRttLossRate.CalcLossCount();
-                rttDelay       = (float)m_statRttDelay.CalcAvgValue();
+                rttxDelay = (unsigned long)m_statRttxDelay.CalcAvgValue();
 
                 printf(
-                    "\n"
-                    " SEND : %9.1f(kbps)\t RECV : %9.1f(kbps)\t"
-                    " LOSS : %5.2f%% [" PRO_PRT64U "]\t RTT' : %u(ms) \n"
+                    "\n SEND : %.1f(kbps)  RECV : %.1f(kbps) "
+                    " LOSS : %.2f%% [" PRO_PRT64U "]  RTT' : %u(ms) \n"
                     ,
                     outputBitRate / 1000,
                     inputBitRate  / 1000,
                     inputLossRate * 100,
                     inputLossCount,
-                    (unsigned int)rttDelay
+                    (unsigned int)rttxDelay
                     );
             }}}
             else
             {{{
                 printf(
-                    "\n"
-                    " SEND : %9.1f(kbps)\t RECV : %9.1f(kbps)\t"
-                    " LOSS : %5.2f%% [" PRO_PRT64U "] \n"
+                    "\n SEND : %.1f(kbps)  RECV : %.1f(kbps) "
+                    " LOSS : %.2f%% [" PRO_PRT64U "] \n"
                     ,
                     outputBitRate / 1000,
                     inputBitRate  / 1000,
@@ -1025,30 +1002,22 @@ CTest::OnTimer(void*      factory,
             }
 
             /*
-             * create
+             * recreate
              */
             if (m_mode == TM_UDPE || m_mode == TM_UDPS)
             {
                 if (m_udpSession == NULL)
                 {
-                    m_udpSession = CreateUdpServer(
-                        m_reactor,
-                        m_params.server.local_ip,
-                        m_params.server.local_port,
-                        true
-                        );
+                    m_udpSession = CreateUdpServer(m_reactor,
+                        m_params.server.local_ip, m_params.server.local_port);
                 }
             }
             else if (m_mode == TM_TCPE || m_mode == TM_TCPS)
             {
                 if (m_tcpSession == NULL)
                 {
-                    m_tcpSession = CreateTcpServer(
-                        m_reactor,
-                        m_params.server.local_ip,
-                        m_params.server.local_port,
-                        true
-                        );
+                    m_tcpSession = CreateTcpServer(m_reactor,
+                        m_params.server.local_ip, m_params.server.local_port);
                 }
             }
             else
