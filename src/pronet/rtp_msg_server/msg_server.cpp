@@ -538,7 +538,7 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
             return;
         }
 
-        MSG_USER_CTX& ctx = m_uid2Ctx[user->classId][user->UserId()];
+        MSG_USER_CTX& ctx = m_uid2Ctx[user->classId][user->UserId()]; /* insert */
         ctx.iids.insert(user->instId);
 
         if (!m_configInfo.msgs_db_readonly)

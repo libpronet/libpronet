@@ -311,7 +311,7 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
                 }
 
                 if (memcmp(sync.nonce, m_syncToPeer.nonce,
-                    sizeof(sync.nonce) != 0))
+                    sizeof(sync.nonce)) != 0)
                 {
                     break;
                 }

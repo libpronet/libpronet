@@ -41,6 +41,149 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+static
+void
+PRO_CALLTYPE
+ReadConfig_i(const CProStlString&            exeRoot,
+             CProStlVector<PRO_CONFIG_ITEM>& configs,
+             MSG_CLIENT_CONFIG_INFO&         configInfo)
+{
+    configInfo.msgc_ssl_cafiles.clear();
+    configInfo.msgc_ssl_crlfiles.clear();
+
+    int       i = 0;
+    const int c = (int)configs.size();
+
+    for (; i < c; ++i)
+    {
+        CProStlString& configName  = configs[i].configName;
+        CProStlString& configValue = configs[i].configValue;
+
+        if (stricmp(configName.c_str(), "msgc_mm_type") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value >= (int)RTP_MMT_MSG_MIN &&
+                value <= (int)RTP_MMT_MSG_MAX)
+            {
+                configInfo.msgc_mm_type = (RTP_MM_TYPE)value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgc_server_ip") == 0)
+        {
+            if (!configValue.empty())
+            {
+                configInfo.msgc_server_ip = configValue;
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgc_server_port") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0 && value <= 65535)
+            {
+                configInfo.msgc_server_port = (unsigned short)value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgc_id") == 0)
+        {
+            if (!configValue.empty())
+            {
+                RtpMsgString2User(configValue.c_str(), &configInfo.msgc_id);
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgc_password") == 0)
+        {
+            configInfo.msgc_password = configValue;
+
+            if (!configValue.empty())
+            {
+                ProZeroMemory(&configValue[0], configValue.length());
+                configValue = "";
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgc_local_ip") == 0)
+        {
+            if (!configValue.empty())
+            {
+                configInfo.msgc_local_ip = configValue;
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgc_handshake_timeout") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0)
+            {
+                configInfo.msgc_handshake_timeout = value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgc_redline_bytes") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0)
+            {
+                configInfo.msgc_redline_bytes = value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgc_enable_ssl") == 0)
+        {
+            configInfo.msgc_enable_ssl = atoi(configValue.c_str()) != 0;
+        }
+        else if (stricmp(configName.c_str(), "msgc_ssl_enable_sha1cert") == 0)
+        {
+            configInfo.msgc_ssl_enable_sha1cert = atoi(configValue.c_str()) != 0;
+        }
+        else if (stricmp(configName.c_str(), "msgc_ssl_cafile") == 0)
+        {
+            if (!configValue.empty())
+            {
+                if (configValue[0] == '.' ||
+                    configValue.find_first_of("\\/") == CProStlString::npos)
+                {
+                    CProStlString fileName = exeRoot;
+                    fileName += configValue;
+                    configValue = fileName;
+                }
+            }
+
+            if (!configValue.empty())
+            {
+                configInfo.msgc_ssl_cafiles.push_back(configValue);
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgc_ssl_crlfile") == 0)
+        {
+            if (!configValue.empty())
+            {
+                if (configValue[0] == '.' ||
+                    configValue.find_first_of("\\/") == CProStlString::npos)
+                {
+                    CProStlString fileName = exeRoot;
+                    fileName += configValue;
+                    configValue = fileName;
+                }
+            }
+
+            if (!configValue.empty())
+            {
+                configInfo.msgc_ssl_crlfiles.push_back(configValue);
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgc_ssl_sni") == 0)
+        {
+            configInfo.msgc_ssl_sni = configValue;
+        }
+        else if (stricmp(configName.c_str(), "msgc_ssl_aes256") == 0)
+        {
+            configInfo.msgc_ssl_aes256 = atoi(configValue.c_str()) != 0;
+        }
+        else
+        {
+        }
+    } /* end of for (...) */
+}
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
 int main(int argc, char* argv[])
 {
     printf(
@@ -112,137 +255,7 @@ int main(int argc, char* argv[])
                 );
         }
 
-        configInfo.msgc_ssl_cafiles.clear();
-        configInfo.msgc_ssl_crlfiles.clear();
-
-        int       i = 0;
-        const int c = (int)configs.size();
-
-        for (; i < c; ++i)
-        {
-            CProStlString& configName  = configs[i].configName;
-            CProStlString& configValue = configs[i].configValue;
-
-            if (stricmp(configName.c_str(), "msgc_mm_type") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value >= (int)RTP_MMT_MSG_MIN &&
-                    value <= (int)RTP_MMT_MSG_MAX)
-                {
-                    configInfo.msgc_mm_type = (RTP_MM_TYPE)value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgc_server_ip") == 0)
-            {
-                if (!configValue.empty())
-                {
-                    configInfo.msgc_server_ip = configValue;
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgc_server_port") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0 && value <= 65535)
-                {
-                    configInfo.msgc_server_port = (unsigned short)value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgc_id") == 0)
-            {
-                if (!configValue.empty())
-                {
-                    RtpMsgString2User(configValue.c_str(), &configInfo.msgc_id);
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgc_password") == 0)
-            {
-                configInfo.msgc_password = configValue;
-
-                if (!configValue.empty())
-                {
-                    ProZeroMemory(&configValue[0], configValue.length());
-                    configValue = "";
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgc_local_ip") == 0)
-            {
-                if (!configValue.empty())
-                {
-                    configInfo.msgc_local_ip = configValue;
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgc_handshake_timeout") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0)
-                {
-                    configInfo.msgc_handshake_timeout = value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgc_redline_bytes") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0)
-                {
-                    configInfo.msgc_redline_bytes = value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgc_enable_ssl") == 0)
-            {
-                configInfo.msgc_enable_ssl = atoi(configValue.c_str()) != 0;
-            }
-            else if (stricmp(configName.c_str(), "msgc_ssl_enable_sha1cert") == 0)
-            {
-                configInfo.msgc_ssl_enable_sha1cert = atoi(configValue.c_str()) != 0;
-            }
-            else if (stricmp(configName.c_str(), "msgc_ssl_cafile") == 0)
-            {
-                if (!configValue.empty())
-                {
-                    if (configValue[0] == '.' ||
-                        configValue.find_first_of("\\/") == CProStlString::npos)
-                    {
-                        CProStlString fileName = exeRoot;
-                        fileName += configValue;
-                        configValue = fileName;
-                    }
-                }
-
-                if (!configValue.empty())
-                {
-                    configInfo.msgc_ssl_cafiles.push_back(configValue);
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgc_ssl_crlfile") == 0)
-            {
-                if (!configValue.empty())
-                {
-                    if (configValue[0] == '.' ||
-                        configValue.find_first_of("\\/") == CProStlString::npos)
-                    {
-                        CProStlString fileName = exeRoot;
-                        fileName += configValue;
-                        configValue = fileName;
-                    }
-                }
-
-                if (!configValue.empty())
-                {
-                    configInfo.msgc_ssl_crlfiles.push_back(configValue);
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgc_ssl_sni") == 0)
-            {
-                configInfo.msgc_ssl_sni = configValue;
-            }
-            else if (stricmp(configName.c_str(), "msgc_ssl_aes256") == 0)
-            {
-                configInfo.msgc_ssl_aes256 = atoi(configValue.c_str()) != 0;
-            }
-            else
-            {
-            }
-        } /* end of for (...) */
+        ReadConfig_i(exeRoot, configs, configInfo);
 
         if (server_ip != NULL && server_port > 0)
         {
@@ -329,6 +342,7 @@ int main(int argc, char* argv[])
     while (1)
     {
         ProSleep(1);
+
         RtpMsgUser2String(&bindUser, bindString);
 #if defined(_WIN32)
         printf("\nMSG-Cli-To:%s\\>", bindString);

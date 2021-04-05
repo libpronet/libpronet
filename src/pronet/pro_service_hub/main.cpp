@@ -106,6 +106,79 @@ static CProThreadMutexCondition g_s_cond;
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+static
+void
+PRO_CALLTYPE
+ReadConfig_i(const CProStlVector<PRO_CONFIG_ITEM>& configs,
+             SERVICE_HUB_CONFIG_INFO&              configInfo)
+{
+    configInfo.hubs_tcpex_port_a.clear();
+    configInfo.hubs_tcpex_port_b.clear();
+    configInfo.hubs_tcp_port_a.clear();
+    configInfo.hubs_tcp_port_b.clear();
+
+    int       i = 0;
+    const int c = (int)configs.size();
+
+    for (; i < c; ++i)
+    {
+        const CProStlString& configName  = configs[i].configName;
+        const CProStlString& configValue = configs[i].configValue;
+
+        if (stricmp(configName.c_str(), "hubs_thread_count") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0 && value <= 100)
+            {
+                configInfo.hubs_thread_count = value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "hubs_handshake_timeout") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0)
+            {
+                configInfo.hubs_handshake_timeout = value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "hubs_tcpex_port_a") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0 && value <= 65535)
+            {
+                configInfo.hubs_tcpex_port_a.insert((unsigned short)value);
+            }
+        }
+        else if (stricmp(configName.c_str(), "hubs_tcpex_port_b") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0 && value <= 65535)
+            {
+                configInfo.hubs_tcpex_port_b.insert((unsigned short)value);
+            }
+        }
+        else if (stricmp(configName.c_str(), "hubs_tcp_port_a") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0 && value <= 65535)
+            {
+                configInfo.hubs_tcp_port_a.insert((unsigned short)value);
+            }
+        }
+        else if (stricmp(configName.c_str(), "hubs_tcp_port_b") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0 && value <= 65535)
+            {
+                configInfo.hubs_tcp_port_b.insert((unsigned short)value);
+            }
+        }
+        else
+        {
+        }
+    } /* end of for (...) */
+}
+
 #if !defined(_WIN32) && !defined(_WIN32_WCE)
 
 static
@@ -126,6 +199,8 @@ SignalHandler_i(int sig)
                 ,
                 timeString.c_str()
                 );
+            fflush(stdout);
+
             g_s_cond.Signal();
             break;
         }
@@ -138,6 +213,8 @@ SignalHandler_i(int sig)
                 ,
                 timeString.c_str()
                 );
+            fflush(stdout);
+
             g_s_cond.Signal();
             break;
         }
@@ -150,6 +227,8 @@ SignalHandler_i(int sig)
                 ,
                 timeString.c_str()
                 );
+            fflush(stdout);
+
             g_s_cond.Signal();
             break;
         }
@@ -162,6 +241,8 @@ SignalHandler_i(int sig)
                 ,
                 timeString.c_str()
                 );
+            fflush(stdout);
+
             g_s_cond.Signal();
             break;
         }
@@ -223,75 +304,12 @@ int main(int argc, char* argv[])
                 timeString.c_str(),
                 configFileName.c_str()
                 );
+            fflush(stdout);
 
             goto EXIT;
         }
 
-        configInfo.hubs_tcpex_port_a.clear();
-        configInfo.hubs_tcpex_port_b.clear();
-        configInfo.hubs_tcp_port_a.clear();
-        configInfo.hubs_tcp_port_b.clear();
-
-        int       i = 0;
-        const int c = (int)configs.size();
-
-        for (; i < c; ++i)
-        {
-            const CProStlString& configName  = configs[i].configName;
-            const CProStlString& configValue = configs[i].configValue;
-
-            if (stricmp(configName.c_str(), "hubs_thread_count") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0 && value <= 100)
-                {
-                    configInfo.hubs_thread_count = value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "hubs_handshake_timeout") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0)
-                {
-                    configInfo.hubs_handshake_timeout = value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "hubs_tcpex_port_a") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0 && value <= 65535)
-                {
-                    configInfo.hubs_tcpex_port_a.insert((unsigned short)value);
-                }
-            }
-            else if (stricmp(configName.c_str(), "hubs_tcpex_port_b") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0 && value <= 65535)
-                {
-                    configInfo.hubs_tcpex_port_b.insert((unsigned short)value);
-                }
-            }
-            else if (stricmp(configName.c_str(), "hubs_tcp_port_a") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0 && value <= 65535)
-                {
-                    configInfo.hubs_tcp_port_a.insert((unsigned short)value);
-                }
-            }
-            else if (stricmp(configName.c_str(), "hubs_tcp_port_b") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0 && value <= 65535)
-                {
-                    configInfo.hubs_tcp_port_b.insert((unsigned short)value);
-                }
-            }
-            else
-            {
-            }
-        } /* end of for (...) */
+        ReadConfig_i(configs, configInfo);
     }
 
     reactor = ProCreateReactor(configInfo.hubs_thread_count);
@@ -304,6 +322,7 @@ int main(int argc, char* argv[])
             ,
             timeString.c_str()
             );
+        fflush(stdout);
 
         goto EXIT;
     }
@@ -375,6 +394,7 @@ int main(int argc, char* argv[])
                     (unsigned int)port,
                     (unsigned int)port
                     );
+                fflush(stdout);
 
                 goto EXIT;
             }
@@ -407,6 +427,8 @@ int main(int argc, char* argv[])
         PRO_VER_PATCH,
         portString.c_str()
         );
+    fflush(stdout);
+
     g_s_cond.Wait(NULL);
 
 EXIT:

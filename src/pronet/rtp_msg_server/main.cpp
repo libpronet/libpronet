@@ -45,6 +45,180 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+static
+void
+PRO_CALLTYPE
+ReadConfig_i(const CProStlString&            exeRoot,
+             CProStlVector<PRO_CONFIG_ITEM>& configs,
+             MSG_SERVER_CONFIG_INFO&         configInfo)
+{
+    configInfo.msgs_ssl_cafiles.clear();
+    configInfo.msgs_ssl_crlfiles.clear();
+    configInfo.msgs_ssl_certfiles.clear();
+
+    int       i = 0;
+    const int c = (int)configs.size();
+
+    for (; i < c; ++i)
+    {
+        CProStlString& configName  = configs[i].configName;
+        CProStlString& configValue = configs[i].configValue;
+
+        if (stricmp(configName.c_str(), "msgs_thread_count") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0 && value <= 100)
+            {
+                configInfo.msgs_thread_count = value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgs_mm_type") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value >= (int)RTP_MMT_MSG_MIN &&
+                value <= (int)RTP_MMT_MSG_MAX)
+            {
+                configInfo.msgs_mm_type = (RTP_MM_TYPE)value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgs_hub_port") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0 && value <= 65535)
+            {
+                configInfo.msgs_hub_port = (unsigned short)value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgs_handshake_timeout") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0)
+            {
+                configInfo.msgs_handshake_timeout = value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgs_redline_bytes_c2s") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0)
+            {
+                configInfo.msgs_redline_bytes_c2s = value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgs_redline_bytes_usr") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0)
+            {
+                configInfo.msgs_redline_bytes_usr = value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgs_db_readonly") == 0)
+        {
+            configInfo.msgs_db_readonly = atoi(configValue.c_str()) != 0;
+        }
+        else if (stricmp(configName.c_str(), "msgs_enable_ssl") == 0)
+        {
+            configInfo.msgs_enable_ssl = atoi(configValue.c_str()) != 0;
+        }
+        else if (stricmp(configName.c_str(), "msgs_ssl_forced") == 0)
+        {
+            configInfo.msgs_ssl_forced = atoi(configValue.c_str()) != 0;
+        }
+        else if (stricmp(configName.c_str(), "msgs_ssl_enable_sha1cert") == 0)
+        {
+            configInfo.msgs_ssl_enable_sha1cert = atoi(configValue.c_str()) != 0;
+        }
+        else if (stricmp(configName.c_str(), "msgs_ssl_cafile") == 0)
+        {
+            if (!configValue.empty())
+            {
+                if (configValue[0] == '.' ||
+                    configValue.find_first_of("\\/") == CProStlString::npos)
+                {
+                    CProStlString fileName = exeRoot;
+                    fileName += configValue;
+                    configValue = fileName;
+                }
+            }
+
+            if (!configValue.empty())
+            {
+                configInfo.msgs_ssl_cafiles.push_back(configValue);
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgs_ssl_crlfile") == 0)
+        {
+            if (!configValue.empty())
+            {
+                if (configValue[0] == '.' ||
+                    configValue.find_first_of("\\/") == CProStlString::npos)
+                {
+                    CProStlString fileName = exeRoot;
+                    fileName += configValue;
+                    configValue = fileName;
+                }
+            }
+
+            if (!configValue.empty())
+            {
+                configInfo.msgs_ssl_crlfiles.push_back(configValue);
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgs_ssl_certfile") == 0)
+        {
+            if (!configValue.empty())
+            {
+                if (configValue[0] == '.' ||
+                    configValue.find_first_of("\\/") == CProStlString::npos)
+                {
+                    CProStlString fileName = exeRoot;
+                    fileName += configValue;
+                    configValue = fileName;
+                }
+            }
+
+            if (!configValue.empty())
+            {
+                configInfo.msgs_ssl_certfiles.push_back(configValue);
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgs_ssl_keyfile") == 0)
+        {
+            if (!configValue.empty())
+            {
+                if (configValue[0] == '.' ||
+                    configValue.find_first_of("\\/") == CProStlString::npos)
+                {
+                    CProStlString fileName = exeRoot;
+                    fileName += configValue;
+                    configValue = fileName;
+                }
+            }
+
+            configInfo.msgs_ssl_keyfile = configValue;
+        }
+        else if (stricmp(configName.c_str(), "msgs_log_loop_bytes") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0)
+            {
+                configInfo.msgs_log_loop_bytes = value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "msgs_log_level_green") == 0)
+        {
+            configInfo.msgs_log_level_green    = atoi(configValue.c_str());
+        }
+        else
+        {
+        }
+    } /* end of for (...) */
+}
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
 int main(int argc, char* argv[])
 {
     ProNetInit();
@@ -106,168 +280,7 @@ int main(int argc, char* argv[])
             goto EXIT;
         }
 
-        configInfo.msgs_ssl_cafiles.clear();
-        configInfo.msgs_ssl_crlfiles.clear();
-        configInfo.msgs_ssl_certfiles.clear();
-
-        int       i = 0;
-        const int c = (int)configs.size();
-
-        for (; i < c; ++i)
-        {
-            CProStlString& configName  = configs[i].configName;
-            CProStlString& configValue = configs[i].configValue;
-
-            if (stricmp(configName.c_str(), "msgs_thread_count") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0 && value <= 100)
-                {
-                    configInfo.msgs_thread_count = value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgs_mm_type") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value >= (int)RTP_MMT_MSG_MIN &&
-                    value <= (int)RTP_MMT_MSG_MAX)
-                {
-                    configInfo.msgs_mm_type = (RTP_MM_TYPE)value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgs_hub_port") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0 && value <= 65535)
-                {
-                    configInfo.msgs_hub_port = (unsigned short)value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgs_handshake_timeout") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0)
-                {
-                    configInfo.msgs_handshake_timeout = value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgs_redline_bytes_c2s") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0)
-                {
-                    configInfo.msgs_redline_bytes_c2s = value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgs_redline_bytes_usr") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0)
-                {
-                    configInfo.msgs_redline_bytes_usr = value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgs_db_readonly") == 0)
-            {
-                configInfo.msgs_db_readonly = atoi(configValue.c_str()) != 0;
-            }
-            else if (stricmp(configName.c_str(), "msgs_enable_ssl") == 0)
-            {
-                configInfo.msgs_enable_ssl = atoi(configValue.c_str()) != 0;
-            }
-            else if (stricmp(configName.c_str(), "msgs_ssl_forced") == 0)
-            {
-                configInfo.msgs_ssl_forced = atoi(configValue.c_str()) != 0;
-            }
-            else if (stricmp(configName.c_str(), "msgs_ssl_enable_sha1cert") == 0)
-            {
-                configInfo.msgs_ssl_enable_sha1cert = atoi(configValue.c_str()) != 0;
-            }
-            else if (stricmp(configName.c_str(), "msgs_ssl_cafile") == 0)
-            {
-                if (!configValue.empty())
-                {
-                    if (configValue[0] == '.' ||
-                        configValue.find_first_of("\\/") == CProStlString::npos)
-                    {
-                        CProStlString fileName = exeRoot;
-                        fileName += configValue;
-                        configValue = fileName;
-                    }
-                }
-
-                if (!configValue.empty())
-                {
-                    configInfo.msgs_ssl_cafiles.push_back(configValue);
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgs_ssl_crlfile") == 0)
-            {
-                if (!configValue.empty())
-                {
-                    if (configValue[0] == '.' ||
-                        configValue.find_first_of("\\/") == CProStlString::npos)
-                    {
-                        CProStlString fileName = exeRoot;
-                        fileName += configValue;
-                        configValue = fileName;
-                    }
-                }
-
-                if (!configValue.empty())
-                {
-                    configInfo.msgs_ssl_crlfiles.push_back(configValue);
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgs_ssl_certfile") == 0)
-            {
-                if (!configValue.empty())
-                {
-                    if (configValue[0] == '.' ||
-                        configValue.find_first_of("\\/") == CProStlString::npos)
-                    {
-                        CProStlString fileName = exeRoot;
-                        fileName += configValue;
-                        configValue = fileName;
-                    }
-                }
-
-                if (!configValue.empty())
-                {
-                    configInfo.msgs_ssl_certfiles.push_back(configValue);
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgs_ssl_keyfile") == 0)
-            {
-                if (!configValue.empty())
-                {
-                    if (configValue[0] == '.' ||
-                        configValue.find_first_of("\\/") == CProStlString::npos)
-                    {
-                        CProStlString fileName = exeRoot;
-                        fileName += configValue;
-                        configValue = fileName;
-                    }
-                }
-
-                configInfo.msgs_ssl_keyfile = configValue;
-            }
-            else if (stricmp(configName.c_str(), "msgs_log_loop_bytes") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0)
-                {
-                    configInfo.msgs_log_loop_bytes = value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "msgs_log_level_green") == 0)
-            {
-                configInfo.msgs_log_level_green    = atoi(configValue.c_str());
-            }
-            else
-            {
-            }
-        } /* end of for (...) */
+        ReadConfig_i(exeRoot, configs, configInfo);
     }
 
     logFile->SetMaxSize(configInfo.msgs_log_loop_bytes);
@@ -372,6 +385,7 @@ int main(int argc, char* argv[])
     while (1)
     {
         ProSleep(1);
+
 #if defined(_WIN32)
         printf("\nMSG-Svr:\\>");
 #else

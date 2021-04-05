@@ -39,6 +39,176 @@ static CTest* g_s_tester = NULL;
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+static
+void
+PRO_CALLTYPE
+ReadConfig_i(const CProStlString&            exeRoot,
+             CProStlVector<PRO_CONFIG_ITEM>& configs,
+             TCP_SERVER_CONFIG_INFO&         configInfo)
+{
+    configInfo.tcps_ssl_cafiles.clear();
+    configInfo.tcps_ssl_crlfiles.clear();
+    configInfo.tcps_ssl_certfiles.clear();
+
+    int       i = 0;
+    const int c = (int)configs.size();
+
+    for (; i < c; ++i)
+    {
+        CProStlString& configName  = configs[i].configName;
+        CProStlString& configValue = configs[i].configValue;
+
+        if (stricmp(configName.c_str(), "tcps_thread_count") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0 && value <= 100)
+            {
+                configInfo.tcps_thread_count = value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "tcps_using_hub") == 0)
+        {
+            configInfo.tcps_using_hub = atoi(configValue.c_str()) != 0;
+        }
+        else if (stricmp(configName.c_str(), "tcps_port") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0 && value <= 65535)
+            {
+                configInfo.tcps_port = (unsigned short)value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "tcps_handshake_timeout") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0)
+            {
+                configInfo.tcps_handshake_timeout = value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "tcps_heartbeat_interval") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value > 0)
+            {
+                configInfo.tcps_heartbeat_interval = value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "tcps_heartbeat_bytes") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value >= 0 && value <= 1024)
+            {
+                configInfo.tcps_heartbeat_bytes = value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "tcps_sockbuf_size_recv") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value >= 1024)
+            {
+                configInfo.tcps_sockbuf_size_recv = value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "tcps_sockbuf_size_send") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value >= 1024)
+            {
+                configInfo.tcps_sockbuf_size_send = value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "tcps_recvpool_size") == 0)
+        {
+            const int value = atoi(configValue.c_str());
+            if (value >= 1024)
+            {
+                configInfo.tcps_recvpool_size = value;
+            }
+        }
+        else if (stricmp(configName.c_str(), "tcps_enable_ssl") == 0)
+        {
+            configInfo.tcps_enable_ssl = atoi(configValue.c_str()) != 0;
+        }
+        else if (stricmp(configName.c_str(), "tcps_ssl_enable_sha1cert") == 0)
+        {
+            configInfo.tcps_ssl_enable_sha1cert = atoi(configValue.c_str()) != 0;
+        }
+        else if (stricmp(configName.c_str(), "tcps_ssl_cafile") == 0)
+        {
+            if (!configValue.empty())
+            {
+                if (configValue[0] == '.' ||
+                    configValue.find_first_of("\\/") == CProStlString::npos)
+                {
+                    CProStlString fileName = exeRoot;
+                    fileName += configValue;
+                    configValue = fileName;
+                }
+            }
+
+            if (!configValue.empty())
+            {
+                configInfo.tcps_ssl_cafiles.push_back(configValue);
+            }
+        }
+        else if (stricmp(configName.c_str(), "tcps_ssl_crlfile") == 0)
+        {
+            if (!configValue.empty())
+            {
+                if (configValue[0] == '.' ||
+                    configValue.find_first_of("\\/") == CProStlString::npos)
+                {
+                    CProStlString fileName = exeRoot;
+                    fileName += configValue;
+                    configValue = fileName;
+                }
+            }
+
+            if (!configValue.empty())
+            {
+                configInfo.tcps_ssl_crlfiles.push_back(configValue);
+            }
+        }
+        else if (stricmp(configName.c_str(), "tcps_ssl_certfile") == 0)
+        {
+            if (!configValue.empty())
+            {
+                if (configValue[0] == '.' ||
+                    configValue.find_first_of("\\/") == CProStlString::npos)
+                {
+                    CProStlString fileName = exeRoot;
+                    fileName += configValue;
+                    configValue = fileName;
+                }
+            }
+
+            if (!configValue.empty())
+            {
+                configInfo.tcps_ssl_certfiles.push_back(configValue);
+            }
+        }
+        else if (stricmp(configName.c_str(), "tcps_ssl_keyfile") == 0)
+        {
+            if (!configValue.empty())
+            {
+                if (configValue[0] == '.' ||
+                    configValue.find_first_of("\\/") == CProStlString::npos)
+                {
+                    CProStlString fileName = exeRoot;
+                    fileName += configValue;
+                    configValue = fileName;
+                }
+            }
+
+            configInfo.tcps_ssl_keyfile = configValue;
+        }
+        else
+        {
+        }
+    } /* end of for (...) */
+}
+
 #if !defined(_WIN32) && !defined(_WIN32_WCE)
 
 static
@@ -159,167 +329,7 @@ int main(int argc, char* argv[])
                 );
         }
 
-        configInfo.tcps_ssl_cafiles.clear();
-        configInfo.tcps_ssl_crlfiles.clear();
-        configInfo.tcps_ssl_certfiles.clear();
-
-        int       i = 0;
-        const int c = (int)configs.size();
-
-        for (; i < c; ++i)
-        {
-            CProStlString& configName  = configs[i].configName;
-            CProStlString& configValue = configs[i].configValue;
-
-            if (stricmp(configName.c_str(), "tcps_thread_count") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0 && value <= 100)
-                {
-                    configInfo.tcps_thread_count = value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "tcps_using_hub") == 0)
-            {
-                configInfo.tcps_using_hub = atoi(configValue.c_str()) != 0;
-            }
-            else if (stricmp(configName.c_str(), "tcps_port") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0 && value <= 65535)
-                {
-                    configInfo.tcps_port = (unsigned short)value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "tcps_handshake_timeout") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0)
-                {
-                    configInfo.tcps_handshake_timeout = value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "tcps_heartbeat_interval") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value > 0)
-                {
-                    configInfo.tcps_heartbeat_interval = value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "tcps_heartbeat_bytes") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value >= 0 && value <= 1024)
-                {
-                    configInfo.tcps_heartbeat_bytes = value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "tcps_sockbuf_size_recv") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value >= 1024)
-                {
-                    configInfo.tcps_sockbuf_size_recv = value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "tcps_sockbuf_size_send") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value >= 1024)
-                {
-                    configInfo.tcps_sockbuf_size_send = value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "tcps_recvpool_size") == 0)
-            {
-                const int value = atoi(configValue.c_str());
-                if (value >= 1024)
-                {
-                    configInfo.tcps_recvpool_size = value;
-                }
-            }
-            else if (stricmp(configName.c_str(), "tcps_enable_ssl") == 0)
-            {
-                configInfo.tcps_enable_ssl = atoi(configValue.c_str()) != 0;
-            }
-            else if (stricmp(configName.c_str(), "tcps_ssl_enable_sha1cert") == 0)
-            {
-                configInfo.tcps_ssl_enable_sha1cert = atoi(configValue.c_str()) != 0;
-            }
-            else if (stricmp(configName.c_str(), "tcps_ssl_cafile") == 0)
-            {
-                if (!configValue.empty())
-                {
-                    if (configValue[0] == '.' ||
-                        configValue.find_first_of("\\/") == CProStlString::npos)
-                    {
-                        CProStlString fileName = exeRoot;
-                        fileName += configValue;
-                        configValue = fileName;
-                    }
-                }
-
-                if (!configValue.empty())
-                {
-                    configInfo.tcps_ssl_cafiles.push_back(configValue);
-                }
-            }
-            else if (stricmp(configName.c_str(), "tcps_ssl_crlfile") == 0)
-            {
-                if (!configValue.empty())
-                {
-                    if (configValue[0] == '.' ||
-                        configValue.find_first_of("\\/") == CProStlString::npos)
-                    {
-                        CProStlString fileName = exeRoot;
-                        fileName += configValue;
-                        configValue = fileName;
-                    }
-                }
-
-                if (!configValue.empty())
-                {
-                    configInfo.tcps_ssl_crlfiles.push_back(configValue);
-                }
-            }
-            else if (stricmp(configName.c_str(), "tcps_ssl_certfile") == 0)
-            {
-                if (!configValue.empty())
-                {
-                    if (configValue[0] == '.' ||
-                        configValue.find_first_of("\\/") == CProStlString::npos)
-                    {
-                        CProStlString fileName = exeRoot;
-                        fileName += configValue;
-                        configValue = fileName;
-                    }
-                }
-
-                if (!configValue.empty())
-                {
-                    configInfo.tcps_ssl_certfiles.push_back(configValue);
-                }
-            }
-            else if (stricmp(configName.c_str(), "tcps_ssl_keyfile") == 0)
-            {
-                if (!configValue.empty())
-                {
-                    if (configValue[0] == '.' ||
-                        configValue.find_first_of("\\/") == CProStlString::npos)
-                    {
-                        CProStlString fileName = exeRoot;
-                        fileName += configValue;
-                        configValue = fileName;
-                    }
-                }
-
-                configInfo.tcps_ssl_keyfile = configValue;
-            }
-            else
-            {
-            }
-        } /* end of for (...) */
+        ReadConfig_i(exeRoot, configs, configInfo);
     }
 
     static char s_traceInfo[2048] = "";
@@ -413,6 +423,7 @@ int main(int argc, char* argv[])
     while (1)
     {
         ProSleep(1);
+
 #if defined(_WIN32)
         printf("\nTCP-Svr:\\>");
 #else

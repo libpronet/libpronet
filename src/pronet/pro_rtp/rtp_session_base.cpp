@@ -813,7 +813,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (int)(m_canUpcall    ? 1 : 0)
                     );
 #if defined(_WIN32)
-                ::OutputDebugString(buffer);
+                ::OutputDebugStringA(buffer);
 #else
                 printf("%s", buffer);
 #endif
@@ -884,7 +884,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (int)(m_canUpcall    ? 1 : 0)
                     );
 #if defined(_WIN32)
-                ::OutputDebugString(buffer);
+                ::OutputDebugStringA(buffer);
 #else
                 printf("%s", buffer);
 #endif
@@ -955,7 +955,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (int)(m_canUpcall    ? 1 : 0)
                     );
 #if defined(_WIN32)
-                ::OutputDebugString(buffer);
+                ::OutputDebugStringA(buffer);
 #else
                 printf("%s", buffer);
 #endif
@@ -1114,7 +1114,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (unsigned int)heapBytes
                     );
 #if defined(_WIN32)
-                    ::OutputDebugString(buffer);
+                    ::OutputDebugStringA(buffer);
 #else
                     printf("%s", buffer);
 #endif

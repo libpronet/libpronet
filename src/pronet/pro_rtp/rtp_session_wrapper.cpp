@@ -1778,7 +1778,7 @@ CRtpSessionWrapper::OnTimer(void*      factory,
                         tick
                         );
 #if defined(_WIN32)
-                    ::OutputDebugString(traceInfo);
+                    ::OutputDebugStringA(traceInfo);
 #else
                     printf("%s", traceInfo);
 #endif
@@ -1828,7 +1828,7 @@ CRtpSessionWrapper::OnTimer(void*      factory,
                         tick
                         );
 #if defined(_WIN32)
-                    ::OutputDebugString(traceInfo);
+                    ::OutputDebugStringA(traceInfo);
 #else
                     printf("%s", traceInfo);
 #endif
@@ -1880,7 +1880,7 @@ CRtpSessionWrapper::OnTimer(void*      factory,
                         tick
                         );
 #if defined(_WIN32)
-                    ::OutputDebugString(traceInfo);
+                    ::OutputDebugStringA(traceInfo);
 #else
                     printf("%s", traceInfo);
 #endif
