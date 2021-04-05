@@ -305,10 +305,13 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
                     buffer + sizeof(RTP_EXT) + sizeof(RTP_HEADER),
                     sizeof(RTP_UDPX_SYNC)
                     );
+                if (pbsd_hton16(sync.CalcChecksum()) != sync.checksum)
+                {
+                    break;
+                }
 
-                if (memcmp((char*)&sync + sizeof(PRO_UINT16),
-                    (char*)&m_syncToPeer + sizeof(PRO_UINT16),
-                    sizeof(RTP_UDPX_SYNC) - sizeof(PRO_UINT16)) != 0)
+                if (memcmp(sync.nonce, m_syncToPeer.nonce,
+                    sizeof(sync.nonce) != 0))
                 {
                     break;
                 }
