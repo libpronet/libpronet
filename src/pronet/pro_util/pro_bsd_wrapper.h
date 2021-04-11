@@ -406,6 +406,20 @@ pbsd_closesocket(PRO_INT64 fd,
 ////
 
 /*
+ * 功能: 校验给定的ip字符串是否有效
+ *
+ * 参数:
+ * ipString : 待校验的ip字符串
+ *
+ * 返回值: true有效, false无效
+ *
+ * 说明: 无
+ */
+bool
+PRO_CALLTYPE
+ProCheckIpString(const char* ipString);
+
+/*
  * 功能: 获取本地的首选ip地址
  *
  * 参数:

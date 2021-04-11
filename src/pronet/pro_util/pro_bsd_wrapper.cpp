@@ -1475,6 +1475,15 @@ pbsd_closesocket(PRO_INT64 fd,
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+bool
+PRO_CALLTYPE
+ProCheckIpString(const char* ipString)
+{
+    const PRO_UINT32 ip = pbsd_inet_addr_i(ipString);
+
+    return (ip != 0 && ip != (PRO_UINT32)-1);
+}
+
 const char*
 PRO_CALLTYPE
 ProGetLocalFirstIp(char        localFirstIp[64],
