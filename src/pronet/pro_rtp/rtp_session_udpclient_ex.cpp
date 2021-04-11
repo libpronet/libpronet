@@ -72,9 +72,6 @@ CRtpSessionUdpclientEx::CRtpSessionUdpclientEx(const RTP_SESSION_INFO& localInfo
             m_syncToPeer.nonce[i] = (unsigned char)(ProRand_0_1() * 255);
         }
 
-        std::random_shuffle(m_syncToPeer.nonce,
-            m_syncToPeer.nonce + sizeof(m_syncToPeer.nonce));
-
         m_syncToPeer.checksum = pbsd_hton16(m_syncToPeer.CalcChecksum());
     }
 }

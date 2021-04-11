@@ -50,8 +50,6 @@ MakeNonce_i(PRO_NONCE& nonce)
     {
         nonce.nonce[i] = (char)(ProRand_0_1() * 255);
     }
-
-    std::random_shuffle(nonce.nonce, nonce.nonce + sizeof(nonce.nonce));
 }
 
 /////////////////////////////////////////////////////////////////////////////

@@ -44,8 +44,6 @@ Rand_i(void*          act,
         {
             buf[i] = (unsigned char)(ProRand_0_1() * 255);
         }
-
-        std::random_shuffle(buf, buf + size);
     }
 
     return (0);
