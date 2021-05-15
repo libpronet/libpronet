@@ -48,7 +48,6 @@ static const unsigned char SERVER_CID    = 1;                                   
 static const PRO_UINT64    NODE_UID_MIN  = 1;                                     /* 1 ~ ... */
 static const PRO_UINT64    NODE_UID_MAX  = ((PRO_UINT64)0xEF << 32) | 0xFFFFFFFF; /* 1 ~ 0xEFFFFFFFFF */
 static const PRO_UINT64    NODE_UID_MAXX = ((PRO_UINT64)0xFF << 32) | 0xFFFFFFFF; /* 1 ~ 0xFFFFFFFFFF */
-static const PRO_UINT16    NODE_IID_MIN  = 1;                                     /* 1 ~ ... */
 
 typedef void (CRtpMsgServer::* ACTION)(PRO_INT64*);
 
@@ -938,7 +937,6 @@ CRtpMsgServer::AsyncOnAcceptSession(PRO_INT64* args)
         {
             baseUser.UserId(MakeClientId_i());
         }
-        baseUser.instId = NODE_IID_MIN;
     }
 
     /*
@@ -1412,7 +1410,6 @@ CRtpMsgServer::ProcessMsg_client_login(IRtpSession*            session,
         {
             subUser.UserId(MakeClientId_i());
         }
-        subUser.instId = NODE_IID_MIN;
     }
 
     /*
