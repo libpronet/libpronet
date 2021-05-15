@@ -40,13 +40,13 @@ struct C2S_SERVER_CONFIG_INFO
     {
         c2ss_thread_count               = 20;
         c2ss_mm_type                    = RTP_MMT_MSG;
-        c2ss_uplink_ip                  = "127.0.0.1";
+        c2ss_uplink_ip                  = "a.b.c.d";
         c2ss_uplink_port                = 3000;
         c2ss_uplink_password            = "test";
         c2ss_uplink_local_ip            = "0.0.0.0";
         c2ss_uplink_timeout             = 20;
         c2ss_uplink_redline_bytes       = 8192000;
-        c2ss_local_hub_port             = 4000;
+        c2ss_local_hub_port             = 3000;
         c2ss_local_timeout              = 20;
         c2ss_local_redline_bytes        = 1024000;
 

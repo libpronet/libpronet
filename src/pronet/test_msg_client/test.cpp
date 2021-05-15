@@ -300,7 +300,6 @@ CTest::SendMsg(const char* msg)
         {
             RTP_MSG_USER dstUser;
             dstUser.classId = myUser.classId;
-            dstUser.instId  = 1;
 
             for (int i = 1; i <= 50; ++i)
             {
@@ -315,7 +314,6 @@ CTest::SendMsg(const char* msg)
         {
             RTP_MSG_USER dstUser;
             dstUser.classId = myUser.classId;
-            dstUser.instId  = 1;
 
             const PRO_INT64 myUid = myUser.UserId();
 
