@@ -32,7 +32,7 @@
 ////
 
 #define MAX_TRY_TIMES         100
-#define SEND_SYNC_INTERVAL_MS 300
+#define SEND_SYNC_INTERVAL_MS 50
 #define DEFAULT_TIMEOUT       10
 
 /////////////////////////////////////////////////////////////////////////////
@@ -202,6 +202,17 @@ CRtpSessionUdpclientEx::Fini()
 
     ProDeleteTransport(trans);
     observer->Release();
+}
+
+void
+PRO_CALLTYPE
+CRtpSessionUdpclientEx::GetSyncId(unsigned char syncId[14]) const
+{
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        memcpy(syncId, m_syncToPeer.nonce, 14);
+    }
 }
 
 void

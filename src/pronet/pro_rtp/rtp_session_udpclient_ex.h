@@ -50,6 +50,8 @@ private:
 
     virtual ~CRtpSessionUdpclientEx();
 
+    virtual void PRO_CALLTYPE GetSyncId(unsigned char syncId[14]) const;
+
     virtual void PRO_CALLTYPE OnRecv(
         IProTransport*          trans,
         const pbsd_sockaddr_in* remoteAddr
