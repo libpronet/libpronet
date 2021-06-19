@@ -41,7 +41,8 @@
 #undef DECLARE_SGI_POOL
 #endif
 
-#if !defined(PRO_LACKS_SGI_POOL) && !defined(PRO_LACKS_SGI_POOL_OPNEW)
+#if !defined(PRO_LACKS_SGI_POOL) && !defined(PRO_LACKS_SGI_POOL_OPNEW) && \
+    defined(NDEBUG)
 #define DECLARE_SGI_POOL(a)                                                                         \
 public:                                                                                             \
     static void* operator new(size_t size)        { return (ProAllocateSgiPoolBuffer(size, (a))); } \
