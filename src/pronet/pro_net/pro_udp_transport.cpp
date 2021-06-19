@@ -501,7 +501,7 @@ CProUdpTransport::UdpConnResetAsError(const pbsd_sockaddr_in* remoteAddr)
         unsigned long bytesReturned = 0;
         ::WSAIoctl((SOCKET)m_sockId, (unsigned long)SIO_UDP_CONNRESET,
             &arg, sizeof(long), NULL, 0, &bytesReturned, NULL, NULL);
-#else
+#elif !defined(PRO_LACKS_UDP_CONNECT)
         pbsd_connect(m_sockId, remoteAddr);
 #endif
     }

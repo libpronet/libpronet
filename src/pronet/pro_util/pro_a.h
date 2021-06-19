@@ -187,6 +187,9 @@
 #if !defined(PRO_MACH_ABSOLUTE_TIME)
 #define PRO_MACH_ABSOLUTE_TIME
 #endif
+#if !defined(PRO_LACKS_UDP_CONNECT)
+#define PRO_LACKS_UDP_CONNECT
+#endif
 #endif /* __APPLE__ */
 
 /*
