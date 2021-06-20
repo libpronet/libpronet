@@ -77,6 +77,8 @@ class IProFunctorCommand
 {
 public:
 
+    virtual ~IProFunctorCommand() {}
+
     virtual void PRO_CALLTYPE Destroy() = 0;
 
     virtual void PRO_CALLTYPE Execute() = 0;

@@ -277,6 +277,8 @@ class IRtpMsgClient
 {
 public:
 
+    virtual ~IRtpMsgClient() {}
+
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 
     virtual unsigned long PRO_CALLTYPE Release() = 0;
@@ -373,6 +375,8 @@ class IRtpMsgClientObserver
 {
 public:
 
+    virtual ~IRtpMsgClientObserver() {}
+
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 
     virtual unsigned long PRO_CALLTYPE Release() = 0;
@@ -427,6 +431,8 @@ public:
 class IRtpMsgServer
 {
 public:
+
+    virtual ~IRtpMsgServer() {}
 
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 
@@ -537,6 +543,8 @@ class IRtpMsgServerObserver
 {
 public:
 
+    virtual ~IRtpMsgServerObserver() {}
+
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 
     virtual unsigned long PRO_CALLTYPE Release() = 0;
@@ -618,6 +626,8 @@ public:
 class IRtpMsgC2s
 {
 public:
+
+    virtual ~IRtpMsgC2s() {}
 
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 
@@ -739,6 +749,8 @@ public:
 class IRtpMsgC2sObserver
 {
 public:
+
+    virtual ~IRtpMsgC2sObserver() {}
 
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 

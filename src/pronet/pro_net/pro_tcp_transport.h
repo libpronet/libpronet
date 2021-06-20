@@ -38,6 +38,8 @@ class IProTransportObserverEx : public IProTransportObserver
 {
 public:
 
+    virtual ~IProTransportObserverEx() {}
+
     virtual void PRO_CALLTYPE OnRecvFd(
         IProTransport*            trans,
         PRO_INT64                 fd,

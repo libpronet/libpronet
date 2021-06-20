@@ -536,6 +536,8 @@ class IRtpPacket
 {
 public:
 
+    virtual ~IRtpPacket() {}
+
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 
     virtual unsigned long PRO_CALLTYPE Release() = 0;
@@ -599,6 +601,8 @@ class IRtpBucket
 {
 public:
 
+    virtual ~IRtpBucket() {}
+
     virtual void PRO_CALLTYPE Destroy() = 0;
 
     virtual unsigned long PRO_CALLTYPE GetTotalBytes() const = 0;
@@ -644,6 +648,8 @@ class IRtpReorder
 {
 public:
 
+    virtual ~IRtpReorder() {}
+
     virtual void PRO_CALLTYPE SetWallHeightInPackets(
         unsigned char heightInPackets         /* = 3 */
         ) = 0;
@@ -676,6 +682,8 @@ public:
 class IRtpServiceObserver
 {
 public:
+
+    virtual ~IRtpServiceObserver() {}
 
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 
@@ -726,6 +734,8 @@ public:
 class IRtpSession
 {
 public:
+
+    virtual ~IRtpSession() {}
 
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 
@@ -942,6 +952,8 @@ public:
 class IRtpSessionObserver
 {
 public:
+
+    virtual ~IRtpSessionObserver() {}
 
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 

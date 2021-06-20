@@ -34,6 +34,8 @@ class IRtpMsgClientObserverEx : public IRtpMsgClientObserver
 {
 public:
 
+    virtual ~IRtpMsgClientObserverEx() {}
+
     virtual void PRO_CALLTYPE OnTransferMsg(
         IRtpMsgClient*      msgClient,
         const void*         buf,

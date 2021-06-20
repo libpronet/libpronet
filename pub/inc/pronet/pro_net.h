@@ -151,6 +151,8 @@ class IProOnTimer
 {
 public:
 
+    virtual ~IProOnTimer() {}
+
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 
     virtual unsigned long PRO_CALLTYPE Release() = 0;
@@ -172,6 +174,8 @@ public:
 class IProReactor
 {
 public:
+
+    virtual ~IProReactor() {}
 
     /*
      * 创建一个普通定时器
@@ -250,6 +254,8 @@ class IProAcceptorObserver
 {
 public:
 
+    virtual ~IProAcceptorObserver() {}
+
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 
     virtual unsigned long PRO_CALLTYPE Release() = 0;
@@ -296,6 +302,8 @@ public:
 class IProServiceHostObserver
 {
 public:
+
+    virtual ~IProServiceHostObserver() {}
 
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 
@@ -346,6 +354,8 @@ public:
 class IProConnectorObserver
 {
 public:
+
+    virtual ~IProConnectorObserver() {}
 
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 
@@ -421,6 +431,8 @@ class IProTcpHandshakerObserver
 {
 public:
 
+    virtual ~IProTcpHandshakerObserver() {}
+
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 
     virtual unsigned long PRO_CALLTYPE Release() = 0;
@@ -457,6 +469,8 @@ public:
 class IProSslHandshakerObserver
 {
 public:
+
+    virtual ~IProSslHandshakerObserver() {}
 
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 
@@ -513,6 +527,8 @@ class IProRecvPool
 {
 public:
 
+    virtual ~IProRecvPool() {}
+
     /*
      * 查询接收池内的数据量
      */
@@ -545,6 +561,8 @@ public:
 class IProTransport
 {
 public:
+
+    virtual ~IProTransport() {}
 
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 
@@ -678,6 +696,8 @@ public:
 class IProTransportObserver
 {
 public:
+
+    virtual ~IProTransportObserver() {}
 
     virtual unsigned long PRO_CALLTYPE AddRef() = 0;
 
