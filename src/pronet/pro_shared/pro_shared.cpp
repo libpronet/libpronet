@@ -404,6 +404,8 @@ void
 PRO_CALLTYPE
 Init_i()
 {
+    pbsd_startup_i();
+
     if (g_s_lock  == NULL)
     {
         g_s_lock  = new CProThreadMutex_s;
@@ -691,11 +693,6 @@ ProSleep_s(PRO_UINT32 milliseconds)
         g_s_lock->Lock();
         if (!g_s_socketFlag) /* double check */
         {
-            /*
-             * initialize the socket library
-             */
-            pbsd_startup_i();
-
             InitSocket_i();
             g_s_socketFlag = true;
         }

@@ -808,6 +808,21 @@ ProCloseSockId(PRO_INT64 sockId,
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+class CProNetDotCpp
+{
+public:
+
+    CProNetDotCpp()
+    {
+        ProNetInit();
+    }
+};
+
+static volatile CProNetDotCpp g_s_initiator;
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
 #if defined(__cplusplus)
 } /* extern "C" */
 #endif

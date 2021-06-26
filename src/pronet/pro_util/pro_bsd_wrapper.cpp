@@ -1558,6 +1558,21 @@ ProGetLocalIpList(char localIpList[8][64])
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+class CProBsdWrapperDotCpp
+{
+public:
+
+    CProBsdWrapperDotCpp()
+    {
+        pbsd_startup();
+    }
+};
+
+static volatile CProBsdWrapperDotCpp g_s_initiator;
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
 #if defined(__cplusplus)
 } /* extern "C" */
 #endif

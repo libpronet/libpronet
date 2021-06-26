@@ -598,6 +598,21 @@ DeleteRtpReorder(IRtpReorder* reorder)
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+class CRtpBaseDotCpp
+{
+public:
+
+    CRtpBaseDotCpp()
+    {
+        ProRtpInit();
+    }
+};
+
+static volatile CRtpBaseDotCpp g_s_initiator;
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
 #if defined(__cplusplus)
 } /* extern "C" */
 #endif
