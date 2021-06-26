@@ -142,11 +142,15 @@ struct pbsd_sockaddr_in : public sockaddr_in
 
 struct pbsd_sockaddr_un /* a dummy on Windows */
 {
+    char dummy;
+
     DECLARE_SGI_POOL(0)
 };
 
 struct pbsd_msghdr      /* a dummy on Windows */
 {
+    char dummy;
+
     DECLARE_SGI_POOL(0)
 };
 
