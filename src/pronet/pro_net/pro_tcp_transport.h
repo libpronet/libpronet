@@ -121,7 +121,7 @@ public:
     virtual void PRO_CALLTYPE StopHeartbeat();
 
     virtual void PRO_CALLTYPE UdpConnResetAsError(
-        const pbsd_sockaddr_in* remoteAddr
+        const pbsd_sockaddr_in* remoteAddr /* = NULL */
         )
     {
     }

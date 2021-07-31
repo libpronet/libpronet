@@ -408,51 +408,43 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
             return (false);
         }
 
+        pbsd_sockaddr_in* remoteAddr = &m_remoteAddr;
+
         if (m_info.sessionType == RTP_ST_UDPCLIENT ||
             m_info.sessionType == RTP_ST_UDPSERVER)
         {
             if (m_remoteAddr.sin_addr.s_addr != 0)
             {
-                ret = m_trans->SendData(
-                    (char*)packet->GetPayloadBuffer() - otherSize,
-                    packet->GetPayloadSize() + otherSize,
-                    m_actionId + 1,
-                    &m_remoteAddr
-                    );
-                if (!ret && tryAgain != NULL)
-                {
-                    *tryAgain = true;
-                }
+                remoteAddr = &m_remoteAddr;
             }
             else if (m_remoteAddrConfig.sin_addr.s_addr != 0)
             {
-                ret = m_trans->SendData(
-                    (char*)packet->GetPayloadBuffer() - otherSize,
-                    packet->GetPayloadSize() + otherSize,
-                    m_actionId + 1,
-                    &m_remoteAddrConfig
-                    );
-                if (!ret && tryAgain != NULL)
-                {
-                    *tryAgain = true;
-                }
+                remoteAddr = &m_remoteAddrConfig;
             }
             else
             {
+                return (false);
             }
         }
-        else
+
+        ret = m_trans->SendData(
+            (char*)packet->GetPayloadBuffer() - otherSize,
+            packet->GetPayloadSize() + otherSize,
+            m_actionId + 1,
+            remoteAddr
+            );
+        if (m_info.sessionType == RTP_ST_UDPCLIENT    ||
+            m_info.sessionType == RTP_ST_UDPSERVER    ||
+            m_info.sessionType == RTP_ST_UDPCLIENT_EX ||
+            m_info.sessionType == RTP_ST_UDPSERVER_EX ||
+            m_info.sessionType == RTP_ST_MCAST        ||
+            m_info.sessionType == RTP_ST_MCAST_EX)
         {
-            ret = m_trans->SendData(
-                (char*)packet->GetPayloadBuffer() - otherSize,
-                packet->GetPayloadSize() + otherSize,
-                m_actionId + 1,
-                &m_remoteAddr
-                );
-            if (!ret && tryAgain != NULL)
-            {
-                *tryAgain = true;
-            }
+            ret = true; /* hack */
+        }
+        if (!ret && tryAgain != NULL)
+        {
+            *tryAgain = true;
         }
 
         m_sendTick = ProGetTickCount64();

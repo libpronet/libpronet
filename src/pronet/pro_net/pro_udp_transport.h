@@ -79,7 +79,7 @@ public:
     virtual bool PRO_CALLTYPE SendData(
         const void*             buf,
         size_t                  size,
-        PRO_UINT64              actionId,  /* = 0 */
+        PRO_UINT64              actionId,  /* ignored */
         const pbsd_sockaddr_in* remoteAddr /* = NULL */
         );
 
@@ -103,7 +103,7 @@ public:
     virtual void PRO_CALLTYPE StopHeartbeat();
 
     virtual void PRO_CALLTYPE UdpConnResetAsError(
-        const pbsd_sockaddr_in* remoteAddr
+        const pbsd_sockaddr_in* remoteAddr /* = NULL */
         );
 
 protected:
@@ -144,9 +144,7 @@ private:
 private:
 
     bool                    m_onWr;
-    bool                    m_pendingWr;
     bool                    m_requestOnSend;
-    PRO_UINT64              m_actionId;
     bool                    m_connResetAsError;
     bool                    m_connRefused;
 

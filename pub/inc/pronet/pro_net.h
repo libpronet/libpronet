@@ -625,17 +625,16 @@ public:
     /*
      * 发送数据
      *
-     * 对于tcp, 数据将放到发送池里, 忽略remoteAddr参数;
-     * 对于udp, 数据将直接发送, 如果remoteAddr参数无效, 则使用默认的远端地址;
-     * actionId是上层分配的一个值, 用于标识这次发送动作, OnSend(...)回调时会
-     * 带回该值
+     * 对于tcp, 数据将放到发送池里, 忽略remoteAddr参数. actionId是上层分配的
+     * 一个值, 用于标识这次发送动作, OnSend(...)回调时会带回该值;
+     * 对于udp, 数据将直接发送, 如果remoteAddr参数无效, 则使用默认的远端地址
      *
      * 如果返回false, 表示发送忙, 上层应该缓冲数据以待OnSend(...)回调拉取
      */
     virtual bool PRO_CALLTYPE SendData(
         const void*             buf,
         size_t                  size,
-        PRO_UINT64              actionId   = 0,
+        PRO_UINT64              actionId   = 0,   /* for tcp */
         const pbsd_sockaddr_in* remoteAddr = NULL /* for udp */
         ) = 0;
 
@@ -684,7 +683,7 @@ public:
      * 默认false. 设置之后不可逆
      */
     virtual void PRO_CALLTYPE UdpConnResetAsError(
-        const pbsd_sockaddr_in* remoteAddr
+        const pbsd_sockaddr_in* remoteAddr = NULL
         ) = 0;
 };
 
@@ -726,7 +725,7 @@ public:
      * 数据被成功送入套接字的发送缓冲区时, 或上层调用过RequestOnSend(...),
      * 该函数将被回调
      *
-     * 如果回调是RequestOnSend(...)触发的, 则actionId为0
+     * 如果是udp/mcast传输器, 或者回调由RequestOnSend(...)触发, 则actionId为0
      */
     virtual void PRO_CALLTYPE OnSend(
         IProTransport* trans,

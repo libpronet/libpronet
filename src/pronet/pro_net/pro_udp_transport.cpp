@@ -51,9 +51,7 @@ CProUdpTransport::CProUdpTransport(size_t recvPoolSize) /* = 0 */
     m_sockId           = -1;
     m_timerId          = 0;
     m_onWr             = false;
-    m_pendingWr        = false;
     m_requestOnSend    = false;
-    m_actionId         = 0;
     m_connResetAsError = false;
     m_connRefused      = false;
 
@@ -318,7 +316,7 @@ bool
 PRO_CALLTYPE
 CProUdpTransport::SendData(const void*             buf,
                            size_t                  size,
-                           PRO_UINT64              actionId,   /* = 0 */
+                           PRO_UINT64              actionId,   /* ignored */
                            const pbsd_sockaddr_in* remoteAddr) /* = NULL */
 {
     assert(buf != NULL);
@@ -343,7 +341,7 @@ CProUdpTransport::SendData(const void*             buf,
             return (false);
         }
 
-        if (m_pendingWr || m_connRefused)
+        if (m_connRefused)
         {
             return (false);
         }
@@ -362,16 +360,14 @@ CProUdpTransport::SendData(const void*             buf,
             m_sockId, buf, (int)size, 0, realAddr);
         if (sentSize != (int)size)
         {
-            if (pbsd_errno((void*)&pbsd_sendto) == PBSD_ECONNRESET)
+            if (m_connResetAsError &&
+                pbsd_errno((void*)&pbsd_sendto) == PBSD_ECONNRESET)
             {
                 m_connRefused = true;
             }
 
             return (false);
         }
-
-        m_pendingWr = true;
-        m_actionId  = actionId;
     }
 
     return (true);
@@ -478,14 +474,8 @@ CProUdpTransport::StopHeartbeat()
 
 void
 PRO_CALLTYPE
-CProUdpTransport::UdpConnResetAsError(const pbsd_sockaddr_in* remoteAddr)
+CProUdpTransport::UdpConnResetAsError(const pbsd_sockaddr_in* remoteAddr) /* = NULL */
 {
-    assert(remoteAddr != NULL);
-    if (remoteAddr == NULL)
-    {
-        return;
-    }
-
     {
         CProThreadMutexGuard mon(m_lock);
 
@@ -502,7 +492,10 @@ CProUdpTransport::UdpConnResetAsError(const pbsd_sockaddr_in* remoteAddr)
         ::WSAIoctl((SOCKET)m_sockId, (unsigned long)SIO_UDP_CONNRESET,
             &arg, sizeof(long), NULL, 0, &bytesReturned, NULL, NULL);
 #elif !defined(PRO_LACKS_UDP_CONNECT)
-        pbsd_connect(m_sockId, remoteAddr);
+        if (remoteAddr != NULL)
+        {
+            pbsd_connect(m_sockId, remoteAddr);
+        }
 #endif
     }
 }
@@ -624,7 +617,6 @@ CProUdpTransport::OnOutput(PRO_INT64 sockId)
     }
 
     IProTransportObserver* observer = NULL;
-    PRO_UINT64             actionId = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -639,16 +631,12 @@ CProUdpTransport::OnOutput(PRO_INT64 sockId)
             return;
         }
 
-        if (!m_pendingWr && !m_requestOnSend && !m_connRefused)
+        if (!m_requestOnSend && !m_connRefused)
         {
             return;
         }
 
-        actionId = m_actionId;
-
-        m_pendingWr     = false;
         m_requestOnSend = false;
-        m_actionId      = 0;
 
         m_observer->AddRef();
         observer = m_observer;
@@ -663,14 +651,14 @@ CProUdpTransport::OnOutput(PRO_INT64 sockId)
         }
         else
         {
-            observer->OnSend(this, actionId);
+            observer->OnSend(this, 0);
 
             {
                 CProThreadMutexGuard mon(m_lock);
 
                 if (m_observer != NULL && m_reactorTask != NULL)
                 {
-                    if (m_onWr && !m_pendingWr && !m_requestOnSend)
+                    if (m_onWr && !m_requestOnSend)
                     {
                         m_reactorTask->RemoveHandler(
                             m_sockId, this, PRO_MASK_WRITE);
