@@ -129,7 +129,7 @@ CRtpSessionTcpserver::Init(IRtpSessionObserver* observer,
             unsigned short localPort2 = localPort;
             if (localPort2 == 0)
             {
-                localPort2 = AllocRtpTcpPort();
+                localPort2 = AllocRtpTcpPort(true); /* rfc is true */
             }
 
             if (localPort2 % 2 == 0)

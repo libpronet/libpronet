@@ -125,8 +125,9 @@ CRtpSessionUdpclientEx::Init(IRtpSessionObserver* observer,
         for (int i = 0; i < MAX_TRY_TIMES; ++i)
         {
             m_trans = ProCreateUdpTransport(
-                this, reactor, localIp, AllocRtpUdpPort(), sockBufSizeRecv,
-                sockBufSizeSend, recvPoolSize, remoteIp, remotePort);
+                this, reactor, localIp, AllocRtpUdpPort(false), /* rfc is false */
+                sockBufSizeRecv, sockBufSizeSend, recvPoolSize,
+                remoteIp, remotePort);
             if (m_trans != NULL)
             {
                 break;

@@ -41,7 +41,7 @@ public:
         unsigned short& maxPort
         ) const;
 
-    unsigned short AllocPort();
+    unsigned short AllocPort(bool rfc);
 
 private:
 

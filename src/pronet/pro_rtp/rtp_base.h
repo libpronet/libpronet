@@ -1143,10 +1143,10 @@ FindRtpStreamFromPacket(const IRtpPacket* packet,
  * 功能: 设置rtp端口号的分配范围
  *
  * 参数:
- * minUdpPort : 最小udp端口号
- * maxUdpPort : 最大udp端口号
- * minTcpPort : 最小tcp端口号
- * maxTcpPort : 最大tcp端口号
+ * minUdpPort : 最小udp端口号. 0忽略udp设置
+ * maxUdpPort : 最大udp端口号. 0忽略udp设置
+ * minTcpPort : 最小tcp端口号. 0忽略tcp设置
+ * maxTcpPort : 最大tcp端口号. 0忽略tcp设置
  *
  * 返回值: 无
  *
@@ -1184,30 +1184,32 @@ GetRtpPortRange(unsigned short* minUdpPort,  /* = NULL */
 /*
  * 功能: 自动分配一个udp端口号
  *
- * 参数: 无
+ * 参数:
+ * rfc : 是否遵从rfc规则, 即分配偶数端口号
  *
- * 返回值: udp端口号. [偶数]
+ * 返回值: udp端口号
  *
  * 说明: 返回的端口号不一定空闲, 应该多次分配尝试
  */
 PRO_RTP_API
 unsigned short
 PRO_CALLTYPE
-AllocRtpUdpPort();
+AllocRtpUdpPort(bool rfc);
 
 /*
  * 功能: 自动分配一个tcp端口号
  *
- * 参数: 无
+ * 参数:
+ * rfc : 是否遵从rfc规则, 即分配偶数端口号
  *
- * 返回值: tcp端口号. [偶数]
+ * 返回值: tcp端口号
  *
  * 说明: 返回的端口号不一定空闲, 应该多次分配尝试
  */
 PRO_RTP_API
 unsigned short
 PRO_CALLTYPE
-AllocRtpTcpPort();
+AllocRtpTcpPort(bool rfc);
 
 /*
  * 功能: 设置会话的保活超时

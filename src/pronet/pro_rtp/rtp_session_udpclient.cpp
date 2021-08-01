@@ -103,7 +103,7 @@ CRtpSessionUdpclient::Init(IRtpSessionObserver* observer,
             unsigned short localPort2 = localPort;
             if (localPort2 == 0)
             {
-                localPort2 = AllocRtpUdpPort();
+                localPort2 = AllocRtpUdpPort(true); /* rfc is true */
             }
 
             if (localPort2 % 2 == 0)

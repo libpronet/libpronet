@@ -21,7 +21,6 @@
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -36,28 +35,14 @@ CRtpPortAllocator::CRtpPortAllocator()
 {
     m_portBase = DEFAULT_MIN_PORT;
     m_portSpan = DEFAULT_MAX_PORT - DEFAULT_MIN_PORT;
-    m_portItr  = (unsigned short)(ProRand_0_1() * m_portSpan) / 2 * 2;
+    m_portItr  = (unsigned short)(ProRand_0_1() * m_portSpan);
 }
 
 bool
 CRtpPortAllocator::SetPortRange(unsigned short minPort,
                                 unsigned short maxPort)
 {
-    if (minPort == 0)
-    {
-        minPort = 2;
-    }
-
-    if (minPort % 2 != 0)
-    {
-        ++minPort;
-    }
-    if (maxPort % 2 == 0)
-    {
-        --maxPort;
-    }
-
-    if (minPort >= maxPort)
+    if (minPort == 0 || maxPort == 0 || minPort > maxPort)
     {
         return (false);
     }
@@ -65,7 +50,7 @@ CRtpPortAllocator::SetPortRange(unsigned short minPort,
     m_lock.Lock();
     m_portBase = minPort;
     m_portSpan = maxPort - minPort;
-    m_portItr  = (unsigned short)(ProRand_0_1() * m_portSpan) / 2 * 2;
+    m_portItr  = (unsigned short)(ProRand_0_1() * m_portSpan);
     m_lock.Unlock();
 
     return (true);
@@ -82,14 +67,14 @@ CRtpPortAllocator::GetPortRange(unsigned short& minPort,
 }
 
 unsigned short
-CRtpPortAllocator::AllocPort()
+CRtpPortAllocator::AllocPort(bool rfc)
 {
     m_lock.Lock();
     unsigned short port = m_portBase + m_portItr % m_portSpan;
-    m_portItr += 2;
+    m_portItr += rfc ? 2 : 1;
     m_lock.Unlock();
 
-    if (port % 2 != 0)
+    if (rfc && port % 2 != 0)
     {
         --port;
     }

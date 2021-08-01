@@ -109,7 +109,7 @@ CRtpSessionMcastEx::Init(IRtpSessionObserver* observer,
             unsigned short mcastPort2 = mcastPort;
             if (mcastPort2 == 0)
             {
-                mcastPort2 = AllocRtpUdpPort();
+                mcastPort2 = AllocRtpUdpPort(false); /* rfc is false */
             }
 
             m_trans = ProCreateMcastTransport(

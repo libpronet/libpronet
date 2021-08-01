@@ -278,21 +278,21 @@ GetRtpPortRange(unsigned short* minUdpPort, /* = NULL */
 PRO_RTP_API
 unsigned short
 PRO_CALLTYPE
-AllocRtpUdpPort()
+AllocRtpUdpPort(bool rfc)
 {
     assert(g_s_udpPortAllocator != NULL);
 
-    return (g_s_udpPortAllocator->AllocPort());
+    return (g_s_udpPortAllocator->AllocPort(rfc));
 }
 
 PRO_RTP_API
 unsigned short
 PRO_CALLTYPE
-AllocRtpTcpPort()
+AllocRtpTcpPort(bool rfc)
 {
     assert(g_s_tcpPortAllocator != NULL);
 
-    return (g_s_tcpPortAllocator->AllocPort());
+    return (g_s_tcpPortAllocator->AllocPort(rfc));
 }
 
 PRO_RTP_API
