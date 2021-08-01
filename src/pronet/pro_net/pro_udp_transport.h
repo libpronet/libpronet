@@ -144,6 +144,7 @@ private:
 private:
 
     bool                    m_onWr;
+    bool                    m_pendingWr;
     bool                    m_requestOnSend;
     bool                    m_connResetAsError;
     bool                    m_connRefused;

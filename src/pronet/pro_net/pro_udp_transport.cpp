@@ -51,6 +51,7 @@ CProUdpTransport::CProUdpTransport(size_t recvPoolSize) /* = 0 */
     m_sockId           = -1;
     m_timerId          = 0;
     m_onWr             = false;
+    m_pendingWr        = false;
     m_requestOnSend    = false;
     m_connResetAsError = false;
     m_connRefused      = false;
@@ -368,6 +369,8 @@ CProUdpTransport::SendData(const void*             buf,
 
             return (false);
         }
+
+        m_pendingWr = true;
     }
 
     return (true);
@@ -631,11 +634,12 @@ CProUdpTransport::OnOutput(PRO_INT64 sockId)
             return;
         }
 
-        if (!m_requestOnSend && !m_connRefused)
+        if (!m_pendingWr && !m_requestOnSend && !m_connRefused)
         {
             return;
         }
 
+        m_pendingWr     = false;
         m_requestOnSend = false;
 
         m_observer->AddRef();
@@ -658,7 +662,7 @@ CProUdpTransport::OnOutput(PRO_INT64 sockId)
 
                 if (m_observer != NULL && m_reactorTask != NULL)
                 {
-                    if (m_onWr && !m_requestOnSend)
+                    if (m_onWr && !m_pendingWr && !m_requestOnSend)
                     {
                         m_reactorTask->RemoveHandler(
                             m_sockId, this, PRO_MASK_WRITE);
