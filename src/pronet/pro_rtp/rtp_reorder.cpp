@@ -38,13 +38,38 @@ CRtpReorder::CRtpReorder()
     m_heightInPackets   = 3;
     m_heightInMs        = 500;
     m_maxBrokenDuration = 10;
-    m_minSeq64          = -1;
-    m_lastValidTick     = 0;
+
+    Reset();
 }
 
 CRtpReorder::~CRtpReorder()
 {
     Reset();
+}
+
+void
+PRO_CALLTYPE
+CRtpReorder::Reset()
+{
+    m_minSeq64      = -1;
+    m_lastValidTick = 0;
+
+    Clean();
+}
+
+void
+CRtpReorder::Clean()
+{
+    CProStlMap<PRO_INT64, IRtpPacket*>::iterator       itr = m_seq64ToPacket.begin();
+    CProStlMap<PRO_INT64, IRtpPacket*>::iterator const end = m_seq64ToPacket.end();
+
+    for (; itr != end; ++itr)
+    {
+        IRtpPacket* const packet = itr->second;
+        packet->Release();
+    }
+
+    m_seq64ToPacket.clear();
 }
 
 void
@@ -106,7 +131,7 @@ CRtpReorder::PushBackAddRef(IRtpPacket* packet)
     const PRO_INT64 tick = ProGetTickCount64();
 
     const PRO_UINT16 seq16 = packet->GetSequence();
-    if (m_minSeq64 == -1)
+    if (m_minSeq64 < 0)
     {
         m_minSeq64      = seq16;
         m_lastValidTick = tick;
@@ -139,7 +164,7 @@ CRtpReorder::PushBackAddRef(IRtpPacket* packet)
 
         if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* forward */
         {
-            seq64 = m_minSeq64 >> 16;
+            seq64 =   m_minSeq64 >> 16;
             ++seq64;
             seq64 <<= 16;
             seq64 |=  seq16;
@@ -168,7 +193,7 @@ CRtpReorder::PushBackAddRef(IRtpPacket* packet)
         }
         else if (dist2 < dist1 && dist2 < MAX_LOSS_COUNT) /* back */
         {
-            seq64 = m_minSeq64 >> 16;
+            seq64 =   m_minSeq64 >> 16;
             --seq64;
             seq64 <<= 16;
             seq64 |=  seq16;
@@ -179,7 +204,7 @@ CRtpReorder::PushBackAddRef(IRtpPacket* packet)
         }
     }
 
-    if (seq64 == -1)
+    if (seq64 < 0)
     {
         Clean();
 
@@ -243,29 +268,4 @@ CRtpReorder::PopFront(bool force)
     {
         return (NULL);
     }
-}
-
-void
-PRO_CALLTYPE
-CRtpReorder::Reset()
-{
-    Clean();
-
-    m_minSeq64      = -1;
-    m_lastValidTick = 0;
-}
-
-void
-CRtpReorder::Clean()
-{
-    CProStlMap<PRO_INT64, IRtpPacket*>::iterator       itr = m_seq64ToPacket.begin();
-    CProStlMap<PRO_INT64, IRtpPacket*>::iterator const end = m_seq64ToPacket.end();
-
-    for (; itr != end; ++itr)
-    {
-        IRtpPacket* const packet = itr->second;
-        packet->Release();
-    }
-
-    m_seq64ToPacket.clear();
 }

@@ -19,6 +19,7 @@
 #include "pro_a.h"
 #include "pro_stat.h"
 #include "pro_memory_pool.h"
+#include "pro_stl.h"
 #include "pro_time_util.h"
 #include <cassert>
 
@@ -34,7 +35,14 @@
 
 CProStatBitRate::CProStatBitRate()
 {
-    m_timeSpan  = 5;
+    m_timeSpan = 5;
+
+    Reset();
+}
+
+void
+CProStatBitRate::Reset()
+{
     m_startTick = 0;
     m_calcTick  = 0;
     m_bits      = 0;
@@ -109,15 +117,6 @@ CProStatBitRate::Update()
     }
 }
 
-void
-CProStatBitRate::Reset()
-{
-    m_startTick = 0;
-    m_calcTick  = 0;
-    m_bits      = 0;
-    m_bitRate   = 0;
-}
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -125,14 +124,23 @@ CProStatLossRate::CProStatLossRate()
 {
     m_timeSpan          = 5;
     m_maxBrokenDuration = 10;
-    m_startTick         = 0;
-    m_calcTick          = 0;
-    m_lastValidTick     = 0;
-    m_nextSeq           = 0;
-    m_count             = 0;
-    m_lossCount         = 0;
-    m_lossCountAll      = 0;
-    m_lossRate          = 0;
+
+    Reset();
+}
+
+void
+CProStatLossRate::Reset()
+{
+    m_startTick     = 0;
+    m_calcTick      = 0;
+    m_lastValidTick = 0;
+    m_nextSeq64     = -1;
+    m_count         = 0;
+    m_lossCount     = 0;
+    m_lossCountAll  = 0;
+    m_lossRate      = 0;
+
+    m_reorder.Reset();
 }
 
 void
@@ -168,70 +176,162 @@ CProStatLossRate::PushData(PRO_UINT16 dataSeq)
     {
         m_startTick     = tick - INIT_TIME_SPAN_MS;
         m_lastValidTick = tick;
-        m_nextSeq       = dataSeq;
+        m_nextSeq64     = -1;
+
+        m_reorder.Reset();
+        m_reorder.Push(dataSeq);
     }
 
     if (tick - m_lastValidTick > m_maxBrokenDuration * 1000)
     {
-        m_nextSeq = dataSeq + 1;
+        m_lastValidTick = tick;
+        m_nextSeq64     = -1;
         ++m_count;
         ++m_lossCount;
         ++m_lossCountAll;
 
-        m_lastValidTick = tick;
+        m_reorder.Reset();
+        m_reorder.Push(dataSeq);
 
         Update();
 
         return;
     }
 
-    if (dataSeq == m_nextSeq)
-    {
-        ++m_nextSeq;
-        ++m_count;
+    PRO_INT64 seq64 = -1;
 
-        m_lastValidTick = tick;
+    if (dataSeq == (PRO_UINT16)m_reorder.itrSeq)
+    {
+        seq64 = m_reorder.itrSeq;
     }
-    else
+    else if (dataSeq < (PRO_UINT16)m_reorder.itrSeq)
     {
-        PRO_UINT16 dist1 = 0;
-        PRO_UINT16 dist2 = 0;
-
-        if (dataSeq < m_nextSeq)
-        {
-            dist1 = (PRO_UINT16)-1 - (m_nextSeq - dataSeq) + 1;
-            dist2 = m_nextSeq - dataSeq;
-        }
-        else
-        {
-            dist1 = dataSeq - m_nextSeq;
-            dist2 = (PRO_UINT16)-1 - (dataSeq - m_nextSeq) + 1;
-        }
+        const PRO_UINT16 dist1 = (PRO_UINT16)-1 - ((PRO_UINT16)m_reorder.itrSeq - dataSeq) + 1;
+        const PRO_UINT16 dist2 = (PRO_UINT16)m_reorder.itrSeq - dataSeq;
 
         if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* forward */
         {
-            m_nextSeq      =  dataSeq + 1;
-            m_count        += dist1 + 1;
-            m_lossCount    += dist1;
-            m_lossCountAll += dist1;
-
-            m_lastValidTick = tick;
+            seq64 =   m_reorder.itrSeq >> 16;
+            ++seq64;
+            seq64 <<= 16;
+            seq64 |=  dataSeq;
         }
         else if (dist2 < dist1 && dist2 < MAX_LOSS_COUNT) /* back */
         {
+            seq64 =   m_reorder.itrSeq >> 16;
+            seq64 <<= 16;
+            seq64 |=  dataSeq;
         }
         else                                              /* reset */
         {
-            m_nextSeq = dataSeq + 1;
-            ++m_count;
-            ++m_lossCount;
-            ++m_lossCountAll;
+            seq64 = -1;
+        }
+    }
+    else
+    {
+        const PRO_UINT16 dist1 = dataSeq - (PRO_UINT16)m_reorder.itrSeq;
+        const PRO_UINT16 dist2 = (PRO_UINT16)-1 - (dataSeq - (PRO_UINT16)m_reorder.itrSeq) + 1;
 
-            m_lastValidTick = tick;
+        if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* forward */
+        {
+            seq64 =   m_reorder.itrSeq >> 16;
+            seq64 <<= 16;
+            seq64 |=  dataSeq;
+        }
+        else if (dist2 < dist1 && dist2 < MAX_LOSS_COUNT) /* back */
+        {
+            seq64 =   m_reorder.itrSeq >> 16;
+            --seq64;
+            seq64 <<= 16;
+            seq64 |=  dataSeq;
+        }
+        else                                              /* reset */
+        {
+            seq64 = -1;
         }
     }
 
+    if (seq64 < 0)
+    {
+        m_lastValidTick = tick;
+        m_nextSeq64     = -1;
+        ++m_count;
+        ++m_lossCount;
+        ++m_lossCountAll;
+
+        m_reorder.Reset();
+        m_reorder.Push(dataSeq);
+
+        Update();
+
+        return;
+    }
+
+    CProStlVector<PRO_INT64> seqs;
+
+    const int ret = m_reorder.Push(seq64);
+    if (ret < 0)
+    {
+    }
+    else if (ret == 0)
+    {
+        m_lastValidTick = tick;
+
+        m_reorder.Read(seqs);
+    }
+    else
+    {
+        m_reorder.ReadAll(seqs);
+        m_reorder.Shift();
+
+        if (m_reorder.Push(seq64) > 0)
+        {
+            m_reorder.ReadAll(seqs, true); /* append is true */
+            m_reorder.Reset();
+            m_reorder.Push(seq64);
+        }
+    }
+
+    int       i = 0;
+    const int c = (int)seqs.size();
+
+    for (; i < c; ++i)
+    {
+        Push(seqs[i]);
+    }
+
     Update();
+}
+
+void
+CProStatLossRate::Push(PRO_INT64 seq64)
+{
+    assert(seq64 >= 0);
+    assert(seq64 >= m_nextSeq64);
+    if (seq64 < 0 || seq64 < m_nextSeq64)
+    {
+        return;
+    }
+
+    if (m_nextSeq64 < 0)
+    {
+        m_nextSeq64 = seq64;
+    }
+
+    if (seq64 == m_nextSeq64)
+    {
+        ++m_nextSeq64;
+        ++m_count;
+    }
+    else
+    {
+        const PRO_INT64 dist = seq64 - m_nextSeq64;
+
+        m_nextSeq64    =  seq64 + 1;
+        m_count        += dist + 1;
+        m_lossCount    += dist;
+        m_lossCountAll += dist;
+    }
 }
 
 double
@@ -272,25 +372,19 @@ CProStatLossRate::Update()
     }
 }
 
-void
-CProStatLossRate::Reset()
-{
-    m_startTick     = 0;
-    m_calcTick      = 0;
-    m_lastValidTick = 0;
-    m_nextSeq       = 0;
-    m_count         = 0;
-    m_lossCount     = 0;
-    m_lossCountAll  = 0;
-    m_lossRate      = 0;
-}
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
 CProStatAvgValue::CProStatAvgValue()
 {
-    m_timeSpan  = 5;
+    m_timeSpan = 5;
+
+    Reset();
+}
+
+void
+CProStatAvgValue::Reset()
+{
     m_startTick = 0;
     m_calcTick  = 0;
     m_count     = 0;
@@ -354,14 +448,4 @@ CProStatAvgValue::Update()
             m_sum       = m_count * m_avgValue;
         }
     }
-}
-
-void
-CProStatAvgValue::Reset()
-{
-    m_startTick = 0;
-    m_calcTick  = 0;
-    m_count     = 0;
-    m_sum       = 0;
-    m_avgValue  = 0;
 }

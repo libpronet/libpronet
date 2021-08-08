@@ -21,6 +21,7 @@
 
 #include "pro_a.h"
 #include "pro_memory_pool.h"
+#include "pro_stl.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -59,6 +60,129 @@ private:
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+struct PRO_REORDER_BLOCK
+{
+    PRO_REORDER_BLOCK()
+    {
+        Reset();
+    }
+
+    void Reset()
+    {
+        baseSeq = -1;
+        itrSeq  = -1;
+        bits[0] = 0;
+        bits[1] = 0;
+    }
+
+    int Push(PRO_INT64 seq)
+    {
+        if (seq < 0)
+        {
+            return (-1);
+        }
+
+        if (baseSeq < 0)
+        {
+            baseSeq =  seq;
+            itrSeq  =  seq;
+            bits[0] |= 1;
+            bits[1] =  0;
+
+            return (0);
+        }
+
+        if (seq < itrSeq)
+        {
+            return (-1);
+        }
+
+        if (seq > baseSeq + 127)
+        {
+            return (1);
+        }
+
+        const int i = (int)(seq - baseSeq) / 64;
+        const int j = (int)(seq - baseSeq) % 64;
+
+        bits[i] |= (PRO_UINT64)1 << j;
+
+        return (0);
+    }
+
+    void Shift()
+    {
+        if (baseSeq < 0)
+        {
+            return;
+        }
+
+        baseSeq += 64;
+        itrSeq  =  baseSeq;
+        bits[0] =  bits[1];
+        bits[1] =  0;
+    }
+
+    void Read(
+        CProStlVector<PRO_INT64>& seqs,
+        bool                      append = false
+        )
+    {
+        if (!append)
+        {
+            seqs.clear();
+        }
+
+        if (itrSeq < 0)
+        {
+            return;
+        }
+
+        for (int i = (int)(itrSeq - baseSeq); i < 64; ++i)
+        {
+            if ((bits[0] & ((PRO_UINT64)1 << i)) == 0)
+            {
+                break;
+            }
+
+            seqs.push_back(itrSeq);
+            ++itrSeq;
+        }
+    }
+
+    void ReadAll(
+        CProStlVector<PRO_INT64>& seqs,
+        bool                      append = false
+        )
+    {
+        if (!append)
+        {
+            seqs.clear();
+        }
+
+        if (itrSeq < 0)
+        {
+            return;
+        }
+
+        for (int i = (int)(itrSeq - baseSeq); i < 64; ++i)
+        {
+            if ((bits[0] & ((PRO_UINT64)1 << i)) != 0)
+            {
+                seqs.push_back(itrSeq);
+            }
+
+            ++itrSeq;
+        }
+    }
+
+    PRO_INT64  baseSeq;
+    PRO_INT64  itrSeq;
+    PRO_UINT64 bits[2];
+
+    DECLARE_SGI_POOL(0)
+};
+
 class CProStatLossRate
 {
 public:
@@ -79,20 +203,24 @@ public:
 
 private:
 
+    void Push(PRO_INT64 seq64);
+
     void Update();
 
 private:
 
-    PRO_INT64  m_timeSpan;
-    PRO_INT64  m_maxBrokenDuration;
-    PRO_INT64  m_startTick;
-    PRO_INT64  m_calcTick;
-    PRO_INT64  m_lastValidTick;
-    PRO_UINT16 m_nextSeq;
-    double     m_count;
-    double     m_lossCount;
-    double     m_lossCountAll;
-    double     m_lossRate;
+    PRO_INT64         m_timeSpan;
+    PRO_INT64         m_maxBrokenDuration;
+    PRO_INT64         m_startTick;
+    PRO_INT64         m_calcTick;
+    PRO_INT64         m_lastValidTick;
+    PRO_INT64         m_nextSeq64;
+    double            m_count;
+    double            m_lossCount;
+    double            m_lossCountAll;
+    double            m_lossRate;
+
+    PRO_REORDER_BLOCK m_reorder;
 
     DECLARE_SGI_POOL(0)
 };
