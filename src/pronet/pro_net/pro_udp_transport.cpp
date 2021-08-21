@@ -50,11 +50,7 @@ CProUdpTransport::CProUdpTransport(size_t recvPoolSize) /* = 0 */
     m_reactorTask      = NULL;
     m_sockId           = -1;
     m_timerId          = 0;
-    m_onWr             = false;
-    m_pendingWr        = false;
-    m_requestOnSend    = false;
     m_connResetAsError = false;
-    m_connRefused      = false;
 
     m_canUpcall        = true;
 
@@ -190,8 +186,7 @@ CProUdpTransport::Fini()
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(
-            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_READ);
 
         m_reactorTask = NULL;
         observer = m_observer;
@@ -342,69 +337,15 @@ CProUdpTransport::SendData(const void*             buf,
             return (false);
         }
 
-        if (m_connRefused)
-        {
-            return (false);
-        }
-
-        if (!m_onWr)
-        {
-            if (!m_reactorTask->AddHandler(m_sockId, this, PRO_MASK_WRITE))
-            {
-                return (false);
-            }
-
-            m_onWr = true;
-        }
-
         const int sentSize = pbsd_sendto(
             m_sockId, buf, (int)size, 0, realAddr);
         if (sentSize != (int)size)
         {
-            if (m_connResetAsError &&
-                pbsd_errno((void*)&pbsd_sendto) == PBSD_ECONNRESET)
-            {
-                m_connRefused = true;
-            }
-
             return (false);
         }
-
-        m_pendingWr = true;
     }
 
     return (true);
-}
-
-void
-PRO_CALLTYPE
-CProUdpTransport::RequestOnSend()
-{
-    {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactorTask == NULL)
-        {
-            return;
-        }
-
-        if (m_requestOnSend)
-        {
-            return;
-        }
-
-        if (!m_onWr)
-        {
-            if (!m_reactorTask->AddHandler(m_sockId, this, PRO_MASK_WRITE))
-            {
-                return;
-            }
-
-            m_onWr = true;
-        }
-
-        m_requestOnSend = true;
-    }
 }
 
 void
@@ -596,80 +537,6 @@ EXIT:
         }
         else
         {
-        }
-    }
-
-    observer->Release();
-
-    if (!m_canUpcall)
-    {
-        Fini();
-    }
-}}
-
-void
-PRO_CALLTYPE
-CProUdpTransport::OnOutput(PRO_INT64 sockId)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
-    assert(sockId != -1);
-    if (sockId == -1)
-    {
-        return;
-    }
-
-    IProTransportObserver* observer = NULL;
-
-    {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactorTask == NULL)
-        {
-            return;
-        }
-
-        if (sockId != m_sockId)
-        {
-            return;
-        }
-
-        if (!m_pendingWr && !m_requestOnSend && !m_connRefused)
-        {
-            return;
-        }
-
-        m_pendingWr     = false;
-        m_requestOnSend = false;
-
-        m_observer->AddRef();
-        observer = m_observer;
-    }
-
-    if (m_canUpcall)
-    {
-        if (m_connRefused)
-        {
-            m_canUpcall = false;
-            observer->OnClose(this, PBSD_ECONNRESET, 0);
-        }
-        else
-        {
-            observer->OnSend(this, 0);
-
-            {
-                CProThreadMutexGuard mon(m_lock);
-
-                if (m_observer != NULL && m_reactorTask != NULL)
-                {
-                    if (m_onWr && !m_pendingWr && !m_requestOnSend)
-                    {
-                        m_reactorTask->RemoveHandler(
-                            m_sockId, this, PRO_MASK_WRITE);
-                        m_onWr = false;
-                    }
-                }
-            }
         }
     }
 

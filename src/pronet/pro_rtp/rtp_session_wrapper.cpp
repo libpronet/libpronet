@@ -1479,7 +1479,8 @@ CRtpSessionWrapper::OnOkSession(IRtpSession* session)
         return;
     }
 
-    IRtpSessionObserver* observer = NULL;
+    IRtpSessionObserver* observer   = NULL;
+    bool                 udpSession = false;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -1498,6 +1499,23 @@ CRtpSessionWrapper::OnOkSession(IRtpSession* session)
         m_session->GetInfo(&m_info);
         m_onOkCalled = true;
 
+        if (m_info.sessionType == RTP_ST_UDPCLIENT    ||
+            m_info.sessionType == RTP_ST_UDPSERVER    ||
+            m_info.sessionType == RTP_ST_UDPCLIENT_EX ||
+            m_info.sessionType == RTP_ST_UDPSERVER_EX ||
+            m_info.sessionType == RTP_ST_MCAST        ||
+            m_info.sessionType == RTP_ST_MCAST_EX)
+        {
+            udpSession = true;
+
+            /*
+             * send all the cached packets
+             */
+            while (DoSendPacket())
+            {
+            }
+        }
+
         m_observer->AddRef();
         observer = m_observer;
     }
@@ -1505,7 +1523,10 @@ CRtpSessionWrapper::OnOkSession(IRtpSession* session)
     observer->OnOkSession(this);
     observer->Release();
 
-    RequestOnSend();
+    if (!udpSession)
+    {
+        RequestOnSend();
+    }
 }
 
 void

@@ -855,6 +855,8 @@ public:
 
     /*
      * 请求会话回调一个OnSend事件
+     *
+     * 仅用于面向连接的会话
      */
     virtual void PRO_CALLTYPE RequestOnSend() = 0;
 
@@ -974,6 +976,8 @@ public:
 
     /*
      * 发送能力空闲时, 该函数将被回调
+     *
+     * 仅用于面向连接的会话
      */
     virtual void PRO_CALLTYPE OnSendSession(
         IRtpSession* session,

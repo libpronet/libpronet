@@ -639,7 +639,7 @@ public:
         ) = 0;
 
     /*
-     * 请求回调一个OnSend事件
+     * 请求回调一个OnSend事件(for CProTcpTransport & CProSslTransport)
      *
      * 网络发送能力缓解时, OnSend(...)回调才会过来
      */
@@ -725,7 +725,7 @@ public:
      * 数据被成功送入套接字的发送缓冲区时, 或上层调用过RequestOnSend(...),
      * 该函数将被回调
      *
-     * 如果是udp/mcast传输器, 或者回调由RequestOnSend(...)触发, 则actionId为0
+     * 如果回调由RequestOnSend(...)触发, 则actionId为0
      */
     virtual void PRO_CALLTYPE OnSend(
         IProTransport* trans,

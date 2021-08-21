@@ -128,7 +128,7 @@ CProHandlerMgr::GetHandlerCount() const
     return ((unsigned long)m_sockId2HandlerInfo.size());
 }
 
-const PRO_HANDLER_INFO
+PRO_HANDLER_INFO
 CProHandlerMgr::FindHandler(PRO_INT64 sockId) const
 {
     PRO_HANDLER_INFO info;

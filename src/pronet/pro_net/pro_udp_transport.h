@@ -83,7 +83,9 @@ public:
         const pbsd_sockaddr_in* remoteAddr /* = NULL */
         );
 
-    virtual void PRO_CALLTYPE RequestOnSend();
+    virtual void PRO_CALLTYPE RequestOnSend()
+    {
+    }
 
     virtual void PRO_CALLTYPE SuspendRecv();
 
@@ -128,7 +130,9 @@ private:
 
     virtual void PRO_CALLTYPE OnInput(PRO_INT64 sockId);
 
-    virtual void PRO_CALLTYPE OnOutput(PRO_INT64 sockId);
+    virtual void PRO_CALLTYPE OnOutput(PRO_INT64 sockId)
+    {
+    }
 
     virtual void PRO_CALLTYPE OnError(
         PRO_INT64 sockId,
@@ -143,11 +147,7 @@ private:
 
 private:
 
-    bool                    m_onWr;
-    bool                    m_pendingWr;
-    bool                    m_requestOnSend;
     bool                    m_connResetAsError;
-    bool                    m_connRefused;
 
     bool                    m_canUpcall;
     CProThreadMutex         m_lockUpcall;

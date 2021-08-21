@@ -70,7 +70,7 @@ public:
 
     unsigned long GetHandlerCount() const;
 
-    const PRO_HANDLER_INFO FindHandler(PRO_INT64 sockId) const;
+    PRO_HANDLER_INFO FindHandler(PRO_INT64 sockId) const;
 
     const CProStlMap<PRO_INT64, PRO_HANDLER_INFO>& GetAllHandlers() const;
 
