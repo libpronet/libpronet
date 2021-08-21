@@ -688,9 +688,7 @@ CRtpMsgClient::GetSendingBytes() const
 void
 PRO_CALLTYPE
 CRtpMsgClient::OnOkSession(IRtpSession* session)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(session != NULL);
     if (session == NULL)
     {
@@ -750,15 +748,13 @@ CRtpMsgClient::OnOkSession(IRtpSession* session)
     }
 
     observer->Release();
-}}
+}
 
 void
 PRO_CALLTYPE
 CRtpMsgClient::OnRecvSession(IRtpSession* session,
                              IRtpPacket*  packet)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(session != NULL);
     assert(packet != NULL);
     assert(packet->GetPayloadSize() > sizeof(RTP_MSG_HEADER));
@@ -878,7 +874,7 @@ CRtpMsgClient::OnRecvSession(IRtpSession* session,
     }
 
     observer->Release();
-}}
+}
 
 void
 PRO_CALLTYPE
@@ -915,9 +911,7 @@ CRtpMsgClient::OnCloseSession(IRtpSession* session,
                               long         errorCode,
                               long         sslCode,
                               bool         tcpConnected)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(session != NULL);
     if (session == NULL)
     {
@@ -951,17 +945,13 @@ CRtpMsgClient::OnCloseSession(IRtpSession* session,
     }
 
     observer->Release();
-
-    Fini();
-}}
+}
 
 void
 PRO_CALLTYPE
 CRtpMsgClient::OnHeartbeatSession(IRtpSession* session,
                                   PRO_INT64    peerAliveTick)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(session != NULL);
     if (session == NULL)
     {
@@ -994,16 +984,14 @@ CRtpMsgClient::OnHeartbeatSession(IRtpSession* session,
     }
 
     observer->Release();
-}}
+}
 
 void
 PRO_CALLTYPE
 CRtpMsgClient::OnTimer(void*      factory,
                        PRO_UINT64 timerId,
                        PRO_INT64  userData)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(factory != NULL);
     assert(timerId > 0);
     if (factory == NULL || timerId == 0)
@@ -1043,4 +1031,4 @@ CRtpMsgClient::OnTimer(void*      factory,
     observer->Release();
 
     Fini();
-}}
+}

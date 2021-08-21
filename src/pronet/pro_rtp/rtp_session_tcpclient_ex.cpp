@@ -264,9 +264,7 @@ CRtpSessionTcpclientEx::OnConnectOk(IProConnector*   connector,
                                     unsigned char    serviceId,
                                     unsigned char    serviceOpt,
                                     const PRO_NONCE* nonce)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(connector != NULL);
     assert(sockId != -1);
     assert(nonce != NULL);
@@ -321,7 +319,7 @@ CRtpSessionTcpclientEx::OnConnectOk(IProConnector*   connector,
 
     observer->Release();
     ProDeleteConnector(connector);
-}}
+}
 
 void
 PRO_CALLTYPE
@@ -331,9 +329,7 @@ CRtpSessionTcpclientEx::OnConnectError(IProConnector* connector,
                                        unsigned char  serviceId,
                                        unsigned char  serviceOpt,
                                        bool           timeout)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(connector != NULL);
     if (connector == NULL)
     {
@@ -370,7 +366,7 @@ CRtpSessionTcpclientEx::OnConnectError(IProConnector* connector,
 
     observer->Release();
     ProDeleteConnector(connector);
-}}
+}
 
 void
 PRO_CALLTYPE
@@ -379,9 +375,7 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProTcpHandshaker* handshaker,
                                       bool               unixSocket,
                                       const void*        buf,
                                       unsigned long      size)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(handshaker != NULL);
     assert(sockId != -1);
     if (handshaker == NULL || sockId == -1)
@@ -504,15 +498,13 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProTcpHandshaker* handshaker,
 
     observer->Release();
     ProDeleteTcpHandshaker(handshaker);
-}}
+}
 
 void
 PRO_CALLTYPE
 CRtpSessionTcpclientEx::OnHandshakeError(IProTcpHandshaker* handshaker,
                                          long               errorCode)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(handshaker != NULL);
     if (handshaker == NULL)
     {
@@ -548,7 +540,7 @@ CRtpSessionTcpclientEx::OnHandshakeError(IProTcpHandshaker* handshaker,
 
     observer->Release();
     ProDeleteTcpHandshaker(handshaker);
-}}
+}
 
 void
 PRO_CALLTYPE
@@ -558,9 +550,7 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProSslHandshaker* handshaker,
                                       bool               unixSocket,
                                       const void*        buf,
                                       unsigned long      size)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(handshaker != NULL);
     assert(ctx != NULL);
     assert(sockId != -1);
@@ -693,16 +683,14 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProSslHandshaker* handshaker,
 
     observer->Release();
     ProDeleteSslHandshaker(handshaker);
-}}
+}
 
 void
 PRO_CALLTYPE
 CRtpSessionTcpclientEx::OnHandshakeError(IProSslHandshaker* handshaker,
                                          long               errorCode,
                                          long               sslCode)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(handshaker != NULL);
     if (handshaker == NULL)
     {
@@ -738,15 +726,13 @@ CRtpSessionTcpclientEx::OnHandshakeError(IProSslHandshaker* handshaker,
 
     observer->Release();
     ProDeleteSslHandshaker(handshaker);
-}}
+}
 
 void
 PRO_CALLTYPE
 CRtpSessionTcpclientEx::OnRecv(IProTransport*          trans,
                                const pbsd_sockaddr_in* remoteAddr)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(trans != NULL);
     if (trans == NULL)
     {
@@ -826,12 +812,12 @@ CRtpSessionTcpclientEx::OnRecv(IProTransport*          trans,
             break;
         }
     } /* end of while (...) */
-}}
+}
 
 bool
 CRtpSessionTcpclientEx::Recv0(CRtpPacket*& packet,
                               bool&        leave)
-{{
+{
     assert(m_info.packMode == RTP_EPM_DEFAULT);
     assert(m_trans != NULL);
     assert(m_handshakeOk);
@@ -912,12 +898,12 @@ CRtpSessionTcpclientEx::Recv0(CRtpPacket*& packet,
     } /* end of while (...) */
 
     return (ret);
-}}
+}
 
 bool
 CRtpSessionTcpclientEx::Recv2(CRtpPacket*& packet,
                               bool&        leave)
-{{
+{
     assert(m_info.packMode == RTP_EPM_TCP2);
     assert(m_trans != NULL);
     assert(m_handshakeOk);
@@ -970,12 +956,12 @@ CRtpSessionTcpclientEx::Recv2(CRtpPacket*& packet,
     } /* end of while (...) */
 
     return (ret);
-}}
+}
 
 bool
 CRtpSessionTcpclientEx::Recv4(CRtpPacket*& packet,
                               bool&        leave)
-{{
+{
     assert(m_info.packMode == RTP_EPM_TCP4);
     assert(m_trans != NULL);
     assert(m_handshakeOk);
@@ -1092,7 +1078,7 @@ CRtpSessionTcpclientEx::Recv4(CRtpPacket*& packet,
     } /* end of while (...) */
 
     return (ret);
-}}
+}
 
 bool
 CRtpSessionTcpclientEx::DoHandshake(PRO_INT64        sockId,

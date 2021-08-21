@@ -229,9 +229,7 @@ CRtpSessionTcpserver::OnAccept(IProAcceptor*  acceptor,
                                const char*    localIp,
                                const char*    remoteIp,
                                unsigned short remotePort)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(acceptor != NULL);
     assert(sockId != -1);
     assert(localIp != NULL);
@@ -319,15 +317,13 @@ CRtpSessionTcpserver::OnAccept(IProAcceptor*  acceptor,
 
     observer->Release();
     ProDeleteAcceptor(acceptor);
-}}
+}
 
 void
 PRO_CALLTYPE
 CRtpSessionTcpserver::OnRecv(IProTransport*          trans,
                              const pbsd_sockaddr_in* remoteAddr)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(trans != NULL);
     if (trans == NULL)
     {
@@ -396,12 +392,12 @@ CRtpSessionTcpserver::OnRecv(IProTransport*          trans,
             break;
         }
     } /* end of while (...) */
-}}
+}
 
 bool
 CRtpSessionTcpserver::Recv(CRtpPacket*& packet,
                            bool&        leave)
-{{
+{
     assert(m_trans != NULL);
 
     packet = NULL;
@@ -483,4 +479,4 @@ CRtpSessionTcpserver::Recv(CRtpPacket*& packet,
     } /* end of while (...) */
 
     return (ret);
-}}
+}

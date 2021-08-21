@@ -1670,8 +1670,6 @@ CRtpSessionWrapper::OnCloseSession(IRtpSession* session,
 
     observer->OnCloseSession(this, errorCode, sslCode, tcpConnected);
     observer->Release();
-
-    Fini();
 }
 
 void

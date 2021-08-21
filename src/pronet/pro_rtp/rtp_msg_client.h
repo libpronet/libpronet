@@ -202,8 +202,7 @@ private:
     bool                               m_onOkCalled;
     mutable CProThreadMutex            m_lock;
 
-    bool                               m_canUpcall;
-    CProThreadMutex                    m_lockUpcall;
+    volatile bool                      m_canUpcall;
 
     DECLARE_SGI_POOL(0)
 };

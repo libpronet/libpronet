@@ -149,8 +149,7 @@ private:
 
     bool                    m_connResetAsError;
 
-    bool                    m_canUpcall;
-    CProThreadMutex         m_lockUpcall;
+    volatile bool           m_canUpcall;
 
     DECLARE_SGI_POOL(0)
 };

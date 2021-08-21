@@ -211,9 +211,7 @@ CRtpSessionTcpclient::OnConnectOk(IProConnector* connector,
                                   bool           unixSocket,
                                   const char*    remoteIp,
                                   unsigned short remotePort)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(connector != NULL);
     assert(sockId != -1);
     if (connector == NULL || sockId == -1)
@@ -295,7 +293,7 @@ CRtpSessionTcpclient::OnConnectOk(IProConnector* connector,
 
     observer->Release();
     ProDeleteConnector(connector);
-}}
+}
 
 void
 PRO_CALLTYPE
@@ -303,9 +301,7 @@ CRtpSessionTcpclient::OnConnectError(IProConnector* connector,
                                      const char*    remoteIp,
                                      unsigned short remotePort,
                                      bool           timeout)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(connector != NULL);
     if (connector == NULL)
     {
@@ -342,15 +338,13 @@ CRtpSessionTcpclient::OnConnectError(IProConnector* connector,
 
     observer->Release();
     ProDeleteConnector(connector);
-}}
+}
 
 void
 PRO_CALLTYPE
 CRtpSessionTcpclient::OnRecv(IProTransport*          trans,
                              const pbsd_sockaddr_in* remoteAddr)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(trans != NULL);
     if (trans == NULL)
     {
@@ -419,12 +413,12 @@ CRtpSessionTcpclient::OnRecv(IProTransport*          trans,
             break;
         }
     } /* end of while (...) */
-}}
+}
 
 bool
 CRtpSessionTcpclient::Recv(CRtpPacket*& packet,
                            bool&        leave)
-{{
+{
     assert(m_trans != NULL);
 
     packet = NULL;
@@ -506,4 +500,4 @@ CRtpSessionTcpclient::Recv(CRtpPacket*& packet,
     } /* end of while (...) */
 
     return (ret);
-}}
+}

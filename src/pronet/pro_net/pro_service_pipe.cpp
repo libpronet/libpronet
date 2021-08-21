@@ -397,8 +397,6 @@ CProServicePipe::OnClose(IProTransport* trans,
 
     observer->OnClose(this);
     observer->Release();
-
-    Fini();
 }
 
 /////////////////////////////////////////////////////////////////////////////

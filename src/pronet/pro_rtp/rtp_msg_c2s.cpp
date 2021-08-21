@@ -634,9 +634,7 @@ CRtpMsgC2s::KickoutLocalUser(const RTP_MSG_USER* user)
 
 void
 CRtpMsgC2s::AsyncKickoutLocalUser(PRO_INT64* args)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     const RTP_MSG_USER user(
         (unsigned char)args[0], args[1], (PRO_UINT16)args[2]);
     assert(user.classId > 0);
@@ -677,7 +675,7 @@ CRtpMsgC2s::AsyncKickoutLocalUser(PRO_INT64* args)
     observer->OnCloseUser(this, &user, -1, 0);
     observer->Release();
     DeleteRtpSessionWrapper(oldSession);
-}}
+}
 
 void
 PRO_CALLTYPE
@@ -1105,9 +1103,7 @@ CRtpMsgC2s::OnCloseSession(IRtpSession* session,
                            long         errorCode,
                            long         sslCode,
                            bool         tcpConnected)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(session != NULL);
     if (session == NULL)
     {
@@ -1149,15 +1145,13 @@ CRtpMsgC2s::OnCloseSession(IRtpSession* session,
     observer->OnCloseUser(this, &user, errorCode, sslCode);
     observer->Release();
     DeleteRtpSessionWrapper(session);
-}}
+}
 
 void
 PRO_CALLTYPE
 CRtpMsgC2s::OnHeartbeatSession(IRtpSession* session,
                                PRO_INT64    peerAliveTick)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(session != NULL);
     if (session == NULL)
     {
@@ -1191,16 +1185,14 @@ CRtpMsgC2s::OnHeartbeatSession(IRtpSession* session,
 
     observer->OnHeartbeatUser(this, &user, peerAliveTick);
     observer->Release();
-}}
+}
 
 void
 PRO_CALLTYPE
 CRtpMsgC2s::OnOkMsg(IRtpMsgClient*      msgClient,
                     const RTP_MSG_USER* myUser,
                     const char*         myPublicIp)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(msgClient != NULL);
     assert(myUser != NULL);
     assert(myUser->classId == SERVER_CID);
@@ -1239,7 +1231,7 @@ CRtpMsgC2s::OnOkMsg(IRtpMsgClient*      msgClient,
 
     observer->OnOkC2s(this, myUser, myPublicIp);
     observer->Release();
-}}
+}
 
 void
 PRO_CALLTYPE
@@ -1248,9 +1240,7 @@ CRtpMsgC2s::OnRecvMsg(IRtpMsgClient*      msgClient,
                       unsigned long       size,
                       PRO_UINT16          charset,
                       const RTP_MSG_USER* srcUser)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(msgClient != NULL);
     assert(buf != NULL);
     assert(size > 0);
@@ -1297,12 +1287,12 @@ CRtpMsgC2s::OnRecvMsg(IRtpMsgClient*      msgClient,
     else
     {
     }
-}}
+}
 
 void
 CRtpMsgC2s::ProcessMsg_client_login_ok(IRtpMsgClient*          msgClient,
                                        const CProConfigStream& msgStream)
-{{
+{
     assert(msgClient != NULL);
     if (msgClient == NULL)
     {
@@ -1450,12 +1440,12 @@ CRtpMsgC2s::ProcessMsg_client_login_ok(IRtpMsgClient*          msgClient,
 
     observer->Release();
     DeleteRtpSessionWrapper(oldSession);
-}}
+}
 
 void
 CRtpMsgC2s::ProcessMsg_client_login_error(IRtpMsgClient*          msgClient,
                                           const CProConfigStream& msgStream)
-{{
+{
     assert(msgClient != NULL);
     if (msgClient == NULL)
     {
@@ -1493,12 +1483,12 @@ CRtpMsgC2s::ProcessMsg_client_login_error(IRtpMsgClient*          msgClient,
         ProSslCtx_Delete(info.sslCtx);
         ProCloseSockId(info.sockId);
     }
-}}
+}
 
 void
 CRtpMsgC2s::ProcessMsg_client_kickout(IRtpMsgClient*          msgClient,
                                       const CProConfigStream& msgStream)
-{{
+{
     assert(msgClient != NULL);
     if (msgClient == NULL)
     {
@@ -1553,7 +1543,7 @@ CRtpMsgC2s::ProcessMsg_client_kickout(IRtpMsgClient*          msgClient,
     observer->OnCloseUser(this, &user, -1, 0);
     observer->Release();
     DeleteRtpSessionWrapper(oldSession);
-}}
+}
 
 void
 PRO_CALLTYPE
@@ -1623,9 +1613,7 @@ CRtpMsgC2s::OnCloseMsg(IRtpMsgClient* msgClient,
                        long           errorCode,
                        long           sslCode,
                        bool           tcpConnected)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(msgClient != NULL);
     if (msgClient == NULL)
     {
@@ -1689,15 +1677,13 @@ CRtpMsgC2s::OnCloseMsg(IRtpMsgClient* msgClient,
     CRtpMsgClient* const msgClient2 = (CRtpMsgClient*)msgClient;
     msgClient2->Fini();
     msgClient2->Release();
-}}
+}
 
 void
 PRO_CALLTYPE
 CRtpMsgC2s::OnHeartbeatMsg(IRtpMsgClient* msgClient,
                            PRO_INT64      peerAliveTick)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(msgClient != NULL);
     if (msgClient == NULL)
     {
@@ -1726,7 +1712,7 @@ CRtpMsgC2s::OnHeartbeatMsg(IRtpMsgClient* msgClient,
 
     observer->OnHeartbeatC2s(this, peerAliveTick);
     observer->Release();
-}}
+}
 
 void
 PRO_CALLTYPE

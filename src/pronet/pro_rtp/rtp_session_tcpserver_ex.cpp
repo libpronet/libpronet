@@ -216,9 +216,7 @@ void
 PRO_CALLTYPE
 CRtpSessionTcpserverEx::OnRecv(IProTransport*          trans,
                                const pbsd_sockaddr_in* remoteAddr)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(trans != NULL);
     if (trans == NULL)
     {
@@ -304,12 +302,12 @@ CRtpSessionTcpserverEx::OnRecv(IProTransport*          trans,
             break;
         }
     } /* end of while (...) */
-}}
+}
 
 bool
 CRtpSessionTcpserverEx::Recv0(CRtpPacket*& packet,
                               bool&        leave)
-{{
+{
     assert(m_info.packMode == RTP_EPM_DEFAULT);
     assert(m_trans != NULL);
     assert(m_handshakeOk);
@@ -390,12 +388,12 @@ CRtpSessionTcpserverEx::Recv0(CRtpPacket*& packet,
     } /* end of while (...) */
 
     return (ret);
-}}
+}
 
 bool
 CRtpSessionTcpserverEx::Recv2(CRtpPacket*& packet,
                               bool&        leave)
-{{
+{
     assert(m_info.packMode == RTP_EPM_TCP2);
     assert(m_trans != NULL);
     assert(m_handshakeOk);
@@ -448,12 +446,12 @@ CRtpSessionTcpserverEx::Recv2(CRtpPacket*& packet,
     } /* end of while (...) */
 
     return (ret);
-}}
+}
 
 bool
 CRtpSessionTcpserverEx::Recv4(CRtpPacket*& packet,
                               bool&        leave)
-{{
+{
     assert(m_info.packMode == RTP_EPM_TCP4);
     assert(m_trans != NULL);
     assert(m_handshakeOk);
@@ -570,7 +568,7 @@ CRtpSessionTcpserverEx::Recv4(CRtpPacket*& packet,
     } /* end of while (...) */
 
     return (ret);
-}}
+}
 
 bool
 CRtpSessionTcpserverEx::DoHandshake(bool useAckData,

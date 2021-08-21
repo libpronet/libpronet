@@ -566,9 +566,7 @@ void
 PRO_CALLTYPE
 CRtpSessionBase::OnSend(IProTransport* trans,
                         PRO_UINT64     actionId)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(trans != NULL);
     if (trans == NULL)
     {
@@ -622,16 +620,14 @@ CRtpSessionBase::OnSend(IProTransport* trans,
     }
 
     observer->Release();
-}}
+}
 
 void
 PRO_CALLTYPE
 CRtpSessionBase::OnClose(IProTransport* trans,
                          long           errorCode,
                          long           sslCode)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(trans != NULL);
     if (trans == NULL)
     {
@@ -664,14 +660,12 @@ CRtpSessionBase::OnClose(IProTransport* trans,
     }
 
     observer->Release();
-
-    Fini();
-}}
+}
 
 void
 PRO_CALLTYPE
 CRtpSessionBase::OnHeartbeat(IProTransport* trans)
-{{
+{
 #if !defined(_WIN32_WCE)
     bool enableTrace = false;
     if (
@@ -688,8 +682,6 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
         enableTrace = g_fileMonitor.QueryFileExist();
     }
 #endif
-
-    CProThreadMutexGuard mon(m_lockUpcall);
 
     assert(trans != NULL);
     if (trans == NULL)
@@ -1203,16 +1195,14 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
     {
         Fini();
     }
-}}
+}
 
 void
 PRO_CALLTYPE
 CRtpSessionBase::OnTimer(void*      factory,
                          PRO_UINT64 timerId,
                          PRO_INT64  userData)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(factory != NULL);
     assert(timerId > 0);
     if (factory == NULL || timerId == 0)
@@ -1276,4 +1266,4 @@ CRtpSessionBase::OnTimer(void*      factory,
     {
         Fini();
     }
-}}
+}

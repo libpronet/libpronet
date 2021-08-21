@@ -228,9 +228,7 @@ void
 PRO_CALLTYPE
 CRtpSessionMcast::OnRecv(IProTransport*          trans,
                          const pbsd_sockaddr_in* remoteAddr)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(trans != NULL);
     if (trans == NULL)
     {
@@ -351,4 +349,4 @@ CRtpSessionMcast::OnRecv(IProTransport*          trans,
         }
         break;
     } /* end of while (...) */
-}}
+}

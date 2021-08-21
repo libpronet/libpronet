@@ -307,7 +307,6 @@ private:
     CProStlMap<RTP_MSG_USER, IRtpSession*>               m_user2Session;
 
     mutable CProThreadMutex                              m_lock;
-    CProThreadMutex                                      m_lockUpcall;
 
     DECLARE_SGI_POOL(0)
 };

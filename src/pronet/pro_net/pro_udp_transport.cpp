@@ -447,9 +447,7 @@ CProUdpTransport::UdpConnResetAsError(const pbsd_sockaddr_in* remoteAddr) /* = N
 void
 PRO_CALLTYPE
 CProUdpTransport::OnInput(PRO_INT64 sockId)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(sockId != -1);
     if (sockId == -1)
     {
@@ -546,15 +544,13 @@ EXIT:
     {
         Fini();
     }
-}}
+}
 
 void
 PRO_CALLTYPE
 CProUdpTransport::OnError(PRO_INT64 sockId,
                           long      errorCode)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(sockId != -1);
     if (sockId == -1)
     {
@@ -589,16 +585,14 @@ CProUdpTransport::OnError(PRO_INT64 sockId,
     observer->Release();
 
     Fini();
-}}
+}
 
 void
 PRO_CALLTYPE
 CProUdpTransport::OnTimer(void*      factory,
                           PRO_UINT64 timerId,
                           PRO_INT64  userData)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(factory != NULL);
     assert(timerId > 0);
     if (factory == NULL || timerId == 0)
@@ -631,4 +625,4 @@ CProUdpTransport::OnTimer(void*      factory,
     }
 
     observer->Release();
-}}
+}

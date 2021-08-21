@@ -251,21 +251,17 @@ CProSslTransport::GetSslSuite(char suiteName[64]) const
 void
 PRO_CALLTYPE
 CProSslTransport::OnInput(PRO_INT64 sockId)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     DoRecv(sockId);
-}}
+}
 
 void
 PRO_CALLTYPE
 CProSslTransport::OnOutput(PRO_INT64 sockId)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     DoSend(sockId);
     DoRecv(sockId); /* !!! */
-}}
+}
 
 void
 CProSslTransport::DoRecv(PRO_INT64 sockId)

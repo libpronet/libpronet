@@ -543,9 +543,7 @@ CProTcpTransport::OnInput(PRO_INT64 sockId)
 
 void
 CProTcpTransport::OnInputData(PRO_INT64 sockId)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(sockId != -1);
     if (sockId == -1)
     {
@@ -635,14 +633,12 @@ EXIT:
     {
         Fini();
     }
-}}
+}
 
 void
 CProTcpTransport::OnInputFd(PRO_INT64 sockId)
-{{
+{
 #if !defined(_WIN32) && !defined(_WIN32_WCE)
-
-    CProThreadMutexGuard mon(m_lockUpcall);
 
     assert(sockId != -1);
     if (sockId == -1)
@@ -734,14 +730,12 @@ CProTcpTransport::OnInputFd(PRO_INT64 sockId)
     }
 
 #endif /* _WIN32, _WIN32_WCE */
-}}
+}
 
 void
 PRO_CALLTYPE
 CProTcpTransport::OnOutput(PRO_INT64 sockId)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(sockId != -1);
     if (sockId == -1)
     {
@@ -896,15 +890,13 @@ CProTcpTransport::OnOutput(PRO_INT64 sockId)
     {
         Fini();
     }
-}}
+}
 
 void
 PRO_CALLTYPE
 CProTcpTransport::OnError(PRO_INT64 sockId,
                           long      errorCode)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(sockId != -1);
     if (sockId == -1)
     {
@@ -940,16 +932,14 @@ CProTcpTransport::OnError(PRO_INT64 sockId,
     observer->Release();
 
     Fini();
-}}
+}
 
 void
 PRO_CALLTYPE
 CProTcpTransport::OnTimer(void*      factory,
                           PRO_UINT64 timerId,
                           PRO_INT64  userData)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(factory != NULL);
     assert(timerId > 0);
     if (factory == NULL || timerId == 0)
@@ -982,4 +972,4 @@ CProTcpTransport::OnTimer(void*      factory,
     }
 
     observer->Release();
-}}
+}

@@ -220,9 +220,7 @@ void
 PRO_CALLTYPE
 CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
                                const pbsd_sockaddr_in* remoteAddr)
-{{
-    CProThreadMutexGuard mon(m_lockUpcall);
-
+{
     assert(trans != NULL);
     assert(remoteAddr != NULL);
     if (trans == NULL || remoteAddr == NULL)
@@ -438,7 +436,7 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
         }
         break;
     } /* end of while (...) */
-}}
+}
 
 void
 PRO_CALLTYPE
