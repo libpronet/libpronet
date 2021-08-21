@@ -181,7 +181,7 @@ CProTpReactorTask::Stop()
 
 void
 CProTpReactorTask::StopMe()
-{{
+{
     {
         CProThreadMutexGuard mon(m_lock);
 
@@ -234,7 +234,7 @@ CProTpReactorTask::StopMe()
         m_curThreadCount    = 0;
         m_wantExit          = false;
     }
-}}
+}
 
 bool
 CProTpReactorTask::AddHandler(PRO_INT64         sockId,
@@ -252,10 +252,13 @@ CProTpReactorTask::AddHandler(PRO_INT64         sockId,
         return (false);
     }
 
-    if (PRO_BIT_ENABLED(mask, PRO_MASK_ACCEPT) &&
-        PRO_BIT_ENABLED(mask, mask & ~PRO_MASK_ACCEPT))
+    if (PRO_BIT_ENABLED(mask, PRO_MASK_ACCEPT))
     {
-        return (false);
+        assert(mask == PRO_MASK_ACCEPT);
+        if (mask != PRO_MASK_ACCEPT)
+        {
+            return (false);
+        }
     }
 
     bool ret = false;
@@ -270,20 +273,24 @@ CProTpReactorTask::AddHandler(PRO_INT64         sockId,
             return (false);
         }
 
-        CProBaseReactor* reactor = handler->GetReactor();
-        if (reactor == NULL)
+        CProBaseReactor* ioReactor = handler->GetReactor();
+        if (ioReactor == NULL)
         {
-            reactor = m_ioReactors[0];
-
-            int       i = 1;
+            int       i = 0;
             const int c = (int)m_ioReactors.size();
 
             for (; i < c; ++i)
             {
-                if (m_ioReactors[i]->GetHandlerCount() <
-                    reactor->GetHandlerCount())
+                if (ioReactor == NULL)
                 {
-                    reactor = m_ioReactors[i];
+                    ioReactor = m_ioReactors[i];
+                    continue;
+                }
+
+                if (m_ioReactors[i]->GetHandlerCount() <
+                    ioReactor->GetHandlerCount())
+                {
+                    ioReactor = m_ioReactors[i];
                 }
             }
         }
@@ -292,20 +299,25 @@ CProTpReactorTask::AddHandler(PRO_INT64         sockId,
         {
             ret = m_acceptReactor->AddHandler(
                 sockId, handler, PRO_MASK_ACCEPT);
+            if (!ret)
+            {
+                mask = 0;
+            }
         }
         else
         {
-            ret = reactor->AddHandler(sockId, handler, mask);
+            ret = ioReactor->AddHandler(sockId, handler, mask);
             if (ret)
             {
-                handler->SetReactor(reactor);
+                handler->SetReactor(ioReactor);
+            }
+            else
+            {
+                mask = 0;
             }
         }
 
-        if (ret)
-        {
-            handler->AddMask(mask);
-        }
+        handler->AddMask(mask);
     }
 
     return (ret);
@@ -333,28 +345,26 @@ CProTpReactorTask::RemoveHandler(PRO_INT64         sockId,
             return;
         }
 
-        CProBaseReactor* const reactor = handler->GetReactor();
-
         if (PRO_BIT_ENABLED(mask, PRO_MASK_ACCEPT))
         {
             m_acceptReactor->RemoveHandler(sockId, PRO_MASK_ACCEPT);
+            handler->RemoveMask(PRO_MASK_ACCEPT);
         }
 
-        if (PRO_BIT_ENABLED(mask, mask & ~PRO_MASK_ACCEPT))
+        if (PRO_BIT_ENABLED(mask, ~PRO_MASK_ACCEPT))
         {
-            if (reactor != NULL)
+            unsigned long ioMask = mask & ~PRO_MASK_ACCEPT;
+
+            CProBaseReactor* const ioReactor = handler->GetReactor();
+            if (ioReactor != NULL)
             {
-                reactor->RemoveHandler(sockId, mask & ~PRO_MASK_ACCEPT);
+                ioReactor->RemoveHandler(sockId, ioMask);
             }
-        }
 
-        handler->RemoveMask(mask);
+            handler->RemoveMask(ioMask);
 
-        if (reactor != NULL)
-        {
-            const unsigned long newMask = handler->GetMask();
-
-            if (!PRO_BIT_ENABLED(newMask, newMask & ~PRO_MASK_ACCEPT))
+            ioMask = handler->GetMask() & ~PRO_MASK_ACCEPT;
+            if (ioMask == 0)
             {
                 handler->SetReactor(NULL);
             }
@@ -545,7 +555,7 @@ CProTpReactorTask::GetTraceInfo(char*  buf,
             theInfo += theBuf;
         }
 
-        theInfo += '\n';
+        theInfo += "\n";
 
         theValue = (int)m_timerFactory.GetTimerCount();
         sprintf(theBuf, " [ ST Timers ] : %d \n", theValue);

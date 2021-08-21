@@ -32,8 +32,8 @@
 
 void
 PRO_CALLTYPE
-ProAnsiToUnicode(CProStlWstring&      dst,
-                 const CProStlString& src)
+ProAnsiToUnicode(const CProStlString& src,
+                 CProStlWstring&      dst)
 {
     dst = L"";
 
@@ -54,8 +54,8 @@ ProAnsiToUnicode(CProStlWstring&      dst,
 
 void
 PRO_CALLTYPE
-ProUnicodeToAnsi(CProStlString&        dst,
-                 const CProStlWstring& src)
+ProUnicodeToAnsi(const CProStlWstring& src,
+                 CProStlString&        dst)
 {
     dst = "";
 
@@ -77,8 +77,8 @@ ProUnicodeToAnsi(CProStlString&        dst,
 
 void
 PRO_CALLTYPE
-ProUtf8ToUnicode(CProStlWstring&      dst,
-                 const CProStlString& src)
+ProUtf8ToUnicode(const CProStlString& src,
+                 CProStlWstring&      dst)
 {
     dst = L"";
 
@@ -99,8 +99,8 @@ ProUtf8ToUnicode(CProStlWstring&      dst,
 
 void
 PRO_CALLTYPE
-ProUnicodeToUtf8(CProStlString&        dst,
-                 const CProStlWstring& src)
+ProUnicodeToUtf8(const CProStlWstring& src,
+                 CProStlString&        dst)
 {
     dst = "";
 
@@ -122,22 +122,22 @@ ProUnicodeToUtf8(CProStlString&        dst,
 
 void
 PRO_CALLTYPE
-ProAnsiToUtf8(CProStlString&       dst,
-              const CProStlString& src)
+ProAnsiToUtf8(const CProStlString& src,
+              CProStlString&       dst)
 {
     CProStlWstring uni = L"";
-    ProAnsiToUnicode(uni, src);
-    ProUnicodeToUtf8(dst, uni);
+    ProAnsiToUnicode(src, uni);
+    ProUnicodeToUtf8(uni, dst);
 }
 
 void
 PRO_CALLTYPE
-ProUtf8ToAnsi(CProStlString&       dst,
-              const CProStlString& src)
+ProUtf8ToAnsi(const CProStlString& src,
+              CProStlString&       dst)
 {
     CProStlWstring uni = L"";
-    ProUtf8ToUnicode(uni, src);
-    ProUnicodeToAnsi(dst, uni);
+    ProUtf8ToUnicode(src, uni);
+    ProUnicodeToAnsi(uni, dst);
 }
 
 #endif /* _WIN32, _WIN32_WCE */

@@ -111,7 +111,7 @@ CProFunctorCommandTask::Stop()
 
 void
 CProFunctorCommandTask::StopMe()
-{{
+{
     {
         CProThreadMutexGuard mon(m_lock);
 
@@ -138,7 +138,7 @@ CProFunctorCommandTask::StopMe()
         m_curThreadCount = 0;
         m_wantExit       = false;
     }
-}}
+}
 
 bool
 CProFunctorCommandTask::Put(IProFunctorCommand* command,

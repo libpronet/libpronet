@@ -29,33 +29,33 @@
 
 void
 PRO_CALLTYPE
-ProAnsiToUnicode(CProStlWstring&      dst,
-                 const CProStlString& src);
+ProAnsiToUnicode(const CProStlString& src,
+                 CProStlWstring&      dst);
 
 void
 PRO_CALLTYPE
-ProUnicodeToAnsi(CProStlString&        dst,
-                 const CProStlWstring& src);
+ProUnicodeToAnsi(const CProStlWstring& src,
+                 CProStlString&        dst);
 
 void
 PRO_CALLTYPE
-ProUtf8ToUnicode(CProStlWstring&      dst,
-                 const CProStlString& src);
+ProUtf8ToUnicode(const CProStlString& src,
+                 CProStlWstring&      dst);
 
 void
 PRO_CALLTYPE
-ProUnicodeToUtf8(CProStlString&        dst,
-                 const CProStlWstring& src);
+ProUnicodeToUtf8(const CProStlWstring& src,
+                 CProStlString&        dst);
 
 void
 PRO_CALLTYPE
-ProAnsiToUtf8(CProStlString&       dst,
-              const CProStlString& src);
+ProAnsiToUtf8(const CProStlString& src,
+              CProStlString&       dst);
 
 void
 PRO_CALLTYPE
-ProUtf8ToAnsi(CProStlString&       dst,
-              const CProStlString& src);
+ProUtf8ToAnsi(const CProStlString& src,
+              CProStlString&       dst);
 
 #endif /* _WIN32, _WIN32_WCE */
 

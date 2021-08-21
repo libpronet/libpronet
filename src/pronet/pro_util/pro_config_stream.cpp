@@ -276,7 +276,7 @@ CProConfigStream::ConfigsToString(const CProStlVector<PRO_CONFIG_ITEM>& configs,
         str += aroundCharL;
         str += config.configValue;
         str += aroundCharR;
-        str += '\n';
+        str += "\n";
     }
 }
 

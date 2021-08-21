@@ -258,7 +258,7 @@ CMsgServer::KickoutUsers(const CProStlSet<RTP_MSG_USER>& users)
             return;
         }
 
-        traceInfo += '\n';
+        traceInfo += "\n";
         traceInfo += " CMsgServer::KickoutUsers(...) \n";
         traceInfo += " [[[ begin \n";
 
