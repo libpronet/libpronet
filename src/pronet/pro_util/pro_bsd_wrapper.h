@@ -36,6 +36,9 @@
 #if !defined(WIN32_LEAN_AND_MEAN)
 #define WIN32_LEAN_AND_MEAN
 #endif
+#if !defined(_WINSOCK_DEPRECATED_NO_WARNINGS)
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#endif
 #include <windows.h> /* for (_WIN32_WINNT>=0x0500) */
 #include <winsock2.h>
 #include <mswsock.h>
