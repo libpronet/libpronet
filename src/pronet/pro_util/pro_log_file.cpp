@@ -157,14 +157,9 @@ CProLogFile::Log(const char* text,
         CProStlString timeString = "";
         ProGetLocalTimeString(timeString);
 
-        totalString += '\n';
+        totalString += "\n";
         totalString += timeString;
-        totalString += ' ';
-
-        if (text[0] != '\r' && text[0] != '\n')
-        {
-            totalString += '\n';
-        }
+        totalString += " ";
     }
 
     totalString += text;
