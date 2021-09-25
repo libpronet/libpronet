@@ -44,13 +44,12 @@ public:
 
 private:
 
-    void Update();
+    void Update(PRO_INT64 tick);
 
 private:
 
     PRO_INT64 m_timeSpan;
     PRO_INT64 m_startTick;
-    PRO_INT64 m_calcTick;
     double    m_bits;
     double    m_bitRate;
 
@@ -205,7 +204,7 @@ private:
 
     void Push(PRO_INT64 seq64);
 
-    void Update();
+    void Update(PRO_INT64 tick);
 
 private:
 
@@ -244,13 +243,12 @@ public:
 
 private:
 
-    void Update();
+    void Update(PRO_INT64 tick);
 
 private:
 
     PRO_INT64 m_timeSpan;
     PRO_INT64 m_startTick;
-    PRO_INT64 m_calcTick;
     double    m_count;
     double    m_sum;
     double    m_avgValue;
