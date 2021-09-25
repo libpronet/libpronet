@@ -203,6 +203,25 @@ ProRsaKeyGen(unsigned long  keyBytes, /* 128, 256, 512 */
 
 /*-------------------------------------------------------------------------*/
 
+void
+PRO_CALLTYPE
+ProBase64Encode(const void*    inputBuffer,
+                size_t         inputSize,
+                CProStlString& outputString);
+
+void
+PRO_CALLTYPE
+ProBase64Decode(const void*          inputBuffer,
+                size_t               inputSize,
+                CProStlVector<char>& outputBuffer);
+
+void
+PRO_CALLTYPE
+ProBase64DecodeStr(const char*          inputString,
+                   CProStlVector<char>& outputBuffer);
+
+/*-------------------------------------------------------------------------*/
+
 /*
  * 功能: 计算(会话随机数+口令)组合的HASH(SHA-256)值
  *

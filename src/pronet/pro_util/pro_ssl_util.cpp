@@ -23,6 +23,7 @@
 #include "pro_stl.h"
 #include "pro_z.h"
 
+#include "mbedtls/base64.h"
 #include "mbedtls/md.h"
 #include "mbedtls/platform_util.h"
 #include "mbedtls/rsa.h"
@@ -633,6 +634,7 @@ ProRsaDecrypt(void*                ctx,
     for (int i = 0; i < (int)blockCount; ++i)
     {
         size_t olen = 0;
+
         if (mbedtls_rsa_pkcs1_decrypt(ctx2, &Rand_i, NULL,
             MBEDTLS_RSA_PRIVATE, &olen, p, q, ctx2->len - 11) != 0 ||
             olen == 0 || olen > ctx2->len - 11)
@@ -754,6 +756,104 @@ ProRsaKeyGen(unsigned long  keyBytes, /* 128, 256, 512 */
     }
 
     return (true);
+}
+
+/*-------------------------------------------------------------------------*/
+
+void
+PRO_CALLTYPE
+ProBase64Encode(const void*    inputBuffer,
+                size_t         inputSize,
+                CProStlString& outputString)
+{
+    outputString = "";
+
+    if (inputBuffer == NULL || inputSize == 0)
+    {
+        return;
+    }
+
+    const size_t size = inputSize * 2 + 8;
+    char* const  buf  = (char*)ProMalloc(size);
+    if (buf == NULL)
+    {
+        return;
+    }
+
+    size_t olen = 0;
+
+    if (mbedtls_base64_encode((unsigned char*)buf, size, &olen,
+        (unsigned char*)inputBuffer, inputSize) == 0 && olen > 0)
+    {
+        outputString.assign(buf, olen);
+    }
+
+    ProFree(buf);
+}
+
+void
+PRO_CALLTYPE
+ProBase64Decode(const void*          inputBuffer,
+                size_t               inputSize,
+                CProStlVector<char>& outputBuffer)
+{
+    outputBuffer.clear();
+
+    if (inputBuffer == NULL || inputSize == 0)
+    {
+        return;
+    }
+
+    const size_t size = inputSize + 8;
+    char* const  buf  = (char*)ProMalloc(size);
+    if (buf == NULL)
+    {
+        return;
+    }
+
+    size_t olen = 0;
+
+    if (mbedtls_base64_decode((unsigned char*)buf, size, &olen,
+        (unsigned char*)inputBuffer, inputSize) == 0 && olen > 0)
+    {
+        outputBuffer.resize(olen);
+        memcpy(&outputBuffer[0], buf, olen);
+    }
+
+    ProFree(buf);
+}
+
+void
+PRO_CALLTYPE
+ProBase64DecodeStr(const char*          inputString,
+                   CProStlVector<char>& outputBuffer)
+{
+    outputBuffer.clear();
+
+    if (inputString == NULL || inputString[0] == '\0')
+    {
+        return;
+    }
+
+    const size_t inputSize = strlen(inputString);
+
+    const size_t size = inputSize + 8;
+    char* const  buf  = (char*)ProMalloc(size);
+    if (buf == NULL)
+    {
+        return;
+    }
+
+    size_t olen = 0;
+
+    if (mbedtls_base64_decode((unsigned char*)buf, size, &olen,
+        (unsigned char*)inputString, inputSize) == 0 && olen > 0)
+    {
+        outputBuffer.resize(olen);
+        memcpy(&outputBuffer[0], buf, olen);
+    }
+
+    ProFree(buf);
 }
 
 /*-------------------------------------------------------------------------*/
