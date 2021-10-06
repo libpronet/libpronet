@@ -223,13 +223,6 @@ CProMcastTransport::Fini()
     observer->Release();
 }
 
-PRO_TRANS_TYPE
-PRO_CALLTYPE
-CProMcastTransport::GetType() const
-{
-    return (PRO_TRANS_MCAST);
-}
-
 bool
 PRO_CALLTYPE
 CProMcastTransport::AddMcastReceiver(const char* mcastIp)

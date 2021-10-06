@@ -100,8 +100,8 @@ int main(int argc, char* argv[])
     printf(
         "\n"
         " usage [server-side]: \n"
-        " test_rtp -udpecho [ <local_ip> <local_port> [-scroll] ] \n"
-        " test_rtp -tcpecho [ <local_ip> <local_port> [-scroll] ] \n"
+        " test_rtp -udpecho [ <local_ip> <local_port> ] \n"
+        " test_rtp -tcpecho [ <local_ip> <local_port> ] \n"
         " test_rtp -udps    [ <local_ip> <local_port> <kbps> [packet_size] ] \n"
         " test_rtp -tcps    [ <local_ip> <local_port> <kbps> [packet_size] ] \n"
         "\n"
@@ -112,9 +112,9 @@ int main(int argc, char* argv[])
         " for example [server-side on host 192.168.0.101]: \n"
         " test_rtp -udpecho                            \n"
         " test_rtp -udpecho 0.0.0.0       1234         \n"
-        " test_rtp -udpecho 192.168.0.101 1234 -scroll \n"
+        " test_rtp -udpecho 192.168.0.101 1234         \n"
         " test_rtp -tcpecho                            \n"
-        " test_rtp -tcpecho 0.0.0.0       1234 -scroll \n"
+        " test_rtp -tcpecho 0.0.0.0       1234         \n"
         " test_rtp -tcpecho 192.168.0.101 1234         \n"
         " test_rtp -udps                               \n"
         " test_rtp -udps    0.0.0.0       1234 512     \n"
@@ -142,7 +142,6 @@ int main(int argc, char* argv[])
     int          remote_port = 0;
     int          kbps        = 512;
     int          packet_size = 850;
-    bool         scroll      = false;
     IProReactor* reactor     = NULL;
     CTest*       tester      = NULL;
 
@@ -209,12 +208,6 @@ int main(int argc, char* argv[])
 
                 local_ip   = argv[2];
                 local_port = atoi(argv[3]);
-                if (argc >= 5)
-                {
-                    scroll =
-                        stricmp(argv[4], "-scroll")  == 0 ||
-                        stricmp(argv[4], "--scroll") == 0;
-                }
             }
             else if (
                 (mode == TM_UDPS || mode == TM_TCPS)
@@ -281,9 +274,9 @@ int main(int argc, char* argv[])
             {
                 kbps = 1;
             }
-            if (kbps > 1024000)
+            if (kbps > 8192000)
             {
-                kbps = 1024000;
+                kbps = 8192000;
             }
             prm.kbps = kbps;
 
@@ -299,11 +292,6 @@ int main(int argc, char* argv[])
                 packet_size = 1500;
             }
             prm.packet_size = packet_size;
-
-            /*
-             * scroll
-             */
-            prm.scroll = scroll;
             break;
         }
     case TM_UDPC:
@@ -370,9 +358,9 @@ int main(int argc, char* argv[])
             {
                 kbps = 1;
             }
-            if (kbps > 1024000)
+            if (kbps > 8192000)
             {
-                kbps = 1024000;
+                kbps = 8192000;
             }
             prm.kbps = kbps;
 
@@ -425,8 +413,7 @@ int main(int argc, char* argv[])
         goto EXIT;
     }
 
-    if (mode == TM_UDPE || mode == TM_TCPE ||
-        mode == TM_UDPS || mode == TM_TCPS)
+    if (CTest::IsServerMode(mode))
     {
         if (!tester->Init(reactor, params.server))
         {

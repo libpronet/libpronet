@@ -214,13 +214,6 @@ CProUdpTransport::Release()
     return (refCount);
 }
 
-PRO_TRANS_TYPE
-PRO_CALLTYPE
-CProUdpTransport::GetType() const
-{
-    return (PRO_TRANS_UDP);
-}
-
 PRO_SSL_SUITE_ID
 PRO_CALLTYPE
 CProUdpTransport::GetSslSuite(char suiteName[64]) const
@@ -301,13 +294,6 @@ CProUdpTransport::GetRemotePort() const
     return (remotePort);
 }
 
-IProRecvPool*
-PRO_CALLTYPE
-CProUdpTransport::GetRecvPool()
-{
-    return (&m_recvPool);
-}
-
 bool
 PRO_CALLTYPE
 CProUdpTransport::SendData(const void*             buf,
@@ -322,6 +308,8 @@ CProUdpTransport::SendData(const void*             buf,
         return (false);
     }
 
+    const pbsd_sockaddr_in* realAddr = NULL;
+
     {
         CProThreadMutexGuard mon(m_lock);
 
@@ -330,22 +318,16 @@ CProUdpTransport::SendData(const void*             buf,
             return (false);
         }
 
-        const pbsd_sockaddr_in* const realAddr =
-            remoteAddr != NULL ? remoteAddr : &m_defaultRemoteAddr;
+        realAddr = remoteAddr != NULL ? remoteAddr : &m_defaultRemoteAddr;
         if (realAddr->sin_addr.s_addr == 0 || realAddr->sin_port == 0)
-        {
-            return (false);
-        }
-
-        const int sentSize = pbsd_sendto(
-            m_sockId, buf, (int)size, 0, realAddr);
-        if (sentSize != (int)size)
         {
             return (false);
         }
     }
 
-    return (true);
+    const int sentSize = pbsd_sendto(m_sockId, buf, (int)size, 0, realAddr);
+
+    return (sentSize == (int)size);
 }
 
 void

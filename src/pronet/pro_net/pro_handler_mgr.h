@@ -68,11 +68,17 @@ public:
 
     PRO_INT64 GetMaxSockId() const;
 
-    unsigned long GetHandlerCount() const;
+    unsigned long GetHandlerCount() const
+    {
+        return ((unsigned long)m_sockId2HandlerInfo.size());
+    }
 
     PRO_HANDLER_INFO FindHandler(PRO_INT64 sockId) const;
 
-    const CProStlMap<PRO_INT64, PRO_HANDLER_INFO>& GetAllHandlers() const;
+    const CProStlMap<PRO_INT64, PRO_HANDLER_INFO>& GetAllHandlers() const
+    {
+        return (m_sockId2HandlerInfo);
+    }
 
 private:
 

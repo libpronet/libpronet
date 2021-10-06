@@ -36,18 +36,24 @@ public:
 
     void Fini();
 
-    PRO_INT64 GetReaderSockId() const;
+    PRO_INT64 GetReaderSockId() const
+    {
+        return (m_sockIds[0]);
+    }
 
-    PRO_INT64 GetWriterSockId() const;
-
-    void EnableNotify();
+    PRO_INT64 GetWriterSockId() const
+    {
+        return (m_sockIds[1]);
+    }
 
     void Notify();
+
+    void Roger();
 
 private:
 
     PRO_INT64 m_sockIds[2];
-    bool      m_enableNotify;
+    bool      m_notifyPending;
     PRO_INT64 m_notifyTick;
 
     DECLARE_SGI_POOL(0)

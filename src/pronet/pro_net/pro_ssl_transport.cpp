@@ -225,13 +225,6 @@ CProSslTransport::Fini()
     observer->Release();
 }
 
-PRO_TRANS_TYPE
-PRO_CALLTYPE
-CProSslTransport::GetType() const
-{
-    return (PRO_TRANS_SSL);
-}
-
 PRO_SSL_SUITE_ID
 PRO_CALLTYPE
 CProSslTransport::GetSslSuite(char suiteName[64]) const

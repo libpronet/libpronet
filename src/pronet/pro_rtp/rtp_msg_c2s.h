@@ -76,7 +76,10 @@ public:
 
     virtual unsigned long PRO_CALLTYPE Release();
 
-    virtual RTP_MM_TYPE PRO_CALLTYPE GetMmType() const;
+    virtual RTP_MM_TYPE PRO_CALLTYPE GetMmType() const
+    {
+        return (m_mmType);
+    }
 
     virtual void PRO_CALLTYPE GetUplinkUser(RTP_MSG_USER* myUser) const;
 

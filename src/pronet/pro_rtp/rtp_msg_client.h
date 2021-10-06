@@ -83,7 +83,10 @@ public:
 
     virtual unsigned long PRO_CALLTYPE Release();
 
-    virtual RTP_MM_TYPE PRO_CALLTYPE GetMmType() const;
+    virtual RTP_MM_TYPE PRO_CALLTYPE GetMmType() const
+    {
+        return (m_mmType);
+    }
 
     virtual void PRO_CALLTYPE GetUser(RTP_MSG_USER* myUser) const;
 
@@ -153,7 +156,9 @@ private:
     virtual void PRO_CALLTYPE OnSendSession(
         IRtpSession* session,
         bool         packetErased
-        );
+        )
+    {
+    }
 
     virtual void PRO_CALLTYPE OnCloseSession(
         IRtpSession* session,
@@ -184,8 +189,6 @@ private:
         const RTP_MSG_USER* srcUser /* = NULL */
         );
 
-    void DoSendData(bool onOkCalled);
-
 private:
 
     const bool                         m_enableTransfer; /* for c2s */
@@ -196,10 +199,8 @@ private:
     IRtpMsgClientObserver*             m_observer;
     IProReactor*                       m_reactor;
     IRtpSession*                       m_session;
-    IRtpBucket*                        m_bucket;
     RTP_MSG_USER                       m_userBak;
     PRO_UINT64                         m_timerId;
-    bool                               m_onOkCalled;
     mutable CProThreadMutex            m_lock;
 
     volatile bool                      m_canUpcall;

@@ -578,39 +578,6 @@ CRtpPacket::GetPayloadSize16() const
     return ((PRO_UINT16)size);
 }
 
-RTP_EXT_PACK_MODE
-PRO_CALLTYPE
-CRtpPacket::GetPackMode() const
-{
-    return (m_packMode);
-}
-
-void
-PRO_CALLTYPE
-CRtpPacket::SetMagic(PRO_INT64 magic)
-{
-    m_magic = magic;
-}
-
-PRO_INT64
-PRO_CALLTYPE
-CRtpPacket::GetMagic() const
-{
-    return (m_magic);
-}
-
-void
-CRtpPacket::SetMagic2(PRO_INT64 magic2)
-{
-    m_magic2 = magic2;
-}
-
-PRO_INT64
-CRtpPacket::GetMagic2() const
-{
-    return (m_magic2);
-}
-
 void
 CRtpPacket::SetUdpxSync(bool sync)
 {
@@ -621,16 +588,4 @@ bool
 CRtpPacket::GetUdpxSync() const
 {
     return (m_packet->ext->udpxSync != 0);
-}
-
-const RTP_PACKET&
-CRtpPacket::GetPacket() const
-{
-    return (*m_packet);
-}
-
-RTP_PACKET&
-CRtpPacket::GetPacket()
-{
-    return (*m_packet);
 }

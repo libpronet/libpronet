@@ -620,17 +620,6 @@ ProGetTickCount64_s()
 
     return (ret);
 
-#elif !defined(PRO_LACKS_CLOCK_GETTIME) /* for non-MacOS */
-
-    struct timespec ts;
-    clock_gettime(CLOCK_MONOTONIC, &ts);
-
-    PRO_INT64 ret = ts.tv_sec;
-    ret *= 1000;
-    ret += ts.tv_nsec / 1000000;
-
-    return (ret);
-
 #elif defined(PRO_MACH_ABSOLUTE_TIME)   /* for MacOS */
 
     if (!g_s_timebaseFlag)
@@ -648,6 +637,17 @@ ProGetTickCount64_s()
     PRO_INT64 ret = mach_absolute_time();
     ret =  ret * g_s_timebaseInfo.numer / g_s_timebaseInfo.denom; /* ns_ticks ---> ns */
     ret /= 1000000;                                               /* ns       ---> ms */
+
+    return (ret);
+
+#elif !defined(PRO_LACKS_CLOCK_GETTIME) /* for non-MacOS */
+
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+
+    PRO_INT64 ret = ts.tv_sec;
+    ret *= 1000;
+    ret += ts.tv_nsec / 1000000;
 
     return (ret);
 

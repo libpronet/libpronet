@@ -91,7 +91,10 @@ private:
 
     virtual bool PRO_CALLTYPE IsTcpConnected() const;
 
-    virtual bool PRO_CALLTYPE IsReady() const;
+    virtual bool PRO_CALLTYPE IsReady() const
+    {
+        return (m_onOkCalled);
+    }
 
     virtual bool PRO_CALLTYPE SendPacket(
         IRtpPacket* packet,
@@ -214,8 +217,9 @@ private:
     bool                      m_packetErased;
     bool                      m_enableInput;
     bool                      m_enableOutput;
+    bool                      m_outputPending;
     PRO_UINT64                m_timerId;
-    bool                      m_onOkCalled;
+    volatile bool             m_onOkCalled;
     PRO_INT64                 m_traceTick;
 
     PRO_UINT64                m_sendTimerId;

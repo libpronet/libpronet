@@ -122,12 +122,6 @@ CProHandlerMgr::GetMaxSockId() const
     return (sockId);
 }
 
-unsigned long
-CProHandlerMgr::GetHandlerCount() const
-{
-    return ((unsigned long)m_sockId2HandlerInfo.size());
-}
-
 PRO_HANDLER_INFO
 CProHandlerMgr::FindHandler(PRO_INT64 sockId) const
 {
@@ -147,10 +141,4 @@ CProHandlerMgr::FindHandler(PRO_INT64 sockId) const
     }
 
     return (info);
-}
-
-const CProStlMap<PRO_INT64, PRO_HANDLER_INFO>&
-CProHandlerMgr::GetAllHandlers() const
-{
-    return (m_sockId2HandlerInfo);
 }

@@ -79,13 +79,6 @@ CRtpBucket::Destroy()
     delete this;
 }
 
-unsigned long
-PRO_CALLTYPE
-CRtpBucket::GetTotalBytes() const
-{
-    return (m_totalBytes);
-}
-
 IRtpPacket*
 PRO_CALLTYPE
 CRtpBucket::GetFront()
@@ -339,13 +332,6 @@ PRO_CALLTYPE
 CRtpVideoBucket::Destroy()
 {
     delete this;
-}
-
-unsigned long
-PRO_CALLTYPE
-CRtpVideoBucket::GetTotalBytes() const
-{
-    return (m_totalBytes);
 }
 
 IRtpPacket*

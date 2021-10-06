@@ -187,15 +187,30 @@ public:
 
     virtual PRO_UINT16 PRO_CALLTYPE GetPayloadSize16() const;
 
-    virtual RTP_EXT_PACK_MODE PRO_CALLTYPE GetPackMode() const;
+    virtual RTP_EXT_PACK_MODE PRO_CALLTYPE GetPackMode() const
+    {
+        return (m_packMode);
+    }
 
-    virtual void PRO_CALLTYPE SetMagic(PRO_INT64 magic);
+    virtual void PRO_CALLTYPE SetMagic(PRO_INT64 magic)
+    {
+        m_magic = magic;
+    }
 
-    virtual PRO_INT64 PRO_CALLTYPE GetMagic() const;
+    virtual PRO_INT64 PRO_CALLTYPE GetMagic() const
+    {
+        return (m_magic);
+    }
 
-    void SetMagic2(PRO_INT64 magic2);
+    void SetMagic2(PRO_INT64 magic2)
+    {
+        m_magic2 = magic2;
+    }
 
-    PRO_INT64 GetMagic2() const;
+    PRO_INT64 GetMagic2() const
+    {
+        return (m_magic2);
+    }
 
     void SetUdpxSync(bool sync);
 
@@ -204,12 +219,18 @@ public:
     /*
      * Don't use this method unless you know why and how to use it.
      */
-    const RTP_PACKET& GetPacket() const;
+    const RTP_PACKET& GetPacket() const
+    {
+        return (*m_packet);
+    }
 
     /*
      * Don't use this method unless you know why and how to use it.
      */
-    RTP_PACKET& GetPacket();
+    RTP_PACKET& GetPacket()
+    {
+        return (*m_packet);
+    }
 
 private:
 

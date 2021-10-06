@@ -46,7 +46,10 @@ public:
 
     virtual void PRO_CALLTYPE Destroy();
 
-    virtual unsigned long PRO_CALLTYPE GetTotalBytes() const;
+    virtual unsigned long PRO_CALLTYPE GetTotalBytes() const
+    {
+        return (m_totalBytes);
+    }
 
     virtual IRtpPacket* PRO_CALLTYPE GetFront();
 
@@ -123,7 +126,10 @@ public:
 
     virtual void PRO_CALLTYPE Destroy();
 
-    virtual unsigned long PRO_CALLTYPE GetTotalBytes() const;
+    virtual unsigned long PRO_CALLTYPE GetTotalBytes() const
+    {
+        return (m_totalBytes);
+    }
 
     virtual IRtpPacket* PRO_CALLTYPE GetFront();
 

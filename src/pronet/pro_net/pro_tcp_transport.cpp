@@ -33,6 +33,7 @@
 ////
 
 #define DEFAULT_RECV_POOL_SIZE (1024 * 65)
+#define MAX_SENDING_PACKETS    8
 
 #if !defined(_WIN32) && !defined(_WIN32_WCE)
 
@@ -249,13 +250,6 @@ CProTcpTransport::Release()
     return (refCount);
 }
 
-PRO_TRANS_TYPE
-PRO_CALLTYPE
-CProTcpTransport::GetType() const
-{
-    return (PRO_TRANS_TCP);
-}
-
 PRO_SSL_SUITE_ID
 PRO_CALLTYPE
 CProTcpTransport::GetSslSuite(char suiteName[64]) const
@@ -334,13 +328,6 @@ CProTcpTransport::GetRemotePort() const
     }
 
     return (remotePort);
-}
-
-IProRecvPool*
-PRO_CALLTYPE
-CProTcpTransport::GetRecvPool()
-{
-    return (&m_recvPool);
 }
 
 bool
@@ -736,6 +723,44 @@ void
 PRO_CALLTYPE
 CProTcpTransport::OnOutput(PRO_INT64 sockId)
 {
+    bool tryAgain = false;
+
+    for (int i = 0; i < MAX_SENDING_PACKETS; ++i) /* N? */
+    {
+        OnOutput(sockId, tryAgain);
+        if (!tryAgain)
+        {
+            break;
+        }
+    }
+
+    if (m_pendingWr)
+    {
+        return;
+    }
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_observer == NULL || m_reactorTask == NULL)
+        {
+            return;
+        }
+
+        if (m_onWr && !m_pendingWr && !m_requestOnSend)
+        {
+            m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE);
+            m_onWr = false;
+        }
+    }
+}
+
+void
+CProTcpTransport::OnOutput(PRO_INT64 sockId,
+                           bool&     tryAgain)
+{
+    tryAgain = false;
+
     assert(sockId != -1);
     if (sockId == -1)
     {
@@ -865,19 +890,7 @@ CProTcpTransport::OnOutput(PRO_INT64 sockId)
         {
             observer->OnSend(this, actionId);
 
-            {
-                CProThreadMutexGuard mon(m_lock);
-
-                if (m_observer != NULL && m_reactorTask != NULL)
-                {
-                    if (m_onWr && !m_pendingWr && !m_requestOnSend)
-                    {
-                        m_reactorTask->RemoveHandler(
-                            m_sockId, this, PRO_MASK_WRITE);
-                        m_onWr = false;
-                    }
-                }
-            }
+            tryAgain = m_pendingWr;
         }
         else
         {

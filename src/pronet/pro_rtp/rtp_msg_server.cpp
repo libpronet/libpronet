@@ -275,13 +275,6 @@ CRtpMsgServer::Release()
     return (refCount);
 }
 
-RTP_MM_TYPE
-PRO_CALLTYPE
-CRtpMsgServer::GetMmType() const
-{
-    return (m_mmType);
-}
-
 unsigned short
 PRO_CALLTYPE
 CRtpMsgServer::GetServicePort() const

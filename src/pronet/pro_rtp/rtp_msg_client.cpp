@@ -72,14 +72,12 @@ m_mmType(mmType),
 m_sslConfig(sslConfig),
 m_sslSni(sslSni != NULL ? sslSni : "")
 {
-    m_observer   = NULL;
-    m_reactor    = NULL;
-    m_session    = NULL;
-    m_bucket     = NULL;
-    m_timerId    = 0;
-    m_onOkCalled = false;
+    m_observer  = NULL;
+    m_reactor   = NULL;
+    m_session   = NULL;
+    m_timerId   = 0;
 
-    m_canUpcall  = true;
+    m_canUpcall = true;
 }
 
 CRtpMsgClient::~CRtpMsgClient()
@@ -129,18 +127,13 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
         timeoutInSeconds = DEFAULT_TIMEOUT;
     }
 
-    IRtpSession* session = NULL;
-    IRtpBucket*  bucket  = NULL;
-
     {
         CProThreadMutexGuard mon(m_lock);
 
         assert(m_observer == NULL);
         assert(m_reactor == NULL);
         assert(m_session == NULL);
-        assert(m_bucket == NULL);
-        if (m_observer != NULL || m_reactor != NULL || m_session != NULL ||
-            m_bucket != NULL)
+        if (m_observer != NULL || m_reactor != NULL || m_session != NULL)
         {
             return (false);
         }
@@ -182,7 +175,7 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
                     sizeof(initArgs.sslclientEx.localIp), localIp);
             }
 
-            session = CreateRtpSessionWrapper(
+            m_session = CreateRtpSessionWrapper(
                 RTP_ST_SSLCLIENT_EX, &initArgs, &localInfo);
             ProZeroMemory(
                 initArgs.sslclientEx.password,
@@ -208,7 +201,7 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
                     sizeof(initArgs.tcpclientEx.localIp), localIp);
             }
 
-            session = CreateRtpSessionWrapper(
+            m_session = CreateRtpSessionWrapper(
                 RTP_ST_TCPCLIENT_EX, &initArgs, &localInfo);
             ProZeroMemory(
                 initArgs.tcpclientEx.password,
@@ -216,46 +209,23 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
                 );
         }
 
-        if (session == NULL)
+        if (m_session == NULL)
         {
-            goto EXIT;
+            return (false);
         }
         else
         {
-            session->SetOutputRedline(DEFAULT_REDLINE_BYTES, 0, 0);
-        }
-
-        bucket = CreateRtpBaseBucket();
-        if (bucket == NULL)
-        {
-            goto EXIT;
-        }
-        else
-        {
-            bucket->SetRedline(DEFAULT_REDLINE_BYTES, 0, 0);
+            m_session->SetOutputRedline(DEFAULT_REDLINE_BYTES, 0, 0);
         }
 
         observer->AddRef();
         m_observer = observer;
         m_reactor  = reactor;
-        m_session  = session;
-        m_bucket   = bucket;
         m_userBak  = *user;
         m_timerId  = reactor->ScheduleTimer(this, (PRO_UINT64)timeoutInSeconds * 1000, false);
     }
 
     return (true);
-
-EXIT:
-
-    if (bucket != NULL)
-    {
-        bucket->Destroy();
-    }
-
-    DeleteRtpSessionWrapper(session);
-
-    return (false);
 }
 
 void
@@ -263,12 +233,11 @@ CRtpMsgClient::Fini()
 {
     IRtpMsgClientObserver* observer = NULL;
     IRtpSession*           session  = NULL;
-    IRtpBucket*            bucket   = NULL;
 
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL)
         {
             return;
         }
@@ -276,8 +245,6 @@ CRtpMsgClient::Fini()
         m_reactor->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        bucket = m_bucket;
-        m_bucket = NULL;
         session = m_session;
         m_session = NULL;
         m_reactor = NULL;
@@ -285,7 +252,6 @@ CRtpMsgClient::Fini()
         m_observer = NULL;
     }
 
-    bucket->Destroy();
     DeleteRtpSessionWrapper(session);
     observer->Release();
 }
@@ -306,13 +272,6 @@ CRtpMsgClient::Release()
     const unsigned long refCount = CProRefCount::Release();
 
     return (refCount);
-}
-
-RTP_MM_TYPE
-PRO_CALLTYPE
-CRtpMsgClient::GetMmType() const
-{
-    return (m_mmType);
 }
 
 void
@@ -510,30 +469,23 @@ CRtpMsgClient::PushData(const void*         buf1,
         size2 = 0;
     }
 
+    if (srcUser == NULL)
+    {
+        srcUser = &m_userBak;
+    }
+
     bool ret = true;
 
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
-            m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL)
         {
             return (false);
         }
-
-        unsigned long cachedBytes  = 0;
-        unsigned long redlineBytes = 0;
-        m_session->GetFlowctrlInfo(NULL, NULL, NULL, NULL, &cachedBytes, NULL);
-        cachedBytes += m_bucket->GetTotalBytes();
-        m_bucket->GetRedline(&redlineBytes, NULL, NULL);
 
         const unsigned long msgHeaderSize = sizeof(RTP_MSG_HEADER) +
             sizeof(RTP_MSG_USER) * (dstUserCount - 1);
-        if (cachedBytes + msgHeaderSize + size1 + size2 > redlineBytes && /* check redline */
-            cachedBytes > 0)
-        {
-            return (false);
-        }
 
         IRtpPacket* const packet = CreateRtpPacketSpace(
             msgHeaderSize + size1 + size2, RTP_MSG_PACK_MODE);
@@ -546,13 +498,10 @@ CRtpMsgClient::PushData(const void*         buf1,
             (RTP_MSG_HEADER*)packet->GetPayloadBuffer();
         memset(msgHeaderPtr, 0, msgHeaderSize);
 
-        msgHeaderPtr->charset            = pbsd_hton16(charset);
-        if (srcUser != NULL)
-        {
-            msgHeaderPtr->srcUser        = *srcUser;
-            msgHeaderPtr->srcUser.instId = pbsd_hton16(msgHeaderPtr->srcUser.instId);
-        }
-        msgHeaderPtr->dstUserCount       = dstUserCount;
+        msgHeaderPtr->charset        = pbsd_hton16(charset);
+        msgHeaderPtr->srcUser        = *srcUser;
+        msgHeaderPtr->srcUser.instId = pbsd_hton16(msgHeaderPtr->srcUser.instId);
+        msgHeaderPtr->dstUserCount   = dstUserCount;
 
         for (int i = 0; i < (int)dstUserCount; ++i)
         {
@@ -580,45 +529,11 @@ CRtpMsgClient::PushData(const void*         buf1,
         }
 
         packet->SetMmType(m_mmType);
-        ret = m_bucket->PushBackAddRef(packet);
+        ret = m_session->SendPacket(packet);
         packet->Release();
-
-        DoSendData(m_onOkCalled);
     }
 
     return (ret);
-}
-
-void
-CRtpMsgClient::DoSendData(bool onOkCalled)
-{
-    assert(m_session != NULL);
-    assert(m_bucket != NULL);
-
-    if (!onOkCalled)
-    {
-        return;
-    }
-
-    IRtpPacket* const packet = m_bucket->GetFront();
-    if (packet == NULL)
-    {
-        return;
-    }
-
-    RTP_MSG_HEADER* const msgHeaderPtr =
-        (RTP_MSG_HEADER*)packet->GetPayloadBuffer();
-
-    if (msgHeaderPtr->srcUser.classId == 0)
-    {
-        msgHeaderPtr->srcUser        = m_userBak;
-        msgHeaderPtr->srcUser.instId = pbsd_hton16(msgHeaderPtr->srcUser.instId);
-    }
-
-    if (m_session->SendPacket(packet))
-    {
-        m_bucket->PopFrontRelease(packet);
-    }
 }
 
 void
@@ -633,14 +548,12 @@ CRtpMsgClient::SetOutputRedline(unsigned long redlineBytes)
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
-            m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL)
         {
             return;
         }
 
         m_session->SetOutputRedline(redlineBytes, 0, 0);
-        m_bucket->SetRedline(redlineBytes, 0, 0);
     }
 }
 
@@ -653,9 +566,9 @@ CRtpMsgClient::GetOutputRedline() const
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_bucket != NULL)
+        if (m_session != NULL)
         {
-            m_bucket->GetRedline(&redlineBytes, NULL, NULL);
+            m_session->GetOutputRedline(&redlineBytes, NULL, NULL);
         }
     }
 
@@ -675,10 +588,6 @@ CRtpMsgClient::GetSendingBytes() const
         {
             m_session->GetFlowctrlInfo(
                 NULL, NULL, NULL, NULL, &sendingBytes, NULL);
-        }
-        if (m_bucket != NULL)
-        {
-            sendingBytes += m_bucket->GetTotalBytes();
         }
     }
 
@@ -717,8 +626,7 @@ CRtpMsgClient::OnOkSession(IRtpSession* session)
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
-            m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL)
         {
             return;
         }
@@ -729,7 +637,6 @@ CRtpMsgClient::OnOkSession(IRtpSession* session)
         }
 
         m_userBak = user; /* login */
-        DoSendData(true);
 
         m_reactor->CancelTimer(m_timerId);
         m_timerId = 0;
@@ -743,7 +650,6 @@ CRtpMsgClient::OnOkSession(IRtpSession* session)
         char publicIp[64] = "";
         pbsd_inet_ntoa(hdr0.publicIp, publicIp);
 
-        m_onOkCalled = true;
         observer->OnOkMsg(this, &user, publicIp);
     }
 
@@ -796,8 +702,7 @@ CRtpMsgClient::OnRecvSession(IRtpSession* session,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
-            m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL)
         {
             return;
         }
@@ -878,35 +783,6 @@ CRtpMsgClient::OnRecvSession(IRtpSession* session,
 
 void
 PRO_CALLTYPE
-CRtpMsgClient::OnSendSession(IRtpSession* session,
-                             bool         packetErased)
-{
-    assert(session != NULL);
-    if (session == NULL)
-    {
-        return;
-    }
-
-    {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
-            m_bucket == NULL)
-        {
-            return;
-        }
-
-        if (session != m_session)
-        {
-            return;
-        }
-
-        DoSendData(m_onOkCalled);
-    }
-}
-
-void
-PRO_CALLTYPE
 CRtpMsgClient::OnCloseSession(IRtpSession* session,
                               long         errorCode,
                               long         sslCode,
@@ -923,8 +799,7 @@ CRtpMsgClient::OnCloseSession(IRtpSession* session,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
-            m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL)
         {
             return;
         }
@@ -963,8 +838,7 @@ CRtpMsgClient::OnHeartbeatSession(IRtpSession* session,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
-            m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL)
         {
             return;
         }
@@ -1005,8 +879,7 @@ CRtpMsgClient::OnTimer(void*      factory,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL ||
-            m_bucket == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_session == NULL)
         {
             return;
         }

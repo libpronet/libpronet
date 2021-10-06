@@ -294,21 +294,6 @@ CRtpSessionBase::IsTcpConnected() const
 
 bool
 PRO_CALLTYPE
-CRtpSessionBase::IsReady() const
-{
-    bool ready = false;
-
-    {
-        CProThreadMutexGuard mon(m_lock);
-
-        ready = m_onOkCalled;
-    }
-
-    return (ready);
-}
-
-bool
-PRO_CALLTYPE
 CRtpSessionBase::SendPacket(IRtpPacket* packet,
                             bool*       tryAgain) /* = NULL */
 {
@@ -427,18 +412,15 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
             }
         }
 
+        const bool udpSession = IsUdpSession(m_info.sessionType);
+
         ret = m_trans->SendData(
             (char*)packet->GetPayloadBuffer() - otherSize,
             packet->GetPayloadSize() + otherSize,
             m_actionId + 1,
             remoteAddr
             );
-        if (m_info.sessionType == RTP_ST_UDPCLIENT    ||
-            m_info.sessionType == RTP_ST_UDPSERVER    ||
-            m_info.sessionType == RTP_ST_UDPCLIENT_EX ||
-            m_info.sessionType == RTP_ST_UDPSERVER_EX ||
-            m_info.sessionType == RTP_ST_MCAST        ||
-            m_info.sessionType == RTP_ST_MCAST_EX)
+        if (udpSession)
         {
             ret = true; /* hack */
         }
@@ -453,12 +435,7 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
         {
             ++m_actionId;
 
-            if (m_info.sessionType == RTP_ST_TCPCLIENT    ||
-                m_info.sessionType == RTP_ST_TCPSERVER    ||
-                m_info.sessionType == RTP_ST_TCPCLIENT_EX ||
-                m_info.sessionType == RTP_ST_TCPSERVER_EX ||
-                m_info.sessionType == RTP_ST_SSLCLIENT_EX ||
-                m_info.sessionType == RTP_ST_SSLSERVER_EX)
+            if (!udpSession)
             {
                 m_onSendTick1 = m_sendTick;
                 m_onSendTick2 = m_sendTick - 1; /* assert(m_onSendTick2 < m_onSendTick1) */
@@ -593,21 +570,10 @@ CRtpSessionBase::OnSend(IProTransport* trans,
             return;
         }
 
-        switch (m_info.sessionType)
+        if (!IsUdpSession(m_info.sessionType) &&
+            actionId > 0 && actionId == m_actionId)
         {
-        case RTP_ST_TCPCLIENT:
-        case RTP_ST_TCPSERVER:
-        case RTP_ST_TCPCLIENT_EX:
-        case RTP_ST_TCPSERVER_EX:
-        case RTP_ST_SSLCLIENT_EX:
-        case RTP_ST_SSLSERVER_EX:
-            {
-                if (actionId > 0 && actionId == m_actionId)
-                {
-                    m_onSendTick2 = ProGetTickCount64();
-                }
-                break;
-            }
+            m_onSendTick2 = ProGetTickCount64();
         }
 
         m_observer->AddRef();

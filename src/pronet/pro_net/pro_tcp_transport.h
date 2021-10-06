@@ -76,7 +76,10 @@ public:
 
     virtual unsigned long PRO_CALLTYPE Release();
 
-    virtual PRO_TRANS_TYPE PRO_CALLTYPE GetType() const;
+    virtual PRO_TRANS_TYPE PRO_CALLTYPE GetType() const
+    {
+        return (PRO_TRANS_TCP);
+    }
 
     virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
         char suiteName[64]
@@ -92,7 +95,10 @@ public:
 
     virtual unsigned short PRO_CALLTYPE GetRemotePort() const;
 
-    virtual IProRecvPool* PRO_CALLTYPE GetRecvPool();
+    virtual IProRecvPool* PRO_CALLTYPE GetRecvPool()
+    {
+        return (&m_recvPool);
+    }
 
     virtual bool PRO_CALLTYPE SendData(
         const void*             buf,
@@ -156,6 +162,11 @@ protected:
 
     void OnInputFd(PRO_INT64 sockId);
 
+    void OnOutput(
+        PRO_INT64 sockId,
+        bool&     tryAgain
+        );
+
 protected:
 
     const bool              m_recvFdMode;
@@ -166,7 +177,7 @@ protected:
     pbsd_sockaddr_in        m_localAddr;
     pbsd_sockaddr_in        m_remoteAddr;
     bool                    m_onWr;
-    bool                    m_pendingWr;
+    volatile bool           m_pendingWr;
     bool                    m_requestOnSend;
     CProRecvPool            m_recvPool;
     CProSendPool            m_sendPool;

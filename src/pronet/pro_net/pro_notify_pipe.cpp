@@ -34,10 +34,10 @@
 
 CProNotifyPipe::CProNotifyPipe()
 {
-    m_sockIds[0]   = -1;
-    m_sockIds[1]   = -1;
-    m_enableNotify = true;
-    m_notifyTick   = 0;
+    m_sockIds[0]    = -1;
+    m_sockIds[1]    = -1;
+    m_notifyPending = false;
+    m_notifyTick    = 0;
 }
 
 CProNotifyPipe::~CProNotifyPipe()
@@ -127,29 +127,10 @@ CProNotifyPipe::Fini()
     pbsd_closesocket(m_sockIds[1]);
 #endif
 
-    m_sockIds[0]   = -1;
-    m_sockIds[1]   = -1;
-    m_enableNotify = true;
-    m_notifyTick   = 0;
-}
-
-PRO_INT64
-CProNotifyPipe::GetReaderSockId() const
-{
-    return (m_sockIds[0]);
-}
-
-PRO_INT64
-CProNotifyPipe::GetWriterSockId() const
-{
-    return (m_sockIds[1]);
-}
-
-void
-CProNotifyPipe::EnableNotify()
-{
-    m_enableNotify = true;
-    m_notifyTick   = 0;
+    m_sockIds[0]    = -1;
+    m_sockIds[1]    = -1;
+    m_notifyPending = false;
+    m_notifyTick    = 0;
 }
 
 void
@@ -161,20 +142,28 @@ CProNotifyPipe::Notify()
         return;
     }
 
-    PRO_INT64 tick = 0;
-    if (!m_enableNotify)
+    const PRO_INT64 tick = ProGetTickCount64();
+    if (m_notifyPending && tick > m_notifyTick)
     {
-        tick = ProGetTickCount64();
-        if (tick <= m_notifyTick)
-        {
-            return;
-        }
+        m_notifyPending = false;
+        m_notifyTick    = 0;
+    }
+    if (m_notifyPending)
+    {
+        return;
     }
 
     const char buf[] = { 0 };
     if (pbsd_send(sockId, buf, sizeof(buf), 0) > 0) /* connected */
     {
-        m_enableNotify = false;
-        m_notifyTick   = tick > 0 ? tick : ProGetTickCount64();
+        m_notifyPending = true;
+        m_notifyTick    = tick;
     }
+}
+
+void
+CProNotifyPipe::Roger()
+{
+    m_notifyPending = false;
+    m_notifyTick    = 0;
 }

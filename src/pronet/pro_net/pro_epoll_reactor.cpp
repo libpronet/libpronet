@@ -525,7 +525,7 @@ CProEpollReactor::OnInput(PRO_INT64 sockId)
         (recvSize < 0 && pbsd_errno((void*)&pbsd_recv) == PBSD_EWOULDBLOCK)
        )
     {
-        m_notifyPipe->EnableNotify();
+        m_notifyPipe->Roger();
     }
     else
     {

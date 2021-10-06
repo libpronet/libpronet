@@ -58,7 +58,10 @@ public:
 
     virtual unsigned long PRO_CALLTYPE Release();
 
-    virtual PRO_TRANS_TYPE PRO_CALLTYPE GetType() const;
+    virtual PRO_TRANS_TYPE PRO_CALLTYPE GetType() const
+    {
+        return (PRO_TRANS_UDP);
+    }
 
     virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
         char suiteName[64]
@@ -74,7 +77,10 @@ public:
 
     virtual unsigned short PRO_CALLTYPE GetRemotePort() const;
 
-    virtual IProRecvPool* PRO_CALLTYPE GetRecvPool();
+    virtual IProRecvPool* PRO_CALLTYPE GetRecvPool()
+    {
+        return (&m_recvPool);
+    }
 
     virtual bool PRO_CALLTYPE SendData(
         const void*             buf,

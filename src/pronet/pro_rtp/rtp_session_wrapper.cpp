@@ -20,6 +20,7 @@
 #include "rtp_base.h"
 #include "rtp_bucket.h"
 #include "rtp_session_a.h"
+#include "rtp_session_base.h"
 #include "../pro_net/pro_net.h"
 #include "../pro_util/pro_file_monitor.h"
 #include "../pro_util/pro_memory_pool.h"
@@ -89,6 +90,7 @@ CRtpSessionWrapper::CRtpSessionWrapper(const RTP_SESSION_INFO& localInfo)
     m_packetErased     = false;
     m_enableInput      = true;
     m_enableOutput     = true;
+    m_outputPending    = false;
     m_timerId          = 0;
     m_onOkCalled       = false;
     m_traceTick        = 0;
@@ -882,24 +884,6 @@ CRtpSessionWrapper::IsTcpConnected() const
 
 bool
 PRO_CALLTYPE
-CRtpSessionWrapper::IsReady() const
-{
-    bool ready = false;
-
-    {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_session != NULL)
-        {
-            ready = m_session->IsReady();
-        }
-    }
-
-    return (ready);
-}
-
-bool
-PRO_CALLTYPE
 CRtpSessionWrapper::SendPacket(IRtpPacket* packet,
                                bool*       tryAgain) /* = NULL */
 {
@@ -997,7 +981,17 @@ CRtpSessionWrapper::PushPacket(IRtpPacket* packet)
     }
     m_pushToBucketRet1 = m_pushToBucketRet2;
 
-    DoSendPacket();
+    if (CRtpSessionBase::IsUdpSession(m_info.sessionType))
+    {
+        DoSendPacket();
+    }
+    else if (!m_outputPending)
+    {
+        m_outputPending = DoSendPacket();
+    }
+    else
+    {
+    }
 
     return (m_pushToBucketRet2);
 }
@@ -1211,6 +1205,7 @@ CRtpSessionWrapper::EnableOutput(bool enable)
         m_pushToBucketRet1 = true; /* !!! */
         m_pushToBucketRet2 = true; /* !!! */
         m_packetErased     = false;
+        m_outputPending    = false;
 
         pushPackets = m_pushPackets;
         m_pushPackets.clear();
@@ -1497,14 +1492,8 @@ CRtpSessionWrapper::OnOkSession(IRtpSession* session)
         }
 
         m_session->GetInfo(&m_info);
-        m_onOkCalled = true;
 
-        if (m_info.sessionType == RTP_ST_UDPCLIENT    ||
-            m_info.sessionType == RTP_ST_UDPSERVER    ||
-            m_info.sessionType == RTP_ST_UDPCLIENT_EX ||
-            m_info.sessionType == RTP_ST_UDPSERVER_EX ||
-            m_info.sessionType == RTP_ST_MCAST        ||
-            m_info.sessionType == RTP_ST_MCAST_EX)
+        if (CRtpSessionBase::IsUdpSession(m_info.sessionType))
         {
             udpSession = true;
 
@@ -1520,6 +1509,7 @@ CRtpSessionWrapper::OnOkSession(IRtpSession* session)
         observer = m_observer;
     }
 
+    m_onOkCalled = true;
     observer->OnOkSession(this);
     observer->Release();
 
@@ -1586,8 +1576,7 @@ CRtpSessionWrapper::OnSendSession(IRtpSession* session,
                                   bool         packetErased)
 {
     assert(session != NULL);
-    assert(!packetErased);
-    if (session == NULL || packetErased)
+    if (session == NULL)
     {
         return;
     }
@@ -1608,18 +1597,8 @@ CRtpSessionWrapper::OnSendSession(IRtpSession* session,
             return;
         }
 
-        /*
-         * 1. first
-         */
-        if (DoSendPacket() && !m_packetErased)
-        {
-            return;
-        }
-
-        /*
-         * 2. second
-         */
-        if (!m_onOkCalled)
+        m_outputPending = DoSendPacket();
+        if (m_outputPending && !m_packetErased)
         {
             return;
         }
@@ -1695,11 +1674,6 @@ CRtpSessionWrapper::OnHeartbeatSession(IRtpSession* session,
         }
 
         if (session != m_session)
-        {
-            return;
-        }
-
-        if (!m_onOkCalled)
         {
             return;
         }

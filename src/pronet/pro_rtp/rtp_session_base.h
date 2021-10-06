@@ -53,6 +53,18 @@ public:
 
     virtual unsigned long PRO_CALLTYPE Release();
 
+    static bool IsUdpSession(RTP_SESSION_TYPE sessionType)
+    {
+        return (
+            sessionType == RTP_ST_UDPCLIENT    ||
+            sessionType == RTP_ST_UDPSERVER    ||
+            sessionType == RTP_ST_UDPCLIENT_EX ||
+            sessionType == RTP_ST_UDPSERVER_EX ||
+            sessionType == RTP_ST_MCAST        ||
+            sessionType == RTP_ST_MCAST_EX
+            );
+    }
+
 protected:
 
     CRtpSessionBase(bool suspendRecv);
@@ -88,7 +100,10 @@ protected:
 
     virtual bool PRO_CALLTYPE IsTcpConnected() const;
 
-    virtual bool PRO_CALLTYPE IsReady() const;
+    virtual bool PRO_CALLTYPE IsReady() const
+    {
+        return (m_onOkCalled);
+    }
 
     virtual bool PRO_CALLTYPE SendPacket(
         IRtpPacket* packet,
@@ -238,7 +253,7 @@ protected:
     PRO_UINT64              m_onOkTimerId;
     bool                    m_tcpConnected;     /* for tcp, tcp_ex, ssl_ex */
     bool                    m_handshakeOk;      /* for udp_ex, tcp_ex, ssl_ex */
-    bool                    m_onOkCalled;
+    volatile bool           m_onOkCalled;
     CRtpPacket*             m_bigPacket;
     mutable CProThreadMutex m_lock;
 

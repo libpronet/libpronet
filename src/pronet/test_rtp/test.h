@@ -52,7 +52,6 @@ struct TEST_SERVER
     unsigned short local_port;
     unsigned long  kbps;
     unsigned long  packet_size; /* offset is N */
-    bool           scroll;
 
     DECLARE_SGI_POOL(0)
 };
@@ -125,6 +124,19 @@ public:
 
     virtual unsigned long PRO_CALLTYPE Release();
 
+    static bool IsUdpMode(TEST_MODE mode)
+    {
+        return (mode == TM_UDPE || mode == TM_UDPS || mode == TM_UDPC);
+    }
+
+    static bool IsServerMode(TEST_MODE mode)
+    {
+        return (
+            mode == TM_UDPE || mode == TM_TCPE ||
+            mode == TM_UDPS || mode == TM_TCPS
+            );
+    }
+
 private:
 
     CTest(TEST_MODE mode);
@@ -191,28 +203,28 @@ private:
         const char*    localIp
         );
 
-    void PrintSessionReady(
-        IRtpSession* session,
-        bool         udp
+    void PrintSessionCreated(IRtpSession* session);
+
+    void PrintSessionConnected(IRtpSession* session);
+
+    void PrintSessionBroken(IRtpSession* session);
+
+    void OnTimerSend(
+        PRO_UINT64 timerId,
+        bool&      tryAgain
         );
 
-    void PrintSessionConnected(
-        IRtpSession* session,
-        bool         udp
-        );
+    void OnTimerRecv(PRO_UINT64 timerId);
 
-    void PrintSessionBroken(
-        IRtpSession* session,
-        bool         udp
-        );
+    void OnTimerHtbt(PRO_UINT64 timerId);
 
 private:
 
     const TEST_MODE  m_mode;
     TEST_PARAMS      m_params;
     IProReactor*     m_reactor;
-    IRtpSession*     m_udpSession;
-    IRtpSession*     m_tcpSession;
+    IRtpSession*     m_session;
+    CProTimerFactory m_sender; /* a separate, dedicated thread */
     PRO_UINT64       m_sendTimerId;
     PRO_UINT64       m_recvTimerId;
     PRO_UINT64       m_htbtTimerId;

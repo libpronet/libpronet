@@ -44,7 +44,10 @@ public:
 
     void Fini();
 
-    virtual PRO_TRANS_TYPE PRO_CALLTYPE GetType() const;
+    virtual PRO_TRANS_TYPE PRO_CALLTYPE GetType() const
+    {
+        return (PRO_TRANS_SSL);
+    }
 
     virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
         char suiteName[64]

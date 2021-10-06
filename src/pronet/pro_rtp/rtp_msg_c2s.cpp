@@ -369,13 +369,6 @@ CRtpMsgC2s::Release()
     return (refCount);
 }
 
-RTP_MM_TYPE
-PRO_CALLTYPE
-CRtpMsgC2s::GetMmType() const
-{
-    return (m_mmType);
-}
-
 void
 PRO_CALLTYPE
 CRtpMsgC2s::GetUplinkUser(RTP_MSG_USER* myUser) const

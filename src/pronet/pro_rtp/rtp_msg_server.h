@@ -122,7 +122,10 @@ public:
 
     virtual unsigned long PRO_CALLTYPE Release();
 
-    virtual RTP_MM_TYPE PRO_CALLTYPE GetMmType() const;
+    virtual RTP_MM_TYPE PRO_CALLTYPE GetMmType() const
+    {
+        return (m_mmType);
+    }
 
     virtual unsigned short PRO_CALLTYPE GetServicePort() const;
 
