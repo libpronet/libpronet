@@ -386,11 +386,7 @@ int main(int argc, char* argv[])
     {
         ProSleep(1);
 
-#if defined(_WIN32)
-        printf("\nMSG-Svr:\\>");
-#else
-        printf("\nMSG-Svr:~$ ");
-#endif
+        printf("\nMSG-Svr>");
         fflush(stdout);
 
         static char s_cmdText[1024]      = "";

@@ -377,11 +377,7 @@ int main(int argc, char* argv[])
     {
         ProSleep(1);
 
-#if defined(_WIN32)
-        printf("\nTCP-Cli:\\>");
-#else
-        printf("\nTCP-Cli:~$ ");
-#endif
+        printf("\nTCP-Cli>");
         fflush(stdout);
 
         static char s_msgText[1024]      = "";

@@ -424,11 +424,7 @@ int main(int argc, char* argv[])
     {
         ProSleep(1);
 
-#if defined(_WIN32)
-        printf("\nTCP-Svr:\\>");
-#else
-        printf("\nTCP-Svr:~$ ");
-#endif
+        printf("\nTCP-Svr>");
         fflush(stdout);
 
         static char s_msgText[1024]      = "";

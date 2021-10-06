@@ -167,7 +167,7 @@ CTest::Init(IProReactor*       reactor,
         }
         m_recvTimerId     = reactor->ScheduleTimer(this, RECV_TIMER_MS, true, 2); /* 2 --- recv */
         m_htbtTimerId     = reactor->ScheduleTimer(this, HTBT_TIMER_MS, true, 3); /* 3 --- htbt */
-        m_outputShaper.SetMaxBitRate(param.kbps * 1000);
+        m_outputShaper.SetMaxBitRate((double)param.kbps * 1000);
     }
 
     return (true);
@@ -218,7 +218,7 @@ CTest::Init(IProReactor*       reactor,
         }
         m_recvTimerId     = reactor->ScheduleTimer(this, RECV_TIMER_MS, true, 2); /* 2 --- recv */
         m_htbtTimerId     = reactor->ScheduleTimer(this, HTBT_TIMER_MS, true, 3); /* 3 --- htbt */
-        m_outputShaper.SetMaxBitRate(param.kbps * 1000);
+        m_outputShaper.SetMaxBitRate((double)param.kbps * 1000);
     }
 
     return (true);

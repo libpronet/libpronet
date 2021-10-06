@@ -57,7 +57,7 @@ CProShaper::CalcGreenBits()
 
     if (m_startTick == 0)
     {
-        m_greenBits = m_maxBitRate / 1000; /* 1ms */
+        m_greenBits = m_maxBitRate * 5 / 1000; /* 5ms */
         m_startTick = tick;
 
         return (m_greenBits);

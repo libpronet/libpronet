@@ -344,11 +344,7 @@ int main(int argc, char* argv[])
         ProSleep(1);
 
         RtpMsgUser2String(&bindUser, bindString);
-#if defined(_WIN32)
-        printf("\nMSG-Cli-To:%s\\>", bindString);
-#else
-        printf("\nMSG-Cli-To:%s~$ ", bindString);
-#endif
+        printf("\nMSG-Cli-To:%s>", bindString);
         fflush(stdout);
 
         static char s_msgText[1024]      = "";
