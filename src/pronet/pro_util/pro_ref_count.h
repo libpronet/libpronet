@@ -30,12 +30,6 @@ class CProRefCount
 {
 public:
 
-    virtual unsigned long PRO_CALLTYPE AddRef();
-
-    virtual unsigned long PRO_CALLTYPE Release();
-
-protected:
-
     CProRefCount()
     {
         m_refCount = 1;
@@ -44,6 +38,10 @@ protected:
     virtual ~CProRefCount()
     {
     }
+
+    virtual unsigned long PRO_CALLTYPE AddRef();
+
+    virtual unsigned long PRO_CALLTYPE Release();
 
 private:
 
