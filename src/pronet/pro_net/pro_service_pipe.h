@@ -54,12 +54,7 @@ struct PRO_SERVICE_SOCK
             return (false);
         }
 
-        if (sockId < ss.sockId)
-        {
-            return (true);
-        }
-
-        return (false);
+        return (sockId < ss.sockId);
     }
 
     PRO_INT64 expireTick;
@@ -150,12 +145,7 @@ struct PRO_SERVICE_PIPE
 
     bool operator<(const PRO_SERVICE_PIPE& sp) const
     {
-        if (pipe < sp.pipe)
-        {
-            return (true);
-        }
-
-        return (false);
+        return (pipe < sp.pipe);
     }
 
     CProServicePipe* pipe;

@@ -118,12 +118,7 @@ struct PRO_LOCAL_TIME
             return (false);
         }
 
-        if (millisecond < lt.millisecond)
-        {
-            return (true);
-        }
-
-        return (false);
+        return (millisecond < lt.millisecond);
     }
 
     bool operator<=(const PRO_LOCAL_TIME& lt) const

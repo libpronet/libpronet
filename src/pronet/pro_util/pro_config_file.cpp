@@ -200,11 +200,11 @@ CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs,
 
             if (i == 0)
             {
-                item.configName.assign (p, (int)(r - p)); /* name */
+                item.configName.assign (p, r); /* name */
             }
             else
             {
-                item.configValue.assign(p, (int)(r - p)); /* value */
+                item.configValue.assign(p, r); /* value */
             }
 
             /*

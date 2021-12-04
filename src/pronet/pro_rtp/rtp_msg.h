@@ -219,12 +219,7 @@ struct RTP_MSG_USER
             return (false);
         }
 
-        if (instId < user.instId)
-        {
-            return (true);
-        }
-
-        return (false);
+        return (instId < user.instId);
     }
 
     bool operator>(const RTP_MSG_USER& user) const
@@ -248,9 +243,10 @@ struct RTP_MSG_HEADER0
 {
     PRO_UINT16     version; /* the current protocol version is 02 */
     RTP_MSG_USER   user;
+    char           reserved1[2];
     union
     {
-        char       reserved[22];
+        char       reserved2[24];
         PRO_UINT32 publicIp;
     };
 };
@@ -262,7 +258,7 @@ struct RTP_MSG_HEADER
 {
     PRO_UINT16     charset;      /* ANSI, UTF-8, ... */
     RTP_MSG_USER   srcUser;
-    char           reserved[1];
+    char           reserved;
     unsigned char  dstUserCount; /* to 255 users at most */
     RTP_MSG_USER   dstUsers[1];  /* a variable-length array */
 };

@@ -145,33 +145,17 @@ PRO_CALLTYPE
 ProLocalTime2String(const PRO_LOCAL_TIME& localTime,
                     char                  timeString[64])
 {
-    if (localTime.millisecond == 0)
-    {
-        sprintf(
-            timeString,
-            "%04d-%02d-%02d %02d:%02d:%02d",
-            (int)localTime.year,
-            (int)localTime.month,
-            (int)localTime.day,
-            (int)localTime.hour,
-            (int)localTime.minute,
-            (int)localTime.second
-            );
-    }
-    else
-    {
-        sprintf(
-            timeString,
-            "%04d-%02d-%02d %02d:%02d:%02d.%03d",
-            (int)localTime.year,
-            (int)localTime.month,
-            (int)localTime.day,
-            (int)localTime.hour,
-            (int)localTime.minute,
-            (int)localTime.second,
-            (int)localTime.millisecond
-            );
-    }
+    sprintf(
+        timeString,
+        "%04d-%02d-%02d %02d:%02d:%02d.%03d",
+        (int)localTime.year,
+        (int)localTime.month,
+        (int)localTime.day,
+        (int)localTime.hour,
+        (int)localTime.minute,
+        (int)localTime.second,
+        (int)localTime.millisecond
+        );
 
     return (timeString);
 }

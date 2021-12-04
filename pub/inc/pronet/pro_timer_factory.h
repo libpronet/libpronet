@@ -56,12 +56,7 @@ struct PRO_TIMER_NODE
             return (false);
         }
 
-        if (timerId < node.timerId)
-        {
-            return (true);
-        }
-
-        return (false);
+        return (timerId < node.timerId);
     }
 
     PRO_INT64     expireTick;

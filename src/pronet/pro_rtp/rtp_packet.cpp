@@ -322,6 +322,12 @@ void
 CRtpPacket::Init(const void*   payloadBuffer,
                  unsigned long payloadSize)
 {
+    assert(payloadSize > 0);
+    if (payloadSize == 0)
+    {
+        return;
+    }
+
     m_packet = (RTP_PACKET*)ProMalloc(sizeof(RTP_PACKET) + payloadSize + 16); /* (n + 16) bytes, for ssl */
     if (m_packet == NULL)
     {
