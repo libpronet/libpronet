@@ -520,21 +520,7 @@ void
 PRO_CALLTYPE
 ProSrand()
 {
-    PRO_INT64 seed = time(NULL);
-    if (seed <= 0)
-    {
-        seed = ProGetTickCount64_s();
-    }
-
-#if defined(_WIN32) || defined(_WIN32_WCE)
-    seed += (PRO_UINT16)::GetCurrentThreadId();
-    seed += (PRO_UINT32)::GetCurrentThreadId() << 16;
-#else
-    seed += (PRO_UINT16)(PRO_UINT64)pthread_self();
-    seed += (PRO_UINT32)(PRO_UINT64)pthread_self() << 16;
-#endif
-
-    srand((unsigned int)seed);
+    srand((unsigned int)time(NULL));
 }
 
 PRO_SHARED_API

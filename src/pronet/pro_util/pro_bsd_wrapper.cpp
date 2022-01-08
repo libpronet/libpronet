@@ -21,7 +21,6 @@
 #include "pro_memory_pool.h"
 #include "pro_shared.h"
 #include "pro_stl.h"
-#include "pro_time_util.h"
 #include "pro_z.h"
 
 #if defined(__cplusplus)
@@ -350,7 +349,6 @@ pbsd_startup()
 
     setlocale(LC_ALL, "");
     ProSrand();
-    ProSleep(1);
 }
 
 int
