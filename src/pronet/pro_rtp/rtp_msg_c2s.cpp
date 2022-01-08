@@ -24,7 +24,6 @@
 #include "rtp_msg_server.h"
 #include "../pro_net/pro_net.h"
 #include "../pro_util/pro_bsd_wrapper.h"
-#include "../pro_util/pro_config_file.h"
 #include "../pro_util/pro_config_stream.h"
 #include "../pro_util/pro_functor_command.h"
 #include "../pro_util/pro_functor_command_task.h"

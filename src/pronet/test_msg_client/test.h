@@ -21,7 +21,6 @@
 
 #include "../pro_rtp/rtp_base.h"
 #include "../pro_rtp/rtp_msg.h"
-#include "../pro_util/pro_config_file.h"
 #include "../pro_util/pro_config_stream.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"

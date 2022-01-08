@@ -41,6 +41,7 @@
 #include <cstring>
 #include <ctime>
 #include <memory>
+#include <stdint.h>
 
 #if defined(_WIN32) || defined(_WIN32_WCE)
 

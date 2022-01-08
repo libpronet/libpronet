@@ -28,6 +28,7 @@
 #include "pro_tcp_transport.h"
 #include "pro_tp_reactor_task.h"
 #include "pro_udp_transport.h"
+#include "../pro_util/pro_a.h"
 #include "../pro_util/pro_bsd_wrapper.h"
 #include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"

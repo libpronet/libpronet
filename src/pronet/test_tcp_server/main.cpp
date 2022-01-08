@@ -19,7 +19,6 @@
 #include "test.h"
 #include "../pro_net/pro_net.h"
 #include "../pro_util/pro_config_file.h"
-#include "../pro_util/pro_config_stream.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_version.h"
