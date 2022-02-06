@@ -491,6 +491,51 @@ Delay_i(unsigned long milliseconds)
     }
 }
 
+static
+PRO_UINT32
+PRO_CALLTYPE
+GetTickCount32_i()
+{
+    Init_i();
+
+    PRO_INT64 ret = 0;
+
+#if defined(_WIN32) || defined(_WIN32_WCE)
+
+    ret = ::timeGetTime();
+
+#elif defined(PRO_MACH_ABSOLUTE_TIME)
+
+    if (!g_s_timebaseFlag)
+    {
+        g_s_lock->Lock();
+        if (!g_s_timebaseFlag) /* double check */
+        {
+            mach_timebase_info(&g_s_timebaseInfo);
+
+            g_s_timebaseFlag = true;
+        }
+        g_s_lock->Unlock();
+    }
+
+    ret =  mach_absolute_time();
+    ret =  ret * g_s_timebaseInfo.numer / g_s_timebaseInfo.denom; /* ns_ticks ---> ns */
+    ret /= 1000000;                                               /* ns       ---> ms */
+
+#elif !defined(PRO_LACKS_CLOCK_GETTIME)
+
+    struct timespec ts;
+    clock_gettime(CLOCK_MONOTONIC, &ts);
+
+    ret =  ts.tv_sec;
+    ret *= 1000;
+    ret += ts.tv_nsec / 1000000;
+
+#endif
+
+    return ((PRO_UINT32)ret);
+}
+
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -520,7 +565,14 @@ void
 PRO_CALLTYPE
 ProSrand()
 {
-    srand((unsigned int)time(NULL));
+    PRO_INT64 seconds = GetTickCount32_i();
+    seconds /=  1000;
+    seconds <<= 24;
+
+    PRO_INT64 seed = time(NULL);
+    seed += seconds;
+
+    srand((unsigned int)seed);
 }
 
 PRO_SHARED_API
