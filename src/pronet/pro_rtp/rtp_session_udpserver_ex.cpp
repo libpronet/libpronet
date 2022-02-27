@@ -121,7 +121,7 @@ CRtpSessionUdpserverEx::Init(IRtpSessionObserver* observer,
             }
 
             m_trans = ProCreateUdpTransport(
-                this, reactor, localIp, localPort2,
+                this, reactor, true, localIp, localPort2, /* bindToLocal is true */
                 sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
             if (m_trans != NULL)
             {
@@ -385,6 +385,10 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                      * Activate ECONNRESET event
                      */
                     m_trans->UdpConnResetAsError(&m_remoteAddr);
+
+                    char localIp[64] = "";
+                    m_localAddr.sin_port        = pbsd_hton16(m_trans->GetLocalPort());
+                    m_localAddr.sin_addr.s_addr = pbsd_inet_aton(m_trans->GetLocalIp(localIp));
                 }
             }
 

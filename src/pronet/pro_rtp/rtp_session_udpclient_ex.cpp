@@ -31,7 +31,6 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define MAX_TRY_TIMES         100
 #define SEND_SYNC_INTERVAL_MS 50
 #define DEFAULT_TIMEOUT       10
 
@@ -111,6 +110,9 @@ CRtpSessionUdpclientEx::Init(IRtpSessionObserver* observer,
     GetRtpUdpSocketParams(
         m_info.mmType, &sockBufSizeRecv, &sockBufSizeSend, &recvPoolSize);
 
+    const PRO_UINT32 localIp4    = pbsd_inet_aton(localIp);
+    const bool       bindToLocal = localIp4 != (PRO_UINT32)-1 && localIp4 != 0;
+
     {
         CProThreadMutexGuard mon(m_lock);
 
@@ -122,18 +124,10 @@ CRtpSessionUdpclientEx::Init(IRtpSessionObserver* observer,
             return (false);
         }
 
-        for (int i = 0; i < MAX_TRY_TIMES; ++i)
-        {
-            m_trans = ProCreateUdpTransport(
-                this, reactor, localIp, AllocRtpUdpPort(false), /* rfc is false */
-                sockBufSizeRecv, sockBufSizeSend, recvPoolSize,
-                remoteIp, remotePort);
-            if (m_trans != NULL)
-            {
-                break;
-            }
-        }
-
+        m_trans = ProCreateUdpTransport(
+            this, reactor, bindToLocal, localIp, 0, /* localPort is 0 */
+            sockBufSizeRecv, sockBufSizeSend, recvPoolSize,
+            remoteIp, remotePort);
         if (m_trans == NULL)
         {
             return (false);
@@ -340,6 +334,10 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
                  * Activate ECONNRESET event
                  */
                 m_trans->UdpConnResetAsError(&m_remoteAddr);
+
+                char localIp[64] = "";
+                m_localAddr.sin_port        = pbsd_hton16(m_trans->GetLocalPort());
+                m_localAddr.sin_addr.s_addr = pbsd_inet_aton(m_trans->GetLocalIp(localIp));
             }
             else
             {

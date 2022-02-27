@@ -62,7 +62,6 @@ struct TEST_CLIENT
     unsigned short remote_port;
     unsigned long  kbps;
     unsigned long  packet_size; /* offset is N */
-    char           local_ip[64];
 
     DECLARE_SGI_POOL(0)
 };
@@ -192,15 +191,13 @@ private:
     IRtpSession* CreateUdpClient(
         IProReactor*   reactor,
         const char*    remoteIp,
-        unsigned short remotePort,
-        const char*    localIp
+        unsigned short remotePort
         );
 
     IRtpSession* CreateTcpClient(
         IProReactor*   reactor,
         const char*    remoteIp,
-        unsigned short remotePort,
-        const char*    localIp
+        unsigned short remotePort
         );
 
     void PrintSessionCreated(IRtpSession* session);

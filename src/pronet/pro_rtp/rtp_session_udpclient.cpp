@@ -116,7 +116,7 @@ CRtpSessionUdpclient::Init(IRtpSessionObserver* observer,
             }
 
             m_trans = ProCreateUdpTransport(
-                this, reactor, localIp, localPort2,
+                this, reactor, true, localIp, localPort2, /* bindToLocal is true */
                 sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
             if (m_trans != NULL)
             {

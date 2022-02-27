@@ -1103,6 +1103,7 @@ ProCreateTcpTransport(IProTransportObserver* observer,
  * 参数:
  * observer        : 回调目标
  * reactor         : 反应器
+ * bindToLocal     : 是否绑定套接字到本地地址
  * localIp         : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
  * localPort       : 要绑定的本地端口号. 如果为0, 系统将随机分配一个
  * sockBufSizeRecv : 套接字的系统接收缓冲区字节数. 默认auto
@@ -1120,6 +1121,7 @@ IProTransport*
 PRO_CALLTYPE
 ProCreateUdpTransport(IProTransportObserver* observer,
                       IProReactor*           reactor,
+                      bool                   bindToLocal       = false,
                       const char*            localIp           = NULL,
                       unsigned short         localPort         = 0,
                       size_t                 sockBufSizeRecv   = 0,

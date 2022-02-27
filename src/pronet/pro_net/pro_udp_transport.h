@@ -39,7 +39,10 @@ class CProUdpTransport : public IProTransport, public CProEventHandler
 {
 public:
 
-    static CProUdpTransport* CreateInstance(size_t recvPoolSize); /* = 0 */
+    static CProUdpTransport* CreateInstance(
+        bool   bindToLocal, /* = false */
+        size_t recvPoolSize /* = 0 */
+        );
 
     bool Init(
         IProTransportObserver* observer,
@@ -116,12 +119,16 @@ public:
 
 protected:
 
-    CProUdpTransport(size_t recvPoolSize); /* = 0 */
+    CProUdpTransport(
+        bool   bindToLocal, /* = false */
+        size_t recvPoolSize /* = 0 */
+        );
 
     virtual ~CProUdpTransport();
 
 protected:
 
+    const bool              m_bindToLocal;
     const size_t            m_recvPoolSize;
     IProTransportObserver*  m_observer;
     CProTpReactorTask*      m_reactorTask;

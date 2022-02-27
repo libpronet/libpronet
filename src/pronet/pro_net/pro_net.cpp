@@ -420,6 +420,7 @@ IProTransport*
 PRO_CALLTYPE
 ProCreateUdpTransport(IProTransportObserver* observer,
                       IProReactor*           reactor,
+                      bool                   bindToLocal,       /* = false */
                       const char*            localIp,           /* = NULL */
                       unsigned short         localPort,         /* = 0 */
                       size_t                 sockBufSizeRecv,   /* = 0 */
@@ -431,7 +432,7 @@ ProCreateUdpTransport(IProTransportObserver* observer,
     ProNetInit();
 
     CProUdpTransport* const trans =
-        CProUdpTransport::CreateInstance(recvPoolSize);
+        CProUdpTransport::CreateInstance(bindToLocal, recvPoolSize);
     if (trans == NULL)
     {
         return (NULL);

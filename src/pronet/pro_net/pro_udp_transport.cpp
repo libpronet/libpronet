@@ -36,15 +36,20 @@
 ////
 
 CProUdpTransport*
-CProUdpTransport::CreateInstance(size_t recvPoolSize)   /* = 0 */
+CProUdpTransport::CreateInstance(bool   bindToLocal,  /* = false */
+                                 size_t recvPoolSize) /* = 0 */
 {
-    CProUdpTransport* const trans = new CProUdpTransport(recvPoolSize);
+    CProUdpTransport* const trans =
+        new CProUdpTransport(bindToLocal, recvPoolSize);
 
     return (trans);
 }
 
-CProUdpTransport::CProUdpTransport(size_t recvPoolSize) /* = 0 */
-: m_recvPoolSize(recvPoolSize > 0 ? recvPoolSize : DEFAULT_RECV_POOL_SIZE)
+CProUdpTransport::CProUdpTransport(bool   bindToLocal,  /* = false */
+                                   size_t recvPoolSize) /* = 0 */
+                                   :
+m_bindToLocal(bindToLocal),
+m_recvPoolSize(recvPoolSize > 0 ? recvPoolSize : DEFAULT_RECV_POOL_SIZE)
 {
     m_observer         = NULL;
     m_reactorTask      = NULL;
@@ -138,14 +143,16 @@ CProUdpTransport::Init(IProTransportObserver* observer,
         option = (int)sockBufSizeSend;
         pbsd_setsockopt(sockId, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
 
-        if (pbsd_bind(sockId, &localAddr, false) != 0)
+        if (m_bindToLocal &&
+            pbsd_bind(sockId, &localAddr, false) != 0)
         {
             ProCloseSockId(sockId);
 
             return (false);
         }
 
-        if (pbsd_getsockname(sockId, &localAddr) != 0)
+        if (m_bindToLocal &&
+            pbsd_getsockname(sockId, &localAddr) != 0)
         {
             ProCloseSockId(sockId);
 
@@ -417,10 +424,18 @@ CProUdpTransport::UdpConnResetAsError(const pbsd_sockaddr_in* remoteAddr) /* = N
         unsigned long bytesReturned = 0;
         ::WSAIoctl((SOCKET)m_sockId, (unsigned long)SIO_UDP_CONNRESET,
             &arg, sizeof(long), NULL, 0, &bytesReturned, NULL, NULL);
-#elif !defined(PRO_LACKS_UDP_CONNECT)
+#endif
+
+#if !defined(PRO_LACKS_UDP_CONNECT)
         if (remoteAddr != NULL)
         {
             pbsd_connect(m_sockId, remoteAddr);
+
+            pbsd_sockaddr_in localAddr;
+            if (pbsd_getsockname(m_sockId, &localAddr) == 0)
+            {
+                m_localAddr = localAddr;
+            }
         }
 #endif
     }

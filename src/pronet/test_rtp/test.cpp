@@ -196,13 +196,13 @@ CTest::Init(IProReactor*       reactor,
 
         if (m_mode == TM_UDPC)
         {
-            m_session = CreateUdpClient(reactor,
-                param.remote_ip, param.remote_port, param.local_ip);
+            m_session = CreateUdpClient(
+                reactor, param.remote_ip, param.remote_port);
         }
         else
         {
-            m_session = CreateTcpClient(reactor,
-                param.remote_ip, param.remote_port, param.local_ip);
+            m_session = CreateTcpClient(
+                reactor, param.remote_ip, param.remote_port);
         }
 
         if (m_session == NULL)
@@ -235,28 +235,6 @@ CTest::CreateUdpServer(IProReactor*   reactor,
         return (NULL);
     }
 
-    CProStlString theLocalIp = "";
-    if (localIp == NULL || localIp[0] == '\0')
-    {
-        char localFirstIp[64] = "";
-        ProGetLocalFirstIp(localFirstIp);
-        theLocalIp = localFirstIp;
-    }
-    else
-    {
-        const PRO_UINT32 localIp2 = pbsd_inet_aton(localIp);
-        if (localIp2 == (PRO_UINT32)-1 || localIp2 == 0)
-        {
-            char localFirstIp[64] = "";
-            ProGetLocalFirstIp(localFirstIp);
-            theLocalIp = localFirstIp;
-        }
-        else
-        {
-            theLocalIp = localIp;
-        }
-    }
-
     RTP_SESSION_INFO localInfo;
     memset(&localInfo, 0, sizeof(RTP_SESSION_INFO));
     localInfo.mmType = MEDIA_MM_TYPE;
@@ -267,8 +245,11 @@ CTest::CreateUdpServer(IProReactor*   reactor,
     initArgs.udpserverEx.reactor          = reactor;
     initArgs.udpserverEx.localPort        = localPort;
     initArgs.udpserverEx.timeoutInSeconds = UDP_SERVER_TIMEOUT;
-    strncpy_pro(initArgs.udpserverEx.localIp,
-        sizeof(initArgs.udpserverEx.localIp), theLocalIp.c_str());
+    if (localIp != NULL)
+    {
+        strncpy_pro(initArgs.udpserverEx.localIp,
+            sizeof(initArgs.udpserverEx.localIp), localIp);
+    }
 
     IRtpSession* const session = CreateRtpSessionWrapper(
         RTP_ST_UDPSERVER_EX, &initArgs, &localInfo);
@@ -330,8 +311,7 @@ CTest::CreateTcpServer(IProReactor*   reactor,
 IRtpSession*
 CTest::CreateUdpClient(IProReactor*   reactor,
                        const char*    remoteIp,
-                       unsigned short remotePort,
-                       const char*    localIp)
+                       unsigned short remotePort)
 {
     assert(reactor != NULL);
     assert(remoteIp != NULL);
@@ -341,28 +321,6 @@ CTest::CreateUdpClient(IProReactor*   reactor,
         remotePort == 0)
     {
         return (NULL);
-    }
-
-    CProStlString theLocalIp = "";
-    if (localIp == NULL || localIp[0] == '\0')
-    {
-        char localFirstIp[64] = "";
-        ProGetLocalFirstIp(localFirstIp, remoteIp);
-        theLocalIp = localFirstIp;
-    }
-    else
-    {
-        const PRO_UINT32 localIp2 = pbsd_inet_aton(localIp);
-        if (localIp2 == (PRO_UINT32)-1 || localIp2 == 0)
-        {
-            char localFirstIp[64] = "";
-            ProGetLocalFirstIp(localFirstIp, remoteIp);
-            theLocalIp = localFirstIp;
-        }
-        else
-        {
-            theLocalIp = localIp;
-        }
     }
 
     RTP_SESSION_INFO localInfo;
@@ -377,11 +335,6 @@ CTest::CreateUdpClient(IProReactor*   reactor,
     initArgs.udpclientEx.timeoutInSeconds = UDP_CLIENT_TIMEOUT;
     strncpy_pro(initArgs.udpclientEx.remoteIp,
         sizeof(initArgs.udpclientEx.remoteIp), remoteIp);
-    if (localIp != NULL)
-    {
-        strncpy_pro(initArgs.udpclientEx.localIp,
-            sizeof(initArgs.udpclientEx.localIp), theLocalIp.c_str());
-    }
 
     IRtpSession* const session = CreateRtpSessionWrapper(
         RTP_ST_UDPCLIENT_EX, &initArgs, &localInfo);
@@ -405,8 +358,7 @@ CTest::CreateUdpClient(IProReactor*   reactor,
 IRtpSession*
 CTest::CreateTcpClient(IProReactor*   reactor,
                        const char*    remoteIp,
-                       unsigned short remotePort,
-                       const char*    localIp)
+                       unsigned short remotePort)
 {
     assert(reactor != NULL);
     assert(remoteIp != NULL);
@@ -430,11 +382,6 @@ CTest::CreateTcpClient(IProReactor*   reactor,
     initArgs.tcpclient.timeoutInSeconds = TCP_CLIENT_TIMEOUT;
     strncpy_pro(initArgs.tcpclient.remoteIp,
         sizeof(initArgs.tcpclient.remoteIp), remoteIp);
-    if (localIp != NULL)
-    {
-        strncpy_pro(initArgs.tcpclient.localIp,
-            sizeof(initArgs.tcpclient.localIp), localIp);
-    }
 
     IRtpSession* const session = CreateRtpSessionWrapper(
         RTP_ST_TCPCLIENT, &initArgs, &localInfo);

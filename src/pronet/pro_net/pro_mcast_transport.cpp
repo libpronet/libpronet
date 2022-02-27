@@ -41,7 +41,7 @@ CProMcastTransport::CreateInstance(size_t recvPoolSize)     /* = 0 */
 }
 
 CProMcastTransport::CProMcastTransport(size_t recvPoolSize) /* = 0 */
-: CProUdpTransport(recvPoolSize)
+: CProUdpTransport(true, recvPoolSize) /* bindToLocal is true */
 {
 }
 

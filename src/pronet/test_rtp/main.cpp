@@ -106,30 +106,30 @@ int main(int argc, char* argv[])
         " test_rtp -tcps    [ <local_ip> <local_port> <kbps> [packet_size] ] \n"
         "\n"
         " usage [client-side]: \n"
-        " test_rtp -udpc    <remote_ip> <remote_port> <kbps> [ <packet_size> [local_ip] ] \n"
-        " test_rtp -tcpc    <remote_ip> <remote_port> <kbps> [ <packet_size> [local_ip] ] \n"
+        " test_rtp -udpc    <remote_ip> <remote_port> <kbps> [packet_size] \n"
+        " test_rtp -tcpc    <remote_ip> <remote_port> <kbps> [packet_size] \n"
         "\n"
         " for example [server-side on host 192.168.0.101]: \n"
-        " test_rtp -udpecho                            \n"
-        " test_rtp -udpecho 0.0.0.0       1234         \n"
-        " test_rtp -udpecho 192.168.0.101 1234         \n"
-        " test_rtp -tcpecho                            \n"
-        " test_rtp -tcpecho 0.0.0.0       1234         \n"
-        " test_rtp -tcpecho 192.168.0.101 1234         \n"
-        " test_rtp -udps                               \n"
-        " test_rtp -udps    0.0.0.0       1234 512     \n"
-        " test_rtp -udps    192.168.0.101 1234 512 850 \n"
-        " test_rtp -tcps                               \n"
-        " test_rtp -tcps    0.0.0.0       1234 512 850 \n"
-        " test_rtp -tcps    192.168.0.101 1234 512     \n"
+        " test_rtp -udpecho                             \n"
+        " test_rtp -udpecho 0.0.0.0       1234          \n"
+        " test_rtp -udpecho 192.168.0.101 1234          \n"
+        " test_rtp -tcpecho                             \n"
+        " test_rtp -tcpecho 0.0.0.0       1234          \n"
+        " test_rtp -tcpecho 192.168.0.101 1234          \n"
+        " test_rtp -udps                                \n"
+        " test_rtp -udps    0.0.0.0       1234 512      \n"
+        " test_rtp -udps    192.168.0.101 1234 512 850  \n"
+        " test_rtp -tcps                                \n"
+        " test_rtp -tcps    0.0.0.0       1234 512 1400 \n"
+        " test_rtp -tcps    192.168.0.101 1234 512      \n"
         "\n"
         " for example [client-side on host 192.168.0.102]: \n"
-        " test_rtp -udpc    192.168.0.101 1234 512                   \n"
-        " test_rtp -udpc    192.168.0.101 1234 512 850               \n"
-        " test_rtp -udpc    192.168.0.101 1234 512 850 192.168.0.102 \n"
-        " test_rtp -tcpc    192.168.0.101 1234 512                   \n"
-        " test_rtp -tcpc    192.168.0.101 1234 512 850               \n"
-        " test_rtp -tcpc    192.168.0.101 1234 512 850 0.0.0.0       \n"
+        " test_rtp -udpc    192.168.0.101 1234 512      \n"
+        " test_rtp -udpc    192.168.0.101 1234 512 850  \n"
+        " test_rtp -udpc    192.168.0.101 1234 512 850  \n"
+        " test_rtp -tcpc    192.168.0.101 1234 512      \n"
+        " test_rtp -tcpc    192.168.0.101 1234 512 1400 \n"
+        " test_rtp -tcpc    192.168.0.101 1234 512 1400 \n"
         );
 
     ProNetInit();
@@ -319,10 +319,6 @@ int main(int argc, char* argv[])
             {
                 packet_size = atoi(argv[5]);
             }
-            if (argc >= 7)
-            {
-                local_ip    = argv[6];
-            }
 
             /*
              * remote_ip
@@ -376,11 +372,6 @@ int main(int argc, char* argv[])
                 packet_size = 1500;
             }
             prm.packet_size = packet_size;
-
-            /*
-             * local_ip
-             */
-            strncpy_pro(prm.local_ip, sizeof(prm.local_ip), local_ip);
             break;
         }
     } /* end of switch (...) */

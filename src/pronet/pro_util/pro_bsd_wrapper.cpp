@@ -1479,7 +1479,7 @@ ProCheckIpString(const char* ipString)
 {
     const PRO_UINT32 ip = pbsd_inet_addr_i(ipString);
 
-    return (ip != 0 && ip != (PRO_UINT32)-1);
+    return (ip != (PRO_UINT32)-1 && ip != 0);
 }
 
 const char*
