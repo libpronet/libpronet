@@ -68,7 +68,7 @@ CRtpSessionUdpclientEx::CRtpSessionUdpclientEx(const RTP_SESSION_INFO& localInfo
     {
         for (int i = 0; i < (int)sizeof(m_syncToPeer.nonce); ++i)
         {
-            m_syncToPeer.nonce[i] = (unsigned char)(ProRand_0_1() * 255);
+            m_syncToPeer.nonce[i] = (unsigned char)(ProRand_0_32767() % 256);
         }
 
         m_syncToPeer.checksum = pbsd_hton16(m_syncToPeer.CalcChecksum());

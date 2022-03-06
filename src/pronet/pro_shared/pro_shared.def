@@ -4,6 +4,7 @@ EXPORTS
     ProSharedVersion
     ProSrand
     ProRand_0_1
+    ProRand_0_32767
     ProGetTickCount64_s
     ProSleep_s
     ProMakeTimerId

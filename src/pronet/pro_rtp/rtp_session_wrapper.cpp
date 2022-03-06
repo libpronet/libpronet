@@ -1013,10 +1013,12 @@ CRtpSessionWrapper::DoSendPacket()
 
     if (ret)
     {
-        if (packet->GetMarker()
+        if (
+            packet->GetMarker()
             ||
             m_info.mmType < RTP_MMT_VIDEO_MIN ||
-            m_info.mmType > RTP_MMT_VIDEO_MAX) /* non-video */
+            m_info.mmType > RTP_MMT_VIDEO_MAX /* non-video */
+           )
         {
             m_statFrameRateOutput.PushDataBits(1);
         }
@@ -1552,10 +1554,12 @@ CRtpSessionWrapper::OnRecvSession(IRtpSession* session,
             return;
         }
 
-        if (packet->GetMarker()
+        if (
+            packet->GetMarker()
             ||
             m_info.mmType < RTP_MMT_VIDEO_MIN ||
-            m_info.mmType > RTP_MMT_VIDEO_MAX) /* non-video */
+            m_info.mmType > RTP_MMT_VIDEO_MAX /* non-video */
+           )
         {
             m_statFrameRateInput.PushDataBits(1);
         }

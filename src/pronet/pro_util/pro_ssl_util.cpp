@@ -43,7 +43,7 @@ Rand_i(void*          act,
     {
         for (int i = 0; i < (int)size; ++i)
         {
-            buf[i] = (unsigned char)(ProRand_0_1() * 255);
+            buf[i] = (unsigned char)(ProRand_0_32767() % 256);
         }
     }
 

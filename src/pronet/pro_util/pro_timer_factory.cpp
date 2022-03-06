@@ -283,7 +283,7 @@ CProTimerFactory::ScheduleHeartbeatTimer(IProOnTimer* onTimer,
 
         node.expireTick =  (tick + m_htbtTimeSpan - 1) / m_htbtTimeSpan * m_htbtTimeSpan;
         node.expireTick += step * index;
-        node.expireTick += (PRO_INT64)(ProRand_0_1() * (step - 1));
+        node.expireTick += ProRand_0_32767() % step;
         node.timerId    =  ProMakeTimerId();
         node.onTimer    =  onTimer;
         node.timeSpan   =  m_htbtTimeSpan;
@@ -441,7 +441,7 @@ CProTimerFactory::UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds)
             PRO_TIMER_NODE& node = timers[i];
             node.expireTick =  (tick + m_htbtTimeSpan - 1) / m_htbtTimeSpan * m_htbtTimeSpan;
             node.expireTick += step * (i % steps);
-            node.expireTick += (PRO_INT64)(ProRand_0_1() * (step - 1));
+            node.expireTick += ProRand_0_32767() % step;
             node.timeSpan   =  m_htbtTimeSpan;
             node.htbtIndex  =  i % steps;
 

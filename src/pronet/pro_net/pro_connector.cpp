@@ -253,10 +253,10 @@ CProConnector::OnOutput(PRO_INT64 sockId)
         if (m_enableServiceExt)
         {
             unsigned char serviceData[SERVICE_HANDSHAKE_BYTES];
-            serviceData[0] = m_serviceId;                          /* serviceId */
-            serviceData[1] = m_serviceOpt;                         /* serviceOpt */
-            serviceData[2] = (unsigned char)(ProRand_0_1() * 255); /* r */
-            serviceData[3] = (unsigned char)(serviceData[2] + 1);  /* r + 1 */
+            serviceData[0] = m_serviceId;                              /* serviceId */
+            serviceData[1] = m_serviceOpt;                             /* serviceOpt */
+            serviceData[2] = (unsigned char)(ProRand_0_32767() % 256); /* r */
+            serviceData[3] = (unsigned char)(serviceData[2] + 1);      /* r + 1 */
 
             assert(m_handshaker == NULL);
 

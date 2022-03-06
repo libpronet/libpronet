@@ -584,6 +584,14 @@ ProRand_0_1()
 }
 
 PRO_SHARED_API
+int
+PRO_CALLTYPE
+ProRand_0_32767()
+{
+    return (rand());
+}
+
+PRO_SHARED_API
 PRO_INT64
 PRO_CALLTYPE
 ProGetTickCount64_s()

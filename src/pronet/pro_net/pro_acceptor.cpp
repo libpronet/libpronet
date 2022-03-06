@@ -48,7 +48,7 @@ MakeNonce_i(PRO_NONCE& nonce)
 {
     for (int i = 0; i < (int)sizeof(nonce.nonce); ++i)
     {
-        nonce.nonce[i] = (char)(ProRand_0_1() * 255);
+        nonce.nonce[i] = (char)(ProRand_0_32767() % 256);
     }
 }
 
