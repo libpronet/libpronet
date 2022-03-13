@@ -34,7 +34,7 @@
 CRtpPortAllocator::CRtpPortAllocator()
 {
     m_portBase = DEFAULT_MIN_PORT;
-    m_portSpan = DEFAULT_MAX_PORT - DEFAULT_MIN_PORT;
+    m_portSpan = DEFAULT_MAX_PORT - DEFAULT_MIN_PORT + 1;
     m_portItr  = (unsigned short)(ProRand_0_1() * m_portSpan);
 }
 
@@ -49,7 +49,7 @@ CRtpPortAllocator::SetPortRange(unsigned short minPort,
 
     m_lock.Lock();
     m_portBase = minPort;
-    m_portSpan = maxPort - minPort;
+    m_portSpan = maxPort - minPort + 1;
     m_portItr  = (unsigned short)(ProRand_0_1() * m_portSpan);
     m_lock.Unlock();
 
@@ -62,7 +62,7 @@ CRtpPortAllocator::GetPortRange(unsigned short& minPort,
 {
     m_lock.Lock();
     minPort = m_portBase;
-    maxPort = m_portBase + m_portSpan;
+    maxPort = m_portBase + m_portSpan - 1;
     m_lock.Unlock();
 }
 
