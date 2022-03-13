@@ -21,6 +21,7 @@
 #include "pro_memory_pool.h"
 #include "pro_stl.h"
 #include "pro_time_util.h"
+#include "pro_z.h"
 #include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
@@ -61,20 +62,14 @@ CProStatBitRate::SetTimeSpan(unsigned long timeSpanInSeconds) /* = 5 */
 }
 
 void
-CProStatBitRate::PushDataBytes(double dataBytes)
+CProStatBitRate::PushDataBytes(size_t dataBytes)
 {
     PushDataBits(dataBytes * 8);
 }
 
 void
-CProStatBitRate::PushDataBits(double dataBits)
+CProStatBitRate::PushDataBits(size_t dataBits)
 {
-    assert(dataBits >= 0);
-    if (dataBits < 0)
-    {
-        return;
-    }
-
     const PRO_INT64 tick = ProGetTickCount64();
 
     if (m_startTick == 0)
@@ -157,7 +152,7 @@ CProStatLossRate::SetTimeSpan(unsigned long timeSpanInSeconds)                /*
 }
 
 void
-CProStatLossRate::SetMaxBrokenDuration(unsigned char brokenDurationInSeconds) /* = 10 */
+CProStatLossRate::SetMaxBrokenDuration(unsigned long brokenDurationInSeconds) /* = 10 */
 {
     assert(brokenDurationInSeconds > 0);
     if (brokenDurationInSeconds == 0)
@@ -213,7 +208,7 @@ CProStatLossRate::PushData(PRO_UINT16 dataSeq)
     }
     else if (dataSeq < (PRO_UINT16)m_reorder.itrSeq)
     {
-        const PRO_UINT16 dist1 = (PRO_UINT16)-1 - ((PRO_UINT16)m_reorder.itrSeq - dataSeq) + 1;
+        const PRO_UINT16 dist1 = (PRO_UINT16)-1 - (PRO_UINT16)m_reorder.itrSeq + dataSeq + 1;
         const PRO_UINT16 dist2 = (PRO_UINT16)m_reorder.itrSeq - dataSeq;
 
         if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* forward */
@@ -237,7 +232,7 @@ CProStatLossRate::PushData(PRO_UINT16 dataSeq)
     else
     {
         const PRO_UINT16 dist1 = dataSeq - (PRO_UINT16)m_reorder.itrSeq;
-        const PRO_UINT16 dist2 = (PRO_UINT16)-1 - (dataSeq - (PRO_UINT16)m_reorder.itrSeq) + 1;
+        const PRO_UINT16 dist2 = (PRO_UINT16)-1 - dataSeq + (PRO_UINT16)m_reorder.itrSeq + 1;
 
         if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* forward */
         {

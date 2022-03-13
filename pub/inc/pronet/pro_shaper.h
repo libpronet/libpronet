@@ -31,9 +31,17 @@ public:
 
     CProShaper();
 
-    void SetMaxBitRate(double maxBitRate);
+    void SetMaxBitRate(double bitRate);
 
     double GetMaxBitRate() const;
+
+    void SetMinTimeSpan(unsigned long timeSpanInMs); /* = 1 */
+
+    unsigned long GetMinTimeSpan() const;
+
+    void SetMaxTimeSpan(unsigned long timeSpanInMs); /* = 1000 */
+
+    unsigned long GetMaxTimeSpan() const;
 
     double CalcGreenBits();
 
@@ -44,6 +52,8 @@ public:
 private:
 
     double    m_maxBitRate;
+    PRO_INT64 m_minTimeSpan; /* ms */
+    PRO_INT64 m_maxTimeSpan; /* ms */
     double    m_greenBits;
     PRO_INT64 m_startTick;
 

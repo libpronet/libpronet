@@ -22,6 +22,7 @@
 #include "pro_a.h"
 #include "pro_memory_pool.h"
 #include "pro_stl.h"
+#include "pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -34,9 +35,9 @@ public:
 
     void SetTimeSpan(unsigned long timeSpanInSeconds); /* = 5 */
 
-    void PushDataBytes(double dataBytes);
+    void PushDataBytes(size_t dataBytes);
 
-    void PushDataBits(double dataBits);
+    void PushDataBits(size_t dataBits);
 
     double CalcBitRate();
 
@@ -190,7 +191,7 @@ public:
 
     void SetTimeSpan(unsigned long timeSpanInSeconds);                /* = 5 */
 
-    void SetMaxBrokenDuration(unsigned char brokenDurationInSeconds); /* = 10 */
+    void SetMaxBrokenDuration(unsigned long brokenDurationInSeconds); /* = 10 */
 
     void PushData(PRO_UINT16 dataSeq);
 

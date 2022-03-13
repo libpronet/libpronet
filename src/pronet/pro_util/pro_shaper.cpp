@@ -27,27 +27,72 @@
 
 CProShaper::CProShaper()
 {
-    m_maxBitRate = 0;
-    m_greenBits  = 0;
-    m_startTick  = 0;
+    m_maxBitRate  = 0;
+    m_minTimeSpan = 1;
+    m_maxTimeSpan = 1000;
+
+    Reset();
 }
 
 void
-CProShaper::SetMaxBitRate(double maxBitRate)
+CProShaper::Reset()
 {
-    assert(maxBitRate >= 0);
-    if (maxBitRate < 0)
+    m_greenBits = 0;
+    m_startTick = 0;
+}
+
+void
+CProShaper::SetMaxBitRate(double bitRate)
+{
+    assert(bitRate >= 0);
+    if (bitRate < 0)
     {
         return;
     }
 
-    m_maxBitRate = maxBitRate;
+    m_maxBitRate = bitRate;
 }
 
 double
 CProShaper::GetMaxBitRate() const
 {
     return (m_maxBitRate);
+}
+
+void
+CProShaper::SetMinTimeSpan(unsigned long timeSpanInMs) /* = 1 */
+{
+    assert(timeSpanInMs > 0);
+    if (timeSpanInMs == 0)
+    {
+        return;
+    }
+
+    m_minTimeSpan = timeSpanInMs;
+}
+
+unsigned long
+CProShaper::GetMinTimeSpan() const
+{
+    return ((unsigned long)m_minTimeSpan);
+}
+
+void
+CProShaper::SetMaxTimeSpan(unsigned long timeSpanInMs) /* = 1000 */
+{
+    assert(timeSpanInMs > 0);
+    if (timeSpanInMs == 0)
+    {
+        return;
+    }
+
+    m_maxTimeSpan = timeSpanInMs;
+}
+
+unsigned long
+CProShaper::GetMaxTimeSpan() const
+{
+    return ((unsigned long)m_maxTimeSpan);
 }
 
 double
@@ -57,7 +102,13 @@ CProShaper::CalcGreenBits()
 
     if (m_startTick == 0)
     {
-        m_greenBits = m_maxBitRate * 5 / 1000; /* 5ms */
+        PRO_INT64 minTimeSpan = m_minTimeSpan;
+        if (minTimeSpan > m_maxTimeSpan)
+        {
+            minTimeSpan = m_maxTimeSpan;
+        }
+
+        m_greenBits = m_maxBitRate * minTimeSpan / 1000; /* min(ms) */
         m_startTick = tick;
 
         return (m_greenBits);
@@ -65,13 +116,14 @@ CProShaper::CalcGreenBits()
 
     m_greenBits += m_maxBitRate * (tick - m_startTick) / 1000;
 
-    if (m_greenBits < -m_maxBitRate)
+    const double maxBits = m_maxBitRate * m_maxTimeSpan / 1000;
+    if (m_greenBits < -maxBits)
     {
-        m_greenBits = -m_maxBitRate; /* -1s */
+        m_greenBits = -maxBits; /* -max(ms) */
     }
-    else if (m_greenBits > m_maxBitRate)
+    else if (m_greenBits > maxBits)
     {
-        m_greenBits = m_maxBitRate;  /* +1s */
+        m_greenBits = maxBits;  /* +max(ms) */
     }
     else
     {
@@ -92,11 +144,4 @@ CProShaper::FlushGreenBits(double greenBits)
     }
 
     m_greenBits -= greenBits;
-}
-
-void
-CProShaper::Reset()
-{
-    m_greenBits = 0;
-    m_startTick = 0;
 }

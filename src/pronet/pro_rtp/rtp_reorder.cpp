@@ -35,7 +35,7 @@
 
 CRtpReorder::CRtpReorder()
 {
-    m_heightInPackets   = 3;
+    m_heightInPackets   = 100;
     m_heightInMs        = 500;
     m_maxBrokenDuration = 10;
 
@@ -74,7 +74,7 @@ CRtpReorder::Clean()
 
 void
 PRO_CALLTYPE
-CRtpReorder::SetWallHeightInPackets(unsigned char heightInPackets)       /* = 3 */
+CRtpReorder::SetWallHeightInPackets(unsigned long heightInPackets)       /* = 100 */
 {
     assert(heightInPackets > 0);
     if (heightInPackets == 0)
@@ -100,7 +100,7 @@ CRtpReorder::SetWallHeightInMilliseconds(unsigned long heightInMs)       /* = 50
 
 void
 PRO_CALLTYPE
-CRtpReorder::SetMaxBrokenDuration(unsigned char brokenDurationInSeconds) /* = 10 */
+CRtpReorder::SetMaxBrokenDuration(unsigned long brokenDurationInSeconds) /* = 10 */
 {
     assert(brokenDurationInSeconds > 0);
     if (brokenDurationInSeconds == 0)
@@ -159,7 +159,7 @@ CRtpReorder::PushBackAddRef(IRtpPacket* packet)
     }
     else if (seq16 < (PRO_UINT16)m_minSeq64)
     {
-        const PRO_UINT16 dist1 = (PRO_UINT16)-1 - ((PRO_UINT16)m_minSeq64 - seq16) + 1;
+        const PRO_UINT16 dist1 = (PRO_UINT16)-1 - (PRO_UINT16)m_minSeq64 + seq16 + 1;
         const PRO_UINT16 dist2 = (PRO_UINT16)m_minSeq64 - seq16;
 
         if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* forward */
@@ -183,7 +183,7 @@ CRtpReorder::PushBackAddRef(IRtpPacket* packet)
     else
     {
         const PRO_UINT16 dist1 = seq16 - (PRO_UINT16)m_minSeq64;
-        const PRO_UINT16 dist2 = (PRO_UINT16)-1 - (seq16 - (PRO_UINT16)m_minSeq64) + 1;
+        const PRO_UINT16 dist2 = (PRO_UINT16)-1 - seq16 + (PRO_UINT16)m_minSeq64 + 1;
 
         if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* forward */
         {

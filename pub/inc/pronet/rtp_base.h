@@ -651,7 +651,7 @@ public:
     virtual ~IRtpReorder() {}
 
     virtual void PRO_CALLTYPE SetWallHeightInPackets(
-        unsigned char heightInPackets         /* = 3 */
+        unsigned long heightInPackets         /* = 100 */
         ) = 0;
 
     virtual void PRO_CALLTYPE SetWallHeightInMilliseconds(
@@ -659,7 +659,7 @@ public:
         ) = 0;
 
     virtual void PRO_CALLTYPE SetMaxBrokenDuration(
-        unsigned char brokenDurationInSeconds /* = 10 */
+        unsigned long brokenDurationInSeconds /* = 10 */
         ) = 0;
 
     virtual unsigned long PRO_CALLTYPE GetTotalPackets() const = 0;

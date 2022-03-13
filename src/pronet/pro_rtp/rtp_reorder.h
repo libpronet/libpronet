@@ -35,7 +35,7 @@ public:
     virtual ~CRtpReorder();
 
     virtual void PRO_CALLTYPE SetWallHeightInPackets(
-        unsigned char heightInPackets         /* = 3 */
+        unsigned long heightInPackets         /* = 100 */
         );
 
     virtual void PRO_CALLTYPE SetWallHeightInMilliseconds(
@@ -43,7 +43,7 @@ public:
         );
 
     virtual void PRO_CALLTYPE SetMaxBrokenDuration(
-        unsigned char brokenDurationInSeconds /* = 10 */
+        unsigned long brokenDurationInSeconds /* = 10 */
         );
 
     virtual unsigned long PRO_CALLTYPE GetTotalPackets() const;
