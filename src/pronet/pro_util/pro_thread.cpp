@@ -129,6 +129,11 @@ CProThreadBase::Spawn(bool realtime)
                 break;
             }
 
+            if (threadId != 0)
+            {
+                pthread_detach(threadId);
+            }
+
             if (!realtime)
             {
                 break;
