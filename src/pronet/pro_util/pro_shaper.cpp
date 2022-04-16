@@ -27,9 +27,9 @@
 
 CProShaper::CProShaper()
 {
-    m_maxBitRate  = 0;
-    m_minTimeSpan = 1;
-    m_maxTimeSpan = 1000;
+    m_avgBitRate   = 0;
+    m_initTimeSpan = 5;
+    m_maxTimeSpan  = 1000;
 
     Reset();
 }
@@ -37,12 +37,11 @@ CProShaper::CProShaper()
 void
 CProShaper::Reset()
 {
-    m_greenBits = 0;
-    m_startTick = 0;
+    m_startTick = -1;
 }
 
 void
-CProShaper::SetMaxBitRate(double bitRate)
+CProShaper::SetAvgBitRate(double bitRate)
 {
     assert(bitRate >= 0);
     if (bitRate < 0)
@@ -50,17 +49,17 @@ CProShaper::SetMaxBitRate(double bitRate)
         return;
     }
 
-    m_maxBitRate = bitRate;
+    m_avgBitRate = bitRate;
 }
 
 double
-CProShaper::GetMaxBitRate() const
+CProShaper::GetAvgBitRate() const
 {
-    return (m_maxBitRate);
+    return (m_avgBitRate);
 }
 
 void
-CProShaper::SetMinTimeSpan(unsigned long timeSpanInMs) /* = 1 */
+CProShaper::SetInitialTimeSpan(unsigned long timeSpanInMs) /* = 5 */
 {
     assert(timeSpanInMs > 0);
     if (timeSpanInMs == 0)
@@ -68,13 +67,13 @@ CProShaper::SetMinTimeSpan(unsigned long timeSpanInMs) /* = 1 */
         return;
     }
 
-    m_minTimeSpan = timeSpanInMs;
+    m_initTimeSpan = (double)timeSpanInMs;
 }
 
 unsigned long
-CProShaper::GetMinTimeSpan() const
+CProShaper::GetInitialTimeSpan() const
 {
-    return ((unsigned long)m_minTimeSpan);
+    return ((unsigned long)m_initTimeSpan);
 }
 
 void
@@ -86,7 +85,7 @@ CProShaper::SetMaxTimeSpan(unsigned long timeSpanInMs) /* = 1000 */
         return;
     }
 
-    m_maxTimeSpan = timeSpanInMs;
+    m_maxTimeSpan = (double)timeSpanInMs;
 }
 
 unsigned long
@@ -98,40 +97,20 @@ CProShaper::GetMaxTimeSpan() const
 double
 CProShaper::CalcGreenBits()
 {
-    const PRO_INT64 tick = ProGetTickCount64();
+    const double tick = (double)ProGetTickCount64();
 
-    if (m_startTick == 0)
+    if (m_startTick <= 0)
     {
-        PRO_INT64 minTimeSpan = m_minTimeSpan;
-        if (minTimeSpan > m_maxTimeSpan)
-        {
-            minTimeSpan = m_maxTimeSpan;
-        }
-
-        m_greenBits = m_maxBitRate * minTimeSpan / 1000; /* min(ms) */
-        m_startTick = tick;
-
-        return (m_greenBits);
+        m_startTick = tick - m_initTimeSpan;
+    }
+    if (m_startTick < tick - m_maxTimeSpan)
+    {
+        m_startTick = tick - m_maxTimeSpan;
     }
 
-    m_greenBits += m_maxBitRate * (tick - m_startTick) / 1000;
+    const double greenBits = m_avgBitRate * (tick - m_startTick) / 1000;
 
-    const double maxBits = m_maxBitRate * m_maxTimeSpan / 1000;
-    if (m_greenBits < -maxBits)
-    {
-        m_greenBits = -maxBits; /* -max(ms) */
-    }
-    else if (m_greenBits > maxBits)
-    {
-        m_greenBits = maxBits;  /* +max(ms) */
-    }
-    else
-    {
-    }
-
-    m_startTick = tick;
-
-    return (m_greenBits > 0 ? m_greenBits : 0);
+    return (greenBits > 0 ? greenBits : 0);
 }
 
 void
@@ -143,5 +122,10 @@ CProShaper::FlushGreenBits(double greenBits)
         return;
     }
 
-    m_greenBits -= greenBits;
+    if (m_startTick <= 0 || m_avgBitRate < 0.000001)
+    {
+        return;
+    }
+
+    m_startTick += greenBits * 1000 / m_avgBitRate;
 }

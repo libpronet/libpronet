@@ -1904,7 +1904,7 @@ CRtpSessionWrapper::OnTimer(void*      factory,
                 maxSendCount = 1;
             }
 
-            for (int i = 0; i < (int)maxSendCount; ++i)
+            for (int i = 0; i < maxSendCount; ++i)
             {
                 if (m_pushPackets.size() == 0)
                 {

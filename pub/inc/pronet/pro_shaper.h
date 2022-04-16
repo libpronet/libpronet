@@ -16,6 +16,10 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
+/*
+ * This is a token-bucket based rate control implementation.
+ */
+
 #if !defined(____PRO_SHAPER_H____)
 #define ____PRO_SHAPER_H____
 
@@ -31,15 +35,15 @@ public:
 
     CProShaper();
 
-    void SetMaxBitRate(double bitRate);
+    void SetAvgBitRate(double bitRate);
 
-    double GetMaxBitRate() const;
+    double GetAvgBitRate() const;
 
-    void SetMinTimeSpan(unsigned long timeSpanInMs); /* = 1 */
+    void SetInitialTimeSpan(unsigned long timeSpanInMs); /* = 5 */
 
-    unsigned long GetMinTimeSpan() const;
+    unsigned long GetInitialTimeSpan() const;
 
-    void SetMaxTimeSpan(unsigned long timeSpanInMs); /* = 1000 */
+    void SetMaxTimeSpan(unsigned long timeSpanInMs);     /* = 1000 */
 
     unsigned long GetMaxTimeSpan() const;
 
@@ -51,11 +55,10 @@ public:
 
 private:
 
-    double    m_maxBitRate;
-    PRO_INT64 m_minTimeSpan; /* ms */
-    PRO_INT64 m_maxTimeSpan; /* ms */
-    double    m_greenBits;
-    PRO_INT64 m_startTick;
+    double m_avgBitRate;
+    double m_initTimeSpan; /* ms */
+    double m_maxTimeSpan;  /* ms */
+    double m_startTick;
 
     DECLARE_SGI_POOL(0)
 };

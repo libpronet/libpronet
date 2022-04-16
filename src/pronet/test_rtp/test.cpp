@@ -167,7 +167,7 @@ CTest::Init(IProReactor*       reactor,
         }
         m_recvTimerId     = reactor->ScheduleTimer(this, RECV_TIMER_MS, true, 2); /* 2 --- recv */
         m_htbtTimerId     = reactor->ScheduleTimer(this, HTBT_TIMER_MS, true, 3); /* 3 --- htbt */
-        m_outputShaper.SetMaxBitRate((double)param.kbps * 1000);
+        m_outputShaper.SetAvgBitRate((double)param.kbps * 1000);
     }
 
     return (true);
@@ -218,7 +218,7 @@ CTest::Init(IProReactor*       reactor,
         }
         m_recvTimerId     = reactor->ScheduleTimer(this, RECV_TIMER_MS, true, 2); /* 2 --- recv */
         m_htbtTimerId     = reactor->ScheduleTimer(this, HTBT_TIMER_MS, true, 3); /* 3 --- htbt */
-        m_outputShaper.SetMaxBitRate((double)param.kbps * 1000);
+        m_outputShaper.SetAvgBitRate((double)param.kbps * 1000);
     }
 
     return (true);
@@ -742,9 +742,9 @@ CTest::OnTimerSend(PRO_UINT64 timerId,
         }
 
         double packetSize = m_params.server.packet_size;
-        if (packetSize > m_outputShaper.GetMaxBitRate() / 8 - 1)
+        if (packetSize > m_outputShaper.GetAvgBitRate() / 8 - 1)
         {
-            packetSize = m_outputShaper.GetMaxBitRate() / 8 - 1;
+            packetSize = m_outputShaper.GetAvgBitRate() / 8 - 1;
         }
         if (packetSize < sizeof(TEST_PACKET_HDR))
         {

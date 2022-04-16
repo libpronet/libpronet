@@ -211,14 +211,14 @@ CProStatLossRate::PushData(PRO_UINT16 dataSeq)
         const PRO_UINT16 dist1 = (PRO_UINT16)-1 - (PRO_UINT16)m_reorder.itrSeq + dataSeq + 1;
         const PRO_UINT16 dist2 = (PRO_UINT16)m_reorder.itrSeq - dataSeq;
 
-        if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* forward */
+        if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* go forward */
         {
             seq64 =   m_reorder.itrSeq >> 16;
             ++seq64;
             seq64 <<= 16;
             seq64 |=  dataSeq;
         }
-        else if (dist2 < dist1 && dist2 < MAX_LOSS_COUNT) /* back */
+        else if (dist2 < dist1 && dist2 < MAX_LOSS_COUNT) /* go back */
         {
             seq64 =   m_reorder.itrSeq >> 16;
             seq64 <<= 16;
@@ -234,13 +234,13 @@ CProStatLossRate::PushData(PRO_UINT16 dataSeq)
         const PRO_UINT16 dist1 = dataSeq - (PRO_UINT16)m_reorder.itrSeq;
         const PRO_UINT16 dist2 = (PRO_UINT16)-1 - dataSeq + (PRO_UINT16)m_reorder.itrSeq + 1;
 
-        if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* forward */
+        if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* go forward */
         {
             seq64 =   m_reorder.itrSeq >> 16;
             seq64 <<= 16;
             seq64 |=  dataSeq;
         }
-        else if (dist2 < dist1 && dist2 < MAX_LOSS_COUNT) /* back */
+        else if (dist2 < dist1 && dist2 < MAX_LOSS_COUNT) /* go back */
         {
             seq64 =   m_reorder.itrSeq >> 16;
             --seq64;

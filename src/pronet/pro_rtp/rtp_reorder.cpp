@@ -162,14 +162,14 @@ CRtpReorder::PushBackAddRef(IRtpPacket* packet)
         const PRO_UINT16 dist1 = (PRO_UINT16)-1 - (PRO_UINT16)m_minSeq64 + seq16 + 1;
         const PRO_UINT16 dist2 = (PRO_UINT16)m_minSeq64 - seq16;
 
-        if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* forward */
+        if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* go forward */
         {
             seq64 =   m_minSeq64 >> 16;
             ++seq64;
             seq64 <<= 16;
             seq64 |=  seq16;
         }
-        else if (dist2 < dist1 && dist2 < MAX_LOSS_COUNT) /* back */
+        else if (dist2 < dist1 && dist2 < MAX_LOSS_COUNT) /* go back */
         {
             seq64 =   m_minSeq64 >> 16;
             seq64 <<= 16;
@@ -185,13 +185,13 @@ CRtpReorder::PushBackAddRef(IRtpPacket* packet)
         const PRO_UINT16 dist1 = seq16 - (PRO_UINT16)m_minSeq64;
         const PRO_UINT16 dist2 = (PRO_UINT16)-1 - seq16 + (PRO_UINT16)m_minSeq64 + 1;
 
-        if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* forward */
+        if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* go forward */
         {
             seq64 =   m_minSeq64 >> 16;
             seq64 <<= 16;
             seq64 |=  seq16;
         }
-        else if (dist2 < dist1 && dist2 < MAX_LOSS_COUNT) /* back */
+        else if (dist2 < dist1 && dist2 < MAX_LOSS_COUNT) /* go back */
         {
             seq64 =   m_minSeq64 >> 16;
             --seq64;
