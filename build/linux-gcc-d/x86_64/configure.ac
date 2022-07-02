@@ -3,7 +3,7 @@
 
 AC_PREREQ([2.63])
 AC_INIT([libpronet], [0.0.0])
-AM_INIT_AUTOMAKE([foreign])
+AM_INIT_AUTOMAKE([foreign subdir-objects])
 
 # Checks for programs.
 AC_PROG_CC

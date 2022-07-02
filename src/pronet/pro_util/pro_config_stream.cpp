@@ -435,7 +435,7 @@ CProConfigStream::AddFloat64(const CProStlString& configName,
                              double               configValue)
 {
     char configValue2[64] = "";
-    sprintf(configValue2, "%lf", configValue);
+    sprintf(configValue2, "%f", configValue);
 
     Add(configName, configValue2);
 }
