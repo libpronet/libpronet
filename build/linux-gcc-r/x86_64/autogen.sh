@@ -1,19 +1,5 @@
 #!/bin/sh
 
-rm -rf ./mbedtls/.deps
-rm -rf ./pro_shared/.deps
-rm -rf ./pro_util/.deps
-rm -rf ./pro_net/.deps
-rm -rf ./pro_rtp/.deps
-rm -rf ./pro_service_hub/.deps
-rm -rf ./rtp_msg_server/.deps
-rm -rf ./rtp_msg_c2s/.deps
-rm -rf ./test_msg_client/.deps
-rm -rf ./test_rtp/.deps
-rm -rf ./test_tcp_server/.deps
-rm -rf ./test_tcp_client/.deps
-rm -rf ./cfg/.deps
-
 #
 # configure.ac ---> aclocal.m4
 #
