@@ -62,6 +62,7 @@ CRtpSessionBase::CRtpSessionBase(bool suspendRecv)
     m_observer       = NULL;
     m_reactor        = NULL;
     m_trans          = NULL;
+    m_bigPacket      = NULL;
     m_dummySockId    = -1;
     m_actionId       = 0;
     m_initTick       = ProGetTickCount64();
@@ -73,8 +74,8 @@ CRtpSessionBase::CRtpSessionBase(bool suspendRecv)
     m_onOkTimerId    = 0;
     m_tcpConnected   = false;
     m_handshakeOk    = false;
-    m_onOkCalled     = false;
-    m_bigPacket      = NULL;
+    m_onOkCalledPre  = false;
+    m_onOkCalledPost = false;
 
     m_canUpcall      = true;
 
@@ -369,7 +370,7 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
             return (false);
         }
 
-        if (!m_onOkCalled)
+        if (!m_onOkCalledPre)
         {
             if (tryAgain != NULL)
             {
@@ -565,7 +566,7 @@ CRtpSessionBase::OnSend(IProTransport* trans,
             return;
         }
 
-        if (!m_onOkCalled)
+        if (!m_onOkCalledPost)
         {
             return;
         }
@@ -757,10 +758,10 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     m_onSendTick2,
                     m_peerAliveTick,
                     tick,
-                    (int)(m_tcpConnected ? 1 : 0),
-                    (int)(m_handshakeOk  ? 1 : 0),
-                    (int)(m_onOkCalled   ? 1 : 0),
-                    (int)(m_canUpcall    ? 1 : 0)
+                    (int)(m_tcpConnected   ? 1 : 0),
+                    (int)(m_handshakeOk    ? 1 : 0),
+                    (int)(m_onOkCalledPost ? 1 : 0),
+                    (int)(m_canUpcall      ? 1 : 0)
                     );
 #if defined(_WIN32)
                 ::OutputDebugStringA(buffer);
@@ -828,10 +829,10 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     m_onSendTick2,
                     m_peerAliveTick,
                     tick,
-                    (int)(m_tcpConnected ? 1 : 0),
-                    (int)(m_handshakeOk  ? 1 : 0),
-                    (int)(m_onOkCalled   ? 1 : 0),
-                    (int)(m_canUpcall    ? 1 : 0)
+                    (int)(m_tcpConnected   ? 1 : 0),
+                    (int)(m_handshakeOk    ? 1 : 0),
+                    (int)(m_onOkCalledPost ? 1 : 0),
+                    (int)(m_canUpcall      ? 1 : 0)
                     );
 #if defined(_WIN32)
                 ::OutputDebugStringA(buffer);
@@ -899,10 +900,10 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     m_onSendTick2,
                     m_peerAliveTick,
                     tick,
-                    (int)(m_tcpConnected ? 1 : 0),
-                    (int)(m_handshakeOk  ? 1 : 0),
-                    (int)(m_onOkCalled   ? 1 : 0),
-                    (int)(m_canUpcall    ? 1 : 0)
+                    (int)(m_tcpConnected   ? 1 : 0),
+                    (int)(m_handshakeOk    ? 1 : 0),
+                    (int)(m_onOkCalledPost ? 1 : 0),
+                    (int)(m_canUpcall      ? 1 : 0)
                     );
 #if defined(_WIN32)
                 ::OutputDebugStringA(buffer);
@@ -1075,7 +1076,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
         while (0);
 #endif /* _WIN32_WCE */
 
-        if (!m_onOkCalled)
+        if (!m_onOkCalledPost)
         {
             return;
         }
@@ -1218,11 +1219,7 @@ CRtpSessionBase::OnTimer(void*      factory,
         }
         else
         {
-            if (!m_onOkCalled)
-            {
-                m_onOkCalled = true;
-                observer->OnOkSession(this);
-            }
+            DoCallbackOnOk(observer);
         }
     }
 
@@ -1231,5 +1228,32 @@ CRtpSessionBase::OnTimer(void*      factory,
     if (!m_canUpcall)
     {
         Fini();
+    }
+}
+
+void
+CRtpSessionBase::DoCallbackOnOk(IRtpSessionObserver* observer)
+{
+    assert(observer != NULL);
+
+    if (m_onOkCalledPost)
+    {
+        return;
+    }
+
+    {
+        CProThreadMutexGuard mon(m_lockOnOk);
+
+        /*
+         * double check
+         */
+        if (m_onOkCalledPost)
+        {
+            return;
+        }
+
+        m_onOkCalledPre  = true;
+        observer->OnOkSession(this);
+        m_onOkCalledPost = true;
     }
 }

@@ -485,11 +485,7 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProTcpHandshaker* handshaker,
         }
         else if (m_handshakeOk)
         {
-            if (!m_onOkCalled)
-            {
-                m_onOkCalled = true;
-                observer->OnOkSession(this);
-            }
+            DoCallbackOnOk(observer);
         }
         else
         {
@@ -670,11 +666,7 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProSslHandshaker* handshaker,
         }
         else if (m_handshakeOk)
         {
-            if (!m_onOkCalled)
-            {
-                m_onOkCalled = true;
-                observer->OnOkSession(this);
-            }
+            DoCallbackOnOk(observer);
         }
         else
         {
@@ -787,6 +779,7 @@ CRtpSessionTcpclientEx::OnRecv(IProTransport*          trans,
             }
             else
             {
+                DoCallbackOnOk(observer);
                 if (packet != NULL)
                 {
                     observer->OnRecvSession(this, packet);

@@ -324,12 +324,7 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
             }
             else
             {
-                if (!m_onOkCalled)
-                {
-                    m_onOkCalled = true;
-                    observer->OnOkSession(this);
-                }
-
+                DoCallbackOnOk(observer);
                 if (packet != NULL)
                 {
                     observer->OnRecvSession(this, packet);

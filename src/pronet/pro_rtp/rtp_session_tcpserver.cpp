@@ -307,11 +307,7 @@ CRtpSessionTcpserver::OnAccept(IProAcceptor*  acceptor,
         }
         else
         {
-            if (!m_onOkCalled)
-            {
-                m_onOkCalled = true;
-                observer->OnOkSession(this);
-            }
+            DoCallbackOnOk(observer);
         }
     }
 
@@ -367,6 +363,7 @@ CRtpSessionTcpserver::OnRecv(IProTransport*          trans,
             }
             else
             {
+                DoCallbackOnOk(observer);
                 if (packet != NULL)
                 {
                     observer->OnRecvSession(this, packet);

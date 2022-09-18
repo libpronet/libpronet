@@ -102,7 +102,7 @@ protected:
 
     virtual bool PRO_CALLTYPE IsReady() const
     {
-        return (m_onOkCalled);
+        return (m_onOkCalledPre || m_onOkCalledPost);
     }
 
     virtual bool PRO_CALLTYPE SendPacket(
@@ -230,6 +230,8 @@ protected:
     {
     }
 
+    void DoCallbackOnOk(IRtpSessionObserver* observer);
+
 protected:
 
     const bool              m_suspendRecv;
@@ -239,6 +241,7 @@ protected:
     IRtpSessionObserver*    m_observer;
     IProReactor*            m_reactor;
     IProTransport*          m_trans;
+    CRtpPacket*             m_bigPacket;
     pbsd_sockaddr_in        m_localAddr;
     pbsd_sockaddr_in        m_remoteAddr;
     pbsd_sockaddr_in        m_remoteAddrConfig; /* for udp */
@@ -253,8 +256,9 @@ protected:
     PRO_UINT64              m_onOkTimerId;
     bool                    m_tcpConnected;     /* for tcp, tcp_ex, ssl_ex */
     bool                    m_handshakeOk;      /* for udp_ex, tcp_ex, ssl_ex */
-    volatile bool           m_onOkCalled;
-    CRtpPacket*             m_bigPacket;
+    volatile bool           m_onOkCalledPre;
+    volatile bool           m_onOkCalledPost;
+    CProThreadMutex         m_lockOnOk;
     mutable CProThreadMutex m_lock;
 
     volatile bool           m_canUpcall;

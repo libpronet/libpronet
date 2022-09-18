@@ -283,11 +283,7 @@ CRtpSessionTcpclient::OnConnectOk(IProConnector* connector,
         }
         else
         {
-            if (!m_onOkCalled)
-            {
-                m_onOkCalled = true;
-                observer->OnOkSession(this);
-            }
+            DoCallbackOnOk(observer);
         }
     }
 
@@ -388,6 +384,7 @@ CRtpSessionTcpclient::OnRecv(IProTransport*          trans,
             }
             else
             {
+                DoCallbackOnOk(observer);
                 if (packet != NULL)
                 {
                     observer->OnRecvSession(this, packet);
