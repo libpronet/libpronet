@@ -373,7 +373,6 @@ CProTpReactorTask::RemoveHandler(PRO_INT64         sockId,
 }
 
 PRO_UINT64
-PRO_CALLTYPE
 CProTpReactorTask::ScheduleTimer(IProOnTimer* onTimer,
                                  PRO_UINT64   timeSpan,
                                  bool         recurring,
@@ -399,7 +398,6 @@ CProTpReactorTask::ScheduleTimer(IProOnTimer* onTimer,
 }
 
 PRO_UINT64
-PRO_CALLTYPE
 CProTpReactorTask::ScheduleHeartbeatTimer(IProOnTimer* onTimer,
                                           PRO_INT64    userData) /* = 0 */
 {
@@ -422,7 +420,6 @@ CProTpReactorTask::ScheduleHeartbeatTimer(IProOnTimer* onTimer,
 }
 
 bool
-PRO_CALLTYPE
 CProTpReactorTask::UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds)
 {
     bool ret = false;
@@ -444,7 +441,6 @@ CProTpReactorTask::UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds)
 }
 
 void
-PRO_CALLTYPE
 CProTpReactorTask::CancelTimer(PRO_UINT64 timerId)
 {
     {
@@ -461,7 +457,6 @@ CProTpReactorTask::CancelTimer(PRO_UINT64 timerId)
 }
 
 PRO_UINT64
-PRO_CALLTYPE
 CProTpReactorTask::ScheduleMmTimer(IProOnTimer* onTimer,
                                    PRO_UINT64   timeSpan,
                                    bool         recurring,
@@ -487,7 +482,6 @@ CProTpReactorTask::ScheduleMmTimer(IProOnTimer* onTimer,
 }
 
 void
-PRO_CALLTYPE
 CProTpReactorTask::CancelMmTimer(PRO_UINT64 timerId)
 {
     {
@@ -504,7 +498,6 @@ CProTpReactorTask::CancelMmTimer(PRO_UINT64 timerId)
 }
 
 void
-PRO_CALLTYPE
 CProTpReactorTask::GetTraceInfo(char*  buf,
                                 size_t size) const
 {

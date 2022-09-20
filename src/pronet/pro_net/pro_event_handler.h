@@ -47,40 +47,40 @@ class CProEventHandler : public IProOnTimer, public CProRefCount
 {
 public:
 
-    virtual unsigned long PRO_CALLTYPE AddRef()
+    virtual unsigned long AddRef()
     {
         const unsigned long refCount = CProRefCount::AddRef();
 
         return (refCount);
     }
 
-    virtual unsigned long PRO_CALLTYPE Release()
+    virtual unsigned long Release()
     {
         const unsigned long refCount = CProRefCount::Release();
 
         return (refCount);
     }
 
-    virtual void PRO_CALLTYPE OnInput(PRO_INT64 sockId)
+    virtual void OnInput(PRO_INT64 sockId)
     {
     }
 
-    virtual void PRO_CALLTYPE OnOutput(PRO_INT64 sockId)
+    virtual void OnOutput(PRO_INT64 sockId)
     {
     }
 
-    virtual void PRO_CALLTYPE OnException(PRO_INT64 sockId)
+    virtual void OnException(PRO_INT64 sockId)
     {
     }
 
-    virtual void PRO_CALLTYPE OnError(
+    virtual void OnError(
         PRO_INT64 sockId,
         long      errorCode
         )
     {
     }
 
-    virtual void PRO_CALLTYPE OnTimer(
+    virtual void OnTimer(
         void*      factory,
         PRO_UINT64 timerId,
         PRO_INT64  userData

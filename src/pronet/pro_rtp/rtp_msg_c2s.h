@@ -72,64 +72,52 @@ public:
 
     void Fini();
 
-    virtual unsigned long PRO_CALLTYPE AddRef();
+    virtual unsigned long AddRef();
 
-    virtual unsigned long PRO_CALLTYPE Release();
+    virtual unsigned long Release();
 
-    virtual RTP_MM_TYPE PRO_CALLTYPE GetMmType() const
+    virtual RTP_MM_TYPE GetMmType() const
     {
         return (m_mmType);
     }
 
-    virtual void PRO_CALLTYPE GetUplinkUser(RTP_MSG_USER* myUser) const;
+    virtual void GetUplinkUser(RTP_MSG_USER* myUser) const;
 
-    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetUplinkSslSuite(
-        char suiteName[64]
-        ) const;
+    virtual PRO_SSL_SUITE_ID GetUplinkSslSuite(char suiteName[64]) const;
 
-    virtual const char* PRO_CALLTYPE GetUplinkLocalIp(
-        char localIp[64]
-        ) const;
+    virtual const char* GetUplinkLocalIp(char localIp[64]) const;
 
-    virtual unsigned short PRO_CALLTYPE GetUplinkLocalPort() const;
+    virtual unsigned short GetUplinkLocalPort() const;
 
-    virtual const char* PRO_CALLTYPE GetUplinkRemoteIp(
-        char remoteIp[64]
-        ) const;
+    virtual const char* GetUplinkRemoteIp(char remoteIp[64]) const;
 
-    virtual unsigned short PRO_CALLTYPE GetUplinkRemotePort() const;
+    virtual unsigned short GetUplinkRemotePort() const;
 
-    virtual void PRO_CALLTYPE SetUplinkOutputRedline(
-        unsigned long redlineBytes
-        );
+    virtual void SetUplinkOutputRedline(unsigned long redlineBytes);
 
-    virtual unsigned long PRO_CALLTYPE GetUplinkOutputRedline() const;
+    virtual unsigned long GetUplinkOutputRedline() const;
 
-    virtual unsigned long PRO_CALLTYPE GetUplinkSendingBytes() const;
+    virtual unsigned long GetUplinkSendingBytes() const;
 
-    virtual unsigned short PRO_CALLTYPE GetLocalServicePort() const;
+    virtual unsigned short GetLocalServicePort() const;
 
-    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetLocalSslSuite(
+    virtual PRO_SSL_SUITE_ID GetLocalSslSuite(
         const RTP_MSG_USER* user,
         char                suiteName[64]
         ) const;
 
-    virtual void PRO_CALLTYPE GetLocalUserCount(
+    virtual void GetLocalUserCount(
         unsigned long* pendingUserCount, /* = NULL */
         unsigned long* userCount         /* = NULL */
         ) const;
 
-    virtual void PRO_CALLTYPE KickoutLocalUser(const RTP_MSG_USER* user);
+    virtual void KickoutLocalUser(const RTP_MSG_USER* user);
 
-    virtual void PRO_CALLTYPE SetLocalOutputRedline(
-        unsigned long redlineBytes
-        );
+    virtual void SetLocalOutputRedline(unsigned long redlineBytes);
 
-    virtual unsigned long PRO_CALLTYPE GetLocalOutputRedline() const;
+    virtual unsigned long GetLocalOutputRedline() const;
 
-    virtual unsigned long PRO_CALLTYPE GetLocalSendingBytes(
-        const RTP_MSG_USER* user
-        ) const;
+    virtual unsigned long GetLocalSendingBytes(const RTP_MSG_USER* user) const;
 
 private:
 
@@ -143,7 +131,7 @@ private:
 
     virtual ~CRtpMsgC2s();
 
-    virtual void PRO_CALLTYPE OnAcceptSession(
+    virtual void OnAcceptSession(
         IRtpService*            service,
         PRO_INT64               sockId,
         bool                    unixSocket,
@@ -153,7 +141,7 @@ private:
         const PRO_NONCE*        nonce
         );
 
-    virtual void PRO_CALLTYPE OnAcceptSession(
+    virtual void OnAcceptSession(
         IRtpService*            service,
         PRO_SSL_CTX*            sslCtx,
         PRO_INT64               sockId,
@@ -164,41 +152,41 @@ private:
         const PRO_NONCE*        nonce
         );
 
-    virtual void PRO_CALLTYPE OnOkSession(IRtpSession* session)
+    virtual void OnOkSession(IRtpSession* session)
     {
     }
 
-    virtual void PRO_CALLTYPE OnRecvSession(
+    virtual void OnRecvSession(
         IRtpSession* session,
         IRtpPacket*  packet
         );
 
-    virtual void PRO_CALLTYPE OnSendSession(
+    virtual void OnSendSession(
         IRtpSession* session,
         bool         packetErased
         )
     {
     }
 
-    virtual void PRO_CALLTYPE OnCloseSession(
+    virtual void OnCloseSession(
         IRtpSession* session,
         long         errorCode,
         long         sslCode,
         bool         tcpConnected
         );
 
-    virtual void PRO_CALLTYPE OnHeartbeatSession(
+    virtual void OnHeartbeatSession(
         IRtpSession* session,
         PRO_INT64    peerAliveTick
         );
 
-    virtual void PRO_CALLTYPE OnOkMsg(
+    virtual void OnOkMsg(
         IRtpMsgClient*      msgClient,
         const RTP_MSG_USER* myUser,
         const char*         myPublicIp
         );
 
-    virtual void PRO_CALLTYPE OnRecvMsg(
+    virtual void OnRecvMsg(
         IRtpMsgClient*      msgClient,
         const void*         buf,
         unsigned long       size,
@@ -206,7 +194,7 @@ private:
         const RTP_MSG_USER* srcUser
         );
 
-    virtual void PRO_CALLTYPE OnTransferMsg(
+    virtual void OnTransferMsg(
         IRtpMsgClient*      msgClient,
         const void*         buf,
         unsigned long       size,
@@ -216,19 +204,19 @@ private:
         unsigned char       dstUserCount
         );
 
-    virtual void PRO_CALLTYPE OnCloseMsg(
+    virtual void OnCloseMsg(
         IRtpMsgClient* msgClient,
         long           errorCode,
         long           sslCode,
         bool           tcpConnected
         );
 
-    virtual void PRO_CALLTYPE OnHeartbeatMsg(
+    virtual void OnHeartbeatMsg(
         IRtpMsgClient* msgClient,
         PRO_INT64      peerAliveTick
         );
 
-    virtual void PRO_CALLTYPE OnTimer(
+    virtual void OnTimer(
         void*      factory,
         PRO_UINT64 timerId,
         PRO_INT64  userData

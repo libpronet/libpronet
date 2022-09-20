@@ -114,22 +114,18 @@ struct TBL_MSG_KICKOUT_ROW
 ////
 
 long
-PRO_CALLTYPE
 GetMsgUserRow(CDbConnection&      db,
               const RTP_MSG_USER& user,
               TBL_MSG_USER_ROW&   row);
 
 void
-PRO_CALLTYPE
 GetMsgKickoutRows(CDbConnection&                      db,
                   CProStlVector<TBL_MSG_KICKOUT_ROW>& rows);
 
 void
-PRO_CALLTYPE
 CleanMsgKickoutRows(CDbConnection& db);
 
 void
-PRO_CALLTYPE
 AddMsgOnlineRow(CDbConnection&      db,
                 const RTP_MSG_USER& user,
                 CProStlString       userPublicIp,
@@ -137,12 +133,10 @@ AddMsgOnlineRow(CDbConnection&      db,
                 CProStlString       sslSuiteName);
 
 void
-PRO_CALLTYPE
 RemoveMsgOnlineRow(CDbConnection&      db,
                    const RTP_MSG_USER& user);
 
 void
-PRO_CALLTYPE
 CleanMsgOnlineRows(CDbConnection& db);
 
 /////////////////////////////////////////////////////////////////////////////

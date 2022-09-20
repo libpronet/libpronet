@@ -47,14 +47,14 @@ public:
         IRtpServiceObserver* observer,
         IProReactor*         reactor,
         unsigned short       serviceHubPort,
-        unsigned long        timeoutInSeconds   /* = 0 */
+        unsigned long        timeoutInSeconds /* = 0 */
         );
 
     void Fini();
 
-    virtual unsigned long PRO_CALLTYPE AddRef();
+    virtual unsigned long AddRef();
 
-    virtual unsigned long PRO_CALLTYPE Release();
+    virtual unsigned long Release();
 
 private:
 
@@ -65,7 +65,7 @@ private:
 
     virtual ~CRtpService();
 
-    virtual void PRO_CALLTYPE OnServiceAccept(
+    virtual void OnServiceAccept(
         IProServiceHost* serviceHost,
         PRO_INT64        sockId,
         bool             unixSocket,
@@ -76,7 +76,7 @@ private:
     {
     }
 
-    virtual void PRO_CALLTYPE OnServiceAccept(
+    virtual void OnServiceAccept(
         IProServiceHost* serviceHost,
         PRO_INT64        sockId,
         bool             unixSocket,
@@ -88,7 +88,7 @@ private:
         const PRO_NONCE* nonce
         );
 
-    virtual void PRO_CALLTYPE OnHandshakeOk(
+    virtual void OnHandshakeOk(
         IProTcpHandshaker* handshaker,
         PRO_INT64          sockId,
         bool               unixSocket,
@@ -96,12 +96,12 @@ private:
         unsigned long      size
         );
 
-    virtual void PRO_CALLTYPE OnHandshakeError(
+    virtual void OnHandshakeError(
         IProTcpHandshaker* handshaker,
         long               errorCode
         );
 
-    virtual void PRO_CALLTYPE OnHandshakeOk(
+    virtual void OnHandshakeOk(
         IProSslHandshaker* handshaker,
         PRO_SSL_CTX*       ctx,
         PRO_INT64          sockId,
@@ -110,7 +110,7 @@ private:
         unsigned long      size
         );
 
-    virtual void PRO_CALLTYPE OnHandshakeError(
+    virtual void OnHandshakeError(
         IProSslHandshaker* handshaker,
         long               errorCode,
         long               sslCode

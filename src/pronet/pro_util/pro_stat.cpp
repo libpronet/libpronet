@@ -140,7 +140,7 @@ CProStatLossRate::Reset()
 }
 
 void
-CProStatLossRate::SetTimeSpan(unsigned long timeSpanInSeconds)                /* = 5 */
+CProStatLossRate::SetTimeSpan(unsigned long timeSpanInSeconds) /* = 5 */
 {
     assert(timeSpanInSeconds > 0);
     if (timeSpanInSeconds == 0)

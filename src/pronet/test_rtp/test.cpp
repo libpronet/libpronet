@@ -57,7 +57,6 @@
 
 static
 bool
-PRO_CALLTYPE
 CheckMode_i(TEST_MODE mode)
 {
     bool ret = false;
@@ -423,7 +422,6 @@ CTest::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CTest::AddRef()
 {
     const unsigned long refCount = CProRefCount::AddRef();
@@ -432,7 +430,6 @@ CTest::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CTest::Release()
 {
     const unsigned long refCount = CProRefCount::Release();
@@ -555,7 +552,6 @@ CTest::PrintSessionBroken(IRtpSession* session)
 }}}
 
 void
-PRO_CALLTYPE
 CTest::OnOkSession(IRtpSession* session)
 {
     assert(session != NULL);
@@ -583,7 +579,6 @@ CTest::OnOkSession(IRtpSession* session)
 }
 
 void
-PRO_CALLTYPE
 CTest::OnRecvSession(IRtpSession* session,
                      IRtpPacket*  packet)
 {
@@ -641,7 +636,6 @@ CTest::OnRecvSession(IRtpSession* session,
 }
 
 void
-PRO_CALLTYPE
 CTest::OnCloseSession(IRtpSession* session,
                       long         errorCode,
                       long         sslCode,
@@ -683,7 +677,6 @@ CTest::OnCloseSession(IRtpSession* session,
 }
 
 void
-PRO_CALLTYPE
 CTest::OnTimer(void*      factory,
                PRO_UINT64 timerId,
                PRO_INT64  userData)

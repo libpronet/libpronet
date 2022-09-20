@@ -199,7 +199,6 @@ CProConnector::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CProConnector::AddRef()
 {
     const unsigned long refCount = CProEventHandler::AddRef();
@@ -208,7 +207,6 @@ CProConnector::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CProConnector::Release()
 {
     const unsigned long refCount = CProEventHandler::Release();
@@ -217,14 +215,12 @@ CProConnector::Release()
 }
 
 void
-PRO_CALLTYPE
 CProConnector::OnInput(PRO_INT64 sockId)
 {
     OnError(sockId, -1);
 }
 
 void
-PRO_CALLTYPE
 CProConnector::OnOutput(PRO_INT64 sockId)
 {
     assert(sockId != -1);
@@ -340,14 +336,12 @@ EXIT:
 }
 
 void
-PRO_CALLTYPE
 CProConnector::OnException(PRO_INT64 sockId)
 {
     OnError(sockId, -1);
 }
 
 void
-PRO_CALLTYPE
 CProConnector::OnError(PRO_INT64 sockId,
                        long      errorCode)
 {
@@ -412,7 +406,6 @@ CProConnector::OnError(PRO_INT64 sockId,
 }
 
 void
-PRO_CALLTYPE
 CProConnector::OnHandshakeOk(IProTcpHandshaker* handshaker,
                              PRO_INT64          sockId,
                              bool               unixSocket,
@@ -526,7 +519,6 @@ CProConnector::OnHandshakeOk(IProTcpHandshaker* handshaker,
 }
 
 void
-PRO_CALLTYPE
 CProConnector::OnHandshakeError(IProTcpHandshaker* handshaker,
                                 long               errorCode)
 {
@@ -592,7 +584,6 @@ CProConnector::OnHandshakeError(IProTcpHandshaker* handshaker,
 }
 
 void
-PRO_CALLTYPE
 CProConnector::OnTimer(void*      factory,
                        PRO_UINT64 timerId,
                        PRO_INT64  userData)

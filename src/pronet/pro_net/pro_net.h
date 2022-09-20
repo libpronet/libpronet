@@ -97,11 +97,13 @@ extern "C" {
 #if defined(PRO_NET_EXPORTS)
 #if defined(_MSC_VER)
 #define PRO_NET_API /* using xxx.def */
+#elif defined(__MINGW32__) || defined(__CYGWIN__)
+#define PRO_NET_API __declspec(dllexport)
 #else
-#define PRO_NET_API PRO_EXPORT
+#define PRO_NET_API __attribute__((visibility("default")))
 #endif
 #else
-#define PRO_NET_API PRO_IMPORT
+#define PRO_NET_API
 #endif
 
 #include "pro_ssl.h"
@@ -153,11 +155,11 @@ public:
 
     virtual ~IProOnTimer() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
-    virtual void PRO_CALLTYPE OnTimer(
+    virtual void OnTimer(
         void*      factory,
         PRO_UINT64 timerId,
         PRO_INT64  userData
@@ -182,7 +184,7 @@ public:
      *
      * 返回值为定时器id. 0无效
      */
-    virtual PRO_UINT64 PRO_CALLTYPE ScheduleTimer(
+    virtual PRO_UINT64 ScheduleTimer(
         IProOnTimer* onTimer,
         PRO_UINT64   timeSpan,  /* 定时周期(ms) */
         bool         recurring, /* 是否重复. 如果timeSpan为0, recurring必须为false */
@@ -197,7 +199,7 @@ public:
      *
      * 返回值为定时器id. 0无效
      */
-    virtual PRO_UINT64 PRO_CALLTYPE ScheduleHeartbeatTimer(
+    virtual PRO_UINT64 ScheduleHeartbeatTimer(
         IProOnTimer* onTimer,
         PRO_INT64    userData = 0
         ) = 0;
@@ -207,21 +209,19 @@ public:
      *
      * 默认的心跳周期为20秒
      */
-    virtual bool PRO_CALLTYPE UpdateHeartbeatTimers(
-        unsigned long htbtIntervalInSeconds
-        ) = 0;
+    virtual bool UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds) = 0;
 
     /*
      * 删除一个普通定时器
      */
-    virtual void PRO_CALLTYPE CancelTimer(PRO_UINT64 timerId) = 0;
+    virtual void CancelTimer(PRO_UINT64 timerId) = 0;
 
     /*
      * 创建一个多媒体定时器(高精度定时器)
      *
      * 返回值为定时器id. 0无效
      */
-    virtual PRO_UINT64 PRO_CALLTYPE ScheduleMmTimer(
+    virtual PRO_UINT64 ScheduleMmTimer(
         IProOnTimer* onTimer,
         PRO_UINT64   timeSpan,  /* 定时周期(ms) */
         bool         recurring, /* 是否重复. 如果timeSpan为0, recurring必须为false */
@@ -231,12 +231,12 @@ public:
     /*
      * 删除一个多媒体定时器(高精度定时器)
      */
-    virtual void PRO_CALLTYPE CancelMmTimer(PRO_UINT64 timerId) = 0;
+    virtual void CancelMmTimer(PRO_UINT64 timerId) = 0;
 
     /*
      * 获取状态信息字符串
      */
-    virtual void PRO_CALLTYPE GetTraceInfo(
+    virtual void GetTraceInfo(
         char*  buf,
         size_t size
         ) const = 0;
@@ -256,9 +256,9 @@ public:
 
     virtual ~IProAcceptorObserver() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
     /*
      * 有原始连接进入时, 该函数将被回调
@@ -266,7 +266,7 @@ public:
      * 该回调适用于ProCreateAcceptor(...)创建的接受器.
      * 使用者负责sockId的资源维护
      */
-    virtual void PRO_CALLTYPE OnAccept(
+    virtual void OnAccept(
         IProAcceptor*  acceptor,
         PRO_INT64      sockId,     /* 套接字id */
         bool           unixSocket, /* 是否unix套接字 */
@@ -281,7 +281,7 @@ public:
      * 该回调适用于ProCreateAcceptorEx(...)创建的接受器.
      * 使用者负责sockId的资源维护
      */
-    virtual void PRO_CALLTYPE OnAccept(
+    virtual void OnAccept(
         IProAcceptor*    acceptor,
         PRO_INT64        sockId,     /* 套接字id */
         bool             unixSocket, /* 是否unix套接字 */
@@ -305,9 +305,9 @@ public:
 
     virtual ~IProServiceHostObserver() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
     /*
      * 有原始连接进入时, 该函数将被回调
@@ -315,7 +315,7 @@ public:
      * 该回调适用于ProCreateServiceHost(...)创建的服务host.
      * 使用者负责sockId的资源维护
      */
-    virtual void PRO_CALLTYPE OnServiceAccept(
+    virtual void OnServiceAccept(
         IProServiceHost* serviceHost,
         PRO_INT64        sockId,     /* 套接字id */
         bool             unixSocket, /* 是否unix套接字 */
@@ -330,7 +330,7 @@ public:
      * 该回调适用于ProCreateServiceHostEx(...)创建的服务host.
      * 使用者负责sockId的资源维护
      */
-    virtual void PRO_CALLTYPE OnServiceAccept(
+    virtual void OnServiceAccept(
         IProServiceHost* serviceHost,
         PRO_INT64        sockId,     /* 套接字id */
         bool             unixSocket, /* 是否unix套接字 */
@@ -357,9 +357,9 @@ public:
 
     virtual ~IProConnectorObserver() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
     /*
      * 原始连接成功时, 该函数将被回调
@@ -367,7 +367,7 @@ public:
      * 该回调适用于ProCreateConnector(...)创建的连接器.
      * 使用者负责sockId的资源维护
      */
-    virtual void PRO_CALLTYPE OnConnectOk(
+    virtual void OnConnectOk(
         IProConnector* connector,
         PRO_INT64      sockId,     /* 套接字id */
         bool           unixSocket, /* 是否unix套接字 */
@@ -380,7 +380,7 @@ public:
      *
      * 该回调适用于ProCreateConnector(...)创建的连接器
      */
-    virtual void PRO_CALLTYPE OnConnectError(
+    virtual void OnConnectError(
         IProConnector* connector,
         const char*    remoteIp,   /* 远端的ip地址. != NULL */
         unsigned short remotePort, /* 远端的端口号. > 0 */
@@ -393,7 +393,7 @@ public:
      * 该回调适用于ProCreateConnectorEx(...)创建的连接器
      * 使用者负责sockId的资源维护
      */
-    virtual void PRO_CALLTYPE OnConnectOk(
+    virtual void OnConnectOk(
         IProConnector*   connector,
         PRO_INT64        sockId,     /* 套接字id */
         bool             unixSocket, /* 是否unix套接字 */
@@ -409,7 +409,7 @@ public:
      *
      * 该回调适用于ProCreateConnectorEx(...)创建的连接器
      */
-    virtual void PRO_CALLTYPE OnConnectError(
+    virtual void OnConnectError(
         IProConnector* connector,
         const char*    remoteIp,   /* 远端的ip地址. != NULL */
         unsigned short remotePort, /* 远端的端口号. > 0 */
@@ -433,9 +433,9 @@ public:
 
     virtual ~IProTcpHandshakerObserver() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
     /*
      * 握手成功时, 该函数将被回调
@@ -444,7 +444,7 @@ public:
      * 握手完成后, 上层应该把sockId包装成IProTransport,
      * 或释放sockId对应的资源
      */
-    virtual void PRO_CALLTYPE OnHandshakeOk(
+    virtual void OnHandshakeOk(
         IProTcpHandshaker* handshaker,
         PRO_INT64          sockId,     /* 套接字id */
         bool               unixSocket, /* 是否unix套接字 */
@@ -455,9 +455,9 @@ public:
     /*
      * 握手出错或超时时, 该函数将被回调
      */
-    virtual void PRO_CALLTYPE OnHandshakeError(
+    virtual void OnHandshakeError(
         IProTcpHandshaker* handshaker,
-        long               errorCode   /* 系统错误码. 参见"pro_util/pro_bsd_wrapper.h" */
+        long               errorCode /* 系统错误码. 参见"pro_util/pro_bsd_wrapper.h" */
         ) = 0;
 };
 
@@ -472,9 +472,9 @@ public:
 
     virtual ~IProSslHandshakerObserver() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
     /*
      * 握手成功时, 该函数将被回调
@@ -485,7 +485,7 @@ public:
      *
      * 调用ProSslCtx_GetSuite(...)可以获知当前使用的加密套件
      */
-    virtual void PRO_CALLTYPE OnHandshakeOk(
+    virtual void OnHandshakeOk(
         IProSslHandshaker* handshaker,
         PRO_SSL_CTX*       ctx,        /* ssl上下文 */
         PRO_INT64          sockId,     /* 套接字id */
@@ -497,10 +497,10 @@ public:
     /*
      * 握手出错或超时时, 该函数将被回调
      */
-    virtual void PRO_CALLTYPE OnHandshakeError(
+    virtual void OnHandshakeError(
         IProSslHandshaker* handshaker,
-        long               errorCode,  /* 系统错误码. 参见"pro_util/pro_bsd_wrapper.h" */
-        long               sslCode     /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
+        long               errorCode, /* 系统错误码. 参见"pro_util/pro_bsd_wrapper.h" */
+        long               sslCode    /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
         ) = 0;
 };
 
@@ -532,12 +532,12 @@ public:
     /*
      * 查询接收池内的数据量
      */
-    virtual unsigned long PRO_CALLTYPE PeekDataSize() const = 0;
+    virtual unsigned long PeekDataSize() const = 0;
 
     /*
      * 读取接收池内的数据
      */
-    virtual void PRO_CALLTYPE PeekData(
+    virtual void PeekData(
         void*  buf,
         size_t size
         ) const = 0;
@@ -547,12 +547,12 @@ public:
      *
      * 腾出空间, 以便容纳新的数据
      */
-    virtual void PRO_CALLTYPE Flush(size_t size) = 0;
+    virtual void Flush(size_t size) = 0;
 
     /*
      * 查询接收池内剩余的存储空间
      */
-    virtual unsigned long PRO_CALLTYPE GetFreeSize() const = 0;
+    virtual unsigned long GetFreeSize() const = 0;
 };
 
 /*
@@ -564,40 +564,38 @@ public:
 
     virtual ~IProTransport() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
     /*
      * 获取传输器类型
      */
-    virtual PRO_TRANS_TYPE PRO_CALLTYPE GetType() const = 0;
+    virtual PRO_TRANS_TYPE GetType() const = 0;
 
     /*
      * 获取加密套件
      *
      * 仅用于PRO_TRANS_SSL类型的传输器
      */
-    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
-        char suiteName[64]
-        ) const = 0;
+    virtual PRO_SSL_SUITE_ID GetSslSuite(char suiteName[64]) const = 0;
 
     /*
      * 获取底层的套接字id
      *
      * 如非必需, 最好不要直接操作底层的套接字
      */
-    virtual PRO_INT64 PRO_CALLTYPE GetSockId() const = 0;
+    virtual PRO_INT64 GetSockId() const = 0;
 
     /*
      * 获取套接字的本地ip地址
      */
-    virtual const char* PRO_CALLTYPE GetLocalIp(char localIp[64]) const = 0;
+    virtual const char* GetLocalIp(char localIp[64]) const = 0;
 
     /*
      * 获取套接字的本地端口号
      */
-    virtual unsigned short PRO_CALLTYPE GetLocalPort() const = 0;
+    virtual unsigned short GetLocalPort() const = 0;
 
     /*
      * 获取套接字的远端ip地址
@@ -605,7 +603,7 @@ public:
      * 对于tcp, 返回连接对端的ip地址;
      * 对于udp, 返回默认的远端ip地址
      */
-    virtual const char* PRO_CALLTYPE GetRemoteIp(char remoteIp[64]) const = 0;
+    virtual const char* GetRemoteIp(char remoteIp[64]) const = 0;
 
     /*
      * 获取套接字的远端端口号
@@ -613,14 +611,14 @@ public:
      * 对于tcp, 返回连接对端的端口号;
      * 对于udp, 返回默认的远端端口号
      */
-    virtual unsigned short PRO_CALLTYPE GetRemotePort() const = 0;
+    virtual unsigned short GetRemotePort() const = 0;
 
     /*
      * 获取接收池
      *
      * 参见IProRecvPool的注释
      */
-    virtual IProRecvPool* PRO_CALLTYPE GetRecvPool() = 0;
+    virtual IProRecvPool* GetRecvPool() = 0;
 
     /*
      * 发送数据
@@ -631,7 +629,7 @@ public:
      *
      * 如果返回false, 表示发送忙, 上层应该缓冲数据以待OnSend(...)回调拉取
      */
-    virtual bool PRO_CALLTYPE SendData(
+    virtual bool SendData(
         const void*             buf,
         size_t                  size,
         PRO_UINT64              actionId   = 0,   /* for tcp */
@@ -643,48 +641,46 @@ public:
      *
      * 网络发送能力缓解时, OnSend(...)回调才会过来
      */
-    virtual void PRO_CALLTYPE RequestOnSend() = 0;
+    virtual void RequestOnSend() = 0;
 
     /*
      * 挂起接收能力
      */
-    virtual void PRO_CALLTYPE SuspendRecv() = 0;
+    virtual void SuspendRecv() = 0;
 
     /*
      * 恢复接收能力
      */
-    virtual void PRO_CALLTYPE ResumeRecv() = 0;
+    virtual void ResumeRecv() = 0;
 
     /*
      * 添加额外的多播地址(for CProMcastTransport only)
      */
-    virtual bool PRO_CALLTYPE AddMcastReceiver(const char* mcastIp) = 0;
+    virtual bool AddMcastReceiver(const char* mcastIp) = 0;
 
     /*
      * 删除额外的多播地址(for CProMcastTransport only)
      */
-    virtual void PRO_CALLTYPE RemoveMcastReceiver(const char* mcastIp) = 0;
+    virtual void RemoveMcastReceiver(const char* mcastIp) = 0;
 
     /*
      * 启动心跳定时器
      *
      * 心跳事件发生时, OnHeartbeat(...)将被回调
      */
-    virtual void PRO_CALLTYPE StartHeartbeat() = 0;
+    virtual void StartHeartbeat() = 0;
 
     /*
      * 停止心跳定时器
      */
-    virtual void PRO_CALLTYPE StopHeartbeat() = 0;
+    virtual void StopHeartbeat() = 0;
 
     /*
      * udp数据不可达时, 作为错误对待(for CProUdpTransport only)
      *
      * 默认false. 设置之后不可逆
      */
-    virtual void PRO_CALLTYPE UdpConnResetAsError(
-        const pbsd_sockaddr_in* remoteAddr = NULL
-        ) = 0;
+    virtual void UdpConnResetAsError(const pbsd_sockaddr_in* remoteAddr = NULL) = 0;
 };
 
 /*
@@ -698,9 +694,9 @@ public:
 
     virtual ~IProTransportObserver() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
     /*
      * 数据抵达套接字的接收缓冲区时, 该函数将被回调
@@ -716,7 +712,7 @@ public:
      * 另外, 当反应器报告套接字内有数据可读时, 如果接收池已经<<满了>>, 那么该套接
      * 字将被关闭!!! 这说明收端和发端的配合逻辑有问题!!!
      */
-    virtual void PRO_CALLTYPE OnRecv(
+    virtual void OnRecv(
         IProTransport*          trans,
         const pbsd_sockaddr_in* remoteAddr
         ) = 0;
@@ -727,7 +723,7 @@ public:
      *
      * 如果回调由RequestOnSend(...)触发, 则actionId为0
      */
-    virtual void PRO_CALLTYPE OnSend(
+    virtual void OnSend(
         IProTransport* trans,
         PRO_UINT64     actionId
         ) = 0;
@@ -735,7 +731,7 @@ public:
     /*
      * 套接字出现错误时, 该函数将被回调
      */
-    virtual void PRO_CALLTYPE OnClose(
+    virtual void OnClose(
         IProTransport* trans,
         long           errorCode, /* 系统错误码. 参见"pro_util/pro_bsd_wrapper.h" */
         long           sslCode    /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
@@ -744,7 +740,7 @@ public:
     /*
      * 心跳事件发生时, 该函数将被回调
      */
-    virtual void PRO_CALLTYPE OnHeartbeat(IProTransport* trans) = 0;
+    virtual void OnHeartbeat(IProTransport* trans) = 0;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -761,7 +757,6 @@ public:
  */
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProNetInit();
 
 /*
@@ -778,7 +773,6 @@ ProNetInit();
  */
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProNetVersion(unsigned char* major,  /* = NULL */
               unsigned char* minor,  /* = NULL */
               unsigned char* patch); /* = NULL */
@@ -798,7 +792,6 @@ ProNetVersion(unsigned char* major,  /* = NULL */
  */
 PRO_NET_API
 IProReactor*
-PRO_CALLTYPE
 ProCreateReactor(unsigned long ioThreadCount,
                  long          ioThreadPriority = 0);
 
@@ -816,7 +809,6 @@ ProCreateReactor(unsigned long ioThreadCount,
  */
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProDeleteReactor(IProReactor* reactor);
 
 /*
@@ -834,7 +826,6 @@ ProDeleteReactor(IProReactor* reactor);
  */
 PRO_NET_API
 IProAcceptor*
-PRO_CALLTYPE
 ProCreateAcceptor(IProAcceptorObserver* observer,
                   IProReactor*          reactor,
                   const char*           localIp   = NULL,
@@ -860,7 +851,6 @@ ProCreateAcceptor(IProAcceptorObserver* observer,
  */
 PRO_NET_API
 IProAcceptor*
-PRO_CALLTYPE
 ProCreateAcceptorEx(IProAcceptorObserver* observer,
                     IProReactor*          reactor,
                     const char*           localIp          = NULL,
@@ -879,7 +869,6 @@ ProCreateAcceptorEx(IProAcceptorObserver* observer,
  */
 PRO_NET_API
 unsigned short
-PRO_CALLTYPE
 ProGetAcceptorPort(IProAcceptor* acceptor);
 
 /*
@@ -894,7 +883,6 @@ ProGetAcceptorPort(IProAcceptor* acceptor);
  */
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProDeleteAcceptor(IProAcceptor* acceptor);
 
 /*
@@ -915,7 +903,6 @@ ProDeleteAcceptor(IProAcceptor* acceptor);
  */
 PRO_NET_API
 IProConnector*
-PRO_CALLTYPE
 ProCreateConnector(bool                   enableUnixSocket,
                    IProConnectorObserver* observer,
                    IProReactor*           reactor,
@@ -946,7 +933,6 @@ ProCreateConnector(bool                   enableUnixSocket,
  */
 PRO_NET_API
 IProConnector*
-PRO_CALLTYPE
 ProCreateConnectorEx(bool                   enableUnixSocket,
                      unsigned char          serviceId,
                      unsigned char          serviceOpt,
@@ -969,7 +955,6 @@ ProCreateConnectorEx(bool                   enableUnixSocket,
  */
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProDeleteConnector(IProConnector* connector);
 
 /*
@@ -992,7 +977,6 @@ ProDeleteConnector(IProConnector* connector);
  */
 PRO_NET_API
 IProTcpHandshaker*
-PRO_CALLTYPE
 ProCreateTcpHandshaker(IProTcpHandshakerObserver* observer,
                        IProReactor*               reactor,
                        PRO_INT64                  sockId,
@@ -1015,7 +999,6 @@ ProCreateTcpHandshaker(IProTcpHandshakerObserver* observer,
  */
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProDeleteTcpHandshaker(IProTcpHandshaker* handshaker);
 
 /*
@@ -1041,7 +1024,6 @@ ProDeleteTcpHandshaker(IProTcpHandshaker* handshaker);
  */
 PRO_NET_API
 IProSslHandshaker*
-PRO_CALLTYPE
 ProCreateSslHandshaker(IProSslHandshakerObserver* observer,
                        IProReactor*               reactor,
                        PRO_SSL_CTX*               ctx,
@@ -1065,7 +1047,6 @@ ProCreateSslHandshaker(IProSslHandshakerObserver* observer,
  */
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProDeleteSslHandshaker(IProSslHandshaker* handshaker);
 
 /*
@@ -1087,7 +1068,6 @@ ProDeleteSslHandshaker(IProSslHandshaker* handshaker);
  */
 PRO_NET_API
 IProTransport*
-PRO_CALLTYPE
 ProCreateTcpTransport(IProTransportObserver* observer,
                       IProReactor*           reactor,
                       PRO_INT64              sockId,
@@ -1118,7 +1098,6 @@ ProCreateTcpTransport(IProTransportObserver* observer,
  */
 PRO_NET_API
 IProTransport*
-PRO_CALLTYPE
 ProCreateUdpTransport(IProTransportObserver* observer,
                       IProReactor*           reactor,
                       bool                   bindToLocal       = false,
@@ -1153,7 +1132,6 @@ ProCreateUdpTransport(IProTransportObserver* observer,
  */
 PRO_NET_API
 IProTransport*
-PRO_CALLTYPE
 ProCreateMcastTransport(IProTransportObserver* observer,
                         IProReactor*           reactor,
                         const char*            mcastIp,
@@ -1185,7 +1163,6 @@ ProCreateMcastTransport(IProTransportObserver* observer,
  */
 PRO_NET_API
 IProTransport*
-PRO_CALLTYPE
 ProCreateSslTransport(IProTransportObserver* observer,
                       IProReactor*           reactor,
                       PRO_SSL_CTX*           ctx,
@@ -1208,7 +1185,6 @@ ProCreateSslTransport(IProTransportObserver* observer,
  */
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProDeleteTransport(IProTransport* trans);
 
 /*
@@ -1230,7 +1206,6 @@ ProDeleteTransport(IProTransport* trans);
  */
 PRO_NET_API
 IProServiceHub*
-PRO_CALLTYPE
 ProCreateServiceHub(IProReactor*   reactor,
                     unsigned short servicePort,
                     bool           enableLoadBalance = false);
@@ -1255,7 +1230,6 @@ ProCreateServiceHub(IProReactor*   reactor,
  */
 PRO_NET_API
 IProServiceHub*
-PRO_CALLTYPE
 ProCreateServiceHubEx(IProReactor*   reactor,
                       unsigned short servicePort,
                       bool           enableLoadBalance = false,
@@ -1273,7 +1247,6 @@ ProCreateServiceHubEx(IProReactor*   reactor,
  */
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProDeleteServiceHub(IProServiceHub* hub);
 
 /*
@@ -1290,7 +1263,6 @@ ProDeleteServiceHub(IProServiceHub* hub);
  */
 PRO_NET_API
 IProServiceHost*
-PRO_CALLTYPE
 ProCreateServiceHost(IProServiceHostObserver* observer,
                      IProReactor*             reactor,
                      unsigned short           servicePort);
@@ -1310,7 +1282,6 @@ ProCreateServiceHost(IProServiceHostObserver* observer,
  */
 PRO_NET_API
 IProServiceHost*
-PRO_CALLTYPE
 ProCreateServiceHostEx(IProServiceHostObserver* observer,
                        IProReactor*             reactor,
                        unsigned short           servicePort,
@@ -1328,7 +1299,6 @@ ProCreateServiceHostEx(IProServiceHostObserver* observer,
  */
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProDeleteServiceHost(IProServiceHost* host);
 
 /*
@@ -1344,7 +1314,6 @@ ProDeleteServiceHost(IProServiceHost* host);
  */
 PRO_NET_API
 PRO_INT64
-PRO_CALLTYPE
 ProOpenTcpSockId(const char*    localIp, /* = NULL */
                  unsigned short localPort);
 
@@ -1361,7 +1330,6 @@ ProOpenTcpSockId(const char*    localIp, /* = NULL */
  */
 PRO_NET_API
 PRO_INT64
-PRO_CALLTYPE
 ProOpenUdpSockId(const char*    localIp, /* = NULL */
                  unsigned short localPort);
 
@@ -1379,7 +1347,6 @@ ProOpenUdpSockId(const char*    localIp, /* = NULL */
  */
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProCloseSockId(PRO_INT64 sockId,
                bool      linger = false);
 

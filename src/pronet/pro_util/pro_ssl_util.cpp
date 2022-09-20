@@ -52,7 +52,6 @@ Rand_i(void*          act,
 
 static
 void*
-PRO_CALLTYPE
 MdNew_i(mbedtls_md_type_t type)
 {
     const mbedtls_md_info_t* const info = mbedtls_md_info_from_type(type);
@@ -83,7 +82,6 @@ MdNew_i(mbedtls_md_type_t type)
 
 static
 void
-PRO_CALLTYPE
 MdDelete_i(void* ctx)
 {
     if (ctx == NULL)
@@ -97,7 +95,6 @@ MdDelete_i(void* ctx)
 
 static
 void
-PRO_CALLTYPE
 MdInit_i(void* ctx)
 {
     assert(ctx != NULL);
@@ -111,7 +108,6 @@ MdInit_i(void* ctx)
 
 static
 void
-PRO_CALLTYPE
 MdUpdate_i(void*       ctx,
            const void* buf,
            size_t      size)
@@ -128,7 +124,6 @@ MdUpdate_i(void*       ctx,
 
 static
 void
-PRO_CALLTYPE
 MdFinish_i(void* ctx,
            void* hashValue)
 {
@@ -147,28 +142,24 @@ MdFinish_i(void* ctx,
 ////
 
 void*
-PRO_CALLTYPE
 ProMd5New()
 {
     return (MdNew_i(MBEDTLS_MD_MD5));
 }
 
 void
-PRO_CALLTYPE
 ProMd5Delete(void* ctx)
 {
     MdDelete_i(ctx);
 }
 
 void
-PRO_CALLTYPE
 ProMd5Init(void* ctx)
 {
     MdInit_i(ctx);
 }
 
 void
-PRO_CALLTYPE
 ProMd5Update(void*       ctx,
              const void* buf,
              size_t      size)
@@ -177,7 +168,6 @@ ProMd5Update(void*       ctx,
 }
 
 void
-PRO_CALLTYPE
 ProMd5Finish(void* ctx,
              char  hashValue[16])
 {
@@ -187,7 +177,6 @@ ProMd5Finish(void* ctx,
 }
 
 void
-PRO_CALLTYPE
 ProMd5All(const void* buf,
           size_t      size,
           char        hashValue[16])
@@ -213,28 +202,24 @@ ProMd5All(const void* buf,
 /*-------------------------------------------------------------------------*/
 
 void*
-PRO_CALLTYPE
 ProSha1New()
 {
     return (MdNew_i(MBEDTLS_MD_SHA1));
 }
 
 void
-PRO_CALLTYPE
 ProSha1Delete(void* ctx)
 {
     MdDelete_i(ctx);
 }
 
 void
-PRO_CALLTYPE
 ProSha1Init(void* ctx)
 {
     MdInit_i(ctx);
 }
 
 void
-PRO_CALLTYPE
 ProSha1Update(void*       ctx,
               const void* buf,
               size_t      size)
@@ -243,7 +228,6 @@ ProSha1Update(void*       ctx,
 }
 
 void
-PRO_CALLTYPE
 ProSha1Finish(void* ctx,
               char  hashValue[20])
 {
@@ -253,7 +237,6 @@ ProSha1Finish(void* ctx,
 }
 
 void
-PRO_CALLTYPE
 ProSha1All(const void* buf,
            size_t      size,
            char        hashValue[20])
@@ -279,28 +262,24 @@ ProSha1All(const void* buf,
 /*-------------------------------------------------------------------------*/
 
 void*
-PRO_CALLTYPE
 ProSha256New()
 {
     return (MdNew_i(MBEDTLS_MD_SHA256));
 }
 
 void
-PRO_CALLTYPE
 ProSha256Delete(void* ctx)
 {
     MdDelete_i(ctx);
 }
 
 void
-PRO_CALLTYPE
 ProSha256Init(void* ctx)
 {
     MdInit_i(ctx);
 }
 
 void
-PRO_CALLTYPE
 ProSha256Update(void*       ctx,
                 const void* buf,
                 size_t      size)
@@ -309,7 +288,6 @@ ProSha256Update(void*       ctx,
 }
 
 void
-PRO_CALLTYPE
 ProSha256Finish(void* ctx,
                 char  hashValue[32])
 {
@@ -319,7 +297,6 @@ ProSha256Finish(void* ctx,
 }
 
 void
-PRO_CALLTYPE
 ProSha256All(const void* buf,
              size_t      size,
              char        hashValue[32])
@@ -345,28 +322,24 @@ ProSha256All(const void* buf,
 /*-------------------------------------------------------------------------*/
 
 void*
-PRO_CALLTYPE
 ProRipemd160New()
 {
     return (MdNew_i(MBEDTLS_MD_RIPEMD160));
 }
 
 void
-PRO_CALLTYPE
 ProRipemd160Delete(void* ctx)
 {
     MdDelete_i(ctx);
 }
 
 void
-PRO_CALLTYPE
 ProRipemd160Init(void* ctx)
 {
     MdInit_i(ctx);
 }
 
 void
-PRO_CALLTYPE
 ProRipemd160Update(void*       ctx,
                    const void* buf,
                    size_t      size)
@@ -375,7 +348,6 @@ ProRipemd160Update(void*       ctx,
 }
 
 void
-PRO_CALLTYPE
 ProRipemd160Finish(void* ctx,
                    char  hashValue[20])
 {
@@ -385,7 +357,6 @@ ProRipemd160Finish(void* ctx,
 }
 
 void
-PRO_CALLTYPE
 ProRipemd160All(const void* buf,
                 size_t      size,
                 char        hashValue[20])
@@ -411,7 +382,6 @@ ProRipemd160All(const void* buf,
 /*-------------------------------------------------------------------------*/
 
 void*
-PRO_CALLTYPE
 ProRsaNew()
 {
     mbedtls_rsa_context* const ctx =
@@ -427,7 +397,6 @@ ProRsaNew()
 }
 
 void
-PRO_CALLTYPE
 ProRsaDelete(void* ctx)
 {
     if (ctx == NULL)
@@ -440,7 +409,6 @@ ProRsaDelete(void* ctx)
 }
 
 bool
-PRO_CALLTYPE
 ProRsaInitPub(void*       ctx,
               const char* nString,
               const char* eString)
@@ -474,7 +442,6 @@ ProRsaInitPub(void*       ctx,
 }
 
 bool
-PRO_CALLTYPE
 ProRsaInitPrivNED(void*       ctx,
                   const char* nString,
                   const char* eString,
@@ -513,7 +480,6 @@ ProRsaInitPrivNED(void*       ctx,
 }
 
 bool
-PRO_CALLTYPE
 ProRsaInitPrivPQE(void*       ctx,
                   const char* pString,
                   const char* qString,
@@ -550,7 +516,6 @@ ProRsaInitPrivPQE(void*       ctx,
 }
 
 void
-PRO_CALLTYPE
 ProRsaEncrypt(void*                ctx,
               const void*          inputBuffer,
               size_t               inputSize,
@@ -603,7 +568,6 @@ ProRsaEncrypt(void*                ctx,
 }
 
 void
-PRO_CALLTYPE
 ProRsaDecrypt(void*                ctx,
               const void*          inputBuffer,
               size_t               inputSize,
@@ -664,7 +628,6 @@ ProRsaDecrypt(void*                ctx,
 }
 
 bool
-PRO_CALLTYPE
 ProRsaKeyGen(unsigned long  keyBytes, /* 128, 256, 512 */
              CProStlString& pString,
              CProStlString& qString,
@@ -761,7 +724,6 @@ ProRsaKeyGen(unsigned long  keyBytes, /* 128, 256, 512 */
 /*-------------------------------------------------------------------------*/
 
 void
-PRO_CALLTYPE
 ProBase64Encode(const void*    inputBuffer,
                 size_t         inputSize,
                 CProStlString& outputString)
@@ -792,7 +754,6 @@ ProBase64Encode(const void*    inputBuffer,
 }
 
 void
-PRO_CALLTYPE
 ProBase64Decode(const void*          inputBuffer,
                 size_t               inputSize,
                 CProStlVector<char>& outputBuffer)
@@ -824,7 +785,6 @@ ProBase64Decode(const void*          inputBuffer,
 }
 
 void
-PRO_CALLTYPE
 ProBase64DecodeStr(const char*          inputString,
                    CProStlVector<char>& outputBuffer)
 {
@@ -859,7 +819,6 @@ ProBase64DecodeStr(const char*          inputString,
 /*-------------------------------------------------------------------------*/
 
 void
-PRO_CALLTYPE
 ProCalcPasswordHash(const char  nonce[32],
                     const char* password,
                     char        passwordHash[32])
@@ -891,7 +850,6 @@ ProCalcPasswordHash(const char  nonce[32],
 }
 
 void
-PRO_CALLTYPE
 ProZeroMemory(char*  buf,
               size_t size)
 {

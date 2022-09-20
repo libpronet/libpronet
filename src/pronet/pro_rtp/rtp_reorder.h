@@ -34,25 +34,19 @@ public:
 
     virtual ~CRtpReorder();
 
-    virtual void PRO_CALLTYPE SetWallHeightInPackets(
-        unsigned long heightInPackets         /* = 100 */
-        );
+    virtual void SetWallHeightInPackets(unsigned long heightInPackets); /* = 100 */
 
-    virtual void PRO_CALLTYPE SetWallHeightInMilliseconds(
-        unsigned long heightInMs              /* = 500 */
-        );
+    virtual void SetWallHeightInMilliseconds(unsigned long heightInMs); /* = 500 */
 
-    virtual void PRO_CALLTYPE SetMaxBrokenDuration(
-        unsigned long brokenDurationInSeconds /* = 10 */
-        );
+    virtual void SetMaxBrokenDuration(unsigned long brokenDurationInSeconds); /* = 10 */
 
-    virtual unsigned long PRO_CALLTYPE GetTotalPackets() const;
+    virtual unsigned long GetTotalPackets() const;
 
-    virtual void PRO_CALLTYPE PushBackAddRef(IRtpPacket* packet);
+    virtual void PushBackAddRef(IRtpPacket* packet);
 
-    virtual IRtpPacket* PRO_CALLTYPE PopFront(bool force);
+    virtual IRtpPacket* PopFront(bool force);
 
-    virtual void PRO_CALLTYPE Reset();
+    virtual void Reset();
 
 private:
 

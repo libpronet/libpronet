@@ -275,7 +275,6 @@ CProThreadBase::SvcRun(void* arg)
 ////
 
 PRO_UINT64
-PRO_CALLTYPE
 ProGetThreadId()
 {
 #if defined(_WIN32) || defined(_WIN32_WCE)
@@ -288,7 +287,6 @@ ProGetThreadId()
 }
 
 PRO_UINT64
-PRO_CALLTYPE
 ProGetProcessId()
 {
 #if defined(_WIN32) || defined(_WIN32_WCE)

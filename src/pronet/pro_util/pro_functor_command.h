@@ -79,13 +79,13 @@ public:
 
     virtual ~IProFunctorCommand() {}
 
-    virtual void PRO_CALLTYPE Destroy() = 0;
+    virtual void Destroy() = 0;
 
-    virtual void PRO_CALLTYPE Execute() = 0;
+    virtual void Execute() = 0;
 
-    virtual void PRO_CALLTYPE SetUserData(const void* userData) = 0;
+    virtual void SetUserData(const void* userData) = 0;
 
-    virtual const void* PRO_CALLTYPE GetUserData() const = 0;
+    virtual const void* GetUserData() const = 0;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -156,22 +156,22 @@ private:
     {
     }
 
-    virtual void PRO_CALLTYPE Destroy()
+    virtual void Destroy()
     {
         delete this;
     }
 
-    virtual void PRO_CALLTYPE Execute()
+    virtual void Execute()
     {
         (m_receiver.*m_action)((PRO_INT64*)m_args);
     }
 
-    virtual void PRO_CALLTYPE SetUserData(const void* userData)
+    virtual void SetUserData(const void* userData)
     {
         m_userData = userData;
     }
 
-    virtual const void* PRO_CALLTYPE GetUserData() const
+    virtual const void* GetUserData() const
     {
         return (m_userData);
     }
@@ -252,22 +252,22 @@ private:
     {
     }
 
-    virtual void PRO_CALLTYPE Destroy()
+    virtual void Destroy()
     {
         delete this;
     }
 
-    virtual void PRO_CALLTYPE Execute()
+    virtual void Execute()
     {
         (*m_action)((PRO_INT64*)m_args);
     }
 
-    virtual void PRO_CALLTYPE SetUserData(const void* userData)
+    virtual void SetUserData(const void* userData)
     {
         m_userData = userData;
     }
 
-    virtual const void* PRO_CALLTYPE GetUserData() const
+    virtual const void* GetUserData() const
     {
         return (m_userData);
     }

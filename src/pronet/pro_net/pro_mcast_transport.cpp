@@ -33,7 +33,7 @@
 ////
 
 CProMcastTransport*
-CProMcastTransport::CreateInstance(size_t recvPoolSize)     /* = 0 */
+CProMcastTransport::CreateInstance(size_t recvPoolSize) /* = 0 */
 {
     CProMcastTransport* const trans = new CProMcastTransport(recvPoolSize);
 
@@ -224,7 +224,6 @@ CProMcastTransport::Fini()
 }
 
 bool
-PRO_CALLTYPE
 CProMcastTransport::AddMcastReceiver(const char* mcastIp)
 {
     assert(mcastIp != NULL);
@@ -272,7 +271,6 @@ CProMcastTransport::AddMcastReceiver(const char* mcastIp)
 }
 
 void
-PRO_CALLTYPE
 CProMcastTransport::RemoveMcastReceiver(const char* mcastIp)
 {
     if (mcastIp == NULL || mcastIp[0] == '\0')

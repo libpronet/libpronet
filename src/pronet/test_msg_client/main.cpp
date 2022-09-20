@@ -42,7 +42,6 @@
 
 static
 void
-PRO_CALLTYPE
 ReadConfig_i(const CProStlString&            exeRoot,
              CProStlVector<PRO_CONFIG_ITEM>& configs,
              MSG_CLIENT_CONFIG_INFO&         configInfo)

@@ -55,9 +55,9 @@ public:
 
     void Fini();
 
-    virtual unsigned long PRO_CALLTYPE AddRef();
+    virtual unsigned long AddRef();
 
-    virtual unsigned long PRO_CALLTYPE Release();
+    virtual unsigned long Release();
 
 private:
 
@@ -70,18 +70,18 @@ private:
 
     virtual ~CProConnector();
 
-    virtual void PRO_CALLTYPE OnInput(PRO_INT64 sockId);
+    virtual void OnInput(PRO_INT64 sockId);
 
-    virtual void PRO_CALLTYPE OnOutput(PRO_INT64 sockId);
+    virtual void OnOutput(PRO_INT64 sockId);
 
-    virtual void PRO_CALLTYPE OnException(PRO_INT64 sockId);
+    virtual void OnException(PRO_INT64 sockId);
 
-    virtual void PRO_CALLTYPE OnError(
+    virtual void OnError(
         PRO_INT64 sockId,
         long      errorCode
         );
 
-    virtual void PRO_CALLTYPE OnHandshakeOk(
+    virtual void OnHandshakeOk(
         IProTcpHandshaker* handshaker,
         PRO_INT64          sockId,
         bool               unixSocket,
@@ -89,12 +89,12 @@ private:
         unsigned long      size
         );
 
-    virtual void PRO_CALLTYPE OnHandshakeError(
+    virtual void OnHandshakeError(
         IProTcpHandshaker* handshaker,
         long               errorCode
         );
 
-    virtual void PRO_CALLTYPE OnTimer(
+    virtual void OnTimer(
         void*      factory,
         PRO_UINT64 timerId,
         PRO_INT64  userData

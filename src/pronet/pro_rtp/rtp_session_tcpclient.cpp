@@ -187,7 +187,6 @@ CRtpSessionTcpclient::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpSessionTcpclient::AddRef()
 {
     const unsigned long refCount = CRtpSessionBase::AddRef();
@@ -196,7 +195,6 @@ CRtpSessionTcpclient::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpSessionTcpclient::Release()
 {
     const unsigned long refCount = CRtpSessionBase::Release();
@@ -205,7 +203,6 @@ CRtpSessionTcpclient::Release()
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionTcpclient::OnConnectOk(IProConnector* connector,
                                   PRO_INT64      sockId,
                                   bool           unixSocket,
@@ -292,7 +289,6 @@ CRtpSessionTcpclient::OnConnectOk(IProConnector* connector,
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionTcpclient::OnConnectError(IProConnector* connector,
                                      const char*    remoteIp,
                                      unsigned short remotePort,
@@ -337,7 +333,6 @@ CRtpSessionTcpclient::OnConnectError(IProConnector* connector,
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionTcpclient::OnRecv(IProTransport*          trans,
                              const pbsd_sockaddr_in* remoteAddr)
 {

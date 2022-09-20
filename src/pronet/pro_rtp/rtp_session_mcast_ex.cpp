@@ -174,7 +174,6 @@ CRtpSessionMcastEx::Fini()
 }
 
 bool
-PRO_CALLTYPE
 CRtpSessionMcastEx::AddMcastReceiver(const char* mcastIp)
 {
     bool ret = false;
@@ -194,7 +193,6 @@ CRtpSessionMcastEx::AddMcastReceiver(const char* mcastIp)
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionMcastEx::RemoveMcastReceiver(const char* mcastIp)
 {
     {
@@ -210,7 +208,6 @@ CRtpSessionMcastEx::RemoveMcastReceiver(const char* mcastIp)
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionMcastEx::OnRecv(IProTransport*          trans,
                            const pbsd_sockaddr_in* remoteAddr)
 {

@@ -44,14 +44,12 @@ public:
 
     void Fini();
 
-    virtual PRO_TRANS_TYPE PRO_CALLTYPE GetType() const
+    virtual PRO_TRANS_TYPE GetType() const
     {
         return (PRO_TRANS_SSL);
     }
 
-    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
-        char suiteName[64]
-        ) const;
+    virtual PRO_SSL_SUITE_ID GetSslSuite(char suiteName[64]) const;
 
 private:
 
@@ -59,9 +57,9 @@ private:
 
     virtual ~CProSslTransport();
 
-    virtual void PRO_CALLTYPE OnInput(PRO_INT64 sockId);
+    virtual void OnInput(PRO_INT64 sockId);
 
-    virtual void PRO_CALLTYPE OnOutput(PRO_INT64 sockId);
+    virtual void OnOutput(PRO_INT64 sockId);
 
     void DoRecv(PRO_INT64 sockId);
 

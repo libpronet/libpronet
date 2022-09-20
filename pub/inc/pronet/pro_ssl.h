@@ -97,7 +97,6 @@ static const PRO_SSL_SUITE_ID PRO_SSL_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256     
  */
 PRO_NET_API
 PRO_SSL_SERVER_CONFIG*
-PRO_CALLTYPE
 ProSslServerConfig_Create();
 
 /*
@@ -112,7 +111,6 @@ ProSslServerConfig_Create();
  */
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProSslServerConfig_Delete(PRO_SSL_SERVER_CONFIG* config);
 
 /*
@@ -129,7 +127,6 @@ ProSslServerConfig_Delete(PRO_SSL_SERVER_CONFIG* config);
  */
 PRO_NET_API
 bool
-PRO_CALLTYPE
 ProSslServerConfig_SetSuiteList(PRO_SSL_SERVER_CONFIG*  config,
                                 const PRO_SSL_SUITE_ID* suites,
                                 size_t                  suiteCount);
@@ -148,7 +145,6 @@ ProSslServerConfig_SetSuiteList(PRO_SSL_SERVER_CONFIG*  config,
  */
 PRO_NET_API
 bool
-PRO_CALLTYPE
 ProSslServerConfig_SetAlpnList(PRO_SSL_SERVER_CONFIG* config,
                                const char**           alpns,      /* = NULL */
                                size_t                 alpnCount); /* = 0 */
@@ -166,7 +162,6 @@ ProSslServerConfig_SetAlpnList(PRO_SSL_SERVER_CONFIG* config,
  */
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProSslServerConfig_EnableSha1Cert(PRO_SSL_SERVER_CONFIG* config,
                                   bool                   enable);
 
@@ -188,7 +183,6 @@ ProSslServerConfig_EnableSha1Cert(PRO_SSL_SERVER_CONFIG* config,
  */
 PRO_NET_API
 bool
-PRO_CALLTYPE
 ProSslServerConfig_SetCaList(PRO_SSL_SERVER_CONFIG* config,
                              const char**           caFiles,
                              size_t                 caFileCount,
@@ -211,7 +205,6 @@ ProSslServerConfig_SetCaList(PRO_SSL_SERVER_CONFIG* config,
  */
 PRO_NET_API
 bool
-PRO_CALLTYPE
 ProSslServerConfig_AppendCertChain(PRO_SSL_SERVER_CONFIG* config,
                                    const char**           certFiles,
                                    size_t                 certFileCount,
@@ -231,7 +224,6 @@ ProSslServerConfig_AppendCertChain(PRO_SSL_SERVER_CONFIG* config,
  */
 PRO_NET_API
 bool
-PRO_CALLTYPE
 ProSslServerConfig_SetAuthLevel(PRO_SSL_SERVER_CONFIG* config,
                                 PRO_SSL_AUTH_LEVEL     level);
 
@@ -248,7 +240,6 @@ ProSslServerConfig_SetAuthLevel(PRO_SSL_SERVER_CONFIG* config,
  */
 PRO_NET_API
 bool
-PRO_CALLTYPE
 ProSslServerConfig_AddSni(PRO_SSL_SERVER_CONFIG* config,
                           const char*            sniName);
 
@@ -265,7 +256,6 @@ ProSslServerConfig_AddSni(PRO_SSL_SERVER_CONFIG* config,
  */
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProSslServerConfig_RemoveSni(PRO_SSL_SERVER_CONFIG* config,
                              const char*            sniName);
 
@@ -288,7 +278,6 @@ ProSslServerConfig_RemoveSni(PRO_SSL_SERVER_CONFIG* config,
  */
 PRO_NET_API
 bool
-PRO_CALLTYPE
 ProSslServerConfig_SetSniCaList(PRO_SSL_SERVER_CONFIG* config,
                                 const char*            sniName,
                                 const char**           caFiles,
@@ -313,7 +302,6 @@ ProSslServerConfig_SetSniCaList(PRO_SSL_SERVER_CONFIG* config,
  */
 PRO_NET_API
 bool
-PRO_CALLTYPE
 ProSslServerConfig_AppendSniCertChain(PRO_SSL_SERVER_CONFIG* config,
                                       const char*            sniName,
                                       const char**           certFiles,
@@ -334,7 +322,6 @@ ProSslServerConfig_AppendSniCertChain(PRO_SSL_SERVER_CONFIG* config,
  */
 PRO_NET_API
 bool
-PRO_CALLTYPE
 ProSslServerConfig_SetSniAuthLevel(PRO_SSL_SERVER_CONFIG* config,
                                    const char*            sniName,
                                    PRO_SSL_AUTH_LEVEL     level);
@@ -353,7 +340,6 @@ ProSslServerConfig_SetSniAuthLevel(PRO_SSL_SERVER_CONFIG* config,
  */
 PRO_NET_API
 PRO_SSL_CLIENT_CONFIG*
-PRO_CALLTYPE
 ProSslClientConfig_Create();
 
 /*
@@ -368,7 +354,6 @@ ProSslClientConfig_Create();
  */
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProSslClientConfig_Delete(PRO_SSL_CLIENT_CONFIG* config);
 
 /*
@@ -385,7 +370,6 @@ ProSslClientConfig_Delete(PRO_SSL_CLIENT_CONFIG* config);
  */
 PRO_NET_API
 bool
-PRO_CALLTYPE
 ProSslClientConfig_SetSuiteList(PRO_SSL_CLIENT_CONFIG*  config,
                                 const PRO_SSL_SUITE_ID* suites,
                                 size_t                  suiteCount);
@@ -404,7 +388,6 @@ ProSslClientConfig_SetSuiteList(PRO_SSL_CLIENT_CONFIG*  config,
  */
 PRO_NET_API
 bool
-PRO_CALLTYPE
 ProSslClientConfig_SetAlpnList(PRO_SSL_CLIENT_CONFIG* config,
                                const char**           alpns,      /* = NULL */
                                size_t                 alpnCount); /* = 0 */
@@ -422,7 +405,6 @@ ProSslClientConfig_SetAlpnList(PRO_SSL_CLIENT_CONFIG* config,
  */
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProSslClientConfig_EnableSha1Cert(PRO_SSL_CLIENT_CONFIG* config,
                                   bool                   enable);
 
@@ -444,7 +426,6 @@ ProSslClientConfig_EnableSha1Cert(PRO_SSL_CLIENT_CONFIG* config,
  */
 PRO_NET_API
 bool
-PRO_CALLTYPE
 ProSslClientConfig_SetCaList(PRO_SSL_CLIENT_CONFIG* config,
                              const char**           caFiles,
                              size_t                 caFileCount,
@@ -467,7 +448,6 @@ ProSslClientConfig_SetCaList(PRO_SSL_CLIENT_CONFIG* config,
  */
 PRO_NET_API
 bool
-PRO_CALLTYPE
 ProSslClientConfig_SetCertChain(PRO_SSL_CLIENT_CONFIG* config,
                                 const char**           certFiles,
                                 size_t                 certFileCount,
@@ -487,7 +467,6 @@ ProSslClientConfig_SetCertChain(PRO_SSL_CLIENT_CONFIG* config,
  */
 PRO_NET_API
 bool
-PRO_CALLTYPE
 ProSslClientConfig_SetAuthLevel(PRO_SSL_CLIENT_CONFIG* config,
                                 PRO_SSL_AUTH_LEVEL     level);
 
@@ -511,7 +490,6 @@ ProSslClientConfig_SetAuthLevel(PRO_SSL_CLIENT_CONFIG* config,
  */
 PRO_NET_API
 PRO_SSL_CTX*
-PRO_CALLTYPE
 ProSslCtx_CreateS(const PRO_SSL_SERVER_CONFIG* config,
                   PRO_INT64                    sockId,
                   const PRO_NONCE*             nonce); /* = NULL */
@@ -535,7 +513,6 @@ ProSslCtx_CreateS(const PRO_SSL_SERVER_CONFIG* config,
  */
 PRO_NET_API
 PRO_SSL_CTX*
-PRO_CALLTYPE
 ProSslCtx_CreateC(const PRO_SSL_CLIENT_CONFIG* config,
                   const char*                  serverHostName, /* = NULL */
                   PRO_INT64                    sockId,
@@ -553,7 +530,6 @@ ProSslCtx_CreateC(const PRO_SSL_CLIENT_CONFIG* config,
  */
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProSslCtx_Delete(PRO_SSL_CTX* ctx);
 
 /*
@@ -569,7 +545,6 @@ ProSslCtx_Delete(PRO_SSL_CTX* ctx);
  */
 PRO_NET_API
 PRO_SSL_SUITE_ID
-PRO_CALLTYPE
 ProSslCtx_GetSuite(PRO_SSL_CTX* ctx,
                    char         suiteName[64]);
 
@@ -585,7 +560,6 @@ ProSslCtx_GetSuite(PRO_SSL_CTX* ctx,
  */
 PRO_NET_API
 const char*
-PRO_CALLTYPE
 ProSslCtx_GetAlpn(PRO_SSL_CTX* ctx);
 
 /////////////////////////////////////////////////////////////////////////////

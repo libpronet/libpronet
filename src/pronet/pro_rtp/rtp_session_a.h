@@ -39,7 +39,6 @@
  * 说明: 可以使用IRtpSession::GetLocalPort(...)获取本地端口号
  */
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionUdpclient(IRtpSessionObserver*    observer,
                           IProReactor*            reactor,
                           const RTP_SESSION_INFO* localInfo,
@@ -61,7 +60,6 @@ CreateRtpSessionUdpclient(IRtpSessionObserver*    observer,
  * 说明: 可以使用IRtpSession::GetLocalPort(...)获取本地端口号
  */
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionUdpserver(IRtpSessionObserver*    observer,
                           IProReactor*            reactor,
                           const RTP_SESSION_INFO* localInfo,
@@ -86,7 +84,6 @@ CreateRtpSessionUdpserver(IRtpSessionObserver*    observer,
  * 说明: suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionTcpclient(IRtpSessionObserver*    observer,
                           IProReactor*            reactor,
                           const RTP_SESSION_INFO* localInfo,
@@ -115,7 +112,6 @@ CreateRtpSessionTcpclient(IRtpSessionObserver*    observer,
  *       suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionTcpserver(IRtpSessionObserver*    observer,
                           IProReactor*            reactor,
                           const RTP_SESSION_INFO* localInfo,
@@ -141,7 +137,6 @@ CreateRtpSessionTcpserver(IRtpSessionObserver*    observer,
  * 说明: 无
  */
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionUdpclientEx(IRtpSessionObserver*    observer,
                             IProReactor*            reactor,
                             const RTP_SESSION_INFO* localInfo,
@@ -166,7 +161,6 @@ CreateRtpSessionUdpclientEx(IRtpSessionObserver*    observer,
  * 说明: 可以使用IRtpSession::GetLocalPort(...)获取本地端口号
  */
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionUdpserverEx(IRtpSessionObserver*    observer,
                             IProReactor*            reactor,
                             const RTP_SESSION_INFO* localInfo,
@@ -193,7 +187,6 @@ CreateRtpSessionUdpserverEx(IRtpSessionObserver*    observer,
  * 说明: suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionTcpclientEx(IRtpSessionObserver*    observer,
                             IProReactor*            reactor,
                             const RTP_SESSION_INFO* localInfo,
@@ -222,7 +215,6 @@ CreateRtpSessionTcpclientEx(IRtpSessionObserver*    observer,
  * 说明: suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionTcpserverEx(IRtpSessionObserver*    observer,
                             IProReactor*            reactor,
                             const RTP_SESSION_INFO* localInfo,
@@ -255,7 +247,6 @@ CreateRtpSessionTcpserverEx(IRtpSessionObserver*    observer,
  *       suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionSslclientEx(IRtpSessionObserver*         observer,
                             IProReactor*                 reactor,
                             const RTP_SESSION_INFO*      localInfo,
@@ -290,7 +281,6 @@ CreateRtpSessionSslclientEx(IRtpSessionObserver*         observer,
  *       suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionSslserverEx(IRtpSessionObserver*    observer,
                             IProReactor*            reactor,
                             const RTP_SESSION_INFO* localInfo,
@@ -321,7 +311,6 @@ CreateRtpSessionSslserverEx(IRtpSessionObserver*    observer,
  *       可以使用IRtpSession::GetLocalPort(...)获取多播端口号
  */
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionMcast(IRtpSessionObserver*    observer,
                       IProReactor*            reactor,
                       const RTP_SESSION_INFO* localInfo,
@@ -349,7 +338,6 @@ CreateRtpSessionMcast(IRtpSessionObserver*    observer,
  *       可以使用IRtpSession::GetLocalPort(...)获取多播端口号
  */
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionMcastEx(IRtpSessionObserver*    observer,
                         IProReactor*            reactor,
                         const RTP_SESSION_INFO* localInfo,
@@ -368,7 +356,6 @@ CreateRtpSessionMcastEx(IRtpSessionObserver*    observer,
  * 说明: 无
  */
 void
-PRO_CALLTYPE
 DeleteRtpSession(IRtpSession* session);
 
 /////////////////////////////////////////////////////////////////////////////

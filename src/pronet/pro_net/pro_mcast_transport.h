@@ -43,14 +43,14 @@ public:
 
     void Fini();
 
-    virtual PRO_TRANS_TYPE PRO_CALLTYPE GetType() const
+    virtual PRO_TRANS_TYPE GetType() const
     {
         return (PRO_TRANS_MCAST);
     }
 
-    virtual bool PRO_CALLTYPE AddMcastReceiver(const char* mcastIp);
+    virtual bool AddMcastReceiver(const char* mcastIp);
 
-    virtual void PRO_CALLTYPE RemoveMcastReceiver(const char* mcastIp);
+    virtual void RemoveMcastReceiver(const char* mcastIp);
 
 private:
 

@@ -39,9 +39,9 @@ public:
     {
     }
 
-    virtual unsigned long PRO_CALLTYPE AddRef();
+    virtual unsigned long AddRef();
 
-    virtual unsigned long PRO_CALLTYPE Release();
+    virtual unsigned long Release();
 
 private:
 

@@ -135,9 +135,9 @@ public:
 
     void Fini();
 
-    virtual unsigned long PRO_CALLTYPE AddRef();
+    virtual unsigned long AddRef();
 
-    virtual unsigned long PRO_CALLTYPE Release();
+    virtual unsigned long Release();
 
     void KickoutUsers(const CProStlSet<RTP_MSG_USER>& users);
 
@@ -152,7 +152,7 @@ private:
 
     virtual ~CMsgServer();
 
-    virtual bool PRO_CALLTYPE OnCheckUser(
+    virtual bool OnCheckUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
         const char*         userPublicIp,
@@ -165,7 +165,7 @@ private:
         bool*               isC2s
         );
 
-    virtual void PRO_CALLTYPE OnOkUser(
+    virtual void OnOkUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
         const char*         userPublicIp,
@@ -173,14 +173,14 @@ private:
         PRO_INT64           appData
         );
 
-    virtual void PRO_CALLTYPE OnCloseUser(
+    virtual void OnCloseUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
         long                errorCode,
         long                sslCode
         );
 
-    virtual void PRO_CALLTYPE OnHeartbeatUser(
+    virtual void OnHeartbeatUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
         PRO_INT64           peerAliveTick
@@ -188,7 +188,7 @@ private:
     {
     }
 
-    virtual void PRO_CALLTYPE OnRecvMsg(
+    virtual void OnRecvMsg(
         IRtpMsgServer*      msgServer,
         const void*         buf,
         unsigned long       size,

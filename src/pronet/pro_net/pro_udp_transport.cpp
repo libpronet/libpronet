@@ -204,7 +204,6 @@ CProUdpTransport::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CProUdpTransport::AddRef()
 {
     const unsigned long refCount = CProEventHandler::AddRef();
@@ -213,7 +212,6 @@ CProUdpTransport::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CProUdpTransport::Release()
 {
     const unsigned long refCount = CProEventHandler::Release();
@@ -222,7 +220,6 @@ CProUdpTransport::Release()
 }
 
 PRO_SSL_SUITE_ID
-PRO_CALLTYPE
 CProUdpTransport::GetSslSuite(char suiteName[64]) const
 {
     strcpy(suiteName, "NONE");
@@ -231,7 +228,6 @@ CProUdpTransport::GetSslSuite(char suiteName[64]) const
 }
 
 PRO_INT64
-PRO_CALLTYPE
 CProUdpTransport::GetSockId() const
 {
     PRO_INT64 sockId = -1;
@@ -246,7 +242,6 @@ CProUdpTransport::GetSockId() const
 }
 
 const char*
-PRO_CALLTYPE
 CProUdpTransport::GetLocalIp(char localIp[64]) const
 {
     {
@@ -259,7 +254,6 @@ CProUdpTransport::GetLocalIp(char localIp[64]) const
 }
 
 unsigned short
-PRO_CALLTYPE
 CProUdpTransport::GetLocalPort() const
 {
     unsigned short localPort = 0;
@@ -274,7 +268,6 @@ CProUdpTransport::GetLocalPort() const
 }
 
 const char*
-PRO_CALLTYPE
 CProUdpTransport::GetRemoteIp(char remoteIp[64]) const
 {
     {
@@ -287,7 +280,6 @@ CProUdpTransport::GetRemoteIp(char remoteIp[64]) const
 }
 
 unsigned short
-PRO_CALLTYPE
 CProUdpTransport::GetRemotePort() const
 {
     unsigned short remotePort = 0;
@@ -302,7 +294,6 @@ CProUdpTransport::GetRemotePort() const
 }
 
 bool
-PRO_CALLTYPE
 CProUdpTransport::SendData(const void*             buf,
                            size_t                  size,
                            PRO_UINT64              actionId,   /* ignored */
@@ -338,7 +329,6 @@ CProUdpTransport::SendData(const void*             buf,
 }
 
 void
-PRO_CALLTYPE
 CProUdpTransport::SuspendRecv()
 {
     {
@@ -354,7 +344,6 @@ CProUdpTransport::SuspendRecv()
 }
 
 void
-PRO_CALLTYPE
 CProUdpTransport::ResumeRecv()
 {
     {
@@ -370,7 +359,6 @@ CProUdpTransport::ResumeRecv()
 }
 
 void
-PRO_CALLTYPE
 CProUdpTransport::StartHeartbeat()
 {
     {
@@ -389,7 +377,6 @@ CProUdpTransport::StartHeartbeat()
 }
 
 void
-PRO_CALLTYPE
 CProUdpTransport::StopHeartbeat()
 {
     {
@@ -406,7 +393,6 @@ CProUdpTransport::StopHeartbeat()
 }
 
 void
-PRO_CALLTYPE
 CProUdpTransport::UdpConnResetAsError(const pbsd_sockaddr_in* remoteAddr) /* = NULL */
 {
     {
@@ -442,7 +428,6 @@ CProUdpTransport::UdpConnResetAsError(const pbsd_sockaddr_in* remoteAddr) /* = N
 }
 
 void
-PRO_CALLTYPE
 CProUdpTransport::OnInput(PRO_INT64 sockId)
 {
     assert(sockId != -1);
@@ -544,7 +529,6 @@ EXIT:
 }
 
 void
-PRO_CALLTYPE
 CProUdpTransport::OnError(PRO_INT64 sockId,
                           long      errorCode)
 {
@@ -585,7 +569,6 @@ CProUdpTransport::OnError(PRO_INT64 sockId,
 }
 
 void
-PRO_CALLTYPE
 CProUdpTransport::OnTimer(void*      factory,
                           PRO_UINT64 timerId,
                           PRO_INT64  userData)

@@ -43,33 +43,33 @@ public:
     {
     }
 
-    virtual bool PRO_CALLTYPE Init() = 0;
+    virtual bool Init() = 0;
 
-    virtual void PRO_CALLTYPE Fini() = 0;
+    virtual void Fini() = 0;
 
-    virtual bool PRO_CALLTYPE AddHandler(
+    virtual bool AddHandler(
         PRO_INT64         sockId,
         CProEventHandler* handler,
         unsigned long     mask
         ) = 0;
 
-    virtual void PRO_CALLTYPE RemoveHandler(
+    virtual void RemoveHandler(
         PRO_INT64     sockId,
         unsigned long mask
         ) = 0;
 
-    virtual unsigned long PRO_CALLTYPE GetHandlerCount() const;
+    virtual unsigned long GetHandlerCount() const;
 
-    virtual void PRO_CALLTYPE WorkerRun() = 0;
+    virtual void WorkerRun() = 0;
 
 protected:
 
-    virtual unsigned long PRO_CALLTYPE AddRef()
+    virtual unsigned long AddRef()
     {
         return (1);
     }
 
-    virtual unsigned long PRO_CALLTYPE Release()
+    virtual unsigned long Release()
     {
         return (1);
     }

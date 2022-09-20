@@ -30,7 +30,6 @@
 
 static
 int
-PRO_CALLTYPE
 sqlite3_prepare_v2_i(sqlite3*       db,
                      const char*    zSql,
                      int            nByte,
@@ -55,7 +54,6 @@ sqlite3_prepare_v2_i(sqlite3*       db,
 
 static
 int
-PRO_CALLTYPE
 sqlite3_step_i(sqlite3_stmt* pStmt)
 {
     int err = SQLITE_ERROR;
@@ -76,7 +74,6 @@ sqlite3_step_i(sqlite3_stmt* pStmt)
 
 static
 int
-PRO_CALLTYPE
 sqlite3_finalize_i(sqlite3_stmt* pStmt)
 {
     int err = SQLITE_ERROR;

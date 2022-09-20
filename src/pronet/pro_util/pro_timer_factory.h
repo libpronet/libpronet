@@ -86,11 +86,11 @@ public:
 
     virtual ~IProOnTimer() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
-    virtual void PRO_CALLTYPE OnTimer(
+    virtual void OnTimer(
         void*      factory,
         PRO_UINT64 timerId,
         PRO_INT64  userData

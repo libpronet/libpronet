@@ -27,30 +27,24 @@
 ////
 
 void*
-PRO_CALLTYPE
 ProMd5New();
 
 void
-PRO_CALLTYPE
 ProMd5Delete(void* ctx);
 
 void
-PRO_CALLTYPE
 ProMd5Init(void* ctx);
 
 void
-PRO_CALLTYPE
 ProMd5Update(void*       ctx,
              const void* buf,
              size_t      size);
 
 void
-PRO_CALLTYPE
 ProMd5Finish(void* ctx,
              char  hashValue[16]);
 
 void
-PRO_CALLTYPE
 ProMd5All(const void* buf,
           size_t      size,
           char        hashValue[16]);
@@ -58,30 +52,24 @@ ProMd5All(const void* buf,
 /*-------------------------------------------------------------------------*/
 
 void*
-PRO_CALLTYPE
 ProSha1New();
 
 void
-PRO_CALLTYPE
 ProSha1Delete(void* ctx);
 
 void
-PRO_CALLTYPE
 ProSha1Init(void* ctx);
 
 void
-PRO_CALLTYPE
 ProSha1Update(void*       ctx,
               const void* buf,
               size_t      size);
 
 void
-PRO_CALLTYPE
 ProSha1Finish(void* ctx,
               char  hashValue[20]);
 
 void
-PRO_CALLTYPE
 ProSha1All(const void* buf,
            size_t      size,
            char        hashValue[20]);
@@ -89,30 +77,24 @@ ProSha1All(const void* buf,
 /*-------------------------------------------------------------------------*/
 
 void*
-PRO_CALLTYPE
 ProSha256New();
 
 void
-PRO_CALLTYPE
 ProSha256Delete(void* ctx);
 
 void
-PRO_CALLTYPE
 ProSha256Init(void* ctx);
 
 void
-PRO_CALLTYPE
 ProSha256Update(void*       ctx,
                 const void* buf,
                 size_t      size);
 
 void
-PRO_CALLTYPE
 ProSha256Finish(void* ctx,
                 char  hashValue[32]);
 
 void
-PRO_CALLTYPE
 ProSha256All(const void* buf,
              size_t      size,
              char        hashValue[32]);
@@ -120,30 +102,24 @@ ProSha256All(const void* buf,
 /*-------------------------------------------------------------------------*/
 
 void*
-PRO_CALLTYPE
 ProRipemd160New();
 
 void
-PRO_CALLTYPE
 ProRipemd160Delete(void* ctx);
 
 void
-PRO_CALLTYPE
 ProRipemd160Init(void* ctx);
 
 void
-PRO_CALLTYPE
 ProRipemd160Update(void*       ctx,
                    const void* buf,
                    size_t      size);
 
 void
-PRO_CALLTYPE
 ProRipemd160Finish(void* ctx,
                    char  hashValue[20]);
 
 void
-PRO_CALLTYPE
 ProRipemd160All(const void* buf,
                 size_t      size,
                 char        hashValue[20]);
@@ -151,49 +127,41 @@ ProRipemd160All(const void* buf,
 /*-------------------------------------------------------------------------*/
 
 void*
-PRO_CALLTYPE
 ProRsaNew();
 
 void
-PRO_CALLTYPE
 ProRsaDelete(void* ctx);
 
 bool
-PRO_CALLTYPE
 ProRsaInitPub(void*       ctx,
               const char* nString,
               const char* eString);
 
 bool
-PRO_CALLTYPE
 ProRsaInitPrivNED(void*       ctx,
                   const char* nString,
                   const char* eString,
                   const char* dString);
 
 bool
-PRO_CALLTYPE
 ProRsaInitPrivPQE(void*       ctx,
                   const char* pString,
                   const char* qString,
                   const char* eString);
 
 void
-PRO_CALLTYPE
 ProRsaEncrypt(void*                ctx,
               const void*          inputBuffer,
               size_t               inputSize,
               CProStlVector<char>& outputBuffer);
 
 void
-PRO_CALLTYPE
 ProRsaDecrypt(void*                ctx,
               const void*          inputBuffer,
               size_t               inputSize,
               CProStlVector<char>& outputBuffer);
 
 bool
-PRO_CALLTYPE
 ProRsaKeyGen(unsigned long  keyBytes, /* 128, 256, 512 */
              CProStlString& pString,
              CProStlString& qString,
@@ -204,19 +172,16 @@ ProRsaKeyGen(unsigned long  keyBytes, /* 128, 256, 512 */
 /*-------------------------------------------------------------------------*/
 
 void
-PRO_CALLTYPE
 ProBase64Encode(const void*    inputBuffer,
                 size_t         inputSize,
                 CProStlString& outputString);
 
 void
-PRO_CALLTYPE
 ProBase64Decode(const void*          inputBuffer,
                 size_t               inputSize,
                 CProStlVector<char>& outputBuffer);
 
 void
-PRO_CALLTYPE
 ProBase64DecodeStr(const char*          inputString,
                    CProStlVector<char>& outputBuffer);
 
@@ -235,7 +200,6 @@ ProBase64DecodeStr(const char*          inputString,
  * 说明: 无
  */
 void
-PRO_CALLTYPE
 ProCalcPasswordHash(const char  nonce[32],
                     const char* password,
                     char        passwordHash[32]);
@@ -252,7 +216,6 @@ ProCalcPasswordHash(const char  nonce[32],
  * 说明: 该函数速度较慢, 只用于口令等敏感数据的擦除
  */
 void
-PRO_CALLTYPE
 ProZeroMemory(char*  buf,
               size_t size);
 

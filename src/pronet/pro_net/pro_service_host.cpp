@@ -169,7 +169,6 @@ CProServiceHost::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CProServiceHost::AddRef()
 {
     const unsigned long refCount = CProRefCount::AddRef();
@@ -178,7 +177,6 @@ CProServiceHost::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CProServiceHost::Release()
 {
     const unsigned long refCount = CProRefCount::Release();
@@ -200,7 +198,6 @@ CProServiceHost::DecServiceLoad(PRO_INT64 sockId)
 }
 
 void
-PRO_CALLTYPE
 CProServiceHost::OnConnectOk(IProConnector*   connector,
                              PRO_INT64        sockId,
                              bool             unixSocket,
@@ -272,7 +269,6 @@ CProServiceHost::OnConnectOk(IProConnector*   connector,
 }
 
 void
-PRO_CALLTYPE
 CProServiceHost::OnConnectError(IProConnector* connector,
                                 const char*    remoteIp,
                                 unsigned short remotePort,
@@ -306,7 +302,6 @@ CProServiceHost::OnConnectError(IProConnector* connector,
 }
 
 void
-PRO_CALLTYPE
 CProServiceHost::OnRecv(CProServicePipe*          pipe,
                         const PRO_SERVICE_PACKET& packet)
 {
@@ -461,7 +456,6 @@ CProServiceHost::OnRecv(CProServicePipe*          pipe,
 }
 
 void
-PRO_CALLTYPE
 CProServiceHost::OnRecvFd(CProServicePipe*          pipe,
                           PRO_INT64                 fd,
                           bool                      unixSocket,
@@ -580,7 +574,6 @@ CProServiceHost::OnRecvFd(CProServicePipe*          pipe,
 }
 
 void
-PRO_CALLTYPE
 CProServiceHost::OnClose(CProServicePipe* pipe)
 {
     assert(pipe != NULL);
@@ -609,7 +602,6 @@ CProServiceHost::OnClose(CProServicePipe* pipe)
 }
 
 void
-PRO_CALLTYPE
 CProServiceHost::OnTimer(void*      factory,
                          PRO_UINT64 timerId,
                          PRO_INT64  userData)
@@ -675,7 +667,6 @@ CProServiceHost::OnTimer(void*      factory,
 ////
 
 void
-PRO_CALLTYPE
 ProDecServiceLoad(PRO_INT64 sockId)
 {
     if (sockId == -1)

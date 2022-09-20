@@ -44,7 +44,6 @@ extern "C" {
 
 extern
 void
-PRO_CALLTYPE
 ProSslInit();
 
 /////////////////////////////////////////////////////////////////////////////
@@ -52,7 +51,6 @@ ProSslInit();
 
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProNetInit()
 {
     static bool s_flag = false;
@@ -68,7 +66,6 @@ ProNetInit()
 
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProNetVersion(unsigned char* major, /* = NULL */
               unsigned char* minor, /* = NULL */
               unsigned char* patch) /* = NULL */
@@ -89,7 +86,6 @@ ProNetVersion(unsigned char* major, /* = NULL */
 
 PRO_NET_API
 IProReactor*
-PRO_CALLTYPE
 ProCreateReactor(unsigned long ioThreadCount,
                  long          ioThreadPriority) /* = 0 */
 {
@@ -108,7 +104,6 @@ ProCreateReactor(unsigned long ioThreadCount,
 
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProDeleteReactor(IProReactor* reactor)
 {
     if (reactor == NULL)
@@ -123,7 +118,6 @@ ProDeleteReactor(IProReactor* reactor)
 
 PRO_NET_API
 IProAcceptor*
-PRO_CALLTYPE
 ProCreateAcceptor(IProAcceptorObserver* observer,
                   IProReactor*          reactor,
                   const char*           localIp,   /* = NULL */
@@ -150,7 +144,6 @@ ProCreateAcceptor(IProAcceptorObserver* observer,
 
 PRO_NET_API
 IProAcceptor*
-PRO_CALLTYPE
 ProCreateAcceptorEx(IProAcceptorObserver* observer,
                     IProReactor*          reactor,
                     const char*           localIp,          /* = NULL */
@@ -178,7 +171,6 @@ ProCreateAcceptorEx(IProAcceptorObserver* observer,
 
 PRO_NET_API
 unsigned short
-PRO_CALLTYPE
 ProGetAcceptorPort(IProAcceptor* acceptor)
 {
     assert(acceptor != NULL);
@@ -194,7 +186,6 @@ ProGetAcceptorPort(IProAcceptor* acceptor)
 
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProDeleteAcceptor(IProAcceptor* acceptor)
 {
     if (acceptor == NULL)
@@ -209,7 +200,6 @@ ProDeleteAcceptor(IProAcceptor* acceptor)
 
 PRO_NET_API
 IProConnector*
-PRO_CALLTYPE
 ProCreateConnector(bool                   enableUnixSocket,
                    IProConnectorObserver* observer,
                    IProReactor*           reactor,
@@ -240,7 +230,6 @@ ProCreateConnector(bool                   enableUnixSocket,
 
 PRO_NET_API
 IProConnector*
-PRO_CALLTYPE
 ProCreateConnectorEx(bool                   enableUnixSocket,
                      unsigned char          serviceId,
                      unsigned char          serviceOpt,
@@ -273,7 +262,6 @@ ProCreateConnectorEx(bool                   enableUnixSocket,
 
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProDeleteConnector(IProConnector* connector)
 {
     if (connector == NULL)
@@ -288,7 +276,6 @@ ProDeleteConnector(IProConnector* connector)
 
 PRO_NET_API
 IProTcpHandshaker*
-PRO_CALLTYPE
 ProCreateTcpHandshaker(IProTcpHandshakerObserver* observer,
                        IProReactor*               reactor,
                        PRO_INT64                  sockId,
@@ -321,7 +308,6 @@ ProCreateTcpHandshaker(IProTcpHandshakerObserver* observer,
 
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProDeleteTcpHandshaker(IProTcpHandshaker* handshaker)
 {
     if (handshaker == NULL)
@@ -336,7 +322,6 @@ ProDeleteTcpHandshaker(IProTcpHandshaker* handshaker)
 
 PRO_NET_API
 IProSslHandshaker*
-PRO_CALLTYPE
 ProCreateSslHandshaker(IProSslHandshakerObserver* observer,
                        IProReactor*               reactor,
                        PRO_SSL_CTX*               ctx,
@@ -370,7 +355,6 @@ ProCreateSslHandshaker(IProSslHandshakerObserver* observer,
 
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProDeleteSslHandshaker(IProSslHandshaker* handshaker)
 {
     if (handshaker == NULL)
@@ -385,7 +369,6 @@ ProDeleteSslHandshaker(IProSslHandshaker* handshaker)
 
 PRO_NET_API
 IProTransport*
-PRO_CALLTYPE
 ProCreateTcpTransport(IProTransportObserver* observer,
                       IProReactor*           reactor,
                       PRO_INT64              sockId,
@@ -417,7 +400,6 @@ ProCreateTcpTransport(IProTransportObserver* observer,
 
 PRO_NET_API
 IProTransport*
-PRO_CALLTYPE
 ProCreateUdpTransport(IProTransportObserver* observer,
                       IProReactor*           reactor,
                       bool                   bindToLocal,       /* = false */
@@ -452,7 +434,6 @@ ProCreateUdpTransport(IProTransportObserver* observer,
 
 PRO_NET_API
 IProTransport*
-PRO_CALLTYPE
 ProCreateMcastTransport(IProTransportObserver* observer,
                         IProReactor*           reactor,
                         const char*            mcastIp,
@@ -484,7 +465,6 @@ ProCreateMcastTransport(IProTransportObserver* observer,
 
 PRO_NET_API
 IProTransport*
-PRO_CALLTYPE
 ProCreateSslTransport(IProTransportObserver* observer,
                       IProReactor*           reactor,
                       PRO_SSL_CTX*           ctx,
@@ -517,7 +497,6 @@ ProCreateSslTransport(IProTransportObserver* observer,
 
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProDeleteTransport(IProTransport* trans)
 {
     if (trans == NULL)
@@ -558,7 +537,6 @@ ProDeleteTransport(IProTransport* trans)
 
 PRO_NET_API
 IProServiceHub*
-PRO_CALLTYPE
 ProCreateServiceHub(IProReactor*   reactor,
                     unsigned short servicePort,
                     bool           enableLoadBalance) /* = false */
@@ -586,7 +564,6 @@ ProCreateServiceHub(IProReactor*   reactor,
 
 PRO_NET_API
 IProServiceHub*
-PRO_CALLTYPE
 ProCreateServiceHubEx(IProReactor*   reactor,
                       unsigned short servicePort,
                       bool           enableLoadBalance, /* = false */
@@ -615,7 +592,6 @@ ProCreateServiceHubEx(IProReactor*   reactor,
 
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProDeleteServiceHub(IProServiceHub* hub)
 {
     if (hub == NULL)
@@ -630,7 +606,6 @@ ProDeleteServiceHub(IProServiceHub* hub)
 
 PRO_NET_API
 IProServiceHost*
-PRO_CALLTYPE
 ProCreateServiceHost(IProServiceHostObserver* observer,
                      IProReactor*             reactor,
                      unsigned short           servicePort)
@@ -655,7 +630,6 @@ ProCreateServiceHost(IProServiceHostObserver* observer,
 
 PRO_NET_API
 IProServiceHost*
-PRO_CALLTYPE
 ProCreateServiceHostEx(IProServiceHostObserver* observer,
                        IProReactor*             reactor,
                        unsigned short           servicePort,
@@ -687,7 +661,6 @@ ProCreateServiceHostEx(IProServiceHostObserver* observer,
 
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProDeleteServiceHost(IProServiceHost* host)
 {
     if (host == NULL)
@@ -702,7 +675,6 @@ ProDeleteServiceHost(IProServiceHost* host)
 
 PRO_NET_API
 PRO_INT64
-PRO_CALLTYPE
 ProOpenTcpSockId(const char*    localIp, /* = NULL */
                  unsigned short localPort)
 {
@@ -748,7 +720,6 @@ ProOpenTcpSockId(const char*    localIp, /* = NULL */
 
 PRO_NET_API
 PRO_INT64
-PRO_CALLTYPE
 ProOpenUdpSockId(const char*    localIp, /* = NULL */
                  unsigned short localPort)
 {
@@ -794,7 +765,6 @@ ProOpenUdpSockId(const char*    localIp, /* = NULL */
 
 PRO_NET_API
 void
-PRO_CALLTYPE
 ProCloseSockId(PRO_INT64 sockId,
                bool      linger) /* = false */
 {

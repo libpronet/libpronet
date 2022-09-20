@@ -220,7 +220,6 @@ static CProThreadMutex_s*               g_s_lock9         = NULL;
 
 static
 void
-PRO_CALLTYPE
 pbsd_startup_i()
 {
     static bool s_flag = false;
@@ -238,7 +237,6 @@ pbsd_startup_i()
 
 static
 int
-PRO_CALLTYPE
 pbsd_errno_i()
 {
     int errcode = 0;
@@ -263,7 +261,6 @@ pbsd_errno_i()
 
 static
 int
-PRO_CALLTYPE
 pbsd_ioctl_closexec_i(PRO_INT64 fd)
 {
     int retc = -1;
@@ -294,7 +291,6 @@ pbsd_ioctl_closexec_i(PRO_INT64 fd)
 
 static
 PRO_INT64
-PRO_CALLTYPE
 pbsd_socket_i(int af,
               int type,
               int protocol)
@@ -352,7 +348,6 @@ pbsd_socket_i(int af,
 
 static
 int
-PRO_CALLTYPE
 pbsd_select_i(PRO_INT64       nfds,
               pbsd_fd_set*    readfds,
               pbsd_fd_set*    writefds,
@@ -380,7 +375,6 @@ pbsd_select_i(PRO_INT64       nfds,
 
 static
 void
-PRO_CALLTYPE
 pbsd_closesocket_i(PRO_INT64 fd)
 {
     if (fd == -1)
@@ -401,7 +395,6 @@ pbsd_closesocket_i(PRO_INT64 fd)
  */
 static
 void
-PRO_CALLTYPE
 Init_i()
 {
     pbsd_startup_i();
@@ -454,7 +447,6 @@ Init_i()
 
 static
 void
-PRO_CALLTYPE
 InitSocket_i()
 {
     g_s_sockId = pbsd_socket_i(AF_INET, SOCK_DGRAM, 0);
@@ -462,7 +454,6 @@ InitSocket_i()
 
 static
 void
-PRO_CALLTYPE
 FiniSocket_i()
 {
     pbsd_closesocket_i(g_s_sockId);
@@ -471,7 +462,6 @@ FiniSocket_i()
 
 static
 void
-PRO_CALLTYPE
 Delay_i(unsigned long milliseconds)
 {
     const PRO_INT64 te = ProGetTickCount64_s() + milliseconds;
@@ -493,7 +483,6 @@ Delay_i(unsigned long milliseconds)
 
 static
 PRO_UINT32
-PRO_CALLTYPE
 GetTickCount32_i()
 {
     Init_i();
@@ -541,7 +530,6 @@ GetTickCount32_i()
 
 PRO_SHARED_API
 void
-PRO_CALLTYPE
 ProSharedVersion(unsigned char* major, /* = NULL */
                  unsigned char* minor, /* = NULL */
                  unsigned char* patch) /* = NULL */
@@ -562,7 +550,6 @@ ProSharedVersion(unsigned char* major, /* = NULL */
 
 PRO_SHARED_API
 void
-PRO_CALLTYPE
 ProSrand()
 {
     PRO_INT64 seconds = GetTickCount32_i();
@@ -577,7 +564,6 @@ ProSrand()
 
 PRO_SHARED_API
 double
-PRO_CALLTYPE
 ProRand_0_1()
 {
     return ((double)rand() / RAND_MAX);
@@ -585,7 +571,6 @@ ProRand_0_1()
 
 PRO_SHARED_API
 int
-PRO_CALLTYPE
 ProRand_0_32767()
 {
     return (rand());
@@ -593,7 +578,6 @@ ProRand_0_32767()
 
 PRO_SHARED_API
 PRO_INT64
-PRO_CALLTYPE
 ProGetTickCount64_s()
 {
     Init_i();
@@ -706,7 +690,6 @@ ProGetTickCount64_s()
 
 PRO_SHARED_API
 void
-PRO_CALLTYPE
 ProSleep_s(PRO_UINT32 milliseconds)
 {
     Init_i();
@@ -810,7 +793,6 @@ ProSleep_s(PRO_UINT32 milliseconds)
 
 PRO_SHARED_API
 PRO_UINT64
-PRO_CALLTYPE
 ProMakeTimerId()
 {
     Init_i();
@@ -827,7 +809,6 @@ ProMakeTimerId()
 
 PRO_SHARED_API
 PRO_UINT64
-PRO_CALLTYPE
 ProMakeMmTimerId()
 {
     Init_i();
@@ -848,7 +829,6 @@ ProMakeMmTimerId()
 
 PRO_SHARED_API
 void*
-PRO_CALLTYPE
 ProAllocateSgiPoolBuffer(size_t        size,
                          unsigned long poolIndex) /* 0 ~ 9 */
 {
@@ -957,7 +937,6 @@ ProAllocateSgiPoolBuffer(size_t        size,
 
 PRO_SHARED_API
 void*
-PRO_CALLTYPE
 ProReallocateSgiPoolBuffer(void*         buf,
                            size_t        newSize,
                            unsigned long poolIndex) /* 0 ~ 9 */
@@ -1078,7 +1057,6 @@ ProReallocateSgiPoolBuffer(void*         buf,
 
 PRO_SHARED_API
 void
-PRO_CALLTYPE
 ProDeallocateSgiPoolBuffer(void*         buf,
                            unsigned long poolIndex) /* 0 ~ 9 */
 {
@@ -1173,7 +1151,6 @@ ProDeallocateSgiPoolBuffer(void*         buf,
 
 PRO_SHARED_API
 void
-PRO_CALLTYPE
 ProGetSgiPoolInfo(void*         freeList[64],
                   size_t        objSize[64],
                   size_t        busyObjNum[64],

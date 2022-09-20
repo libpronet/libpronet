@@ -587,9 +587,9 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
         m_statLossRateOutput.SetTimeSpan(statInSeconds);
 
         initArgs2.comm.observer->AddRef();
-        m_session->GetInfo(&m_info); /* retrieve the real info */
         m_observer = initArgs2.comm.observer;
         m_reactor  = initArgs2.comm.reactor;
+        m_session->GetInfo(&m_info); /* retrieve the real info */
 
 #if !defined(_WIN32_WCE)
         bool enableTrace = false;
@@ -664,7 +664,6 @@ CRtpSessionWrapper::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpSessionWrapper::AddRef()
 {
     const unsigned long refCount = CProRefCount::AddRef();
@@ -673,7 +672,6 @@ CRtpSessionWrapper::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpSessionWrapper::Release()
 {
     const unsigned long refCount = CProRefCount::Release();
@@ -682,7 +680,6 @@ CRtpSessionWrapper::Release()
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::GetInfo(RTP_SESSION_INFO* info) const
 {
     assert(info != NULL);
@@ -699,7 +696,6 @@ CRtpSessionWrapper::GetInfo(RTP_SESSION_INFO* info) const
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::GetAck(RTP_SESSION_ACK* ack) const
 {
     assert(ack != NULL);
@@ -721,7 +717,6 @@ CRtpSessionWrapper::GetAck(RTP_SESSION_ACK* ack) const
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::GetSyncId(unsigned char syncId[14]) const
 {
     memset(syncId, 0, 14);
@@ -737,7 +732,6 @@ CRtpSessionWrapper::GetSyncId(unsigned char syncId[14]) const
 }
 
 PRO_SSL_SUITE_ID
-PRO_CALLTYPE
 CRtpSessionWrapper::GetSslSuite(char suiteName[64]) const
 {
     strcpy(suiteName, "NONE");
@@ -757,7 +751,6 @@ CRtpSessionWrapper::GetSslSuite(char suiteName[64]) const
 }
 
 PRO_INT64
-PRO_CALLTYPE
 CRtpSessionWrapper::GetSockId() const
 {
     PRO_INT64 sockId = -1;
@@ -775,7 +768,6 @@ CRtpSessionWrapper::GetSockId() const
 }
 
 const char*
-PRO_CALLTYPE
 CRtpSessionWrapper::GetLocalIp(char localIp[64]) const
 {
     strcpy(localIp, "0.0.0.0");
@@ -793,7 +785,6 @@ CRtpSessionWrapper::GetLocalIp(char localIp[64]) const
 }
 
 unsigned short
-PRO_CALLTYPE
 CRtpSessionWrapper::GetLocalPort() const
 {
     unsigned short localPort = 0;
@@ -811,7 +802,6 @@ CRtpSessionWrapper::GetLocalPort() const
 }
 
 const char*
-PRO_CALLTYPE
 CRtpSessionWrapper::GetRemoteIp(char remoteIp[64]) const
 {
     strcpy(remoteIp, "0.0.0.0");
@@ -829,7 +819,6 @@ CRtpSessionWrapper::GetRemoteIp(char remoteIp[64]) const
 }
 
 unsigned short
-PRO_CALLTYPE
 CRtpSessionWrapper::GetRemotePort() const
 {
     unsigned short remotePort = 0;
@@ -847,7 +836,6 @@ CRtpSessionWrapper::GetRemotePort() const
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::SetRemoteIpAndPort(const char*    remoteIp,   /* = NULL */
                                        unsigned short remotePort) /* = 0 */
 {
@@ -865,7 +853,6 @@ CRtpSessionWrapper::SetRemoteIpAndPort(const char*    remoteIp,   /* = NULL */
 }
 
 bool
-PRO_CALLTYPE
 CRtpSessionWrapper::IsTcpConnected() const
 {
     bool connected = false;
@@ -883,7 +870,6 @@ CRtpSessionWrapper::IsTcpConnected() const
 }
 
 bool
-PRO_CALLTYPE
 CRtpSessionWrapper::SendPacket(IRtpPacket* packet,
                                bool*       tryAgain) /* = NULL */
 {
@@ -921,7 +907,6 @@ CRtpSessionWrapper::SendPacket(IRtpPacket* packet,
 }
 
 bool
-PRO_CALLTYPE
 CRtpSessionWrapper::SendPacketByTimer(IRtpPacket*   packet,
                                       unsigned long sendDurationMs) /* = 0 */
 {
@@ -1039,7 +1024,6 @@ CRtpSessionWrapper::DoSendPacket()
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::GetSendOnSendTick(PRO_INT64* onSendTick1,       /* = NULL */
                                       PRO_INT64* onSendTick2) const /* = NULL */
 {
@@ -1063,7 +1047,6 @@ CRtpSessionWrapper::GetSendOnSendTick(PRO_INT64* onSendTick1,       /* = NULL */
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::RequestOnSend()
 {
     {
@@ -1080,7 +1063,6 @@ CRtpSessionWrapper::RequestOnSend()
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::SuspendRecv()
 {
     {
@@ -1097,7 +1079,6 @@ CRtpSessionWrapper::SuspendRecv()
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::ResumeRecv()
 {
     {
@@ -1114,7 +1095,6 @@ CRtpSessionWrapper::ResumeRecv()
 }
 
 bool
-PRO_CALLTYPE
 CRtpSessionWrapper::AddMcastReceiver(const char* mcastIp)
 {
     bool ret = false;
@@ -1135,7 +1115,6 @@ CRtpSessionWrapper::AddMcastReceiver(const char* mcastIp)
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::RemoveMcastReceiver(const char* mcastIp)
 {
     {
@@ -1152,7 +1131,6 @@ CRtpSessionWrapper::RemoveMcastReceiver(const char* mcastIp)
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::EnableInput(bool enable)
 {
     enable = enable ? true : false;
@@ -1180,7 +1158,6 @@ CRtpSessionWrapper::EnableInput(bool enable)
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::EnableOutput(bool enable)
 {
     enable = enable ? true : false;
@@ -1229,7 +1206,6 @@ CRtpSessionWrapper::EnableOutput(bool enable)
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::SetOutputRedline(unsigned long redlineBytes,   /* = 0 */
                                      unsigned long redlineFrames,  /* = 0 */
                                      unsigned long redlineDelayMs) /* = 0 */
@@ -1248,7 +1224,6 @@ CRtpSessionWrapper::SetOutputRedline(unsigned long redlineBytes,   /* = 0 */
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::GetOutputRedline(unsigned long* redlineBytes,         /* = NULL */
                                      unsigned long* redlineFrames,        /* = NULL */
                                      unsigned long* redlineDelayMs) const /* = NULL */
@@ -1277,7 +1252,6 @@ CRtpSessionWrapper::GetOutputRedline(unsigned long* redlineBytes,         /* = N
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::GetFlowctrlInfo(float*         srcFrameRate,       /* = NULL */
                                     float*         srcBitRate,         /* = NULL */
                                     float*         outFrameRate,       /* = NULL */
@@ -1328,7 +1302,6 @@ CRtpSessionWrapper::GetFlowctrlInfo(float*         srcFrameRate,       /* = NULL
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::ResetFlowctrlInfo()
 {
     {
@@ -1345,7 +1318,6 @@ CRtpSessionWrapper::ResetFlowctrlInfo()
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::GetInputStat(float*      frameRate,       /* = NULL */
                                  float*      bitRate,         /* = NULL */
                                  float*      lossRate,        /* = NULL */
@@ -1374,7 +1346,6 @@ CRtpSessionWrapper::GetInputStat(float*      frameRate,       /* = NULL */
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::GetOutputStat(float*      frameRate,       /* = NULL */
                                   float*      bitRate,         /* = NULL */
                                   float*      lossRate,        /* = NULL */
@@ -1403,7 +1374,6 @@ CRtpSessionWrapper::GetOutputStat(float*      frameRate,       /* = NULL */
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::ResetInputStat()
 {
     {
@@ -1422,7 +1392,6 @@ CRtpSessionWrapper::ResetInputStat()
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::ResetOutputStat()
 {
     {
@@ -1441,7 +1410,6 @@ CRtpSessionWrapper::ResetOutputStat()
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::SetMagic(PRO_INT64 magic)
 {
     {
@@ -1452,7 +1420,6 @@ CRtpSessionWrapper::SetMagic(PRO_INT64 magic)
 }
 
 PRO_INT64
-PRO_CALLTYPE
 CRtpSessionWrapper::GetMagic() const
 {
     PRO_INT64 magic = 0;
@@ -1467,7 +1434,6 @@ CRtpSessionWrapper::GetMagic() const
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::OnOkSession(IRtpSession* session)
 {
     assert(session != NULL);
@@ -1522,7 +1488,6 @@ CRtpSessionWrapper::OnOkSession(IRtpSession* session)
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::OnRecvSession(IRtpSession* session,
                                   IRtpPacket*  packet)
 {
@@ -1575,7 +1540,6 @@ CRtpSessionWrapper::OnRecvSession(IRtpSession* session,
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::OnSendSession(IRtpSession* session,
                                   bool         packetErased)
 {
@@ -1619,7 +1583,6 @@ CRtpSessionWrapper::OnSendSession(IRtpSession* session,
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::OnCloseSession(IRtpSession* session,
                                    long         errorCode,
                                    long         sslCode,
@@ -1656,7 +1619,6 @@ CRtpSessionWrapper::OnCloseSession(IRtpSession* session,
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::OnHeartbeatSession(IRtpSession* session,
                                        PRO_INT64    peerAliveTick)
 {
@@ -1691,7 +1653,6 @@ CRtpSessionWrapper::OnHeartbeatSession(IRtpSession* session,
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionWrapper::OnTimer(void*      factory,
                             PRO_UINT64 timerId,
                             PRO_INT64  userData)

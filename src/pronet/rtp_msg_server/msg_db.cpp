@@ -31,7 +31,6 @@
 ////
 
 long
-PRO_CALLTYPE
 GetMsgUserRow(CDbConnection&      db,
               const RTP_MSG_USER& user,
               TBL_MSG_USER_ROW&   row)
@@ -95,7 +94,6 @@ GetMsgUserRow(CDbConnection&      db,
 }
 
 void
-PRO_CALLTYPE
 GetMsgKickoutRows(CDbConnection&                      db,
                   CProStlVector<TBL_MSG_KICKOUT_ROW>& rows)
 {
@@ -132,7 +130,6 @@ GetMsgKickoutRows(CDbConnection&                      db,
 }
 
 void
-PRO_CALLTYPE
 CleanMsgKickoutRows(CDbConnection& db)
 {
     const char* const sql = " DELETE FROM tbl_msg02_kickout ";
@@ -141,7 +138,6 @@ CleanMsgKickoutRows(CDbConnection& db)
 }
 
 void
-PRO_CALLTYPE
 AddMsgOnlineRow(CDbConnection&      db,
                 const RTP_MSG_USER& user,
                 CProStlString       userPublicIp,
@@ -210,7 +206,6 @@ AddMsgOnlineRow(CDbConnection&      db,
 }
 
 void
-PRO_CALLTYPE
 RemoveMsgOnlineRow(CDbConnection&      db,
                    const RTP_MSG_USER& user)
 {
@@ -229,7 +224,6 @@ RemoveMsgOnlineRow(CDbConnection&      db,
 }
 
 void
-PRO_CALLTYPE
 CleanMsgOnlineRows(CDbConnection& db)
 {
     const char* const sql = " DELETE FROM tbl_msg03_online ";

@@ -257,7 +257,6 @@ CRtpMsgClient::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpMsgClient::AddRef()
 {
     const unsigned long refCount = CProRefCount::AddRef();
@@ -266,7 +265,6 @@ CRtpMsgClient::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpMsgClient::Release()
 {
     const unsigned long refCount = CProRefCount::Release();
@@ -275,7 +273,6 @@ CRtpMsgClient::Release()
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgClient::GetUser(RTP_MSG_USER* myUser) const
 {
     assert(myUser != NULL);
@@ -292,7 +289,6 @@ CRtpMsgClient::GetUser(RTP_MSG_USER* myUser) const
 }
 
 PRO_SSL_SUITE_ID
-PRO_CALLTYPE
 CRtpMsgClient::GetSslSuite(char suiteName[64]) const
 {
     strcpy(suiteName, "NONE");
@@ -312,7 +308,6 @@ CRtpMsgClient::GetSslSuite(char suiteName[64]) const
 }
 
 const char*
-PRO_CALLTYPE
 CRtpMsgClient::GetLocalIp(char localIp[64]) const
 {
     strcpy(localIp, "0.0.0.0");
@@ -330,7 +325,6 @@ CRtpMsgClient::GetLocalIp(char localIp[64]) const
 }
 
 unsigned short
-PRO_CALLTYPE
 CRtpMsgClient::GetLocalPort() const
 {
     unsigned short localPort = 0;
@@ -348,7 +342,6 @@ CRtpMsgClient::GetLocalPort() const
 }
 
 const char*
-PRO_CALLTYPE
 CRtpMsgClient::GetRemoteIp(char remoteIp[64]) const
 {
     strcpy(remoteIp, "0.0.0.0");
@@ -366,7 +359,6 @@ CRtpMsgClient::GetRemoteIp(char remoteIp[64]) const
 }
 
 unsigned short
-PRO_CALLTYPE
 CRtpMsgClient::GetRemotePort() const
 {
     unsigned short remotePort = 0;
@@ -384,7 +376,6 @@ CRtpMsgClient::GetRemotePort() const
 }
 
 bool
-PRO_CALLTYPE
 CRtpMsgClient::SendMsg(const void*         buf,
                        unsigned long       size,
                        PRO_UINT16          charset,
@@ -398,7 +389,6 @@ CRtpMsgClient::SendMsg(const void*         buf,
 }
 
 bool
-PRO_CALLTYPE
 CRtpMsgClient::SendMsg2(const void*         buf1,
                         unsigned long       size1,
                         const void*         buf2,  /* = NULL */
@@ -537,7 +527,6 @@ CRtpMsgClient::PushData(const void*         buf1,
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgClient::SetOutputRedline(unsigned long redlineBytes)
 {
     if (redlineBytes == 0)
@@ -558,7 +547,6 @@ CRtpMsgClient::SetOutputRedline(unsigned long redlineBytes)
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpMsgClient::GetOutputRedline() const
 {
     unsigned long redlineBytes = 0;
@@ -576,7 +564,6 @@ CRtpMsgClient::GetOutputRedline() const
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpMsgClient::GetSendingBytes() const
 {
     unsigned long sendingBytes = 0;
@@ -595,7 +582,6 @@ CRtpMsgClient::GetSendingBytes() const
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgClient::OnOkSession(IRtpSession* session)
 {
     assert(session != NULL);
@@ -657,7 +643,6 @@ CRtpMsgClient::OnOkSession(IRtpSession* session)
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgClient::OnRecvSession(IRtpSession* session,
                              IRtpPacket*  packet)
 {
@@ -782,7 +767,6 @@ CRtpMsgClient::OnRecvSession(IRtpSession* session,
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgClient::OnCloseSession(IRtpSession* session,
                               long         errorCode,
                               long         sslCode,
@@ -823,7 +807,6 @@ CRtpMsgClient::OnCloseSession(IRtpSession* session,
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgClient::OnHeartbeatSession(IRtpSession* session,
                                   PRO_INT64    peerAliveTick)
 {
@@ -861,7 +844,6 @@ CRtpMsgClient::OnHeartbeatSession(IRtpSession* session,
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgClient::OnTimer(void*      factory,
                        PRO_UINT64 timerId,
                        PRO_INT64  userData)

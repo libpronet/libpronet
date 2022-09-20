@@ -171,14 +171,12 @@ CProSslHandshaker::Fini()
 }
 
 void
-PRO_CALLTYPE
 CProSslHandshaker::OnInput(PRO_INT64 sockId)
 {
     DoRecv(sockId);
 }
 
 void
-PRO_CALLTYPE
 CProSslHandshaker::OnOutput(PRO_INT64 sockId)
 {
     DoSend(sockId);
@@ -562,7 +560,6 @@ EXIT:
 }
 
 void
-PRO_CALLTYPE
 CProSslHandshaker::OnError(PRO_INT64 sockId,
                            long      errorCode)
 {
@@ -604,7 +601,6 @@ CProSslHandshaker::OnError(PRO_INT64 sockId,
 }
 
 void
-PRO_CALLTYPE
 CProSslHandshaker::OnTimer(void*      factory,
                            PRO_UINT64 timerId,
                            PRO_INT64  userData)

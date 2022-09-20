@@ -237,7 +237,6 @@ CRtpSessionTcpclientEx::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpSessionTcpclientEx::AddRef()
 {
     const unsigned long refCount = CRtpSessionBase::AddRef();
@@ -246,7 +245,6 @@ CRtpSessionTcpclientEx::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpSessionTcpclientEx::Release()
 {
     const unsigned long refCount = CRtpSessionBase::Release();
@@ -255,7 +253,6 @@ CRtpSessionTcpclientEx::Release()
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionTcpclientEx::OnConnectOk(IProConnector*   connector,
                                     PRO_INT64        sockId,
                                     bool             unixSocket,
@@ -322,7 +319,6 @@ CRtpSessionTcpclientEx::OnConnectOk(IProConnector*   connector,
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionTcpclientEx::OnConnectError(IProConnector* connector,
                                        const char*    remoteIp,
                                        unsigned short remotePort,
@@ -369,7 +365,6 @@ CRtpSessionTcpclientEx::OnConnectError(IProConnector* connector,
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionTcpclientEx::OnHandshakeOk(IProTcpHandshaker* handshaker,
                                       PRO_INT64          sockId,
                                       bool               unixSocket,
@@ -497,7 +492,6 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProTcpHandshaker* handshaker,
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionTcpclientEx::OnHandshakeError(IProTcpHandshaker* handshaker,
                                          long               errorCode)
 {
@@ -539,7 +533,6 @@ CRtpSessionTcpclientEx::OnHandshakeError(IProTcpHandshaker* handshaker,
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionTcpclientEx::OnHandshakeOk(IProSslHandshaker* handshaker,
                                       PRO_SSL_CTX*       ctx,
                                       PRO_INT64          sockId,
@@ -678,7 +671,6 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProSslHandshaker* handshaker,
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionTcpclientEx::OnHandshakeError(IProSslHandshaker* handshaker,
                                          long               errorCode,
                                          long               sslCode)
@@ -721,7 +713,6 @@ CRtpSessionTcpclientEx::OnHandshakeError(IProSslHandshaker* handshaker,
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionTcpclientEx::OnRecv(IProTransport*          trans,
                                const pbsd_sockaddr_in* remoteAddr)
 {

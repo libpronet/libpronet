@@ -35,7 +35,6 @@ extern "C" {
 static
 inline
 char
-PRO_CALLTYPE
 tolower_i(char c)
 {
     if (c >= 'A' && c <= 'Z')
@@ -49,7 +48,6 @@ tolower_i(char c)
 static
 inline
 char
-PRO_CALLTYPE
 toupper_i(char c)
 {
     if (c >= 'a' && c <= 'z')
@@ -153,7 +151,6 @@ snprintf_pro(char*       dest,
 #if !defined(_WIN32_WCE)
 
 void
-PRO_CALLTYPE
 ProGetExeDir_(char buf[1024])
 {
     const long size = 1024;
@@ -197,7 +194,6 @@ ProGetExeDir_(char buf[1024])
 }
 
 void
-PRO_CALLTYPE
 ProGetExePath(char buf[1024])
 {
     const long size = 1024;

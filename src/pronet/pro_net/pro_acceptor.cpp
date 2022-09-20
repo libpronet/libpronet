@@ -43,7 +43,6 @@
 
 static
 void
-PRO_CALLTYPE
 MakeNonce_i(PRO_NONCE& nonce)
 {
     for (int i = 0; i < (int)sizeof(nonce.nonce); ++i)
@@ -295,7 +294,6 @@ CProAcceptor::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CProAcceptor::AddRef()
 {
     const unsigned long refCount = CProEventHandler::AddRef();
@@ -304,7 +302,6 @@ CProAcceptor::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CProAcceptor::Release()
 {
     const unsigned long refCount = CProEventHandler::Release();
@@ -327,7 +324,6 @@ CProAcceptor::GetLocalPort() const
 }
 
 void
-PRO_CALLTYPE
 CProAcceptor::OnInput(PRO_INT64 sockId)
 {
     assert(sockId != -1);
@@ -460,7 +456,6 @@ CProAcceptor::OnInput(PRO_INT64 sockId)
 }
 
 void
-PRO_CALLTYPE
 CProAcceptor::OnHandshakeOk(IProTcpHandshaker* handshaker,
                             PRO_INT64          sockId,
                             bool               unixSocket,
@@ -563,7 +558,6 @@ CProAcceptor::OnHandshakeOk(IProTcpHandshaker* handshaker,
 }
 
 void
-PRO_CALLTYPE
 CProAcceptor::OnHandshakeError(IProTcpHandshaker* handshaker,
                                long               errorCode)
 {

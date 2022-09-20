@@ -134,7 +134,6 @@ CProServicePipe::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CProServicePipe::AddRef()
 {
     const unsigned long refCount = CProRefCount::AddRef();
@@ -143,7 +142,6 @@ CProServicePipe::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CProServicePipe::Release()
 {
     const unsigned long refCount = CProRefCount::Release();
@@ -207,7 +205,6 @@ CProServicePipe::SendFd(const PRO_SERVICE_PACKET& s2cPacket)
 }
 
 void
-PRO_CALLTYPE
 CProServicePipe::OnRecv(IProTransport*          trans,
                         const pbsd_sockaddr_in* remoteAddr)
 {
@@ -278,7 +275,6 @@ CProServicePipe::OnRecv(IProTransport*          trans,
 }
 
 void
-PRO_CALLTYPE
 CProServicePipe::OnRecvFd(IProTransport*            trans,
                           PRO_INT64                 fd,
                           bool                      unixSocket,
@@ -320,7 +316,6 @@ CProServicePipe::OnRecvFd(IProTransport*            trans,
 }
 
 void
-PRO_CALLTYPE
 CProServicePipe::OnSend(IProTransport* trans,
                         PRO_UINT64     actionId)
 {
@@ -365,7 +360,6 @@ CProServicePipe::OnSend(IProTransport* trans,
 }
 
 void
-PRO_CALLTYPE
 CProServicePipe::OnClose(IProTransport* trans,
                          long           errorCode,
                          long           sslCode)
@@ -403,7 +397,6 @@ CProServicePipe::OnClose(IProTransport* trans,
 ////
 
 CProServicePipe*
-PRO_CALLTYPE
 ProCreateServicePipe(bool                     recvFdMode,
                      IProServicePipeObserver* observer,
                      IProReactor*             reactor,
@@ -427,7 +420,6 @@ ProCreateServicePipe(bool                     recvFdMode,
 }
 
 void
-PRO_CALLTYPE
 ProDeleteServicePipe(CProServicePipe* pipe)
 {
     if (pipe == NULL)

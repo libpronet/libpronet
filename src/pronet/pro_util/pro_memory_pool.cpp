@@ -36,7 +36,6 @@ extern "C" {
 ////
 
 void*
-PRO_CALLTYPE
 ProMalloc(size_t size)
 {
     if (size == 0)
@@ -54,7 +53,6 @@ ProMalloc(size_t size)
 }
 
 void*
-PRO_CALLTYPE
 ProCalloc(size_t count,
           size_t size)
 {
@@ -81,7 +79,6 @@ ProCalloc(size_t count,
 }
 
 void*
-PRO_CALLTYPE
 ProRealloc(void*  p,
            size_t newSize)
 {
@@ -100,7 +97,6 @@ ProRealloc(void*  p,
 }
 
 void
-PRO_CALLTYPE
 ProFree(void* p)
 {
     if (p == NULL)
@@ -116,18 +112,16 @@ ProFree(void* p)
 }
 
 void*
-PRO_CALLTYPE
 ProPoolMalloc(size_t        size,
-              unsigned long poolIndex)  /* 0 ~ 9 */
+              unsigned long poolIndex) /* 0 ~ 9 */
 {
     return (ProAllocateSgiPoolBuffer(size, poolIndex));
 }
 
 void*
-PRO_CALLTYPE
 ProPoolCalloc(size_t        count,
               size_t        size,
-              unsigned long poolIndex)  /* 0 ~ 9 */
+              unsigned long poolIndex) /* 0 ~ 9 */
 {
     void* const p = ProAllocateSgiPoolBuffer(count * size, poolIndex);
     if (p != NULL)
@@ -139,7 +133,6 @@ ProPoolCalloc(size_t        count,
 }
 
 void*
-PRO_CALLTYPE
 ProPoolRealloc(void*         p,
                size_t        newSize,
                unsigned long poolIndex) /* 0 ~ 9 */
@@ -148,9 +141,8 @@ ProPoolRealloc(void*         p,
 }
 
 void
-PRO_CALLTYPE
 ProPoolFree(void*         p,
-            unsigned long poolIndex)    /* 0 ~ 9 */
+            unsigned long poolIndex) /* 0 ~ 9 */
 {
     ProDeallocateSgiPoolBuffer(p, poolIndex);
 }

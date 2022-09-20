@@ -52,9 +52,9 @@ public:
 
     void Fini();
 
-    virtual unsigned long PRO_CALLTYPE AddRef();
+    virtual unsigned long AddRef();
 
-    virtual unsigned long PRO_CALLTYPE Release();
+    virtual unsigned long Release();
 
 private:
 
@@ -65,7 +65,7 @@ private:
 
     virtual ~CProServiceHub();
 
-    virtual void PRO_CALLTYPE OnAccept(
+    virtual void OnAccept(
         IProAcceptor*  acceptor,
         PRO_INT64      sockId,
         bool           unixSocket,
@@ -74,7 +74,7 @@ private:
         unsigned short remotePort
         );
 
-    virtual void PRO_CALLTYPE OnAccept(
+    virtual void OnAccept(
         IProAcceptor*    acceptor,
         PRO_INT64        sockId,
         bool             unixSocket,
@@ -86,12 +86,12 @@ private:
         const PRO_NONCE* nonce
         );
 
-    virtual void PRO_CALLTYPE OnRecv(
+    virtual void OnRecv(
         CProServicePipe*          pipe,
         const PRO_SERVICE_PACKET& packet
         );
 
-    virtual void PRO_CALLTYPE OnRecvFd(
+    virtual void OnRecvFd(
         CProServicePipe*          pipe,
         PRO_INT64                 fd,
         bool                      unixSocket,
@@ -100,9 +100,9 @@ private:
     {
     }
 
-    virtual void PRO_CALLTYPE OnClose(CProServicePipe* pipe);
+    virtual void OnClose(CProServicePipe* pipe);
 
-    virtual void PRO_CALLTYPE OnTimer(
+    virtual void OnTimer(
         void*      factory,
         PRO_UINT64 timerId,
         PRO_INT64  userData

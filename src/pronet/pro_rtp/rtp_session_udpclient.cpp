@@ -180,7 +180,6 @@ CRtpSessionUdpclient::Fini()
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionUdpclient::SetRemoteIpAndPort(const char*    remoteIp,   /* = NULL */
                                          unsigned short remotePort) /* = 0 */
 {
@@ -203,7 +202,6 @@ CRtpSessionUdpclient::SetRemoteIpAndPort(const char*    remoteIp,   /* = NULL */
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
                              const pbsd_sockaddr_in* remoteAddr)
 {

@@ -73,14 +73,12 @@ CRtpBucket::~CRtpBucket()
 }
 
 void
-PRO_CALLTYPE
 CRtpBucket::Destroy()
 {
     delete this;
 }
 
 IRtpPacket*
-PRO_CALLTYPE
 CRtpBucket::GetFront()
 {
     if (m_packets.size() == 0)
@@ -94,7 +92,6 @@ CRtpBucket::GetFront()
 }
 
 bool
-PRO_CALLTYPE
 CRtpBucket::PushBackAddRef(IRtpPacket* packet)
 {
     assert(packet != NULL);
@@ -149,7 +146,6 @@ CRtpBucket::PushBackAddRef(IRtpPacket* packet)
 }
 
 void
-PRO_CALLTYPE
 CRtpBucket::PopFrontRelease(IRtpPacket* packet)
 {
     if (packet == NULL || m_packets.size() == 0 ||
@@ -168,7 +164,6 @@ CRtpBucket::PopFrontRelease(IRtpPacket* packet)
 }
 
 void
-PRO_CALLTYPE
 CRtpBucket::Reset()
 {
     int       i = 0;
@@ -186,7 +181,6 @@ CRtpBucket::Reset()
 }
 
 void
-PRO_CALLTYPE
 CRtpBucket::SetRedline(unsigned long redlineBytes,   /* = 0 */
                        unsigned long redlineFrames,  /* = 0 */
                        unsigned long redlineDelayMs) /* = 0 */
@@ -206,7 +200,6 @@ CRtpBucket::SetRedline(unsigned long redlineBytes,   /* = 0 */
 }
 
 void
-PRO_CALLTYPE
 CRtpBucket::GetRedline(unsigned long* redlineBytes,         /* = NULL */
                        unsigned long* redlineFrames,        /* = NULL */
                        unsigned long* redlineDelayMs) const /* = NULL */
@@ -226,7 +219,6 @@ CRtpBucket::GetRedline(unsigned long* redlineBytes,         /* = NULL */
 }
 
 void
-PRO_CALLTYPE
 CRtpBucket::GetFlowctrlInfo(float*         srcFrameRate,       /* = NULL */
                             float*         srcBitRate,         /* = NULL */
                             float*         outFrameRate,       /* = NULL */
@@ -247,7 +239,6 @@ CRtpBucket::GetFlowctrlInfo(float*         srcFrameRate,       /* = NULL */
 }
 
 void
-PRO_CALLTYPE
 CRtpBucket::ResetFlowctrlInfo()
 {
     m_flowStat.Reset();
@@ -263,7 +254,6 @@ CRtpAudioBucket::CRtpAudioBucket()
 }
 
 bool
-PRO_CALLTYPE
 CRtpAudioBucket::PushBackAddRef(IRtpPacket* packet)
 {
     assert(packet != NULL);
@@ -328,14 +318,12 @@ CRtpVideoBucket::~CRtpVideoBucket()
 }
 
 void
-PRO_CALLTYPE
 CRtpVideoBucket::Destroy()
 {
     delete this;
 }
 
 IRtpPacket*
-PRO_CALLTYPE
 CRtpVideoBucket::GetFront()
 {
     if (m_sendingFrame != NULL)
@@ -365,7 +353,6 @@ CRtpVideoBucket::GetFront()
 }
 
 bool
-PRO_CALLTYPE
 CRtpVideoBucket::PushBackAddRef(IRtpPacket* packet)
 {
     assert(packet != NULL);
@@ -554,7 +541,6 @@ CRtpVideoBucket::RemoveOldFrames()
 }
 
 void
-PRO_CALLTYPE
 CRtpVideoBucket::PopFrontRelease(IRtpPacket* packet)
 {
     if (packet == NULL || m_sendingFrame == NULL ||
@@ -578,7 +564,6 @@ CRtpVideoBucket::PopFrontRelease(IRtpPacket* packet)
 }
 
 void
-PRO_CALLTYPE
 CRtpVideoBucket::Reset()
 {
     delete m_waitingFrame;
@@ -604,7 +589,6 @@ CRtpVideoBucket::Reset()
 }
 
 void
-PRO_CALLTYPE
 CRtpVideoBucket::SetRedline(unsigned long redlineBytes,   /* = 0 */
                             unsigned long redlineFrames,  /* = 0 */
                             unsigned long redlineDelayMs) /* = 0 */
@@ -624,7 +608,6 @@ CRtpVideoBucket::SetRedline(unsigned long redlineBytes,   /* = 0 */
 }
 
 void
-PRO_CALLTYPE
 CRtpVideoBucket::GetRedline(unsigned long* redlineBytes,         /* = NULL */
                             unsigned long* redlineFrames,        /* = NULL */
                             unsigned long* redlineDelayMs) const /* = NULL */
@@ -644,7 +627,6 @@ CRtpVideoBucket::GetRedline(unsigned long* redlineBytes,         /* = NULL */
 }
 
 void
-PRO_CALLTYPE
 CRtpVideoBucket::GetFlowctrlInfo(float*         srcFrameRate,       /* = NULL */
                                  float*         srcBitRate,         /* = NULL */
                                  float*         outFrameRate,       /* = NULL */
@@ -665,7 +647,6 @@ CRtpVideoBucket::GetFlowctrlInfo(float*         srcFrameRate,       /* = NULL */
 }
 
 void
-PRO_CALLTYPE
 CRtpVideoBucket::ResetFlowctrlInfo()
 {
     m_flowStat.Reset();
@@ -675,7 +656,6 @@ CRtpVideoBucket::ResetFlowctrlInfo()
 ////
 
 IRtpBucket*
-PRO_CALLTYPE
 CreateRtpBucket(RTP_MM_TYPE      mmType,
                 RTP_SESSION_TYPE sessionType)
 {

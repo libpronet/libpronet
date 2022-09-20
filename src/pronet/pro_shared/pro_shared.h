@@ -52,11 +52,13 @@ extern "C" {
 #if defined(PRO_SHARED_EXPORTS)
 #if defined(_MSC_VER)
 #define PRO_SHARED_API /* using xxx.def */
+#elif defined(__MINGW32__) || defined(__CYGWIN__)
+#define PRO_SHARED_API __declspec(dllexport)
 #else
-#define PRO_SHARED_API PRO_EXPORT
+#define PRO_SHARED_API __attribute__((visibility("default")))
 #endif
 #else
-#define PRO_SHARED_API PRO_IMPORT
+#define PRO_SHARED_API
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
@@ -76,7 +78,6 @@ extern "C" {
  */
 PRO_SHARED_API
 void
-PRO_CALLTYPE
 ProSharedVersion(unsigned char* major,  /* = NULL */
                  unsigned char* minor,  /* = NULL */
                  unsigned char* patch); /* = NULL */
@@ -92,7 +93,6 @@ ProSharedVersion(unsigned char* major,  /* = NULL */
  */
 PRO_SHARED_API
 void
-PRO_CALLTYPE
 ProSrand();
 
 /*
@@ -106,7 +106,6 @@ ProSrand();
  */
 PRO_SHARED_API
 double
-PRO_CALLTYPE
 ProRand_0_1();
 
 /*
@@ -120,7 +119,6 @@ ProRand_0_1();
  */
 PRO_SHARED_API
 int
-PRO_CALLTYPE
 ProRand_0_32767();
 
 /*
@@ -134,7 +132,6 @@ ProRand_0_32767();
  */
 PRO_SHARED_API
 PRO_INT64
-PRO_CALLTYPE
 ProGetTickCount64_s();
 
 /*
@@ -152,7 +149,6 @@ ProGetTickCount64_s();
  */
 PRO_SHARED_API
 void
-PRO_CALLTYPE
 ProSleep_s(PRO_UINT32 milliseconds);
 
 /*
@@ -166,7 +162,6 @@ ProSleep_s(PRO_UINT32 milliseconds);
  */
 PRO_SHARED_API
 PRO_UINT64
-PRO_CALLTYPE
 ProMakeTimerId();
 
 /*
@@ -180,7 +175,6 @@ ProMakeTimerId();
  */
 PRO_SHARED_API
 PRO_UINT64
-PRO_CALLTYPE
 ProMakeMmTimerId();
 
 /*
@@ -196,7 +190,6 @@ ProMakeMmTimerId();
  */
 PRO_SHARED_API
 void*
-PRO_CALLTYPE
 ProAllocateSgiPoolBuffer(size_t        size,
                          unsigned long poolIndex); /* 0 ~ 9 */
 
@@ -214,7 +207,6 @@ ProAllocateSgiPoolBuffer(size_t        size,
  */
 PRO_SHARED_API
 void*
-PRO_CALLTYPE
 ProReallocateSgiPoolBuffer(void*         buf,
                            size_t        newSize,
                            unsigned long poolIndex); /* 0 ~ 9 */
@@ -232,7 +224,6 @@ ProReallocateSgiPoolBuffer(void*         buf,
  */
 PRO_SHARED_API
 void
-PRO_CALLTYPE
 ProDeallocateSgiPoolBuffer(void*         buf,
                            unsigned long poolIndex); /* 0 ~ 9 */
 
@@ -253,7 +244,6 @@ ProDeallocateSgiPoolBuffer(void*         buf,
  */
 PRO_SHARED_API
 void
-PRO_CALLTYPE
 ProGetSgiPoolInfo(void*         freeList[64],
                   size_t        objSize[64],
                   size_t        busyObjNum[64],

@@ -28,32 +28,26 @@
 #if defined(_WIN32) || defined(_WIN32_WCE)
 
 void
-PRO_CALLTYPE
 ProAnsiToUnicode(const CProStlString& src,
                  CProStlWstring&      dst);
 
 void
-PRO_CALLTYPE
 ProUnicodeToAnsi(const CProStlWstring& src,
                  CProStlString&        dst);
 
 void
-PRO_CALLTYPE
 ProUtf8ToUnicode(const CProStlString& src,
                  CProStlWstring&      dst);
 
 void
-PRO_CALLTYPE
 ProUnicodeToUtf8(const CProStlWstring& src,
                  CProStlString&        dst);
 
 void
-PRO_CALLTYPE
 ProAnsiToUtf8(const CProStlString& src,
               CProStlString&       dst);
 
 void
-PRO_CALLTYPE
 ProUtf8ToAnsi(const CProStlString& src,
               CProStlString&       dst);
 

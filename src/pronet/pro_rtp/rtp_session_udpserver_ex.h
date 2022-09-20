@@ -53,9 +53,7 @@ class CRtpSessionUdpserverEx : public CRtpSessionBase
 {
 public:
 
-    static CRtpSessionUdpserverEx* CreateInstance(
-        const RTP_SESSION_INFO* localInfo
-        );
+    static CRtpSessionUdpserverEx* CreateInstance(const RTP_SESSION_INFO* localInfo);
 
     bool Init(
         IRtpSessionObserver* observer,
@@ -73,14 +71,14 @@ private:
 
     virtual ~CRtpSessionUdpserverEx();
 
-    virtual void PRO_CALLTYPE GetSyncId(unsigned char syncId[14]) const;
+    virtual void GetSyncId(unsigned char syncId[14]) const;
 
-    virtual void PRO_CALLTYPE OnRecv(
+    virtual void OnRecv(
         IProTransport*          trans,
         const pbsd_sockaddr_in* remoteAddr
         );
 
-    virtual void PRO_CALLTYPE OnTimer(
+    virtual void OnTimer(
         void*      factory,
         PRO_UINT64 timerId,
         PRO_INT64  userData

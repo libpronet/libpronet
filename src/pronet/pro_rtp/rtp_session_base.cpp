@@ -96,7 +96,6 @@ CRtpSessionBase::~CRtpSessionBase()
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpSessionBase::AddRef()
 {
     const unsigned long refCount = CProRefCount::AddRef();
@@ -105,7 +104,6 @@ CRtpSessionBase::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpSessionBase::Release()
 {
     const unsigned long refCount = CProRefCount::Release();
@@ -114,7 +112,6 @@ CRtpSessionBase::Release()
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionBase::GetInfo(RTP_SESSION_INFO* info) const
 {
     assert(info != NULL);
@@ -131,7 +128,6 @@ CRtpSessionBase::GetInfo(RTP_SESSION_INFO* info) const
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionBase::GetAck(RTP_SESSION_ACK* ack) const
 {
     assert(ack != NULL);
@@ -148,14 +144,12 @@ CRtpSessionBase::GetAck(RTP_SESSION_ACK* ack) const
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionBase::GetSyncId(unsigned char syncId[14]) const
 {
     memset(syncId, 0, 14);
 }
 
 PRO_SSL_SUITE_ID
-PRO_CALLTYPE
 CRtpSessionBase::GetSslSuite(char suiteName[64]) const
 {
     strcpy(suiteName, "NONE");
@@ -175,7 +169,6 @@ CRtpSessionBase::GetSslSuite(char suiteName[64]) const
 }
 
 PRO_INT64
-PRO_CALLTYPE
 CRtpSessionBase::GetSockId() const
 {
     PRO_INT64 sockId = -1;
@@ -193,7 +186,6 @@ CRtpSessionBase::GetSockId() const
 }
 
 const char*
-PRO_CALLTYPE
 CRtpSessionBase::GetLocalIp(char localIp[64]) const
 {
     {
@@ -206,7 +198,6 @@ CRtpSessionBase::GetLocalIp(char localIp[64]) const
 }
 
 unsigned short
-PRO_CALLTYPE
 CRtpSessionBase::GetLocalPort() const
 {
     unsigned short localPort = 0;
@@ -221,7 +212,6 @@ CRtpSessionBase::GetLocalPort() const
 }
 
 const char*
-PRO_CALLTYPE
 CRtpSessionBase::GetRemoteIp(char remoteIp[64]) const
 {
     {
@@ -249,7 +239,6 @@ CRtpSessionBase::GetRemoteIp(char remoteIp[64]) const
 }
 
 unsigned short
-PRO_CALLTYPE
 CRtpSessionBase::GetRemotePort() const
 {
     unsigned short remotePort = 0;
@@ -279,7 +268,6 @@ CRtpSessionBase::GetRemotePort() const
 }
 
 bool
-PRO_CALLTYPE
 CRtpSessionBase::IsTcpConnected() const
 {
     bool connected = false;
@@ -294,7 +282,6 @@ CRtpSessionBase::IsTcpConnected() const
 }
 
 bool
-PRO_CALLTYPE
 CRtpSessionBase::SendPacket(IRtpPacket* packet,
                             bool*       tryAgain) /* = NULL */
 {
@@ -448,7 +435,6 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionBase::GetSendOnSendTick(PRO_INT64* onSendTick1,       /* = NULL */
                                    PRO_INT64* onSendTick2) const /* = NULL */
 {
@@ -467,7 +453,6 @@ CRtpSessionBase::GetSendOnSendTick(PRO_INT64* onSendTick1,       /* = NULL */
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionBase::RequestOnSend()
 {
     {
@@ -483,7 +468,6 @@ CRtpSessionBase::RequestOnSend()
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionBase::SuspendRecv()
 {
     {
@@ -499,7 +483,6 @@ CRtpSessionBase::SuspendRecv()
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionBase::ResumeRecv()
 {
     {
@@ -515,7 +498,6 @@ CRtpSessionBase::ResumeRecv()
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionBase::SetMagic(PRO_INT64 magic)
 {
     {
@@ -526,7 +508,6 @@ CRtpSessionBase::SetMagic(PRO_INT64 magic)
 }
 
 PRO_INT64
-PRO_CALLTYPE
 CRtpSessionBase::GetMagic() const
 {
     PRO_INT64 magic = 0;
@@ -541,7 +522,6 @@ CRtpSessionBase::GetMagic() const
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionBase::OnSend(IProTransport* trans,
                         PRO_UINT64     actionId)
 {
@@ -590,7 +570,6 @@ CRtpSessionBase::OnSend(IProTransport* trans,
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionBase::OnClose(IProTransport* trans,
                          long           errorCode,
                          long           sslCode)
@@ -630,7 +609,6 @@ CRtpSessionBase::OnClose(IProTransport* trans,
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionBase::OnHeartbeat(IProTransport* trans)
 {
 #if !defined(_WIN32_WCE)
@@ -1165,7 +1143,6 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionBase::OnTimer(void*      factory,
                          PRO_UINT64 timerId,
                          PRO_INT64  userData)

@@ -29,7 +29,6 @@
 ////
 
 unsigned long
-PRO_CALLTYPE
 CProRefCount::AddRef()
 {
 #if defined(_WIN32) || defined(_WIN32_WCE)
@@ -46,7 +45,6 @@ CProRefCount::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CProRefCount::Release()
 {
 #if defined(_WIN32) || defined(_WIN32_WCE)

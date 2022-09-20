@@ -61,54 +61,44 @@ extern "C" {
 #endif
 
 void*
-PRO_CALLTYPE
 ProMalloc(size_t size);
 
 void*
-PRO_CALLTYPE
 ProCalloc(size_t count,
           size_t size);
 
 void*
-PRO_CALLTYPE
 ProRealloc(void*  p,
            size_t newSize);
 
 void
-PRO_CALLTYPE
 ProFree(void* p);
 
 void*
-PRO_CALLTYPE
 ProPoolMalloc(size_t        size,
-              unsigned long poolIndex);  /* 0 ~ 9 */
+              unsigned long poolIndex); /* 0 ~ 9 */
 
 void*
-PRO_CALLTYPE
 ProPoolCalloc(size_t        count,
               size_t        size,
-              unsigned long poolIndex);  /* 0 ~ 9 */
+              unsigned long poolIndex); /* 0 ~ 9 */
 
 void*
-PRO_CALLTYPE
 ProPoolRealloc(void*         p,
                size_t        newSize,
                unsigned long poolIndex); /* 0 ~ 9 */
 
 void
-PRO_CALLTYPE
 ProPoolFree(void*         p,
-            unsigned long poolIndex);    /* 0 ~ 9 */
+            unsigned long poolIndex); /* 0 ~ 9 */
 
 extern
 void*
-PRO_CALLTYPE
 ProAllocateSgiPoolBuffer(size_t        size,
-                         unsigned long poolIndex);   /* 0 ~ 9 */
+                         unsigned long poolIndex); /* 0 ~ 9 */
 
 extern
 void
-PRO_CALLTYPE
 ProDeallocateSgiPoolBuffer(void*         buf,
                            unsigned long poolIndex); /* 0 ~ 9 */
 

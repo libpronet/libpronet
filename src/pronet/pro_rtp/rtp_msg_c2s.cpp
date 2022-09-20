@@ -351,7 +351,6 @@ CRtpMsgC2s::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpMsgC2s::AddRef()
 {
     const unsigned long refCount = CProRefCount::AddRef();
@@ -360,7 +359,6 @@ CRtpMsgC2s::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpMsgC2s::Release()
 {
     const unsigned long refCount = CProRefCount::Release();
@@ -369,7 +367,6 @@ CRtpMsgC2s::Release()
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgC2s::GetUplinkUser(RTP_MSG_USER* myUser) const
 {
     assert(myUser != NULL);
@@ -386,7 +383,6 @@ CRtpMsgC2s::GetUplinkUser(RTP_MSG_USER* myUser) const
 }
 
 PRO_SSL_SUITE_ID
-PRO_CALLTYPE
 CRtpMsgC2s::GetUplinkSslSuite(char suiteName[64]) const
 {
     strcpy(suiteName, "NONE");
@@ -406,7 +402,6 @@ CRtpMsgC2s::GetUplinkSslSuite(char suiteName[64]) const
 }
 
 const char*
-PRO_CALLTYPE
 CRtpMsgC2s::GetUplinkLocalIp(char localIp[64]) const
 {
     {
@@ -426,7 +421,6 @@ CRtpMsgC2s::GetUplinkLocalIp(char localIp[64]) const
 }
 
 unsigned short
-PRO_CALLTYPE
 CRtpMsgC2s::GetUplinkLocalPort() const
 {
     unsigned short localPort = 0;
@@ -444,7 +438,6 @@ CRtpMsgC2s::GetUplinkLocalPort() const
 }
 
 const char*
-PRO_CALLTYPE
 CRtpMsgC2s::GetUplinkRemoteIp(char remoteIp[64]) const
 {
     {
@@ -457,7 +450,6 @@ CRtpMsgC2s::GetUplinkRemoteIp(char remoteIp[64]) const
 }
 
 unsigned short
-PRO_CALLTYPE
 CRtpMsgC2s::GetUplinkRemotePort() const
 {
     unsigned short remotePort = 0;
@@ -472,7 +464,6 @@ CRtpMsgC2s::GetUplinkRemotePort() const
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgC2s::SetUplinkOutputRedline(unsigned long redlineBytes)
 {
     if (redlineBytes == 0)
@@ -498,7 +489,6 @@ CRtpMsgC2s::SetUplinkOutputRedline(unsigned long redlineBytes)
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpMsgC2s::GetUplinkOutputRedline() const
 {
     unsigned long redlineBytes = 0;
@@ -513,7 +503,6 @@ CRtpMsgC2s::GetUplinkOutputRedline() const
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpMsgC2s::GetUplinkSendingBytes() const
 {
     unsigned long sendingBytes = 0;
@@ -531,7 +520,6 @@ CRtpMsgC2s::GetUplinkSendingBytes() const
 }
 
 unsigned short
-PRO_CALLTYPE
 CRtpMsgC2s::GetLocalServicePort() const
 {
     unsigned short servicePort = 0;
@@ -546,7 +534,6 @@ CRtpMsgC2s::GetLocalServicePort() const
 }
 
 PRO_SSL_SUITE_ID
-PRO_CALLTYPE
 CRtpMsgC2s::GetLocalSslSuite(const RTP_MSG_USER* user,
                              char                suiteName[64]) const
 {
@@ -575,7 +562,6 @@ CRtpMsgC2s::GetLocalSslSuite(const RTP_MSG_USER* user,
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgC2s::GetLocalUserCount(unsigned long* pendingUserCount, /* = NULL */
                               unsigned long* userCount) const  /* = NULL */
 {
@@ -594,7 +580,6 @@ CRtpMsgC2s::GetLocalUserCount(unsigned long* pendingUserCount, /* = NULL */
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgC2s::KickoutLocalUser(const RTP_MSG_USER* user)
 {
     assert(user != NULL);
@@ -670,7 +655,6 @@ CRtpMsgC2s::AsyncKickoutLocalUser(PRO_INT64* args)
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgC2s::SetLocalOutputRedline(unsigned long redlineBytes)
 {
     if (redlineBytes == 0)
@@ -692,7 +676,6 @@ CRtpMsgC2s::SetLocalOutputRedline(unsigned long redlineBytes)
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpMsgC2s::GetLocalOutputRedline() const
 {
     unsigned long redlineBytes = 0;
@@ -707,7 +690,6 @@ CRtpMsgC2s::GetLocalOutputRedline() const
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpMsgC2s::GetLocalSendingBytes(const RTP_MSG_USER* user) const
 {
     assert(user != NULL);
@@ -734,7 +716,6 @@ CRtpMsgC2s::GetLocalSendingBytes(const RTP_MSG_USER* user) const
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgC2s::OnAcceptSession(IRtpService*            service,
                             PRO_INT64               sockId,
                             bool                    unixSocket,
@@ -771,7 +752,6 @@ CRtpMsgC2s::OnAcceptSession(IRtpService*            service,
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgC2s::OnAcceptSession(IRtpService*            service,
                             PRO_SSL_CTX*            sslCtx,
                             PRO_INT64               sockId,
@@ -982,7 +962,6 @@ EXIT:
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgC2s::OnRecvSession(IRtpSession* session,
                           IRtpPacket*  packet)
 {
@@ -1090,7 +1069,6 @@ CRtpMsgC2s::OnRecvSession(IRtpSession* session,
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgC2s::OnCloseSession(IRtpSession* session,
                            long         errorCode,
                            long         sslCode,
@@ -1140,7 +1118,6 @@ CRtpMsgC2s::OnCloseSession(IRtpSession* session,
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgC2s::OnHeartbeatSession(IRtpSession* session,
                                PRO_INT64    peerAliveTick)
 {
@@ -1180,7 +1157,6 @@ CRtpMsgC2s::OnHeartbeatSession(IRtpSession* session,
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgC2s::OnOkMsg(IRtpMsgClient*      msgClient,
                     const RTP_MSG_USER* myUser,
                     const char*         myPublicIp)
@@ -1226,7 +1202,6 @@ CRtpMsgC2s::OnOkMsg(IRtpMsgClient*      msgClient,
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgC2s::OnRecvMsg(IRtpMsgClient*      msgClient,
                       const void*         buf,
                       unsigned long       size,
@@ -1538,7 +1513,6 @@ CRtpMsgC2s::ProcessMsg_client_kickout(IRtpMsgClient*          msgClient,
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgC2s::OnTransferMsg(IRtpMsgClient*      msgClient,
                           const void*         buf,
                           unsigned long       size,
@@ -1600,7 +1574,6 @@ CRtpMsgC2s::OnTransferMsg(IRtpMsgClient*      msgClient,
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgC2s::OnCloseMsg(IRtpMsgClient* msgClient,
                        long           errorCode,
                        long           sslCode,
@@ -1672,7 +1645,6 @@ CRtpMsgC2s::OnCloseMsg(IRtpMsgClient* msgClient,
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgC2s::OnHeartbeatMsg(IRtpMsgClient* msgClient,
                            PRO_INT64      peerAliveTick)
 {
@@ -1707,7 +1679,6 @@ CRtpMsgC2s::OnHeartbeatMsg(IRtpMsgClient* msgClient,
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgC2s::OnTimer(void*      factory,
                     PRO_UINT64 timerId,
                     PRO_INT64  userData)

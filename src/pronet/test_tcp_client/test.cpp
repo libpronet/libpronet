@@ -247,7 +247,6 @@ CTest::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CTest::AddRef()
 {
     const unsigned long refCount = CProRefCount::AddRef();
@@ -256,7 +255,6 @@ CTest::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CTest::Release()
 {
     const unsigned long refCount = CProRefCount::Release();
@@ -344,7 +342,6 @@ CTest::SendMsg(const char* msg)
 }
 
 void
-PRO_CALLTYPE
 CTest::OnConnectOk(IProConnector*   connector,
                    PRO_INT64        sockId,
                    bool             unixSocket,
@@ -474,7 +471,6 @@ CTest::DoHandshake(PRO_INT64        sockId,
 }
 
 void
-PRO_CALLTYPE
 CTest::OnConnectError(IProConnector* connector,
                       const char*    remoteIp,
                       unsigned short remotePort,
@@ -525,7 +521,6 @@ CTest::OnConnectError(IProConnector* connector,
 }
 
 void
-PRO_CALLTYPE
 CTest::OnHandshakeOk(IProTcpHandshaker* handshaker,
                      PRO_INT64          sockId,
                      bool               unixSocket,
@@ -599,7 +594,6 @@ CTest::OnHandshakeOk(IProTcpHandshaker* handshaker,
 }
 
 void
-PRO_CALLTYPE
 CTest::OnHandshakeError(IProTcpHandshaker* handshaker,
                         long               errorCode)
 {
@@ -644,7 +638,6 @@ CTest::OnHandshakeError(IProTcpHandshaker* handshaker,
 }
 
 void
-PRO_CALLTYPE
 CTest::OnHandshakeOk(IProSslHandshaker* handshaker,
                      PRO_SSL_CTX*       ctx,
                      PRO_INT64          sockId,
@@ -725,7 +718,6 @@ CTest::OnHandshakeOk(IProSslHandshaker* handshaker,
 }
 
 void
-PRO_CALLTYPE
 CTest::OnHandshakeError(IProSslHandshaker* handshaker,
                         long               errorCode,
                         long               sslCode)
@@ -772,7 +764,6 @@ CTest::OnHandshakeError(IProSslHandshaker* handshaker,
 }
 
 void
-PRO_CALLTYPE
 CTest::OnRecv(IProTransport*          trans,
               const pbsd_sockaddr_in* remoteAddr)
 {
@@ -877,7 +868,6 @@ CTest::OnRecv(IProTransport*          trans,
 }
 
 void
-PRO_CALLTYPE
 CTest::OnClose(IProTransport* trans,
                long           errorCode,
                long           sslCode)
@@ -934,7 +924,6 @@ CTest::OnClose(IProTransport* trans,
 }
 
 void
-PRO_CALLTYPE
 CTest::OnHeartbeat(IProTransport* trans)
 {
     assert(trans != NULL);
@@ -951,7 +940,6 @@ CTest::OnHeartbeat(IProTransport* trans)
 }
 
 void
-PRO_CALLTYPE
 CTest::OnTimer(void*      factory,
                PRO_UINT64 timerId,
                PRO_INT64  userData)

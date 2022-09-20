@@ -183,7 +183,6 @@ CProServiceHub::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CProServiceHub::AddRef()
 {
     const unsigned long refCount = CProRefCount::AddRef();
@@ -192,7 +191,6 @@ CProServiceHub::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CProServiceHub::Release()
 {
     const unsigned long refCount = CProRefCount::Release();
@@ -201,7 +199,6 @@ CProServiceHub::Release()
 }
 
 void
-PRO_CALLTYPE
 CProServiceHub::OnAccept(IProAcceptor*  acceptor,
                          PRO_INT64      sockId,
                          bool           unixSocket,
@@ -224,7 +221,6 @@ CProServiceHub::OnAccept(IProAcceptor*  acceptor,
 }
 
 void
-PRO_CALLTYPE
 CProServiceHub::OnAccept(IProAcceptor*    acceptor,
                          PRO_INT64        sockId,
                          bool             unixSocket,
@@ -419,7 +415,6 @@ CProServiceHub::AcceptApp(IProAcceptor*    acceptor,
 }
 
 void
-PRO_CALLTYPE
 CProServiceHub::OnRecv(CProServicePipe*          pipe,
                        const PRO_SERVICE_PACKET& packet)
 {
@@ -539,7 +534,6 @@ CProServiceHub::OnRecv(CProServicePipe*          pipe,
 }
 
 void
-PRO_CALLTYPE
 CProServiceHub::OnClose(CProServicePipe* pipe)
 {
     assert(pipe != NULL);
@@ -598,7 +592,6 @@ CProServiceHub::OnClose(CProServicePipe* pipe)
 }
 
 void
-PRO_CALLTYPE
 CProServiceHub::OnTimer(void*      factory,
                         PRO_UINT64 timerId,
                         PRO_INT64  userData)

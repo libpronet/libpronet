@@ -40,7 +40,6 @@ static CTest* g_s_tester = NULL;
 
 static
 void
-PRO_CALLTYPE
 ReadConfig_i(const CProStlString&            exeRoot,
              CProStlVector<PRO_CONFIG_ITEM>& configs,
              TCP_SERVER_CONFIG_INFO&         configInfo)
@@ -272,7 +271,6 @@ SignalHandler_i(int sig)
 
 static
 void
-PRO_CALLTYPE
 SetupSignalHandlers_i()
 {
     struct sigaction sa;

@@ -108,7 +108,6 @@ static CProThreadMutexCondition g_s_cond;
 
 static
 void
-PRO_CALLTYPE
 ReadConfig_i(const CProStlVector<PRO_CONFIG_ITEM>& configs,
              SERVICE_HUB_CONFIG_INFO&              configInfo)
 {
@@ -251,7 +250,6 @@ SignalHandler_i(int sig)
 
 static
 void
-PRO_CALLTYPE
 SetupSignalHandlers_i()
 {
     struct sigaction sa;

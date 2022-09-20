@@ -163,7 +163,6 @@ CRtpService::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpService::AddRef()
 {
     const unsigned long refCount = CProRefCount::AddRef();
@@ -172,7 +171,6 @@ CRtpService::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpService::Release()
 {
     const unsigned long refCount = CProRefCount::Release();
@@ -181,7 +179,6 @@ CRtpService::Release()
 }
 
 void
-PRO_CALLTYPE
 CRtpService::OnServiceAccept(IProServiceHost* serviceHost,
                              PRO_INT64        sockId,
                              bool             unixSocket,
@@ -298,7 +295,6 @@ CRtpService::OnServiceAccept(IProServiceHost* serviceHost,
 }
 
 void
-PRO_CALLTYPE
 CRtpService::OnHandshakeOk(IProTcpHandshaker* handshaker,
                            PRO_INT64          sockId,
                            bool               unixSocket,
@@ -424,7 +420,6 @@ CRtpService::OnHandshakeOk(IProTcpHandshaker* handshaker,
 }
 
 void
-PRO_CALLTYPE
 CRtpService::OnHandshakeError(IProTcpHandshaker* handshaker,
                               long               errorCode)
 {
@@ -456,7 +451,6 @@ CRtpService::OnHandshakeError(IProTcpHandshaker* handshaker,
 }
 
 void
-PRO_CALLTYPE
 CRtpService::OnHandshakeOk(IProSslHandshaker* handshaker,
                            PRO_SSL_CTX*       ctx,
                            PRO_INT64          sockId,
@@ -593,7 +587,6 @@ CRtpService::OnHandshakeOk(IProSslHandshaker* handshaker,
 }
 
 void
-PRO_CALLTYPE
 CRtpService::OnHandshakeError(IProSslHandshaker* handshaker,
                               long               errorCode,
                               long               sslCode)

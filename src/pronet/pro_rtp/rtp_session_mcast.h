@@ -32,9 +32,7 @@ class CRtpSessionMcast : public CRtpSessionBase
 {
 public:
 
-    static CRtpSessionMcast* CreateInstance(
-        const RTP_SESSION_INFO* localInfo
-        );
+    static CRtpSessionMcast* CreateInstance(const RTP_SESSION_INFO* localInfo);
 
     bool Init(
         IRtpSessionObserver* observer,
@@ -52,13 +50,13 @@ private:
 
     virtual ~CRtpSessionMcast();
 
-    virtual bool PRO_CALLTYPE AddMcastReceiver(const char* mcastIp);
+    virtual bool AddMcastReceiver(const char* mcastIp);
 
-    virtual void PRO_CALLTYPE RemoveMcastReceiver(const char* mcastIp);
+    virtual void RemoveMcastReceiver(const char* mcastIp);
 
 private:
 
-    virtual void PRO_CALLTYPE OnRecv(
+    virtual void OnRecv(
         IProTransport*          trans,
         const pbsd_sockaddr_in* remoteAddr
         );

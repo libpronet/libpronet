@@ -189,7 +189,7 @@ public:
 
     CProStatLossRate();
 
-    void SetTimeSpan(unsigned long timeSpanInSeconds);                /* = 5 */
+    void SetTimeSpan(unsigned long timeSpanInSeconds); /* = 5 */
 
     void SetMaxBrokenDuration(unsigned long brokenDurationInSeconds); /* = 10 */
 

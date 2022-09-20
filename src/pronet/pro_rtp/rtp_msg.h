@@ -275,53 +275,51 @@ public:
 
     virtual ~IRtpMsgClient() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
     /*
      * 获取媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
      */
-    virtual RTP_MM_TYPE PRO_CALLTYPE GetMmType() const = 0;
+    virtual RTP_MM_TYPE GetMmType() const = 0;
 
     /*
      * 获取用户号
      */
-    virtual void PRO_CALLTYPE GetUser(RTP_MSG_USER* myUser) const = 0;
+    virtual void GetUser(RTP_MSG_USER* myUser) const = 0;
 
     /*
      * 获取加密套件
      */
-    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
-        char suiteName[64]
-        ) const = 0;
+    virtual PRO_SSL_SUITE_ID GetSslSuite(char suiteName[64]) const = 0;
 
     /*
      * 获取本地ip地址
      */
-    virtual const char* PRO_CALLTYPE GetLocalIp(char localIp[64]) const = 0;
+    virtual const char* GetLocalIp(char localIp[64]) const = 0;
 
     /*
      * 获取本地端口号
      */
-    virtual unsigned short PRO_CALLTYPE GetLocalPort() const = 0;
+    virtual unsigned short GetLocalPort() const = 0;
 
     /*
      * 获取远端ip地址
      */
-    virtual const char* PRO_CALLTYPE GetRemoteIp(char remoteIp[64]) const = 0;
+    virtual const char* GetRemoteIp(char remoteIp[64]) const = 0;
 
     /*
      * 获取远端端口号
      */
-    virtual unsigned short PRO_CALLTYPE GetRemotePort() const = 0;
+    virtual unsigned short GetRemotePort() const = 0;
 
     /*
      * 发送消息
      *
      * 系统内部有消息发送队列
      */
-    virtual bool PRO_CALLTYPE SendMsg(
+    virtual bool SendMsg(
         const void*         buf,         /* 消息内容 */
         unsigned long       size,        /* 消息长度 */
         PRO_UINT16          charset,     /* 用户自定义的消息字符集代码 */
@@ -334,7 +332,7 @@ public:
      *
      * 系统内部有消息发送队列
      */
-    virtual bool PRO_CALLTYPE SendMsg2(
+    virtual bool SendMsg2(
         const void*         buf1,        /* 消息内容1 */
         unsigned long       size1,       /* 消息长度1 */
         const void*         buf2,        /* 消息内容2. 可以是NULL */
@@ -349,17 +347,17 @@ public:
      *
      * 如果redlineBytes为0, 则直接返回, 什么都不做
      */
-    virtual void PRO_CALLTYPE SetOutputRedline(unsigned long redlineBytes) = 0;
+    virtual void SetOutputRedline(unsigned long redlineBytes) = 0;
 
     /*
      * 获取链路发送红线. 默认(1024 * 1024)字节
      */
-    virtual unsigned long PRO_CALLTYPE GetOutputRedline() const = 0;
+    virtual unsigned long GetOutputRedline() const = 0;
 
     /*
      * 获取链路缓存的尚未发送的字节数
      */
-    virtual unsigned long PRO_CALLTYPE GetSendingBytes() const = 0;
+    virtual unsigned long GetSendingBytes() const = 0;
 };
 
 /*
@@ -373,14 +371,14 @@ public:
 
     virtual ~IRtpMsgClientObserver() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
     /*
      * 登录成功时, 该函数将被回调
      */
-    virtual void PRO_CALLTYPE OnOkMsg(
+    virtual void OnOkMsg(
         IRtpMsgClient*      msgClient,
         const RTP_MSG_USER* myUser,
         const char*         myPublicIp
@@ -389,7 +387,7 @@ public:
     /*
      * 消息到来时, 该函数将被回调
      */
-    virtual void PRO_CALLTYPE OnRecvMsg(
+    virtual void OnRecvMsg(
         IRtpMsgClient*      msgClient,
         const void*         buf,
         unsigned long       size,
@@ -400,7 +398,7 @@ public:
     /*
      * 网络错误或超时时, 该函数将被回调
      */
-    virtual void PRO_CALLTYPE OnCloseMsg(
+    virtual void OnCloseMsg(
         IRtpMsgClient* msgClient,
         long           errorCode,   /* 系统错误码 */
         long           sslCode,     /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
@@ -412,7 +410,7 @@ public:
      *
      * 主要用于调试
      */
-    virtual void PRO_CALLTYPE OnHeartbeatMsg(
+    virtual void OnHeartbeatMsg(
         IRtpMsgClient* msgClient,
         PRO_INT64      peerAliveTick
         ) = 0;
@@ -430,24 +428,24 @@ public:
 
     virtual ~IRtpMsgServer() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
     /*
      * 获取媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
      */
-    virtual RTP_MM_TYPE PRO_CALLTYPE GetMmType() const = 0;
+    virtual RTP_MM_TYPE GetMmType() const = 0;
 
     /*
      * 获取服务端口号
      */
-    virtual unsigned short PRO_CALLTYPE GetServicePort() const = 0;
+    virtual unsigned short GetServicePort() const = 0;
 
     /*
      * 获取链路加密套件
      */
-    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
+    virtual PRO_SSL_SUITE_ID GetSslSuite(
         const RTP_MSG_USER* user,
         char                suiteName[64]
         ) const = 0;
@@ -455,7 +453,7 @@ public:
     /*
      * 获取用户数
      */
-    virtual void PRO_CALLTYPE GetUserCount(
+    virtual void GetUserCount(
         unsigned long* pendingUserCount, /* = NULL */
         unsigned long* baseUserCount,    /* = NULL */
         unsigned long* subUserCount      /* = NULL */
@@ -464,14 +462,14 @@ public:
     /*
      * 踢出用户
      */
-    virtual void PRO_CALLTYPE KickoutUser(const RTP_MSG_USER* user) = 0;
+    virtual void KickoutUser(const RTP_MSG_USER* user) = 0;
 
     /*
      * 发送消息
      *
      * 系统内部有消息发送队列
      */
-    virtual bool PRO_CALLTYPE SendMsg(
+    virtual bool SendMsg(
         const void*         buf,         /* 消息内容 */
         unsigned long       size,        /* 消息长度 */
         PRO_UINT16          charset,     /* 用户自定义的消息字符集代码 */
@@ -484,7 +482,7 @@ public:
      *
      * 系统内部有消息发送队列
      */
-    virtual bool PRO_CALLTYPE SendMsg2(
+    virtual bool SendMsg2(
         const void*         buf1,        /* 消息内容1 */
         unsigned long       size1,       /* 消息长度1 */
         const void*         buf2,        /* 消息内容2. 可以是NULL */
@@ -499,35 +497,29 @@ public:
      *
      * 如果redlineBytes为0, 则直接返回, 什么都不做
      */
-    virtual void PRO_CALLTYPE SetOutputRedlineToC2s(
-        unsigned long redlineBytes
-        ) = 0;
+    virtual void SetOutputRedlineToC2s(unsigned long redlineBytes) = 0;
 
     /*
      * 获取server->c2s链路的发送红线. 默认(1024 * 1024 * 8)字节
      */
-    virtual unsigned long PRO_CALLTYPE GetOutputRedlineToC2s() const = 0;
+    virtual unsigned long GetOutputRedlineToC2s() const = 0;
 
     /*
      * 设置server->user链路的发送红线. 默认(1024 * 1024)字节
      *
      * 如果redlineBytes为0, 则直接返回, 什么都不做
      */
-    virtual void PRO_CALLTYPE SetOutputRedlineToUsr(
-        unsigned long redlineBytes
-        ) = 0;
+    virtual void SetOutputRedlineToUsr(unsigned long redlineBytes) = 0;
 
     /*
      * 获取server->user链路的发送红线. 默认(1024 * 1024)字节
      */
-    virtual unsigned long PRO_CALLTYPE GetOutputRedlineToUsr() const = 0;
+    virtual unsigned long GetOutputRedlineToUsr() const = 0;
 
     /*
      * 获取链路缓存的尚未发送的字节数
      */
-    virtual unsigned long PRO_CALLTYPE GetSendingBytes(
-        const RTP_MSG_USER* user
-        ) const = 0;
+    virtual unsigned long GetSendingBytes(const RTP_MSG_USER* user) const = 0;
 };
 
 /*
@@ -541,9 +533,9 @@ public:
 
     virtual ~IRtpMsgServerObserver() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
     /*
      * 用户请求登录时, 该函数将被回调
@@ -553,7 +545,7 @@ public:
      *
      * 返回值表示是否允许该用户登录
      */
-    virtual bool PRO_CALLTYPE OnCheckUser(
+    virtual bool OnCheckUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,         /* 用户发来的登录用户号 */
         const char*         userPublicIp, /* 用户的ip地址 */
@@ -569,7 +561,7 @@ public:
     /*
      * 用户登录成功时, 该函数将被回调
      */
-    virtual void PRO_CALLTYPE OnOkUser(
+    virtual void OnOkUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,         /* 上层分配或许可的用户号 */
         const char*         userPublicIp, /* 用户的ip地址 */
@@ -580,11 +572,11 @@ public:
     /*
      * 用户网络错误或超时时, 该函数将被回调
      */
-    virtual void PRO_CALLTYPE OnCloseUser(
+    virtual void OnCloseUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
-        long                errorCode,    /* 系统错误码 */
-        long                sslCode       /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
+        long                errorCode, /* 系统错误码 */
+        long                sslCode    /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
         ) = 0;
 
     /*
@@ -592,7 +584,7 @@ public:
      *
      * 主要用于调试
      */
-    virtual void PRO_CALLTYPE OnHeartbeatUser(
+    virtual void OnHeartbeatUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
         PRO_INT64           peerAliveTick
@@ -601,7 +593,7 @@ public:
     /*
      * 消息到来时, 该函数将被回调
      */
-    virtual void PRO_CALLTYPE OnRecvMsg(
+    virtual void OnRecvMsg(
         IRtpMsgServer*      msgServer,
         const void*         buf,
         unsigned long       size,
@@ -625,79 +617,71 @@ public:
 
     virtual ~IRtpMsgC2s() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
     /*
      * 获取媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
      */
-    virtual RTP_MM_TYPE PRO_CALLTYPE GetMmType() const = 0;
+    virtual RTP_MM_TYPE GetMmType() const = 0;
 
     /*
      * 获取c2s<->server链路的用户号
      */
-    virtual void PRO_CALLTYPE GetUplinkUser(RTP_MSG_USER* myUser) const = 0;
+    virtual void GetUplinkUser(RTP_MSG_USER* myUser) const = 0;
 
     /*
      * 获取c2s<->server链路的加密套件
      */
-    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetUplinkSslSuite(
-        char suiteName[64]
-        ) const = 0;
+    virtual PRO_SSL_SUITE_ID GetUplinkSslSuite(char suiteName[64]) const = 0;
 
     /*
      * 获取c2s<->server链路的本地ip地址
      */
-    virtual const char* PRO_CALLTYPE GetUplinkLocalIp(
-        char localIp[64]
-        ) const = 0;
+    virtual const char* GetUplinkLocalIp(char localIp[64]) const = 0;
 
     /*
      * 获取c2s<->server链路的本地端口号
      */
-    virtual unsigned short PRO_CALLTYPE GetUplinkLocalPort() const = 0;
+    virtual unsigned short GetUplinkLocalPort() const = 0;
 
     /*
      * 获取c2s<->server链路的远端ip地址
      */
-    virtual const char* PRO_CALLTYPE GetUplinkRemoteIp(
-        char remoteIp[64]
-        ) const = 0;
+    virtual const char* GetUplinkRemoteIp(char remoteIp[64]) const = 0;
 
     /*
      * 获取c2s<->server链路的远端端口号
      */
-    virtual unsigned short PRO_CALLTYPE GetUplinkRemotePort() const = 0;
+    virtual unsigned short GetUplinkRemotePort() const = 0;
 
     /*
      * 设置c2s->server链路的发送红线. 默认(1024 * 1024 * 8)字节
      *
      * 如果redlineBytes为0, 则直接返回, 什么都不做
      */
-    virtual void PRO_CALLTYPE SetUplinkOutputRedline(
-        unsigned long redlineBytes
-        ) = 0;
+    virtual void SetUplinkOutputRedline(unsigned long redlineBytes) = 0;
 
     /*
      * 获取c2s->server链路的发送红线. 默认(1024 * 1024 * 8)字节
      */
-    virtual unsigned long PRO_CALLTYPE GetUplinkOutputRedline() const = 0;
+    virtual unsigned long GetUplinkOutputRedline() const = 0;
 
     /*
      * 获取c2s->server链路缓存的尚未发送的字节数
      */
-    virtual unsigned long PRO_CALLTYPE GetUplinkSendingBytes() const = 0;
+    virtual unsigned long GetUplinkSendingBytes() const = 0;
 
     /*
      * 获取本地服务端口号
      */
-    virtual unsigned short PRO_CALLTYPE GetLocalServicePort() const = 0;
+    virtual unsigned short GetLocalServicePort() const = 0;
 
     /*
      * 获取本地链路加密套件
      */
-    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetLocalSslSuite(
+    virtual PRO_SSL_SUITE_ID GetLocalSslSuite(
         const RTP_MSG_USER* user,
         char                suiteName[64]
         ) const = 0;
@@ -705,7 +689,7 @@ public:
     /*
      * 获取本地用户数
      */
-    virtual void PRO_CALLTYPE GetLocalUserCount(
+    virtual void GetLocalUserCount(
         unsigned long* pendingUserCount, /* = NULL */
         unsigned long* userCount         /* = NULL */
         ) const = 0;
@@ -713,28 +697,24 @@ public:
     /*
      * 踢出本地用户
      */
-    virtual void PRO_CALLTYPE KickoutLocalUser(const RTP_MSG_USER* user) = 0;
+    virtual void KickoutLocalUser(const RTP_MSG_USER* user) = 0;
 
     /*
      * 设置c2s->user链路的发送红线. 默认(1024 * 1024)字节
      *
      * 如果redlineBytes为0, 则直接返回, 什么都不做
      */
-    virtual void PRO_CALLTYPE SetLocalOutputRedline(
-        unsigned long redlineBytes
-        ) = 0;
+    virtual void SetLocalOutputRedline(unsigned long redlineBytes) = 0;
 
     /*
      * 获取c2s->user链路的发送红线. 默认(1024 * 1024)字节
      */
-    virtual unsigned long PRO_CALLTYPE GetLocalOutputRedline() const = 0;
+    virtual unsigned long GetLocalOutputRedline() const = 0;
 
     /*
      * 获取c2s->user链路缓存的尚未发送的字节数
      */
-    virtual unsigned long PRO_CALLTYPE GetLocalSendingBytes(
-        const RTP_MSG_USER* user
-        ) const = 0;
+    virtual unsigned long GetLocalSendingBytes(const RTP_MSG_USER* user) const = 0;
 };
 
 /*
@@ -748,14 +728,14 @@ public:
 
     virtual ~IRtpMsgC2sObserver() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
     /*
      * c2s登录成功时, 该函数将被回调
      */
-    virtual void PRO_CALLTYPE OnOkC2s(
+    virtual void OnOkC2s(
         IRtpMsgC2s*         msgC2s,
         const RTP_MSG_USER* myUser,
         const char*         myPublicIp
@@ -764,11 +744,11 @@ public:
     /*
      * c2s网络错误或超时时, 该函数将被回调
      */
-    virtual void PRO_CALLTYPE OnCloseC2s(
+    virtual void OnCloseC2s(
         IRtpMsgC2s* msgC2s,
-        long        errorCode,         /* 系统错误码 */
-        long        sslCode,           /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
-        bool        tcpConnected       /* tcp连接是否已经建立 */
+        long        errorCode,   /* 系统错误码 */
+        long        sslCode,     /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
+        bool        tcpConnected /* tcp连接是否已经建立 */
         ) = 0;
 
     /*
@@ -776,7 +756,7 @@ public:
      *
      * 主要用于调试
      */
-    virtual void PRO_CALLTYPE OnHeartbeatC2s(
+    virtual void OnHeartbeatC2s(
         IRtpMsgC2s* msgC2s,
         PRO_INT64   peerAliveTick
         ) = 0;
@@ -784,7 +764,7 @@ public:
     /*
      * 用户登录成功时, 该函数将被回调
      */
-    virtual void PRO_CALLTYPE OnOkUser(
+    virtual void OnOkUser(
         IRtpMsgC2s*         msgC2s,
         const RTP_MSG_USER* user,
         const char*         userPublicIp
@@ -793,7 +773,7 @@ public:
     /*
      * 用户网络错误或超时时, 该函数将被回调
      */
-    virtual void PRO_CALLTYPE OnCloseUser(
+    virtual void OnCloseUser(
         IRtpMsgC2s*         msgC2s,
         const RTP_MSG_USER* user,
         long                errorCode, /* 系统错误码 */
@@ -805,7 +785,7 @@ public:
      *
      * 主要用于调试
      */
-    virtual void PRO_CALLTYPE OnHeartbeatUser(
+    virtual void OnHeartbeatUser(
         IRtpMsgC2s*         msgC2s,
         const RTP_MSG_USER* user,
         PRO_INT64           peerAliveTick
@@ -837,7 +817,6 @@ public:
  */
 PRO_RTP_API
 IRtpMsgClient*
-PRO_CALLTYPE
 CreateRtpMsgClient(IRtpMsgClientObserver*       observer,
                    IProReactor*                 reactor,
                    RTP_MM_TYPE                  mmType,
@@ -862,7 +841,6 @@ CreateRtpMsgClient(IRtpMsgClientObserver*       observer,
  */
 PRO_RTP_API
 void
-PRO_CALLTYPE
 DeleteRtpMsgClient(IRtpMsgClient* msgClient);
 
 /*
@@ -883,7 +861,6 @@ DeleteRtpMsgClient(IRtpMsgClient* msgClient);
  */
 PRO_RTP_API
 IRtpMsgServer*
-PRO_CALLTYPE
 CreateRtpMsgServer(IRtpMsgServerObserver*       observer,
                    IProReactor*                 reactor,
                    RTP_MM_TYPE                  mmType,
@@ -904,7 +881,6 @@ CreateRtpMsgServer(IRtpMsgServerObserver*       observer,
  */
 PRO_RTP_API
 void
-PRO_CALLTYPE
 DeleteRtpMsgServer(IRtpMsgServer* msgServer);
 
 /*
@@ -933,7 +909,6 @@ DeleteRtpMsgServer(IRtpMsgServer* msgServer);
  */
 PRO_RTP_API
 IRtpMsgC2s*
-PRO_CALLTYPE
 CreateRtpMsgC2s(IRtpMsgC2sObserver*          observer,
                 IProReactor*                 reactor,
                 RTP_MM_TYPE                  mmType,
@@ -962,7 +937,6 @@ CreateRtpMsgC2s(IRtpMsgC2sObserver*          observer,
  */
 PRO_RTP_API
 void
-PRO_CALLTYPE
 DeleteRtpMsgC2s(IRtpMsgC2s* msgC2s);
 
 /*
@@ -978,7 +952,6 @@ DeleteRtpMsgC2s(IRtpMsgC2s* msgC2s);
  */
 PRO_RTP_API
 void
-PRO_CALLTYPE
 RtpMsgUser2String(const RTP_MSG_USER* user,
                   char                idString[64]);
 
@@ -995,7 +968,6 @@ RtpMsgUser2String(const RTP_MSG_USER* user,
  */
 PRO_RTP_API
 void
-PRO_CALLTYPE
 RtpMsgString2User(const char*   idString,
                   RTP_MSG_USER* user);
 

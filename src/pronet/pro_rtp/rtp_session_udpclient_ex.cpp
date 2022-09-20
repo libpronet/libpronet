@@ -200,7 +200,6 @@ CRtpSessionUdpclientEx::Fini()
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionUdpclientEx::GetSyncId(unsigned char syncId[14]) const
 {
     {
@@ -211,7 +210,6 @@ CRtpSessionUdpclientEx::GetSyncId(unsigned char syncId[14]) const
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
                                const pbsd_sockaddr_in* remoteAddr)
 {
@@ -432,7 +430,6 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionUdpclientEx::OnTimer(void*      factory,
                                 PRO_UINT64 timerId,
                                 PRO_INT64  userData)

@@ -222,7 +222,6 @@ CMsgServer::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CMsgServer::AddRef()
 {
     const unsigned long refCount = CProRefCount::AddRef();
@@ -231,7 +230,6 @@ CMsgServer::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CMsgServer::Release()
 {
     const unsigned long refCount = CProRefCount::Release();
@@ -323,7 +321,6 @@ CMsgServer::Reconfig(const MSG_SERVER_CONFIG_INFO& configInfo)
 }
 
 bool
-PRO_CALLTYPE
 CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
                         const RTP_MSG_USER* user,
                         const char*         userPublicIp,
@@ -498,7 +495,6 @@ EXIT:
 }
 
 void
-PRO_CALLTYPE
 CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
                      const RTP_MSG_USER* user,
                      const char*         userPublicIp,
@@ -573,7 +569,6 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
 }
 
 void
-PRO_CALLTYPE
 CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
                         const RTP_MSG_USER* user,
                         long                errorCode,

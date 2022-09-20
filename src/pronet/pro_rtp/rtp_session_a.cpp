@@ -36,7 +36,6 @@
 ////
 
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionUdpclient(IRtpSessionObserver*    observer,
                           IProReactor*            reactor,
                           const RTP_SESSION_INFO* localInfo,
@@ -61,7 +60,6 @@ CreateRtpSessionUdpclient(IRtpSessionObserver*    observer,
 }
 
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionUdpserver(IRtpSessionObserver*    observer,
                           IProReactor*            reactor,
                           const RTP_SESSION_INFO* localInfo,
@@ -86,7 +84,6 @@ CreateRtpSessionUdpserver(IRtpSessionObserver*    observer,
 }
 
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionTcpclient(IRtpSessionObserver*    observer,
                           IProReactor*            reactor,
                           const RTP_SESSION_INFO* localInfo,
@@ -115,7 +112,6 @@ CreateRtpSessionTcpclient(IRtpSessionObserver*    observer,
 }
 
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionTcpserver(IRtpSessionObserver*    observer,
                           IProReactor*            reactor,
                           const RTP_SESSION_INFO* localInfo,
@@ -143,7 +139,6 @@ CreateRtpSessionTcpserver(IRtpSessionObserver*    observer,
 }
 
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionUdpclientEx(IRtpSessionObserver*    observer,
                             IProReactor*            reactor,
                             const RTP_SESSION_INFO* localInfo,
@@ -171,7 +166,6 @@ CreateRtpSessionUdpclientEx(IRtpSessionObserver*    observer,
 }
 
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionUdpserverEx(IRtpSessionObserver*    observer,
                             IProReactor*            reactor,
                             const RTP_SESSION_INFO* localInfo,
@@ -198,7 +192,6 @@ CreateRtpSessionUdpserverEx(IRtpSessionObserver*    observer,
 }
 
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionTcpclientEx(IRtpSessionObserver*    observer,
                             IProReactor*            reactor,
                             const RTP_SESSION_INFO* localInfo,
@@ -228,7 +221,6 @@ CreateRtpSessionTcpclientEx(IRtpSessionObserver*    observer,
 }
 
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionTcpserverEx(IRtpSessionObserver*    observer,
                             IProReactor*            reactor,
                             const RTP_SESSION_INFO* localInfo,
@@ -257,7 +249,6 @@ CreateRtpSessionTcpserverEx(IRtpSessionObserver*    observer,
 }
 
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionSslclientEx(IRtpSessionObserver*         observer,
                             IProReactor*                 reactor,
                             const RTP_SESSION_INFO*      localInfo,
@@ -290,7 +281,6 @@ CreateRtpSessionSslclientEx(IRtpSessionObserver*         observer,
 }
 
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionSslserverEx(IRtpSessionObserver*    observer,
                             IProReactor*            reactor,
                             const RTP_SESSION_INFO* localInfo,
@@ -320,7 +310,6 @@ CreateRtpSessionSslserverEx(IRtpSessionObserver*    observer,
 }
 
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionMcast(IRtpSessionObserver*    observer,
                       IProReactor*            reactor,
                       const RTP_SESSION_INFO* localInfo,
@@ -346,7 +335,6 @@ CreateRtpSessionMcast(IRtpSessionObserver*    observer,
 }
 
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionMcastEx(IRtpSessionObserver*    observer,
                         IProReactor*            reactor,
                         const RTP_SESSION_INFO* localInfo,
@@ -372,7 +360,6 @@ CreateRtpSessionMcastEx(IRtpSessionObserver*    observer,
 }
 
 void
-PRO_CALLTYPE
 DeleteRtpSession(IRtpSession* session)
 {
     if (session == NULL)

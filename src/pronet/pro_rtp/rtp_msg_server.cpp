@@ -59,7 +59,6 @@ static CProThreadMutex g_s_lock;
 
 static
 PRO_UINT64
-PRO_CALLTYPE
 MakeServerId_i()
 {
     g_s_lock.Lock();
@@ -78,7 +77,6 @@ MakeServerId_i()
 
 static
 PRO_UINT64
-PRO_CALLTYPE
 MakeClientId_i()
 {
     g_s_lock.Lock();
@@ -257,7 +255,6 @@ CRtpMsgServer::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpMsgServer::AddRef()
 {
     const unsigned long refCount = CProRefCount::AddRef();
@@ -266,7 +263,6 @@ CRtpMsgServer::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpMsgServer::Release()
 {
     const unsigned long refCount = CProRefCount::Release();
@@ -275,7 +271,6 @@ CRtpMsgServer::Release()
 }
 
 unsigned short
-PRO_CALLTYPE
 CRtpMsgServer::GetServicePort() const
 {
     unsigned short servicePort = 0;
@@ -290,7 +285,6 @@ CRtpMsgServer::GetServicePort() const
 }
 
 PRO_SSL_SUITE_ID
-PRO_CALLTYPE
 CRtpMsgServer::GetSslSuite(const RTP_MSG_USER* user,
                            char                suiteName[64]) const
 {
@@ -321,7 +315,6 @@ CRtpMsgServer::GetSslSuite(const RTP_MSG_USER* user,
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgServer::GetUserCount(unsigned long* pendingUserCount,   /* = NULL */
                             unsigned long* baseUserCount,      /* = NULL */
                             unsigned long* subUserCount) const /* = NULL */
@@ -345,7 +338,6 @@ CRtpMsgServer::GetUserCount(unsigned long* pendingUserCount,   /* = NULL */
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgServer::KickoutUser(const RTP_MSG_USER* user)
 {
     assert(user != NULL);
@@ -452,7 +444,6 @@ CRtpMsgServer::AsyncKickoutUser(PRO_INT64* args)
 }
 
 bool
-PRO_CALLTYPE
 CRtpMsgServer::SendMsg(const void*         buf,
                        unsigned long       size,
                        PRO_UINT16          charset,
@@ -466,7 +457,6 @@ CRtpMsgServer::SendMsg(const void*         buf,
 }
 
 bool
-PRO_CALLTYPE
 CRtpMsgServer::SendMsg2(const void*         buf1,
                         unsigned long       size1,
                         const void*         buf2,  /* = NULL */
@@ -583,7 +573,6 @@ CRtpMsgServer::SendMsg2(const void*         buf1,
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgServer::SetOutputRedlineToC2s(unsigned long redlineBytes)
 {
     if (redlineBytes == 0)
@@ -605,7 +594,6 @@ CRtpMsgServer::SetOutputRedlineToC2s(unsigned long redlineBytes)
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpMsgServer::GetOutputRedlineToC2s() const
 {
     unsigned long redlineBytes = 0;
@@ -620,7 +608,6 @@ CRtpMsgServer::GetOutputRedlineToC2s() const
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgServer::SetOutputRedlineToUsr(unsigned long redlineBytes)
 {
     if (redlineBytes == 0)
@@ -642,7 +629,6 @@ CRtpMsgServer::SetOutputRedlineToUsr(unsigned long redlineBytes)
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpMsgServer::GetOutputRedlineToUsr() const
 {
     unsigned long redlineBytes = 0;
@@ -657,7 +643,6 @@ CRtpMsgServer::GetOutputRedlineToUsr() const
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpMsgServer::GetSendingBytes(const RTP_MSG_USER* user) const
 {
     assert(user != NULL);
@@ -686,7 +671,6 @@ CRtpMsgServer::GetSendingBytes(const RTP_MSG_USER* user) const
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgServer::OnAcceptSession(IRtpService*            service,
                                PRO_INT64               sockId,
                                bool                    unixSocket,
@@ -761,7 +745,6 @@ EXIT:
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgServer::OnAcceptSession(IRtpService*            service,
                                PRO_SSL_CTX*            sslCtx,
                                PRO_INT64               sockId,
@@ -1023,7 +1006,6 @@ EXIT:
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgServer::OnRecvSession(IRtpSession* session,
                              IRtpPacket*  packet)
 {
@@ -1533,7 +1515,6 @@ CRtpMsgServer::ProcessMsg_client_logout(IRtpSession*            session,
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgServer::OnCloseSession(IRtpSession* session,
                               long         errorCode,
                               long         sslCode,
@@ -1632,7 +1613,6 @@ CRtpMsgServer::AsyncOnCloseSession(PRO_INT64* args)
 }
 
 void
-PRO_CALLTYPE
 CRtpMsgServer::OnHeartbeatSession(IRtpSession* session,
                                   PRO_INT64    peerAliveTick)
 {

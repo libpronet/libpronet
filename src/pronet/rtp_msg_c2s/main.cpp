@@ -48,7 +48,6 @@ static const PRO_UINT64    NODE_UID_MAXX = ((PRO_UINT64)0xFF << 32) | 0xFFFFFFFF
 
 static
 void
-PRO_CALLTYPE
 ReadConfig_i(const CProStlString&            exeRoot,
              CProStlVector<PRO_CONFIG_ITEM>& configs,
              C2S_SERVER_CONFIG_INFO&         configInfo)

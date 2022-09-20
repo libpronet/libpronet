@@ -139,65 +139,65 @@ public:
         PRO_UINT16  size
         );
 
-    virtual unsigned long PRO_CALLTYPE AddRef();
+    virtual unsigned long AddRef();
 
-    virtual unsigned long PRO_CALLTYPE Release();
+    virtual unsigned long Release();
 
-    virtual void PRO_CALLTYPE SetMarker(bool m);
+    virtual void SetMarker(bool m);
 
-    virtual bool PRO_CALLTYPE GetMarker() const;
+    virtual bool GetMarker() const;
 
-    virtual void PRO_CALLTYPE SetPayloadType(char pt);
+    virtual void SetPayloadType(char pt);
 
-    virtual char PRO_CALLTYPE GetPayloadType() const;
+    virtual char GetPayloadType() const;
 
-    virtual void PRO_CALLTYPE SetSequence(PRO_UINT16 seq);
+    virtual void SetSequence(PRO_UINT16 seq);
 
-    virtual PRO_UINT16 PRO_CALLTYPE GetSequence() const;
+    virtual PRO_UINT16 GetSequence() const;
 
-    virtual void PRO_CALLTYPE SetTimeStamp(PRO_UINT32 ts);
+    virtual void SetTimeStamp(PRO_UINT32 ts);
 
-    virtual PRO_UINT32 PRO_CALLTYPE GetTimeStamp() const;
+    virtual PRO_UINT32 GetTimeStamp() const;
 
-    virtual void PRO_CALLTYPE SetSsrc(PRO_UINT32 ssrc);
+    virtual void SetSsrc(PRO_UINT32 ssrc);
 
-    virtual PRO_UINT32 PRO_CALLTYPE GetSsrc() const;
+    virtual PRO_UINT32 GetSsrc() const;
 
-    virtual void PRO_CALLTYPE SetMmId(PRO_UINT32 mmId);
+    virtual void SetMmId(PRO_UINT32 mmId);
 
-    virtual PRO_UINT32 PRO_CALLTYPE GetMmId() const;
+    virtual PRO_UINT32 GetMmId() const;
 
-    virtual void PRO_CALLTYPE SetMmType(RTP_MM_TYPE mmType);
+    virtual void SetMmType(RTP_MM_TYPE mmType);
 
-    virtual RTP_MM_TYPE PRO_CALLTYPE GetMmType() const;
+    virtual RTP_MM_TYPE GetMmType() const;
 
-    virtual void PRO_CALLTYPE SetKeyFrame(bool keyFrame);
+    virtual void SetKeyFrame(bool keyFrame);
 
-    virtual bool PRO_CALLTYPE GetKeyFrame() const;
+    virtual bool GetKeyFrame() const;
 
-    virtual void PRO_CALLTYPE SetFirstPacketOfFrame(bool firstPacket);
+    virtual void SetFirstPacketOfFrame(bool firstPacket);
 
-    virtual bool PRO_CALLTYPE GetFirstPacketOfFrame() const;
+    virtual bool GetFirstPacketOfFrame() const;
 
-    virtual const void* PRO_CALLTYPE GetPayloadBuffer() const;
+    virtual const void* GetPayloadBuffer() const;
 
-    virtual void* PRO_CALLTYPE GetPayloadBuffer();
+    virtual void* GetPayloadBuffer();
 
-    virtual unsigned long PRO_CALLTYPE GetPayloadSize() const;
+    virtual unsigned long GetPayloadSize() const;
 
-    virtual PRO_UINT16 PRO_CALLTYPE GetPayloadSize16() const;
+    virtual PRO_UINT16 GetPayloadSize16() const;
 
-    virtual RTP_EXT_PACK_MODE PRO_CALLTYPE GetPackMode() const
+    virtual RTP_EXT_PACK_MODE GetPackMode() const
     {
         return (m_packMode);
     }
 
-    virtual void PRO_CALLTYPE SetMagic(PRO_INT64 magic)
+    virtual void SetMagic(PRO_INT64 magic)
     {
         m_magic = magic;
     }
 
-    virtual PRO_INT64 PRO_CALLTYPE GetMagic() const
+    virtual PRO_INT64 GetMagic() const
     {
         return (m_magic);
     }

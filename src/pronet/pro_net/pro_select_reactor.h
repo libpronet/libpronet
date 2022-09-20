@@ -32,28 +32,28 @@ public:
 
     virtual ~CProSelectReactor();
 
-    virtual bool PRO_CALLTYPE Init();
+    virtual bool Init();
 
-    virtual void PRO_CALLTYPE Fini();
+    virtual void Fini();
 
-    virtual bool PRO_CALLTYPE AddHandler(
+    virtual bool AddHandler(
         PRO_INT64         sockId,
         CProEventHandler* handler,
         unsigned long     mask
         );
 
-    virtual void PRO_CALLTYPE RemoveHandler(
+    virtual void RemoveHandler(
         PRO_INT64     sockId,
         unsigned long mask
         );
 
-    virtual void PRO_CALLTYPE WorkerRun();
+    virtual void WorkerRun();
 
 private:
 
-    virtual void PRO_CALLTYPE OnInput(PRO_INT64 sockId);
+    virtual void OnInput(PRO_INT64 sockId);
 
-    virtual void PRO_CALLTYPE OnError(
+    virtual void OnError(
         PRO_INT64 sockId,
         long      errorCode
         );

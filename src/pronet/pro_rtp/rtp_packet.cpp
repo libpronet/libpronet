@@ -362,7 +362,6 @@ CRtpPacket::Init(const void*   payloadBuffer,
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpPacket::AddRef()
 {
     const unsigned long refCount = CProRefCount::AddRef();
@@ -371,7 +370,6 @@ CRtpPacket::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpPacket::Release()
 {
     const unsigned long refCount = CProRefCount::Release();
@@ -380,63 +378,54 @@ CRtpPacket::Release()
 }
 
 void
-PRO_CALLTYPE
 CRtpPacket::SetMarker(bool m)
 {
     m_packet->hdr->m = m ? 1 : 0;
 }
 
 bool
-PRO_CALLTYPE
 CRtpPacket::GetMarker() const
 {
     return (m_packet->hdr->m != 0);
 }
 
 void
-PRO_CALLTYPE
 CRtpPacket::SetPayloadType(char pt)
 {
     m_packet->hdr->pt = pt;
 }
 
 char
-PRO_CALLTYPE
 CRtpPacket::GetPayloadType() const
 {
     return (m_packet->hdr->pt);
 }
 
 void
-PRO_CALLTYPE
 CRtpPacket::SetSequence(PRO_UINT16 seq)
 {
     m_packet->hdr->seq = pbsd_hton16(seq);
 }
 
 PRO_UINT16
-PRO_CALLTYPE
 CRtpPacket::GetSequence() const
 {
     return (pbsd_ntoh16(m_packet->hdr->seq));
 }
 
 void
-PRO_CALLTYPE
 CRtpPacket::SetTimeStamp(PRO_UINT32 ts)
 {
     m_packet->hdr->ts = pbsd_hton32(ts);
 }
 
 PRO_UINT32
-PRO_CALLTYPE
 CRtpPacket::GetTimeStamp() const
 {
     return (pbsd_ntoh32(m_packet->hdr->ts));
 }
 
 void
-PRO_CALLTYPE
 CRtpPacket::SetSsrc(PRO_UINT32 ssrc)
 {
     if (m_packMode == RTP_EPM_DEFAULT)
@@ -450,7 +439,6 @@ CRtpPacket::SetSsrc(PRO_UINT32 ssrc)
 }
 
 PRO_UINT32
-PRO_CALLTYPE
 CRtpPacket::GetSsrc() const
 {
     PRO_UINT32 ssrc = 0;
@@ -468,77 +456,66 @@ CRtpPacket::GetSsrc() const
 }
 
 void
-PRO_CALLTYPE
 CRtpPacket::SetMmId(PRO_UINT32 mmId)
 {
     m_packet->ext->mmId = pbsd_hton32(mmId);
 }
 
 PRO_UINT32
-PRO_CALLTYPE
 CRtpPacket::GetMmId() const
 {
     return (pbsd_ntoh32(m_packet->ext->mmId));
 }
 
 void
-PRO_CALLTYPE
 CRtpPacket::SetMmType(RTP_MM_TYPE mmType)
 {
     m_packet->ext->mmType = mmType;
 }
 
 RTP_MM_TYPE
-PRO_CALLTYPE
 CRtpPacket::GetMmType() const
 {
     return (m_packet->ext->mmType);
 }
 
 void
-PRO_CALLTYPE
 CRtpPacket::SetKeyFrame(bool keyFrame)
 {
     m_packet->ext->keyFrame = keyFrame ? 1 : 0;
 }
 
 bool
-PRO_CALLTYPE
 CRtpPacket::GetKeyFrame() const
 {
     return (m_packet->ext->keyFrame != 0);
 }
 
 void
-PRO_CALLTYPE
 CRtpPacket::SetFirstPacketOfFrame(bool firstPacket)
 {
     m_packet->ext->firstPacketOfFrame = firstPacket ? 1 : 0;
 }
 
 bool
-PRO_CALLTYPE
 CRtpPacket::GetFirstPacketOfFrame() const
 {
     return (m_packet->ext->firstPacketOfFrame != 0);
 }
 
 const void*
-PRO_CALLTYPE
 CRtpPacket::GetPayloadBuffer() const
 {
     return (m_packet->hdr + 1);
 }
 
 void*
-PRO_CALLTYPE
 CRtpPacket::GetPayloadBuffer()
 {
     return (m_packet->hdr + 1);
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpPacket::GetPayloadSize() const
 {
     unsigned long size = 0;
@@ -561,7 +538,6 @@ CRtpPacket::GetPayloadSize() const
 }
 
 PRO_UINT16
-PRO_CALLTYPE
 CRtpPacket::GetPayloadSize16() const
 {
     unsigned long size = 0;

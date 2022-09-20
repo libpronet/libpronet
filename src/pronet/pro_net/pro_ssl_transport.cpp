@@ -31,7 +31,7 @@
 ////
 
 CProSslTransport*
-CProSslTransport::CreateInstance(size_t recvPoolSize)   /* = 0 */
+CProSslTransport::CreateInstance(size_t recvPoolSize) /* = 0 */
 {
     CProSslTransport* const trans = new CProSslTransport(recvPoolSize);
 
@@ -226,7 +226,6 @@ CProSslTransport::Fini()
 }
 
 PRO_SSL_SUITE_ID
-PRO_CALLTYPE
 CProSslTransport::GetSslSuite(char suiteName[64]) const
 {
     PRO_SSL_SUITE_ID suiteId = PRO_SSL_SUITE_NONE;
@@ -242,14 +241,12 @@ CProSslTransport::GetSslSuite(char suiteName[64]) const
 }
 
 void
-PRO_CALLTYPE
 CProSslTransport::OnInput(PRO_INT64 sockId)
 {
     DoRecv(sockId);
 }
 
 void
-PRO_CALLTYPE
 CProSslTransport::OnOutput(PRO_INT64 sockId)
 {
     DoSend(sockId);

@@ -44,34 +44,34 @@ public:
 
     virtual ~CRtpBucket();
 
-    virtual void PRO_CALLTYPE Destroy();
+    virtual void Destroy();
 
-    virtual unsigned long PRO_CALLTYPE GetTotalBytes() const
+    virtual unsigned long GetTotalBytes() const
     {
         return (m_totalBytes);
     }
 
-    virtual IRtpPacket* PRO_CALLTYPE GetFront();
+    virtual IRtpPacket* GetFront();
 
-    virtual bool PRO_CALLTYPE PushBackAddRef(IRtpPacket* packet);
+    virtual bool PushBackAddRef(IRtpPacket* packet);
 
-    virtual void PRO_CALLTYPE PopFrontRelease(IRtpPacket* packet);
+    virtual void PopFrontRelease(IRtpPacket* packet);
 
-    virtual void PRO_CALLTYPE Reset();
+    virtual void Reset();
 
-    virtual void PRO_CALLTYPE SetRedline(
-        unsigned long redlineBytes,   /* = 0 */
-        unsigned long redlineFrames,  /* = 0 */
-        unsigned long redlineDelayMs  /* = 0 */
+    virtual void SetRedline(
+        unsigned long redlineBytes,  /* = 0 */
+        unsigned long redlineFrames, /* = 0 */
+        unsigned long redlineDelayMs /* = 0 */
         );
 
-    virtual void PRO_CALLTYPE GetRedline(
+    virtual void GetRedline(
         unsigned long* redlineBytes,  /* = NULL */
         unsigned long* redlineFrames, /* = NULL */
         unsigned long* redlineDelayMs /* = NULL */
         ) const;
 
-    virtual void PRO_CALLTYPE GetFlowctrlInfo(
+    virtual void GetFlowctrlInfo(
         float*         srcFrameRate, /* = NULL */
         float*         srcBitRate,   /* = NULL */
         float*         outFrameRate, /* = NULL */
@@ -80,7 +80,7 @@ public:
         unsigned long* cachedFrames  /* = NULL */
         ) const;
 
-    virtual void PRO_CALLTYPE ResetFlowctrlInfo();
+    virtual void ResetFlowctrlInfo();
 
 protected:
 
@@ -108,7 +108,7 @@ public:
     {
     }
 
-    virtual bool PRO_CALLTYPE PushBackAddRef(IRtpPacket* packet);
+    virtual bool PushBackAddRef(IRtpPacket* packet);
 
     DECLARE_SGI_POOL(0)
 };
@@ -124,34 +124,34 @@ public:
 
     virtual ~CRtpVideoBucket();
 
-    virtual void PRO_CALLTYPE Destroy();
+    virtual void Destroy();
 
-    virtual unsigned long PRO_CALLTYPE GetTotalBytes() const
+    virtual unsigned long GetTotalBytes() const
     {
         return (m_totalBytes);
     }
 
-    virtual IRtpPacket* PRO_CALLTYPE GetFront();
+    virtual IRtpPacket* GetFront();
 
-    virtual bool PRO_CALLTYPE PushBackAddRef(IRtpPacket* packet);
+    virtual bool PushBackAddRef(IRtpPacket* packet);
 
-    virtual void PRO_CALLTYPE PopFrontRelease(IRtpPacket* packet);
+    virtual void PopFrontRelease(IRtpPacket* packet);
 
-    virtual void PRO_CALLTYPE Reset();
+    virtual void Reset();
 
-    virtual void PRO_CALLTYPE SetRedline(
-        unsigned long redlineBytes,   /* = 0 */
-        unsigned long redlineFrames,  /* = 0 */
-        unsigned long redlineDelayMs  /* = 0 */
+    virtual void SetRedline(
+        unsigned long redlineBytes,  /* = 0 */
+        unsigned long redlineFrames, /* = 0 */
+        unsigned long redlineDelayMs /* = 0 */
         );
 
-    virtual void PRO_CALLTYPE GetRedline(
+    virtual void GetRedline(
         unsigned long* redlineBytes,  /* = NULL */
         unsigned long* redlineFrames, /* = NULL */
         unsigned long* redlineDelayMs /* = NULL */
         ) const;
 
-    virtual void PRO_CALLTYPE GetFlowctrlInfo(
+    virtual void GetFlowctrlInfo(
         float*         srcFrameRate, /* = NULL */
         float*         srcBitRate,   /* = NULL */
         float*         outFrameRate, /* = NULL */
@@ -160,7 +160,7 @@ public:
         unsigned long* cachedFrames  /* = NULL */
         ) const;
 
-    virtual void PRO_CALLTYPE ResetFlowctrlInfo();
+    virtual void ResetFlowctrlInfo();
 
 private:
 
@@ -187,7 +187,6 @@ private:
 ////
 
 IRtpBucket*
-PRO_CALLTYPE
 CreateRtpBucket(RTP_MM_TYPE      mmType,
                 RTP_SESSION_TYPE sessionType);
 

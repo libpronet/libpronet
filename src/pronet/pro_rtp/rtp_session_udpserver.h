@@ -28,9 +28,7 @@ class CRtpSessionUdpserver : public CRtpSessionUdpclient
 {
 public:
 
-    static CRtpSessionUdpserver* CreateInstance(
-        const RTP_SESSION_INFO* localInfo
-        );
+    static CRtpSessionUdpserver* CreateInstance(const RTP_SESSION_INFO* localInfo);
 
 private:
 

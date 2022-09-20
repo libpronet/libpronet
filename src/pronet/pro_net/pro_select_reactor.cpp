@@ -36,7 +36,6 @@ static char g_s_buffer[1024];
 static
 inline
 bool
-PRO_CALLTYPE
 pbsd_fd_preset_i(PRO_INT64    fd,
                  pbsd_fd_set& fds)
 {
@@ -55,7 +54,6 @@ pbsd_fd_preset_i(PRO_INT64    fd,
 static
 inline
 void
-PRO_CALLTYPE
 pbsd_fd_set_i(PRO_INT64    fd,
               pbsd_fd_set& fds)
 {
@@ -81,7 +79,6 @@ pbsd_fd_set_i(PRO_INT64    fd,
 static
 inline
 void
-PRO_CALLTYPE
 pbsd_fd_clr_i(PRO_INT64    fd,
               pbsd_fd_set& fds)
 {
@@ -127,7 +124,6 @@ CProSelectReactor::~CProSelectReactor()
 }
 
 bool
-PRO_CALLTYPE
 CProSelectReactor::Init()
 {
     {
@@ -158,7 +154,6 @@ CProSelectReactor::Init()
 }
 
 void
-PRO_CALLTYPE
 CProSelectReactor::Fini()
 {
     {
@@ -170,7 +165,6 @@ CProSelectReactor::Fini()
 }
 
 bool
-PRO_CALLTYPE
 CProSelectReactor::AddHandler(PRO_INT64         sockId,
                               CProEventHandler* handler,
                               unsigned long     mask)
@@ -274,7 +268,6 @@ CProSelectReactor::AddHandler(PRO_INT64         sockId,
 }
 
 void
-PRO_CALLTYPE
 CProSelectReactor::RemoveHandler(PRO_INT64     sockId,
                                  unsigned long mask)
 {
@@ -339,7 +332,6 @@ CProSelectReactor::RemoveHandler(PRO_INT64     sockId,
 }
 
 void
-PRO_CALLTYPE
 CProSelectReactor::WorkerRun()
 {
     {
@@ -606,7 +598,6 @@ CProSelectReactor::WorkerRun()
 }
 
 void
-PRO_CALLTYPE
 CProSelectReactor::OnInput(PRO_INT64 sockId)
 {
     assert(sockId != -1);
@@ -631,7 +622,6 @@ CProSelectReactor::OnInput(PRO_INT64 sockId)
 }
 
 void
-PRO_CALLTYPE
 CProSelectReactor::OnError(PRO_INT64 sockId,
                            long      errorCode)
 {

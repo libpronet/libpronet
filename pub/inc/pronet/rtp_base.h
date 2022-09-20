@@ -89,11 +89,13 @@ extern "C" {
 #if defined(PRO_RTP_EXPORTS)
 #if defined(_MSC_VER)
 #define PRO_RTP_API /* using xxx.def */
+#elif defined(__MINGW32__) || defined(__CYGWIN__)
+#define PRO_RTP_API __declspec(dllexport)
 #else
-#define PRO_RTP_API PRO_EXPORT
+#define PRO_RTP_API __attribute__((visibility("default")))
 #endif
 #else
-#define PRO_RTP_API PRO_IMPORT
+#define PRO_RTP_API
 #endif
 
 class IRtpBucket;          /* rtp流控桶 */
@@ -538,59 +540,59 @@ public:
 
     virtual ~IRtpPacket() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
-    virtual void PRO_CALLTYPE SetMarker(bool m) = 0;
+    virtual void SetMarker(bool m) = 0;
 
-    virtual bool PRO_CALLTYPE GetMarker() const = 0;
+    virtual bool GetMarker() const = 0;
 
-    virtual void PRO_CALLTYPE SetPayloadType(char pt) = 0;
+    virtual void SetPayloadType(char pt) = 0;
 
-    virtual char PRO_CALLTYPE GetPayloadType() const = 0;
+    virtual char GetPayloadType() const = 0;
 
-    virtual void PRO_CALLTYPE SetSequence(PRO_UINT16 seq) = 0;
+    virtual void SetSequence(PRO_UINT16 seq) = 0;
 
-    virtual PRO_UINT16 PRO_CALLTYPE GetSequence() const = 0;
+    virtual PRO_UINT16 GetSequence() const = 0;
 
-    virtual void PRO_CALLTYPE SetTimeStamp(PRO_UINT32 ts) = 0;
+    virtual void SetTimeStamp(PRO_UINT32 ts) = 0;
 
-    virtual PRO_UINT32 PRO_CALLTYPE GetTimeStamp() const = 0;
+    virtual PRO_UINT32 GetTimeStamp() const = 0;
 
-    virtual void PRO_CALLTYPE SetSsrc(PRO_UINT32 ssrc) = 0;
+    virtual void SetSsrc(PRO_UINT32 ssrc) = 0;
 
-    virtual PRO_UINT32 PRO_CALLTYPE GetSsrc() const = 0;
+    virtual PRO_UINT32 GetSsrc() const = 0;
 
-    virtual void PRO_CALLTYPE SetMmId(PRO_UINT32 mmId) = 0;
+    virtual void SetMmId(PRO_UINT32 mmId) = 0;
 
-    virtual PRO_UINT32 PRO_CALLTYPE GetMmId() const = 0;
+    virtual PRO_UINT32 GetMmId() const = 0;
 
-    virtual void PRO_CALLTYPE SetMmType(RTP_MM_TYPE mmType) = 0;
+    virtual void SetMmType(RTP_MM_TYPE mmType) = 0;
 
-    virtual RTP_MM_TYPE PRO_CALLTYPE GetMmType() const = 0;
+    virtual RTP_MM_TYPE GetMmType() const = 0;
 
-    virtual void PRO_CALLTYPE SetKeyFrame(bool keyFrame) = 0;
+    virtual void SetKeyFrame(bool keyFrame) = 0;
 
-    virtual bool PRO_CALLTYPE GetKeyFrame() const = 0;
+    virtual bool GetKeyFrame() const = 0;
 
-    virtual void PRO_CALLTYPE SetFirstPacketOfFrame(bool firstPacket) = 0;
+    virtual void SetFirstPacketOfFrame(bool firstPacket) = 0;
 
-    virtual bool PRO_CALLTYPE GetFirstPacketOfFrame() const = 0;
+    virtual bool GetFirstPacketOfFrame() const = 0;
 
-    virtual const void* PRO_CALLTYPE GetPayloadBuffer() const = 0;
+    virtual const void* GetPayloadBuffer() const = 0;
 
-    virtual void* PRO_CALLTYPE GetPayloadBuffer() = 0;
+    virtual void* GetPayloadBuffer() = 0;
 
-    virtual unsigned long PRO_CALLTYPE GetPayloadSize() const = 0;
+    virtual unsigned long GetPayloadSize() const = 0;
 
-    virtual PRO_UINT16 PRO_CALLTYPE GetPayloadSize16() const = 0;
+    virtual PRO_UINT16 GetPayloadSize16() const = 0;
 
-    virtual RTP_EXT_PACK_MODE PRO_CALLTYPE GetPackMode() const = 0;
+    virtual RTP_EXT_PACK_MODE GetPackMode() const = 0;
 
-    virtual void PRO_CALLTYPE SetMagic(PRO_INT64 magic) = 0;
+    virtual void SetMagic(PRO_INT64 magic) = 0;
 
-    virtual PRO_INT64 PRO_CALLTYPE GetMagic() const = 0;
+    virtual PRO_INT64 GetMagic() const = 0;
 };
 #endif /* ____IRtpPacket____ */
 
@@ -603,31 +605,31 @@ public:
 
     virtual ~IRtpBucket() {}
 
-    virtual void PRO_CALLTYPE Destroy() = 0;
+    virtual void Destroy() = 0;
 
-    virtual unsigned long PRO_CALLTYPE GetTotalBytes() const = 0;
+    virtual unsigned long GetTotalBytes() const = 0;
 
-    virtual IRtpPacket* PRO_CALLTYPE GetFront() = 0;
+    virtual IRtpPacket* GetFront() = 0;
 
-    virtual bool PRO_CALLTYPE PushBackAddRef(IRtpPacket* packet) = 0;
+    virtual bool PushBackAddRef(IRtpPacket* packet) = 0;
 
-    virtual void PRO_CALLTYPE PopFrontRelease(IRtpPacket* packet) = 0;
+    virtual void PopFrontRelease(IRtpPacket* packet) = 0;
 
-    virtual void PRO_CALLTYPE Reset() = 0;
+    virtual void Reset() = 0;
 
-    virtual void PRO_CALLTYPE SetRedline(
-        unsigned long redlineBytes,   /* = 0 */
-        unsigned long redlineFrames,  /* = 0 */
-        unsigned long redlineDelayMs  /* = 0 */
+    virtual void SetRedline(
+        unsigned long redlineBytes,  /* = 0 */
+        unsigned long redlineFrames, /* = 0 */
+        unsigned long redlineDelayMs /* = 0 */
         ) = 0;
 
-    virtual void PRO_CALLTYPE GetRedline(
+    virtual void GetRedline(
         unsigned long* redlineBytes,  /* = NULL */
         unsigned long* redlineFrames, /* = NULL */
         unsigned long* redlineDelayMs /* = NULL */
         ) const = 0;
 
-    virtual void PRO_CALLTYPE GetFlowctrlInfo(
+    virtual void GetFlowctrlInfo(
         float*         srcFrameRate, /* = NULL */
         float*         srcBitRate,   /* = NULL */
         float*         outFrameRate, /* = NULL */
@@ -636,7 +638,7 @@ public:
         unsigned long* cachedFrames  /* = NULL */
         ) const = 0;
 
-    virtual void PRO_CALLTYPE ResetFlowctrlInfo() = 0;
+    virtual void ResetFlowctrlInfo() = 0;
 };
 
 /*
@@ -650,25 +652,19 @@ public:
 
     virtual ~IRtpReorder() {}
 
-    virtual void PRO_CALLTYPE SetWallHeightInPackets(
-        unsigned long heightInPackets         /* = 100 */
-        ) = 0;
+    virtual void SetWallHeightInPackets(unsigned long heightInPackets /* = 100 */) = 0;
 
-    virtual void PRO_CALLTYPE SetWallHeightInMilliseconds(
-        unsigned long heightInMs              /* = 500 */
-        ) = 0;
+    virtual void SetWallHeightInMilliseconds(unsigned long heightInMs /* = 500 */) = 0;
 
-    virtual void PRO_CALLTYPE SetMaxBrokenDuration(
-        unsigned long brokenDurationInSeconds /* = 10 */
-        ) = 0;
+    virtual void SetMaxBrokenDuration(unsigned long brokenDurationInSeconds /* = 10 */) = 0;
 
-    virtual unsigned long PRO_CALLTYPE GetTotalPackets() const = 0;
+    virtual unsigned long GetTotalPackets() const = 0;
 
-    virtual void PRO_CALLTYPE PushBackAddRef(IRtpPacket* packet) = 0;
+    virtual void PushBackAddRef(IRtpPacket* packet) = 0;
 
-    virtual IRtpPacket* PRO_CALLTYPE PopFront(bool force) = 0;
+    virtual IRtpPacket* PopFront(bool force) = 0;
 
-    virtual void PRO_CALLTYPE Reset() = 0;
+    virtual void Reset() = 0;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -685,9 +681,9 @@ public:
 
     virtual ~IRtpServiceObserver() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
     /*
      * 有tcp会话进入时, 该函数将被回调
@@ -696,7 +692,7 @@ public:
      * 把sockId包装成RTP_ST_TCPSERVER_EX类型的IRtpSession对象,
      * 或释放sockId对应的资源
      */
-    virtual void PRO_CALLTYPE OnAcceptSession(
+    virtual void OnAcceptSession(
         IRtpService*            service,
         PRO_INT64               sockId,     /* 套接字id */
         bool                    unixSocket, /* 是否unix套接字 */
@@ -713,7 +709,7 @@ public:
      * 把(sslCtx, sockId)包装成RTP_ST_SSLSERVER_EX类型的IRtpSession对象,
      * 或释放(sslCtx, sockId)对应的资源
      */
-    virtual void PRO_CALLTYPE OnAcceptSession(
+    virtual void OnAcceptSession(
         IRtpService*            service,
         PRO_SSL_CTX*            sslCtx,     /* ssl上下文 */
         PRO_INT64               sockId,     /* 套接字id */
@@ -737,14 +733,14 @@ public:
 
     virtual ~IRtpSession() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
     /*
      * 获取会话信息
      */
-    virtual void PRO_CALLTYPE GetInfo(RTP_SESSION_INFO* info) const = 0;
+    virtual void GetInfo(RTP_SESSION_INFO* info) const = 0;
 
     /*
      * 获取会话应答
@@ -752,7 +748,7 @@ public:
      * 仅用于RTP_ST_TCPCLIENT_EX, RTP_ST_SSLCLIENT_EX类型的会话.
      * OnOkSession(...)回调之前没有意义
      */
-    virtual void PRO_CALLTYPE GetAck(RTP_SESSION_ACK* ack) const = 0;
+    virtual void GetAck(RTP_SESSION_ACK* ack) const = 0;
 
     /*
      * 获取会话的同步id
@@ -762,50 +758,48 @@ public:
      *
      * 上层可以用同步id做一些有用的事情, 比如协商可靠udp链路的初始序号
      */
-    virtual void PRO_CALLTYPE GetSyncId(unsigned char syncId[14]) const = 0;
+    virtual void GetSyncId(unsigned char syncId[14]) const = 0;
 
     /*
      * 获取会话的加密套件
      *
      * 仅用于RTP_ST_SSLCLIENT_EX, RTP_ST_SSLSERVER_EX类型的会话
      */
-    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
-        char suiteName[64]
-        ) const = 0;
+    virtual PRO_SSL_SUITE_ID GetSslSuite(char suiteName[64]) const = 0;
 
     /*
      * 获取会话的套接字id
      *
      * 如非必需, 最好不要直接操作底层的套接字
      */
-    virtual PRO_INT64 PRO_CALLTYPE GetSockId() const = 0;
+    virtual PRO_INT64 GetSockId() const = 0;
 
     /*
      * 获取会话的本地ip地址
      */
-    virtual const char* PRO_CALLTYPE GetLocalIp(char localIp[64]) const = 0;
+    virtual const char* GetLocalIp(char localIp[64]) const = 0;
 
     /*
      * 获取会话的本地端口号
      */
-    virtual unsigned short PRO_CALLTYPE GetLocalPort() const = 0;
+    virtual unsigned short GetLocalPort() const = 0;
 
     /*
      * 获取会话的远端ip地址
      */
-    virtual const char* PRO_CALLTYPE GetRemoteIp(char remoteIp[64]) const = 0;
+    virtual const char* GetRemoteIp(char remoteIp[64]) const = 0;
 
     /*
      * 获取会话的远端端口号
      */
-    virtual unsigned short PRO_CALLTYPE GetRemotePort() const = 0;
+    virtual unsigned short GetRemotePort() const = 0;
 
     /*
      * 设置会话的远端ip地址和端口号
      *
      * 仅用于RTP_ST_UDPCLIENT, RTP_ST_UDPSERVER类型的会话
      */
-    virtual void PRO_CALLTYPE SetRemoteIpAndPort(
+    virtual void SetRemoteIpAndPort(
         const char*    remoteIp,  /* = NULL */
         unsigned short remotePort /* = 0 */
         ) = 0;
@@ -815,12 +809,12 @@ public:
      *
      * 仅用于面向连接的会话
      */
-    virtual bool PRO_CALLTYPE IsTcpConnected() const = 0;
+    virtual bool IsTcpConnected() const = 0;
 
     /*
      * 检查会话是否就绪(握手完成)
      */
-    virtual bool PRO_CALLTYPE IsReady() const = 0;
+    virtual bool IsReady() const = 0;
 
     /*
      * 直接发送rtp包
@@ -828,7 +822,7 @@ public:
      * 如果返回false, 并且(*tryAgain)返回true, 则表示底层暂时无法发送,
      * 上层应该缓冲数据, 以待稍后发送或OnSendSession(...)回调拉取
      */
-    virtual bool PRO_CALLTYPE SendPacket(
+    virtual bool SendPacket(
         IRtpPacket* packet,
         bool*       tryAgain = NULL
         ) = 0;
@@ -838,7 +832,7 @@ public:
      *
      * sendDurationMs为平滑周期. 默认1毫秒
      */
-    virtual bool PRO_CALLTYPE SendPacketByTimer(
+    virtual bool SendPacketByTimer(
         IRtpPacket*   packet,
         unsigned long sendDurationMs = 0
         ) = 0;
@@ -848,7 +842,7 @@ public:
      *
      * 用于粗略地判断tcp链路的发送延迟, 判断tcp链路是否老化
      */
-    virtual void PRO_CALLTYPE GetSendOnSendTick(
+    virtual void GetSendOnSendTick(
         PRO_INT64* onSendTick1, /* = NULL */
         PRO_INT64* onSendTick2  /* = NULL */
         ) const = 0;
@@ -858,57 +852,57 @@ public:
      *
      * 仅用于面向连接的会话
      */
-    virtual void PRO_CALLTYPE RequestOnSend() = 0;
+    virtual void RequestOnSend() = 0;
 
     /*
      * 挂起会话的接收能力
      */
-    virtual void PRO_CALLTYPE SuspendRecv() = 0;
+    virtual void SuspendRecv() = 0;
 
     /*
      * 恢复会话的接收能力
      */
-    virtual void PRO_CALLTYPE ResumeRecv() = 0;
+    virtual void ResumeRecv() = 0;
 
     /*
      * 为会话添加额外的多播接收地址
      *
      * 仅用于RTP_ST_MCAST, RTP_ST_MCAST_EX类型的会话
      */
-    virtual bool PRO_CALLTYPE AddMcastReceiver(const char* mcastIp) = 0;
+    virtual bool AddMcastReceiver(const char* mcastIp) = 0;
 
     /*
      * 为会话删除额外的多播接收地址
      *
      * 仅用于RTP_ST_MCAST, RTP_ST_MCAST_EX类型的会话
      */
-    virtual void PRO_CALLTYPE RemoveMcastReceiver(const char* mcastIp) = 0;
+    virtual void RemoveMcastReceiver(const char* mcastIp) = 0;
 
     /*
      * rtp链路使能(for CRtpSessionWrapper only)------------------------------
      */
 
-    virtual void PRO_CALLTYPE EnableInput(bool enable) = 0;
+    virtual void EnableInput(bool enable) = 0;
 
-    virtual void PRO_CALLTYPE EnableOutput(bool enable) = 0;
+    virtual void EnableOutput(bool enable) = 0;
 
     /*
      * rtp流量控制(for CRtpSessionWrapper only)------------------------------
      */
 
-    virtual void PRO_CALLTYPE SetOutputRedline(
-        unsigned long redlineBytes,   /* = 0 */
-        unsigned long redlineFrames,  /* = 0 */
-        unsigned long redlineDelayMs  /* = 0 */
+    virtual void SetOutputRedline(
+        unsigned long redlineBytes,  /* = 0 */
+        unsigned long redlineFrames, /* = 0 */
+        unsigned long redlineDelayMs /* = 0 */
         ) = 0;
 
-    virtual void PRO_CALLTYPE GetOutputRedline(
+    virtual void GetOutputRedline(
         unsigned long* redlineBytes,  /* = NULL */
         unsigned long* redlineFrames, /* = NULL */
         unsigned long* redlineDelayMs /* = NULL */
         ) const = 0;
 
-    virtual void PRO_CALLTYPE GetFlowctrlInfo(
+    virtual void GetFlowctrlInfo(
         float*         srcFrameRate, /* = NULL */
         float*         srcBitRate,   /* = NULL */
         float*         outFrameRate, /* = NULL */
@@ -917,33 +911,33 @@ public:
         unsigned long* cachedFrames  /* = NULL */
         ) const = 0;
 
-    virtual void PRO_CALLTYPE ResetFlowctrlInfo() = 0;
+    virtual void ResetFlowctrlInfo() = 0;
 
     /*
      * rtp数据统计(for CRtpSessionWrapper only)------------------------------
      */
 
-    virtual void PRO_CALLTYPE GetInputStat(
+    virtual void GetInputStat(
         float*      frameRate, /* = NULL */
         float*      bitRate,   /* = NULL */
         float*      lossRate,  /* = NULL */
         PRO_UINT64* lossCount  /* = NULL */
         ) const = 0;
 
-    virtual void PRO_CALLTYPE GetOutputStat(
+    virtual void GetOutputStat(
         float*      frameRate, /* = NULL */
         float*      bitRate,   /* = NULL */
         float*      lossRate,  /* = NULL */
         PRO_UINT64* lossCount  /* = NULL */
         ) const = 0;
 
-    virtual void PRO_CALLTYPE ResetInputStat() = 0;
+    virtual void ResetInputStat() = 0;
 
-    virtual void PRO_CALLTYPE ResetOutputStat() = 0;
+    virtual void ResetOutputStat() = 0;
 
-    virtual void PRO_CALLTYPE SetMagic(PRO_INT64 magic) = 0;
+    virtual void SetMagic(PRO_INT64 magic) = 0;
 
-    virtual PRO_INT64 PRO_CALLTYPE GetMagic() const = 0;
+    virtual PRO_INT64 GetMagic() const = 0;
 };
 
 /*
@@ -957,19 +951,19 @@ public:
 
     virtual ~IRtpSessionObserver() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
     /*
      * 握手完成时, 该函数将被回调
      */
-    virtual void PRO_CALLTYPE OnOkSession(IRtpSession* session) = 0;
+    virtual void OnOkSession(IRtpSession* session) = 0;
 
     /*
      * rtp包到来时, 该函数将被回调
      */
-    virtual void PRO_CALLTYPE OnRecvSession(
+    virtual void OnRecvSession(
         IRtpSession* session,
         IRtpPacket*  packet
         ) = 0;
@@ -979,7 +973,7 @@ public:
      *
      * 仅用于面向连接的会话
      */
-    virtual void PRO_CALLTYPE OnSendSession(
+    virtual void OnSendSession(
         IRtpSession* session,
         bool         packetErased /* 是否有rtp包被流控队列擦除 */
         ) = 0;
@@ -987,7 +981,7 @@ public:
     /*
      * 网络错误或超时时, 该函数将被回调
      */
-    virtual void PRO_CALLTYPE OnCloseSession(
+    virtual void OnCloseSession(
         IRtpSession* session,
         long         errorCode,   /* 系统错误码 */
         long         sslCode,     /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
@@ -1004,7 +998,7 @@ public:
      *
      * 主要用于调试
      */
-    virtual void PRO_CALLTYPE OnHeartbeatSession(
+    virtual void OnHeartbeatSession(
         IRtpSession* session,
         PRO_INT64    peerAliveTick
         ) = 0;
@@ -1024,7 +1018,6 @@ public:
  */
 PRO_RTP_API
 void
-PRO_CALLTYPE
 ProRtpInit();
 
 /*
@@ -1041,7 +1034,6 @@ ProRtpInit();
  */
 PRO_RTP_API
 void
-PRO_CALLTYPE
 ProRtpVersion(unsigned char* major,  /* = NULL */
               unsigned char* minor,  /* = NULL */
               unsigned char* patch); /* = NULL */
@@ -1065,7 +1057,6 @@ ProRtpVersion(unsigned char* major,  /* = NULL */
  */
 PRO_RTP_API
 IRtpPacket*
-PRO_CALLTYPE
 CreateRtpPacket(const void*       payloadBuffer,
                 unsigned long     payloadSize,
                 RTP_EXT_PACK_MODE packMode = RTP_EPM_DEFAULT);
@@ -1090,7 +1081,6 @@ CreateRtpPacket(const void*       payloadBuffer,
  */
 PRO_RTP_API
 IRtpPacket*
-PRO_CALLTYPE
 CreateRtpPacketSpace(unsigned long     payloadSize,
                      RTP_EXT_PACK_MODE packMode = RTP_EPM_DEFAULT);
 
@@ -1106,7 +1096,6 @@ CreateRtpPacketSpace(unsigned long     payloadSize,
  */
 PRO_RTP_API
 IRtpPacket*
-PRO_CALLTYPE
 CloneRtpPacket(const IRtpPacket* packet);
 
 /*
@@ -1122,7 +1111,6 @@ CloneRtpPacket(const IRtpPacket* packet);
  */
 PRO_RTP_API
 IRtpPacket*
-PRO_CALLTYPE
 ParseRtpStreamToPacket(const void* streamBuffer,
                        PRO_UINT16  streamSize);
 
@@ -1139,7 +1127,6 @@ ParseRtpStreamToPacket(const void* streamBuffer,
  */
 PRO_RTP_API
 const void*
-PRO_CALLTYPE
 FindRtpStreamFromPacket(const IRtpPacket* packet,
                         PRO_UINT16*       streamSize);
 
@@ -1158,7 +1145,6 @@ FindRtpStreamFromPacket(const IRtpPacket* packet,
  */
 PRO_RTP_API
 void
-PRO_CALLTYPE
 SetRtpPortRange(unsigned short minUdpPort,  /* = 0 */
                 unsigned short maxUdpPort,  /* = 0 */
                 unsigned short minTcpPort,  /* = 0 */
@@ -1179,7 +1165,6 @@ SetRtpPortRange(unsigned short minUdpPort,  /* = 0 */
  */
 PRO_RTP_API
 void
-PRO_CALLTYPE
 GetRtpPortRange(unsigned short* minUdpPort,  /* = NULL */
                 unsigned short* maxUdpPort,  /* = NULL */
                 unsigned short* minTcpPort,  /* = NULL */
@@ -1197,7 +1182,6 @@ GetRtpPortRange(unsigned short* minUdpPort,  /* = NULL */
  */
 PRO_RTP_API
 unsigned short
-PRO_CALLTYPE
 AllocRtpUdpPort(bool rfc);
 
 /*
@@ -1212,7 +1196,6 @@ AllocRtpUdpPort(bool rfc);
  */
 PRO_RTP_API
 unsigned short
-PRO_CALLTYPE
 AllocRtpTcpPort(bool rfc);
 
 /*
@@ -1227,7 +1210,6 @@ AllocRtpTcpPort(bool rfc);
  */
 PRO_RTP_API
 void
-PRO_CALLTYPE
 SetRtpKeepaliveTimeout(unsigned long keepaliveInSeconds); /* = 60 */
 
 /*
@@ -1241,7 +1223,6 @@ SetRtpKeepaliveTimeout(unsigned long keepaliveInSeconds); /* = 60 */
  */
 PRO_RTP_API
 unsigned long
-PRO_CALLTYPE
 GetRtpKeepaliveTimeout();
 
 /*
@@ -1256,7 +1237,6 @@ GetRtpKeepaliveTimeout();
  */
 PRO_RTP_API
 void
-PRO_CALLTYPE
 SetRtpFlowctrlTimeSpan(unsigned long flowctrlInSeconds); /* = 1 */
 
 /*
@@ -1270,7 +1250,6 @@ SetRtpFlowctrlTimeSpan(unsigned long flowctrlInSeconds); /* = 1 */
  */
 PRO_RTP_API
 unsigned long
-PRO_CALLTYPE
 GetRtpFlowctrlTimeSpan();
 
 /*
@@ -1285,7 +1264,6 @@ GetRtpFlowctrlTimeSpan();
  */
 PRO_RTP_API
 void
-PRO_CALLTYPE
 SetRtpStatTimeSpan(unsigned long statInSeconds); /* = 5 */
 
 /*
@@ -1299,7 +1277,6 @@ SetRtpStatTimeSpan(unsigned long statInSeconds); /* = 5 */
  */
 PRO_RTP_API
 unsigned long
-PRO_CALLTYPE
 GetRtpStatTimeSpan();
 
 /*
@@ -1317,7 +1294,6 @@ GetRtpStatTimeSpan();
  */
 PRO_RTP_API
 void
-PRO_CALLTYPE
 SetRtpUdpSocketParams(RTP_MM_TYPE   mmType,
                       unsigned long sockBufSizeRecv, /* = 0 */
                       unsigned long sockBufSizeSend, /* = 0 */
@@ -1338,7 +1314,6 @@ SetRtpUdpSocketParams(RTP_MM_TYPE   mmType,
  */
 PRO_RTP_API
 void
-PRO_CALLTYPE
 GetRtpUdpSocketParams(RTP_MM_TYPE    mmType,
                       unsigned long* sockBufSizeRecv, /* = NULL */
                       unsigned long* sockBufSizeSend, /* = NULL */
@@ -1359,7 +1334,6 @@ GetRtpUdpSocketParams(RTP_MM_TYPE    mmType,
  */
 PRO_RTP_API
 void
-PRO_CALLTYPE
 SetRtpTcpSocketParams(RTP_MM_TYPE   mmType,
                       unsigned long sockBufSizeRecv, /* = 0 */
                       unsigned long sockBufSizeSend, /* = 0 */
@@ -1380,7 +1354,6 @@ SetRtpTcpSocketParams(RTP_MM_TYPE   mmType,
  */
 PRO_RTP_API
 void
-PRO_CALLTYPE
 GetRtpTcpSocketParams(RTP_MM_TYPE    mmType,
                       unsigned long* sockBufSizeRecv, /* = NULL */
                       unsigned long* sockBufSizeSend, /* = NULL */
@@ -1403,7 +1376,6 @@ GetRtpTcpSocketParams(RTP_MM_TYPE    mmType,
  */
 PRO_RTP_API
 IRtpService*
-PRO_CALLTYPE
 CreateRtpService(const PRO_SSL_SERVER_CONFIG* sslConfig, /* = NULL */
                  IRtpServiceObserver*         observer,
                  IProReactor*                 reactor,
@@ -1423,7 +1395,6 @@ CreateRtpService(const PRO_SSL_SERVER_CONFIG* sslConfig, /* = NULL */
  */
 PRO_RTP_API
 void
-PRO_CALLTYPE
 DeleteRtpService(IRtpService* service);
 
 /*
@@ -1440,7 +1411,6 @@ DeleteRtpService(IRtpService* service);
  */
 PRO_RTP_API
 bool
-PRO_CALLTYPE
 CheckRtpServiceData(const char  serviceNonce[32],
                     const char* servicePassword,
                     const char  clientPasswordHash[32]);
@@ -1459,7 +1429,6 @@ CheckRtpServiceData(const char  serviceNonce[32],
  */
 PRO_RTP_API
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionWrapper(RTP_SESSION_TYPE        sessionType,
                         const RTP_INIT_ARGS*    initArgs,
                         const RTP_SESSION_INFO* localInfo);
@@ -1476,7 +1445,6 @@ CreateRtpSessionWrapper(RTP_SESSION_TYPE        sessionType,
  */
 PRO_RTP_API
 void
-PRO_CALLTYPE
 DeleteRtpSessionWrapper(IRtpSession* sessionWrapper);
 
 /*
@@ -1490,7 +1458,6 @@ DeleteRtpSessionWrapper(IRtpSession* sessionWrapper);
  */
 PRO_RTP_API
 IRtpBucket*
-PRO_CALLTYPE
 CreateRtpBaseBucket();
 
 /*
@@ -1504,7 +1471,6 @@ CreateRtpBaseBucket();
  */
 PRO_RTP_API
 IRtpBucket*
-PRO_CALLTYPE
 CreateRtpAudioBucket();
 
 /*
@@ -1521,7 +1487,6 @@ CreateRtpAudioBucket();
  */
 PRO_RTP_API
 IRtpBucket*
-PRO_CALLTYPE
 CreateRtpVideoBucket();
 
 /*
@@ -1535,7 +1500,6 @@ CreateRtpVideoBucket();
  */
 PRO_RTP_API
 IRtpReorder*
-PRO_CALLTYPE
 CreateRtpReorder();
 
 /*
@@ -1550,7 +1514,6 @@ CreateRtpReorder();
  */
 PRO_RTP_API
 void
-PRO_CALLTYPE
 DeleteRtpReorder(IRtpReorder* reorder);
 
 /////////////////////////////////////////////////////////////////////////////

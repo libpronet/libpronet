@@ -50,7 +50,7 @@ union PRO_CMSG_CTRL
 
 CProTcpTransport*
 CProTcpTransport::CreateInstance(bool   recvFdMode,
-                                 size_t recvPoolSize)   /* = 0 */
+                                 size_t recvPoolSize) /* = 0 */
 {
 #if defined(_WIN32) || defined(_WIN32_WCE)
     recvFdMode = false;
@@ -233,7 +233,6 @@ CProTcpTransport::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CProTcpTransport::AddRef()
 {
     const unsigned long refCount = CProEventHandler::AddRef();
@@ -242,7 +241,6 @@ CProTcpTransport::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CProTcpTransport::Release()
 {
     const unsigned long refCount = CProEventHandler::Release();
@@ -251,7 +249,6 @@ CProTcpTransport::Release()
 }
 
 PRO_SSL_SUITE_ID
-PRO_CALLTYPE
 CProTcpTransport::GetSslSuite(char suiteName[64]) const
 {
     strcpy(suiteName, "NONE");
@@ -260,7 +257,6 @@ CProTcpTransport::GetSslSuite(char suiteName[64]) const
 }
 
 PRO_INT64
-PRO_CALLTYPE
 CProTcpTransport::GetSockId() const
 {
     PRO_INT64 sockId = -1;
@@ -275,7 +271,6 @@ CProTcpTransport::GetSockId() const
 }
 
 const char*
-PRO_CALLTYPE
 CProTcpTransport::GetLocalIp(char localIp[64]) const
 {
     {
@@ -288,7 +283,6 @@ CProTcpTransport::GetLocalIp(char localIp[64]) const
 }
 
 unsigned short
-PRO_CALLTYPE
 CProTcpTransport::GetLocalPort() const
 {
     unsigned short localPort = 0;
@@ -303,7 +297,6 @@ CProTcpTransport::GetLocalPort() const
 }
 
 const char*
-PRO_CALLTYPE
 CProTcpTransport::GetRemoteIp(char remoteIp[64]) const
 {
     {
@@ -316,7 +309,6 @@ CProTcpTransport::GetRemoteIp(char remoteIp[64]) const
 }
 
 unsigned short
-PRO_CALLTYPE
 CProTcpTransport::GetRemotePort() const
 {
     unsigned short remotePort = 0;
@@ -331,7 +323,6 @@ CProTcpTransport::GetRemotePort() const
 }
 
 bool
-PRO_CALLTYPE
 CProTcpTransport::SendData(const void*             buf,
                            size_t                  size,
                            PRO_UINT64              actionId,   /* = 0 */
@@ -416,7 +407,6 @@ CProTcpTransport::SendFd(const PRO_SERVICE_PACKET& s2cPacket)
 }
 
 void
-PRO_CALLTYPE
 CProTcpTransport::RequestOnSend()
 {
     {
@@ -447,7 +437,6 @@ CProTcpTransport::RequestOnSend()
 }
 
 void
-PRO_CALLTYPE
 CProTcpTransport::SuspendRecv()
 {
     {
@@ -463,7 +452,6 @@ CProTcpTransport::SuspendRecv()
 }
 
 void
-PRO_CALLTYPE
 CProTcpTransport::ResumeRecv()
 {
     {
@@ -479,7 +467,6 @@ CProTcpTransport::ResumeRecv()
 }
 
 void
-PRO_CALLTYPE
 CProTcpTransport::StartHeartbeat()
 {
     {
@@ -498,7 +485,6 @@ CProTcpTransport::StartHeartbeat()
 }
 
 void
-PRO_CALLTYPE
 CProTcpTransport::StopHeartbeat()
 {
     {
@@ -515,7 +501,6 @@ CProTcpTransport::StopHeartbeat()
 }
 
 void
-PRO_CALLTYPE
 CProTcpTransport::OnInput(PRO_INT64 sockId)
 {
     if (m_recvFdMode)
@@ -720,7 +705,6 @@ CProTcpTransport::OnInputFd(PRO_INT64 sockId)
 }
 
 void
-PRO_CALLTYPE
 CProTcpTransport::OnOutput(PRO_INT64 sockId)
 {
     bool tryAgain = false;
@@ -906,7 +890,6 @@ CProTcpTransport::OnOutput(PRO_INT64 sockId,
 }
 
 void
-PRO_CALLTYPE
 CProTcpTransport::OnError(PRO_INT64 sockId,
                           long      errorCode)
 {
@@ -948,7 +931,6 @@ CProTcpTransport::OnError(PRO_INT64 sockId,
 }
 
 void
-PRO_CALLTYPE
 CProTcpTransport::OnTimer(void*      factory,
                           PRO_UINT64 timerId,
                           PRO_INT64  userData)

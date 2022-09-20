@@ -36,16 +36,13 @@
 ////
 //// [[[[
 ////
-#include "../../../pronet/pro_util/pro_a.h"
 #include <stddef.h>
 
 void*
-PRO_CALLTYPE
 ProCalloc(size_t count,
           size_t size);
 
 void
-PRO_CALLTYPE
 ProFree(void* p);
 
 #define MBEDTLS_PLATFORM_CALLOC_MACRO ProCalloc

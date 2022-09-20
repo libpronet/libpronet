@@ -43,9 +43,7 @@ public CProRefCount
 {
 public:
 
-    static CRtpSessionWrapper* CreateInstance(
-        const RTP_SESSION_INFO* localInfo
-        );
+    static CRtpSessionWrapper* CreateInstance(const RTP_SESSION_INFO* localInfo);
 
     bool Init(
         RTP_SESSION_TYPE     sessionType,
@@ -54,9 +52,9 @@ public:
 
     void Fini();
 
-    virtual unsigned long PRO_CALLTYPE AddRef();
+    virtual unsigned long AddRef();
 
-    virtual unsigned long PRO_CALLTYPE Release();
+    virtual unsigned long Release();
 
 private:
 
@@ -64,80 +62,78 @@ private:
 
     virtual ~CRtpSessionWrapper();
 
-    virtual void PRO_CALLTYPE GetInfo(RTP_SESSION_INFO* info) const;
+    virtual void GetInfo(RTP_SESSION_INFO* info) const;
 
-    virtual void PRO_CALLTYPE GetAck(RTP_SESSION_ACK* ack) const;
+    virtual void GetAck(RTP_SESSION_ACK* ack) const;
 
-    virtual void PRO_CALLTYPE GetSyncId(unsigned char syncId[14]) const;
+    virtual void GetSyncId(unsigned char syncId[14]) const;
 
-    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
-        char suiteName[64]
-        ) const;
+    virtual PRO_SSL_SUITE_ID GetSslSuite(char suiteName[64]) const;
 
-    virtual PRO_INT64 PRO_CALLTYPE GetSockId() const;
+    virtual PRO_INT64 GetSockId() const;
 
-    virtual const char* PRO_CALLTYPE GetLocalIp(char localIp[64]) const;
+    virtual const char* GetLocalIp(char localIp[64]) const;
 
-    virtual unsigned short PRO_CALLTYPE GetLocalPort() const;
+    virtual unsigned short GetLocalPort() const;
 
-    virtual const char* PRO_CALLTYPE GetRemoteIp(char remoteIp[64]) const;
+    virtual const char* GetRemoteIp(char remoteIp[64]) const;
 
-    virtual unsigned short PRO_CALLTYPE GetRemotePort() const;
+    virtual unsigned short GetRemotePort() const;
 
-    virtual void PRO_CALLTYPE SetRemoteIpAndPort(
+    virtual void SetRemoteIpAndPort(
         const char*    remoteIp,  /* = NULL */
         unsigned short remotePort /* = 0 */
         );
 
-    virtual bool PRO_CALLTYPE IsTcpConnected() const;
+    virtual bool IsTcpConnected() const;
 
-    virtual bool PRO_CALLTYPE IsReady() const
+    virtual bool IsReady() const
     {
         return (m_onOkCalled);
     }
 
-    virtual bool PRO_CALLTYPE SendPacket(
+    virtual bool SendPacket(
         IRtpPacket* packet,
-        bool*       tryAgain         /* = NULL */
+        bool*       tryAgain /* = NULL */
         );
 
-    virtual bool PRO_CALLTYPE SendPacketByTimer(
+    virtual bool SendPacketByTimer(
         IRtpPacket*   packet,
         unsigned long sendDurationMs /* = 0 */
         );
 
-    virtual void PRO_CALLTYPE GetSendOnSendTick(
-        PRO_INT64* onSendTick1,      /* = NULL */
-        PRO_INT64* onSendTick2       /* = NULL */
+    virtual void GetSendOnSendTick(
+        PRO_INT64* onSendTick1, /* = NULL */
+        PRO_INT64* onSendTick2  /* = NULL */
         ) const;
 
-    virtual void PRO_CALLTYPE RequestOnSend();
+    virtual void RequestOnSend();
 
-    virtual void PRO_CALLTYPE SuspendRecv();
+    virtual void SuspendRecv();
 
-    virtual void PRO_CALLTYPE ResumeRecv();
+    virtual void ResumeRecv();
 
-    virtual bool PRO_CALLTYPE AddMcastReceiver(const char* mcastIp);
+    virtual bool AddMcastReceiver(const char* mcastIp);
 
-    virtual void PRO_CALLTYPE RemoveMcastReceiver(const char* mcastIp);
+    virtual void RemoveMcastReceiver(const char* mcastIp);
 
-    virtual void PRO_CALLTYPE EnableInput(bool enable);
+    virtual void EnableInput(bool enable);
 
-    virtual void PRO_CALLTYPE EnableOutput(bool enable);
+    virtual void EnableOutput(bool enable);
 
-    virtual void PRO_CALLTYPE SetOutputRedline(
-        unsigned long redlineBytes,   /* = 0 */
-        unsigned long redlineFrames,  /* = 0 */
-        unsigned long redlineDelayMs  /* = 0 */
+    virtual void SetOutputRedline(
+        unsigned long redlineBytes,  /* = 0 */
+        unsigned long redlineFrames, /* = 0 */
+        unsigned long redlineDelayMs /* = 0 */
         );
 
-    virtual void PRO_CALLTYPE GetOutputRedline(
+    virtual void GetOutputRedline(
         unsigned long* redlineBytes,  /* = NULL */
         unsigned long* redlineFrames, /* = NULL */
         unsigned long* redlineDelayMs /* = NULL */
         ) const;
 
-    virtual void PRO_CALLTYPE GetFlowctrlInfo(
+    virtual void GetFlowctrlInfo(
         float*         srcFrameRate, /* = NULL */
         float*         srcBitRate,   /* = NULL */
         float*         outFrameRate, /* = NULL */
@@ -146,55 +142,55 @@ private:
         unsigned long* cachedFrames  /* = NULL */
         ) const;
 
-    virtual void PRO_CALLTYPE ResetFlowctrlInfo();
+    virtual void ResetFlowctrlInfo();
 
-    virtual void PRO_CALLTYPE GetInputStat(
+    virtual void GetInputStat(
         float*      frameRate, /* = NULL */
         float*      bitRate,   /* = NULL */
         float*      lossRate,  /* = NULL */
         PRO_UINT64* lossCount  /* = NULL */
         ) const;
 
-    virtual void PRO_CALLTYPE GetOutputStat(
+    virtual void GetOutputStat(
         float*      frameRate, /* = NULL */
         float*      bitRate,   /* = NULL */
         float*      lossRate,  /* = NULL */
         PRO_UINT64* lossCount  /* = NULL */
         ) const;
 
-    virtual void PRO_CALLTYPE ResetInputStat();
+    virtual void ResetInputStat();
 
-    virtual void PRO_CALLTYPE ResetOutputStat();
+    virtual void ResetOutputStat();
 
-    virtual void PRO_CALLTYPE SetMagic(PRO_INT64 magic);
+    virtual void SetMagic(PRO_INT64 magic);
 
-    virtual PRO_INT64 PRO_CALLTYPE GetMagic() const;
+    virtual PRO_INT64 GetMagic() const;
 
-    virtual void PRO_CALLTYPE OnOkSession(IRtpSession* session);
+    virtual void OnOkSession(IRtpSession* session);
 
-    virtual void PRO_CALLTYPE OnRecvSession(
+    virtual void OnRecvSession(
         IRtpSession* session,
         IRtpPacket*  packet
         );
 
-    virtual void PRO_CALLTYPE OnSendSession(
+    virtual void OnSendSession(
         IRtpSession* session,
         bool         packetErased
         );
 
-    virtual void PRO_CALLTYPE OnCloseSession(
+    virtual void OnCloseSession(
         IRtpSession* session,
         long         errorCode,
         long         sslCode,
         bool         tcpConnected
         );
 
-    virtual void PRO_CALLTYPE OnHeartbeatSession(
+    virtual void OnHeartbeatSession(
         IRtpSession* session,
         PRO_INT64    peerAliveTick
         );
 
-    virtual void PRO_CALLTYPE OnTimer(
+    virtual void OnTimer(
         void*      factory,
         PRO_UINT64 timerId,
         PRO_INT64  userData

@@ -164,23 +164,23 @@ public:
 
     virtual ~IProServicePipeObserver() {}
 
-    virtual unsigned long PRO_CALLTYPE AddRef() = 0;
+    virtual unsigned long AddRef() = 0;
 
-    virtual unsigned long PRO_CALLTYPE Release() = 0;
+    virtual unsigned long Release() = 0;
 
-    virtual void PRO_CALLTYPE OnRecv(
+    virtual void OnRecv(
         CProServicePipe*          pipe,
         const PRO_SERVICE_PACKET& packet
         ) = 0;
 
-    virtual void PRO_CALLTYPE OnRecvFd(
+    virtual void OnRecvFd(
         CProServicePipe*          pipe,
         PRO_INT64                 fd,
         bool                      unixSocket,
         const PRO_SERVICE_PACKET& s2cPacket
         ) = 0;
 
-    virtual void PRO_CALLTYPE OnClose(CProServicePipe* pipe) = 0;
+    virtual void OnClose(CProServicePipe* pipe) = 0;
 };
 
 /////////////////////////////////////////////////////////////////////////////
@@ -202,9 +202,9 @@ public:
 
     void Fini();
 
-    virtual unsigned long PRO_CALLTYPE AddRef();
+    virtual unsigned long AddRef();
 
-    virtual unsigned long PRO_CALLTYPE Release();
+    virtual unsigned long Release();
 
     void SendData(const PRO_SERVICE_PACKET& packet);
 
@@ -216,30 +216,30 @@ private:
 
     virtual ~CProServicePipe();
 
-    virtual void PRO_CALLTYPE OnRecv(
+    virtual void OnRecv(
         IProTransport*          trans,
         const pbsd_sockaddr_in* remoteAddr
         );
 
-    virtual void PRO_CALLTYPE OnRecvFd(
+    virtual void OnRecvFd(
         IProTransport*            trans,
         PRO_INT64                 fd,
         bool                      unixSocket,
         const PRO_SERVICE_PACKET& s2cPacket
         );
 
-    virtual void PRO_CALLTYPE OnSend(
+    virtual void OnSend(
         IProTransport* trans,
         PRO_UINT64     actionId
         );
 
-    virtual void PRO_CALLTYPE OnClose(
+    virtual void OnClose(
         IProTransport* trans,
         long           errorCode,
         long           sslCode
         );
 
-    virtual void PRO_CALLTYPE OnHeartbeat(IProTransport* trans)
+    virtual void OnHeartbeat(IProTransport* trans)
     {
     }
 
@@ -259,7 +259,6 @@ private:
 ////
 
 CProServicePipe*
-PRO_CALLTYPE
 ProCreateServicePipe(bool                     recvFdMode,
                      IProServicePipeObserver* observer,
                      IProReactor*             reactor,
@@ -267,7 +266,6 @@ ProCreateServicePipe(bool                     recvFdMode,
                      bool                     unixSocket);
 
 void
-PRO_CALLTYPE
 ProDeleteServicePipe(CProServicePipe* pipe);
 
 /////////////////////////////////////////////////////////////////////////////

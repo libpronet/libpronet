@@ -78,12 +78,12 @@ public:
         return (true);
     }
 
-    virtual unsigned long PRO_CALLTYPE PeekDataSize() const
+    virtual unsigned long PeekDataSize() const
     {
         return ((unsigned long)m_dataSize);
     }
 
-    virtual void PRO_CALLTYPE PeekData(
+    virtual void PeekData(
         void*  buf,
         size_t size
         ) const
@@ -106,7 +106,7 @@ public:
         }
     }
 
-    virtual void PRO_CALLTYPE Flush(size_t size)
+    virtual void Flush(size_t size)
     {
         if (size == 0 || size > m_dataSize)
         {
@@ -150,7 +150,7 @@ public:
         m_dataSize -= size;
     }
 
-    virtual unsigned long PRO_CALLTYPE GetFreeSize() const
+    virtual unsigned long GetFreeSize() const
     {
         return ((unsigned long)m_idleSize);
     }

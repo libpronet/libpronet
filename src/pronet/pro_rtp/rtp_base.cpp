@@ -66,7 +66,6 @@ static unsigned long          g_s_tcpRecvPoolSize[256];    /* mmType0 ~ mmType25
 
 PRO_RTP_API
 void
-PRO_CALLTYPE
 ProRtpInit()
 {
     static bool s_flag = false;
@@ -103,7 +102,6 @@ ProRtpInit()
 
 PRO_RTP_API
 void
-PRO_CALLTYPE
 ProRtpVersion(unsigned char* major, /* = NULL */
               unsigned char* minor, /* = NULL */
               unsigned char* patch) /* = NULL */
@@ -124,10 +122,9 @@ ProRtpVersion(unsigned char* major, /* = NULL */
 
 PRO_RTP_API
 IRtpPacket*
-PRO_CALLTYPE
 CreateRtpPacket(const void*       payloadBuffer,
                 unsigned long     payloadSize,
-                RTP_EXT_PACK_MODE packMode)      /* = RTP_EPM_DEFAULT */
+                RTP_EXT_PACK_MODE packMode) /* = RTP_EPM_DEFAULT */
 {
     CRtpPacket* const packet =
         CRtpPacket::CreateInstance(payloadBuffer, payloadSize, packMode);
@@ -137,7 +134,6 @@ CreateRtpPacket(const void*       payloadBuffer,
 
 PRO_RTP_API
 IRtpPacket*
-PRO_CALLTYPE
 CreateRtpPacketSpace(unsigned long     payloadSize,
                      RTP_EXT_PACK_MODE packMode) /* = RTP_EPM_DEFAULT */
 {
@@ -149,7 +145,6 @@ CreateRtpPacketSpace(unsigned long     payloadSize,
 
 PRO_RTP_API
 IRtpPacket*
-PRO_CALLTYPE
 CloneRtpPacket(const IRtpPacket* packet)
 {
     CRtpPacket* const newPacket = CRtpPacket::Clone(packet);
@@ -159,7 +154,6 @@ CloneRtpPacket(const IRtpPacket* packet)
 
 PRO_RTP_API
 IRtpPacket*
-PRO_CALLTYPE
 ParseRtpStreamToPacket(const void* streamBuffer,
                        PRO_UINT16  streamSize)
 {
@@ -200,7 +194,6 @@ ParseRtpStreamToPacket(const void* streamBuffer,
 
 PRO_RTP_API
 const void*
-PRO_CALLTYPE
 FindRtpStreamFromPacket(const IRtpPacket* packet,
                         PRO_UINT16*       streamSize)
 {
@@ -226,7 +219,6 @@ FindRtpStreamFromPacket(const IRtpPacket* packet,
 
 PRO_RTP_API
 void
-PRO_CALLTYPE
 SetRtpPortRange(unsigned short minUdpPort, /* = 0 */
                 unsigned short maxUdpPort, /* = 0 */
                 unsigned short minTcpPort, /* = 0 */
@@ -241,7 +233,6 @@ SetRtpPortRange(unsigned short minUdpPort, /* = 0 */
 
 PRO_RTP_API
 void
-PRO_CALLTYPE
 GetRtpPortRange(unsigned short* minUdpPort, /* = NULL */
                 unsigned short* maxUdpPort, /* = NULL */
                 unsigned short* minTcpPort, /* = NULL */
@@ -277,7 +268,6 @@ GetRtpPortRange(unsigned short* minUdpPort, /* = NULL */
 
 PRO_RTP_API
 unsigned short
-PRO_CALLTYPE
 AllocRtpUdpPort(bool rfc)
 {
     assert(g_s_udpPortAllocator != NULL);
@@ -287,7 +277,6 @@ AllocRtpUdpPort(bool rfc)
 
 PRO_RTP_API
 unsigned short
-PRO_CALLTYPE
 AllocRtpTcpPort(bool rfc)
 {
     assert(g_s_tcpPortAllocator != NULL);
@@ -297,7 +286,6 @@ AllocRtpTcpPort(bool rfc)
 
 PRO_RTP_API
 void
-PRO_CALLTYPE
 SetRtpKeepaliveTimeout(unsigned long keepaliveInSeconds) /* = 60 */
 {
     assert(keepaliveInSeconds > 0);
@@ -311,7 +299,6 @@ SetRtpKeepaliveTimeout(unsigned long keepaliveInSeconds) /* = 60 */
 
 PRO_RTP_API
 unsigned long
-PRO_CALLTYPE
 GetRtpKeepaliveTimeout()
 {
     return (g_s_keepaliveInSeconds);
@@ -319,7 +306,6 @@ GetRtpKeepaliveTimeout()
 
 PRO_RTP_API
 void
-PRO_CALLTYPE
 SetRtpFlowctrlTimeSpan(unsigned long flowctrlInSeconds) /* = 1 */
 {
     assert(flowctrlInSeconds > 0);
@@ -333,7 +319,6 @@ SetRtpFlowctrlTimeSpan(unsigned long flowctrlInSeconds) /* = 1 */
 
 PRO_RTP_API
 unsigned long
-PRO_CALLTYPE
 GetRtpFlowctrlTimeSpan()
 {
     return (g_s_flowctrlInSeconds);
@@ -341,7 +326,6 @@ GetRtpFlowctrlTimeSpan()
 
 PRO_RTP_API
 void
-PRO_CALLTYPE
 SetRtpStatTimeSpan(unsigned long statInSeconds) /* = 5 */
 {
     assert(statInSeconds > 0);
@@ -355,7 +339,6 @@ SetRtpStatTimeSpan(unsigned long statInSeconds) /* = 5 */
 
 PRO_RTP_API
 unsigned long
-PRO_CALLTYPE
 GetRtpStatTimeSpan()
 {
     return (g_s_statInSeconds);
@@ -363,7 +346,6 @@ GetRtpStatTimeSpan()
 
 PRO_RTP_API
 void
-PRO_CALLTYPE
 SetRtpUdpSocketParams(RTP_MM_TYPE   mmType,
                       unsigned long sockBufSizeRecv, /* = 0 */
                       unsigned long sockBufSizeSend, /* = 0 */
@@ -385,7 +367,6 @@ SetRtpUdpSocketParams(RTP_MM_TYPE   mmType,
 
 PRO_RTP_API
 void
-PRO_CALLTYPE
 GetRtpUdpSocketParams(RTP_MM_TYPE    mmType,
                       unsigned long* sockBufSizeRecv, /* = NULL */
                       unsigned long* sockBufSizeSend, /* = NULL */
@@ -407,7 +388,6 @@ GetRtpUdpSocketParams(RTP_MM_TYPE    mmType,
 
 PRO_RTP_API
 void
-PRO_CALLTYPE
 SetRtpTcpSocketParams(RTP_MM_TYPE   mmType,
                       unsigned long sockBufSizeRecv, /* = 0 */
                       unsigned long sockBufSizeSend, /* = 0 */
@@ -429,7 +409,6 @@ SetRtpTcpSocketParams(RTP_MM_TYPE   mmType,
 
 PRO_RTP_API
 void
-PRO_CALLTYPE
 GetRtpTcpSocketParams(RTP_MM_TYPE    mmType,
                       unsigned long* sockBufSizeRecv, /* = NULL */
                       unsigned long* sockBufSizeSend, /* = NULL */
@@ -451,7 +430,6 @@ GetRtpTcpSocketParams(RTP_MM_TYPE    mmType,
 
 PRO_RTP_API
 IRtpService*
-PRO_CALLTYPE
 CreateRtpService(const PRO_SSL_SERVER_CONFIG* sslConfig,        /* = NULL */
                  IRtpServiceObserver*         observer,
                  IProReactor*                 reactor,
@@ -480,7 +458,6 @@ CreateRtpService(const PRO_SSL_SERVER_CONFIG* sslConfig,        /* = NULL */
 
 PRO_RTP_API
 void
-PRO_CALLTYPE
 DeleteRtpService(IRtpService* service)
 {
     if (service == NULL)
@@ -495,7 +472,6 @@ DeleteRtpService(IRtpService* service)
 
 PRO_RTP_API
 bool
-PRO_CALLTYPE
 CheckRtpServiceData(const char  serviceNonce[32],
                     const char* servicePassword,
                     const char  clientPasswordHash[32])
@@ -508,7 +484,6 @@ CheckRtpServiceData(const char  serviceNonce[32],
 
 PRO_RTP_API
 IRtpSession*
-PRO_CALLTYPE
 CreateRtpSessionWrapper(RTP_SESSION_TYPE        sessionType,
                         const RTP_INIT_ARGS*    initArgs,
                         const RTP_SESSION_INFO* localInfo)
@@ -534,7 +509,6 @@ CreateRtpSessionWrapper(RTP_SESSION_TYPE        sessionType,
 
 PRO_RTP_API
 void
-PRO_CALLTYPE
 DeleteRtpSessionWrapper(IRtpSession* sessionWrapper)
 {
     if (sessionWrapper == NULL)
@@ -549,7 +523,6 @@ DeleteRtpSessionWrapper(IRtpSession* sessionWrapper)
 
 PRO_RTP_API
 IRtpBucket*
-PRO_CALLTYPE
 CreateRtpBaseBucket()
 {
     CRtpBucket* const bucket = new CRtpBucket;
@@ -559,7 +532,6 @@ CreateRtpBaseBucket()
 
 PRO_RTP_API
 IRtpBucket*
-PRO_CALLTYPE
 CreateRtpAudioBucket()
 {
     CRtpAudioBucket* const bucket = new CRtpAudioBucket;
@@ -569,7 +541,6 @@ CreateRtpAudioBucket()
 
 PRO_RTP_API
 IRtpBucket*
-PRO_CALLTYPE
 CreateRtpVideoBucket()
 {
     CRtpVideoBucket* const bucket = new CRtpVideoBucket;
@@ -579,7 +550,6 @@ CreateRtpVideoBucket()
 
 PRO_RTP_API
 IRtpReorder*
-PRO_CALLTYPE
 CreateRtpReorder()
 {
     CRtpReorder* const reorder = new CRtpReorder;
@@ -589,7 +559,6 @@ CreateRtpReorder()
 
 PRO_RTP_API
 void
-PRO_CALLTYPE
 DeleteRtpReorder(IRtpReorder* reorder)
 {
     delete (CRtpReorder*)reorder;

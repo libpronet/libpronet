@@ -119,9 +119,9 @@ public:
 
     void Fini();
 
-    virtual unsigned long PRO_CALLTYPE AddRef();
+    virtual unsigned long AddRef();
 
-    virtual unsigned long PRO_CALLTYPE Release();
+    virtual unsigned long Release();
 
     static bool IsUdpMode(TEST_MODE mode)
     {
@@ -142,35 +142,35 @@ private:
 
     virtual ~CTest();
 
-    virtual void PRO_CALLTYPE OnOkSession(IRtpSession* session);
+    virtual void OnOkSession(IRtpSession* session);
 
-    virtual void PRO_CALLTYPE OnRecvSession(
+    virtual void OnRecvSession(
         IRtpSession* session,
         IRtpPacket*  packet
         );
 
-    virtual void PRO_CALLTYPE OnSendSession(
+    virtual void OnSendSession(
         IRtpSession* session,
         bool         packetErased
         )
     {
     }
 
-    virtual void PRO_CALLTYPE OnCloseSession(
+    virtual void OnCloseSession(
         IRtpSession* session,
         long         errorCode,
         long         sslCode,
         bool         tcpConnected
         );
 
-    virtual void PRO_CALLTYPE OnHeartbeatSession(
+    virtual void OnHeartbeatSession(
         IRtpSession* session,
         PRO_INT64    peerAliveTick
         )
     {
     }
 
-    virtual void PRO_CALLTYPE OnTimer(
+    virtual void OnTimer(
         void*      factory,
         PRO_UINT64 timerId,
         PRO_INT64  userData

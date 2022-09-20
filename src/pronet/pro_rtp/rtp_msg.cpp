@@ -33,7 +33,6 @@ extern "C" {
 
 PRO_RTP_API
 IRtpMsgClient*
-PRO_CALLTYPE
 CreateRtpMsgClient(IRtpMsgClientObserver*       observer,
                    IProReactor*                 reactor,
                    RTP_MM_TYPE                  mmType,
@@ -68,7 +67,6 @@ CreateRtpMsgClient(IRtpMsgClientObserver*       observer,
 
 PRO_RTP_API
 void
-PRO_CALLTYPE
 DeleteRtpMsgClient(IRtpMsgClient* msgClient)
 {
     if (msgClient == NULL)
@@ -83,7 +81,6 @@ DeleteRtpMsgClient(IRtpMsgClient* msgClient)
 
 PRO_RTP_API
 IRtpMsgServer*
-PRO_CALLTYPE
 CreateRtpMsgServer(IRtpMsgServerObserver*       observer,
                    IProReactor*                 reactor,
                    RTP_MM_TYPE                  mmType,
@@ -113,7 +110,6 @@ CreateRtpMsgServer(IRtpMsgServerObserver*       observer,
 
 PRO_RTP_API
 void
-PRO_CALLTYPE
 DeleteRtpMsgServer(IRtpMsgServer* msgServer)
 {
     if (msgServer == NULL)
@@ -128,7 +124,6 @@ DeleteRtpMsgServer(IRtpMsgServer* msgServer)
 
 PRO_RTP_API
 IRtpMsgC2s*
-PRO_CALLTYPE
 CreateRtpMsgC2s(IRtpMsgC2sObserver*          observer,
                 IProReactor*                 reactor,
                 RTP_MM_TYPE                  mmType,
@@ -168,7 +163,6 @@ CreateRtpMsgC2s(IRtpMsgC2sObserver*          observer,
 
 PRO_RTP_API
 void
-PRO_CALLTYPE
 DeleteRtpMsgC2s(IRtpMsgC2s* msgC2s)
 {
     if (msgC2s == NULL)
@@ -183,7 +177,6 @@ DeleteRtpMsgC2s(IRtpMsgC2s* msgC2s)
 
 PRO_RTP_API
 void
-PRO_CALLTYPE
 RtpMsgUser2String(const RTP_MSG_USER* user,
                   char                idString[64])
 {
@@ -205,7 +198,6 @@ RtpMsgUser2String(const RTP_MSG_USER* user,
 
 PRO_RTP_API
 void
-PRO_CALLTYPE
 RtpMsgString2User(const char*   idString,
                   RTP_MSG_USER* user)
 {

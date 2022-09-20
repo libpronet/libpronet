@@ -35,7 +35,6 @@ CProBaseReactor::CProBaseReactor()
 }
 
 unsigned long
-PRO_CALLTYPE
 CProBaseReactor::GetHandlerCount() const
 {
     unsigned long count = 0;

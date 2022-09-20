@@ -48,9 +48,9 @@ public:
 
     void Fini();
 
-    virtual unsigned long PRO_CALLTYPE AddRef();
+    virtual unsigned long AddRef();
 
-    virtual unsigned long PRO_CALLTYPE Release();
+    virtual unsigned long Release();
 
     void DecServiceLoad(PRO_INT64 sockId);
 
@@ -60,7 +60,7 @@ private:
 
     virtual ~CProServiceHost();
 
-    virtual void PRO_CALLTYPE OnConnectOk(
+    virtual void OnConnectOk(
         IProConnector* connector,
         PRO_INT64      sockId,
         bool           unixSocket,
@@ -70,7 +70,7 @@ private:
     {
     }
 
-    virtual void PRO_CALLTYPE OnConnectError(
+    virtual void OnConnectError(
         IProConnector* connector,
         const char*    remoteIp,
         unsigned short remotePort,
@@ -79,7 +79,7 @@ private:
     {
     }
 
-    virtual void PRO_CALLTYPE OnConnectOk(
+    virtual void OnConnectOk(
         IProConnector*   connector,
         PRO_INT64        sockId,
         bool             unixSocket,
@@ -90,7 +90,7 @@ private:
         const PRO_NONCE* nonce
         );
 
-    virtual void PRO_CALLTYPE OnConnectError(
+    virtual void OnConnectError(
         IProConnector* connector,
         const char*    remoteIp,
         unsigned short remotePort,
@@ -99,21 +99,21 @@ private:
         bool           timeout
         );
 
-    virtual void PRO_CALLTYPE OnRecv(
+    virtual void OnRecv(
         CProServicePipe*          pipe,
         const PRO_SERVICE_PACKET& packet
         );
 
-    virtual void PRO_CALLTYPE OnRecvFd(
+    virtual void OnRecvFd(
         CProServicePipe*          pipe,
         PRO_INT64                 fd,
         bool                      unixSocket,
         const PRO_SERVICE_PACKET& s2cPacket
         );
 
-    virtual void PRO_CALLTYPE OnClose(CProServicePipe* pipe);
+    virtual void OnClose(CProServicePipe* pipe);
 
-    virtual void PRO_CALLTYPE OnTimer(
+    virtual void OnTimer(
         void*      factory,
         PRO_UINT64 timerId,
         PRO_INT64  userData
@@ -141,7 +141,6 @@ private:
 ////
 
 void
-PRO_CALLTYPE
 ProDecServiceLoad(PRO_INT64 sockId);
 
 /////////////////////////////////////////////////////////////////////////////

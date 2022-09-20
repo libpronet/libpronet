@@ -166,7 +166,6 @@ CProTcpHandshaker::Fini()
 }
 
 void
-PRO_CALLTYPE
 CProTcpHandshaker::OnInput(PRO_INT64 sockId)
 {
     assert(sockId != -1);
@@ -251,7 +250,6 @@ CProTcpHandshaker::OnInput(PRO_INT64 sockId)
 }
 
 void
-PRO_CALLTYPE
 CProTcpHandshaker::OnOutput(PRO_INT64 sockId)
 {
     assert(sockId != -1);
@@ -385,7 +383,6 @@ EXIT:
 }
 
 void
-PRO_CALLTYPE
 CProTcpHandshaker::OnError(PRO_INT64 sockId,
                            long      errorCode)
 {
@@ -426,7 +423,6 @@ CProTcpHandshaker::OnError(PRO_INT64 sockId,
 }
 
 void
-PRO_CALLTYPE
 CProTcpHandshaker::OnTimer(void*      factory,
                            PRO_UINT64 timerId,
                            PRO_INT64  userData)

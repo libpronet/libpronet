@@ -174,9 +174,9 @@ public:
 
     void Fini();
 
-    virtual unsigned long PRO_CALLTYPE AddRef();
+    virtual unsigned long AddRef();
 
-    virtual unsigned long PRO_CALLTYPE Release();
+    virtual unsigned long Release();
 
     void Reconfig(const C2S_SERVER_CONFIG_INFO& configInfo);
 
@@ -186,40 +186,40 @@ private:
 
     virtual ~CC2sServer();
 
-    virtual void PRO_CALLTYPE OnOkC2s(
+    virtual void OnOkC2s(
         IRtpMsgC2s*         msgC2s,
         const RTP_MSG_USER* myUser,
         const char*         myPublicIp
         );
 
-    virtual void PRO_CALLTYPE OnCloseC2s(
+    virtual void OnCloseC2s(
         IRtpMsgC2s* msgC2s,
         long        errorCode,
         long        sslCode,
         bool        tcpConnected
         );
 
-    virtual void PRO_CALLTYPE OnHeartbeatC2s(
+    virtual void OnHeartbeatC2s(
         IRtpMsgC2s* msgC2s,
         PRO_INT64   peerAliveTick
         )
     {
     }
 
-    virtual void PRO_CALLTYPE OnOkUser(
+    virtual void OnOkUser(
         IRtpMsgC2s*         msgC2s,
         const RTP_MSG_USER* user,
         const char*         userPublicIp
         );
 
-    virtual void PRO_CALLTYPE OnCloseUser(
+    virtual void OnCloseUser(
         IRtpMsgC2s*         msgC2s,
         const RTP_MSG_USER* user,
         long                errorCode,
         long                sslCode
         );
 
-    virtual void PRO_CALLTYPE OnHeartbeatUser(
+    virtual void OnHeartbeatUser(
         IRtpMsgC2s*         msgC2s,
         const RTP_MSG_USER* user,
         PRO_INT64           peerAliveTick

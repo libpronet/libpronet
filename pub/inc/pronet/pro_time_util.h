@@ -151,30 +151,24 @@ struct PRO_LOCAL_TIME
 ////
 
 PRO_INT64
-PRO_CALLTYPE
 ProGetTickCount64();
 
 void
-PRO_CALLTYPE
 ProSleep(PRO_UINT32 milliseconds);
 
 void
-PRO_CALLTYPE
 ProGetLocalTime(PRO_LOCAL_TIME& localTime,
                 long            deltaSeconds = 0);
 
 const char*
-PRO_CALLTYPE
 ProGetLocalTimeString(CProStlString& timeString,
                       long           deltaSeconds = 0);
 
 const char*
-PRO_CALLTYPE
 ProLocalTime2String(const PRO_LOCAL_TIME& localTime,
                     char                  timeString[64]);
 
 void
-PRO_CALLTYPE
 ProString2LocalTime(const char*     timeString,
                     PRO_LOCAL_TIME& localTime);
 

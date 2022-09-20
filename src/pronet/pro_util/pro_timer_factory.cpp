@@ -535,7 +535,7 @@ CProTimerFactory::WorkerRun(PRO_INT64* args)
                         node.expireTick = tick + node.timeSpan;
                     }
 
-                    node.onTimer->AddRef();                   /* !!! */
+                    node.onTimer->AddRef(); /* !!! */
                     m_timers.insert(node);
                     m_timerId2ExpireTick[node.timerId] = node.expireTick;
                 }

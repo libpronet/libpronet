@@ -51,9 +51,9 @@ public:
 
     virtual void Fini();
 
-    virtual unsigned long PRO_CALLTYPE AddRef();
+    virtual unsigned long AddRef();
 
-    virtual unsigned long PRO_CALLTYPE Release();
+    virtual unsigned long Release();
 
 private:
 
@@ -64,7 +64,7 @@ private:
 
     virtual ~CRtpSessionTcpclient();
 
-    virtual void PRO_CALLTYPE OnConnectOk(
+    virtual void OnConnectOk(
         IProConnector* connector,
         PRO_INT64      sockId,
         bool           unixSocket,
@@ -72,14 +72,14 @@ private:
         unsigned short remotePort
         );
 
-    virtual void PRO_CALLTYPE OnConnectError(
+    virtual void OnConnectError(
         IProConnector* connector,
         const char*    remoteIp,
         unsigned short remotePort,
         bool           timeout
         );
 
-    virtual void PRO_CALLTYPE OnConnectOk(
+    virtual void OnConnectOk(
         IProConnector*   connector,
         PRO_INT64        sockId,
         bool             unixSocket,
@@ -92,7 +92,7 @@ private:
     {
     }
 
-    virtual void PRO_CALLTYPE OnConnectError(
+    virtual void OnConnectError(
         IProConnector* connector,
         const char*    remoteIp,
         unsigned short remotePort,
@@ -103,7 +103,7 @@ private:
     {
     }
 
-    virtual void PRO_CALLTYPE OnRecv(
+    virtual void OnRecv(
         IProTransport*          trans,
         const pbsd_sockaddr_in* remoteAddr
         );

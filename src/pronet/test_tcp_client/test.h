@@ -131,9 +131,9 @@ public:
 
     void Fini();
 
-    virtual unsigned long PRO_CALLTYPE AddRef();
+    virtual unsigned long AddRef();
 
-    virtual unsigned long PRO_CALLTYPE Release();
+    virtual unsigned long Release();
 
     void SetHeartbeatDataSize(unsigned long size); /* 0 ~ 1024 */
 
@@ -147,7 +147,7 @@ private:
 
     virtual ~CTest();
 
-    virtual void PRO_CALLTYPE OnConnectOk(
+    virtual void OnConnectOk(
         IProConnector* connector,
         PRO_INT64      sockId,
         bool           unixSocket,
@@ -157,7 +157,7 @@ private:
     {
     }
 
-    virtual void PRO_CALLTYPE OnConnectError(
+    virtual void OnConnectError(
         IProConnector* connector,
         const char*    remoteIp,
         unsigned short remotePort,
@@ -166,7 +166,7 @@ private:
     {
     }
 
-    virtual void PRO_CALLTYPE OnConnectOk(
+    virtual void OnConnectOk(
         IProConnector*   connector,
         PRO_INT64        sockId,
         bool             unixSocket,
@@ -177,7 +177,7 @@ private:
         const PRO_NONCE* nonce
         );
 
-    virtual void PRO_CALLTYPE OnConnectError(
+    virtual void OnConnectError(
         IProConnector* connector,
         const char*    remoteIp,
         unsigned short remotePort,
@@ -186,7 +186,7 @@ private:
         bool           timeout
         );
 
-    virtual void PRO_CALLTYPE OnHandshakeOk(
+    virtual void OnHandshakeOk(
         IProTcpHandshaker* handshaker,
         PRO_INT64          sockId,
         bool               unixSocket,
@@ -194,12 +194,12 @@ private:
         unsigned long      size
         );
 
-    virtual void PRO_CALLTYPE OnHandshakeError(
+    virtual void OnHandshakeError(
         IProTcpHandshaker* handshaker,
         long               errorCode
         );
 
-    virtual void PRO_CALLTYPE OnHandshakeOk(
+    virtual void OnHandshakeOk(
         IProSslHandshaker* handshaker,
         PRO_SSL_CTX*       ctx,
         PRO_INT64          sockId,
@@ -208,33 +208,33 @@ private:
         unsigned long      size
         );
 
-    virtual void PRO_CALLTYPE OnHandshakeError(
+    virtual void OnHandshakeError(
         IProSslHandshaker* handshaker,
         long               errorCode,
         long               sslCode
         );
 
-    virtual void PRO_CALLTYPE OnRecv(
+    virtual void OnRecv(
         IProTransport*          trans,
         const pbsd_sockaddr_in* remoteAddr
         );
 
-    virtual void PRO_CALLTYPE OnSend(
+    virtual void OnSend(
         IProTransport* trans,
         PRO_UINT64     actionId
         )
     {
     }
 
-    virtual void PRO_CALLTYPE OnClose(
+    virtual void OnClose(
         IProTransport* trans,
         long           errorCode,
         long           sslCode
         );
 
-    virtual void PRO_CALLTYPE OnHeartbeat(IProTransport* trans);
+    virtual void OnHeartbeat(IProTransport* trans);
 
-    virtual void PRO_CALLTYPE OnTimer(
+    virtual void OnTimer(
         void*      factory,
         PRO_UINT64 timerId,
         PRO_INT64  userData

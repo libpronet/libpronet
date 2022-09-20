@@ -195,7 +195,6 @@ CRtpSessionTcpserverEx::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpSessionTcpserverEx::AddRef()
 {
     const unsigned long refCount = CRtpSessionBase::AddRef();
@@ -204,7 +203,6 @@ CRtpSessionTcpserverEx::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpSessionTcpserverEx::Release()
 {
     const unsigned long refCount = CRtpSessionBase::Release();
@@ -213,7 +211,6 @@ CRtpSessionTcpserverEx::Release()
 }
 
 void
-PRO_CALLTYPE
 CRtpSessionTcpserverEx::OnRecv(IProTransport*          trans,
                                const pbsd_sockaddr_in* remoteAddr)
 {

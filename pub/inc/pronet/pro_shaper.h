@@ -43,7 +43,7 @@ public:
 
     unsigned long GetInitialTimeSpan() const;
 
-    void SetMaxTimeSpan(unsigned long timeSpanInMs);     /* = 1000 */
+    void SetMaxTimeSpan(unsigned long timeSpanInMs); /* = 1000 */
 
     unsigned long GetMaxTimeSpan() const;
 

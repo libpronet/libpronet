@@ -32,9 +32,7 @@ class CRtpSessionUdpclient : public CRtpSessionBase
 {
 public:
 
-    static CRtpSessionUdpclient* CreateInstance(
-        const RTP_SESSION_INFO* localInfo
-        );
+    static CRtpSessionUdpclient* CreateInstance(const RTP_SESSION_INFO* localInfo);
 
     bool Init(
         IRtpSessionObserver* observer,
@@ -53,12 +51,12 @@ protected:
 
 private:
 
-    virtual void PRO_CALLTYPE SetRemoteIpAndPort(
+    virtual void SetRemoteIpAndPort(
         const char*    remoteIp,  /* = NULL */
         unsigned short remotePort /* = 0 */
         );
 
-    virtual void PRO_CALLTYPE OnRecv(
+    virtual void OnRecv(
         IProTransport*          trans,
         const pbsd_sockaddr_in* remoteAddr
         );

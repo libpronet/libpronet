@@ -61,16 +61,16 @@ private:
 
     virtual ~CProTcpHandshaker();
 
-    virtual void PRO_CALLTYPE OnInput(PRO_INT64 sockId);
+    virtual void OnInput(PRO_INT64 sockId);
 
-    virtual void PRO_CALLTYPE OnOutput(PRO_INT64 sockId);
+    virtual void OnOutput(PRO_INT64 sockId);
 
-    virtual void PRO_CALLTYPE OnError(
+    virtual void OnError(
         PRO_INT64 sockId,
         long      errorCode
         );
 
-    virtual void PRO_CALLTYPE OnTimer(
+    virtual void OnTimer(
         void*      factory,
         PRO_UINT64 timerId,
         PRO_INT64  userData

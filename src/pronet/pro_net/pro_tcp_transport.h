@@ -40,7 +40,7 @@ public:
 
     virtual ~IProTransportObserverEx() {}
 
-    virtual void PRO_CALLTYPE OnRecvFd(
+    virtual void OnRecvFd(
         IProTransport*            trans,
         PRO_INT64                 fd,
         bool                      unixSocket,
@@ -72,63 +72,59 @@ public:
 
     void Fini();
 
-    virtual unsigned long PRO_CALLTYPE AddRef();
+    virtual unsigned long AddRef();
 
-    virtual unsigned long PRO_CALLTYPE Release();
+    virtual unsigned long Release();
 
-    virtual PRO_TRANS_TYPE PRO_CALLTYPE GetType() const
+    virtual PRO_TRANS_TYPE GetType() const
     {
         return (PRO_TRANS_TCP);
     }
 
-    virtual PRO_SSL_SUITE_ID PRO_CALLTYPE GetSslSuite(
-        char suiteName[64]
-        ) const;
+    virtual PRO_SSL_SUITE_ID GetSslSuite(char suiteName[64]) const;
 
-    virtual PRO_INT64 PRO_CALLTYPE GetSockId() const;
+    virtual PRO_INT64 GetSockId() const;
 
-    virtual const char* PRO_CALLTYPE GetLocalIp(char localIp[64]) const;
+    virtual const char* GetLocalIp(char localIp[64]) const;
 
-    virtual unsigned short PRO_CALLTYPE GetLocalPort() const;
+    virtual unsigned short GetLocalPort() const;
 
-    virtual const char* PRO_CALLTYPE GetRemoteIp(char remoteIp[64]) const;
+    virtual const char* GetRemoteIp(char remoteIp[64]) const;
 
-    virtual unsigned short PRO_CALLTYPE GetRemotePort() const;
+    virtual unsigned short GetRemotePort() const;
 
-    virtual IProRecvPool* PRO_CALLTYPE GetRecvPool()
+    virtual IProRecvPool* GetRecvPool()
     {
         return (&m_recvPool);
     }
 
-    virtual bool PRO_CALLTYPE SendData(
+    virtual bool SendData(
         const void*             buf,
         size_t                  size,
         PRO_UINT64              actionId,  /* = 0 */
         const pbsd_sockaddr_in* remoteAddr /* = NULL */
         );
 
-    virtual void PRO_CALLTYPE RequestOnSend();
+    virtual void RequestOnSend();
 
-    virtual void PRO_CALLTYPE SuspendRecv();
+    virtual void SuspendRecv();
 
-    virtual void PRO_CALLTYPE ResumeRecv();
+    virtual void ResumeRecv();
 
-    virtual bool PRO_CALLTYPE AddMcastReceiver(const char* mcastIp)
+    virtual bool AddMcastReceiver(const char* mcastIp)
     {
         return (false);
     }
 
-    virtual void PRO_CALLTYPE RemoveMcastReceiver(const char* mcastIp)
+    virtual void RemoveMcastReceiver(const char* mcastIp)
     {
     }
 
-    virtual void PRO_CALLTYPE StartHeartbeat();
+    virtual void StartHeartbeat();
 
-    virtual void PRO_CALLTYPE StopHeartbeat();
+    virtual void StopHeartbeat();
 
-    virtual void PRO_CALLTYPE UdpConnResetAsError(
-        const pbsd_sockaddr_in* remoteAddr /* = NULL */
-        )
+    virtual void UdpConnResetAsError(const pbsd_sockaddr_in* remoteAddr) /* = NULL */
     {
     }
 
@@ -143,16 +139,16 @@ protected:
 
     virtual ~CProTcpTransport();
 
-    virtual void PRO_CALLTYPE OnInput(PRO_INT64 sockId);
+    virtual void OnInput(PRO_INT64 sockId);
 
-    virtual void PRO_CALLTYPE OnOutput(PRO_INT64 sockId);
+    virtual void OnOutput(PRO_INT64 sockId);
 
-    virtual void PRO_CALLTYPE OnError(
+    virtual void OnError(
         PRO_INT64 sockId,
         long      errorCode
         );
 
-    virtual void PRO_CALLTYPE OnTimer(
+    virtual void OnTimer(
         void*      factory,
         PRO_UINT64 timerId,
         PRO_INT64  userData

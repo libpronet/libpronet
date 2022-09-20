@@ -89,7 +89,6 @@ CProEpollReactor::~CProEpollReactor()
 }
 
 bool
-PRO_CALLTYPE
 CProEpollReactor::Init()
 {
     {
@@ -145,7 +144,6 @@ CProEpollReactor::Init()
 }
 
 void
-PRO_CALLTYPE
 CProEpollReactor::Fini()
 {
     {
@@ -162,7 +160,6 @@ CProEpollReactor::Fini()
 }
 
 bool
-PRO_CALLTYPE
 CProEpollReactor::AddHandler(PRO_INT64         sockId,
                              CProEventHandler* handler,
                              unsigned long     mask)
@@ -285,7 +282,6 @@ CProEpollReactor::AddHandler(PRO_INT64         sockId,
 }
 
 void
-PRO_CALLTYPE
 CProEpollReactor::RemoveHandler(PRO_INT64     sockId,
                                 unsigned long mask)
 {
@@ -381,7 +377,6 @@ CProEpollReactor::RemoveHandler(PRO_INT64     sockId,
 }
 
 void
-PRO_CALLTYPE
 CProEpollReactor::WorkerRun()
 {
     {
@@ -509,7 +504,6 @@ CProEpollReactor::WorkerRun()
 }
 
 void
-PRO_CALLTYPE
 CProEpollReactor::OnInput(PRO_INT64 sockId)
 {
     assert(sockId != -1);
@@ -534,7 +528,6 @@ CProEpollReactor::OnInput(PRO_INT64 sockId)
 }
 
 void
-PRO_CALLTYPE
 CProEpollReactor::OnError(PRO_INT64 sockId,
                           long      errorCode)
 {

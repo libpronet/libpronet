@@ -237,7 +237,6 @@ CTest::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CTest::AddRef()
 {
     const unsigned long refCount = CProRefCount::AddRef();
@@ -246,7 +245,6 @@ CTest::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CTest::Release()
 {
     const unsigned long refCount = CProRefCount::Release();
@@ -433,7 +431,6 @@ CTest::Reconnect()
 }
 
 void
-PRO_CALLTYPE
 CTest::OnOkMsg(IRtpMsgClient*      msgClient,
                const RTP_MSG_USER* myUser,
                const char*         myPublicIp)
@@ -488,7 +485,6 @@ CTest::OnOkMsg(IRtpMsgClient*      msgClient,
 }
 
 void
-PRO_CALLTYPE
 CTest::OnRecvMsg(IRtpMsgClient*      msgClient,
                  const void*         buf,
                  unsigned long       size,
@@ -552,7 +548,6 @@ CTest::OnRecvMsg(IRtpMsgClient*      msgClient,
 }
 
 void
-PRO_CALLTYPE
 CTest::OnCloseMsg(IRtpMsgClient* msgClient,
                   long           errorCode,
                   long           sslCode,

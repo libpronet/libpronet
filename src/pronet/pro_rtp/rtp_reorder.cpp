@@ -48,7 +48,6 @@ CRtpReorder::~CRtpReorder()
 }
 
 void
-PRO_CALLTYPE
 CRtpReorder::Reset()
 {
     m_minSeq64      = -1;
@@ -73,8 +72,7 @@ CRtpReorder::Clean()
 }
 
 void
-PRO_CALLTYPE
-CRtpReorder::SetWallHeightInPackets(unsigned long heightInPackets)       /* = 100 */
+CRtpReorder::SetWallHeightInPackets(unsigned long heightInPackets) /* = 100 */
 {
     assert(heightInPackets > 0);
     if (heightInPackets == 0)
@@ -86,8 +84,7 @@ CRtpReorder::SetWallHeightInPackets(unsigned long heightInPackets)       /* = 10
 }
 
 void
-PRO_CALLTYPE
-CRtpReorder::SetWallHeightInMilliseconds(unsigned long heightInMs)       /* = 500 */
+CRtpReorder::SetWallHeightInMilliseconds(unsigned long heightInMs) /* = 500 */
 {
     assert(heightInMs > 0);
     if (heightInMs == 0)
@@ -99,7 +96,6 @@ CRtpReorder::SetWallHeightInMilliseconds(unsigned long heightInMs)       /* = 50
 }
 
 void
-PRO_CALLTYPE
 CRtpReorder::SetMaxBrokenDuration(unsigned long brokenDurationInSeconds) /* = 10 */
 {
     assert(brokenDurationInSeconds > 0);
@@ -112,14 +108,12 @@ CRtpReorder::SetMaxBrokenDuration(unsigned long brokenDurationInSeconds) /* = 10
 }
 
 unsigned long
-PRO_CALLTYPE
 CRtpReorder::GetTotalPackets() const
 {
     return ((unsigned long)m_seq64ToPacket.size());
 }
 
 void
-PRO_CALLTYPE
 CRtpReorder::PushBackAddRef(IRtpPacket* packet)
 {
     assert(packet != NULL);
@@ -232,7 +226,6 @@ CRtpReorder::PushBackAddRef(IRtpPacket* packet)
 }
 
 IRtpPacket*
-PRO_CALLTYPE
 CRtpReorder::PopFront(bool force)
 {
     const PRO_INT64 tick = ProGetTickCount64();

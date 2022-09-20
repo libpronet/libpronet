@@ -33,21 +33,18 @@
 ////
 
 PRO_INT64
-PRO_CALLTYPE
 ProGetTickCount64()
 {
     return (ProGetTickCount64_s());
 }
 
 void
-PRO_CALLTYPE
 ProSleep(PRO_UINT32 milliseconds)
 {
     ProSleep_s(milliseconds);
 }
 
 void
-PRO_CALLTYPE
 ProGetLocalTime(PRO_LOCAL_TIME& localTime,
                 long            deltaSeconds) /* = 0 */
 {
@@ -127,7 +124,6 @@ ProGetLocalTime(PRO_LOCAL_TIME& localTime,
 }
 
 const char*
-PRO_CALLTYPE
 ProGetLocalTimeString(CProStlString& timeString,
                       long           deltaSeconds) /* = 0 */
 {
@@ -141,7 +137,6 @@ ProGetLocalTimeString(CProStlString& timeString,
 }
 
 const char*
-PRO_CALLTYPE
 ProLocalTime2String(const PRO_LOCAL_TIME& localTime,
                     char                  timeString[64])
 {
@@ -161,7 +156,6 @@ ProLocalTime2String(const PRO_LOCAL_TIME& localTime,
 }
 
 void
-PRO_CALLTYPE
 ProString2LocalTime(const char*     timeString,
                     PRO_LOCAL_TIME& localTime)
 {

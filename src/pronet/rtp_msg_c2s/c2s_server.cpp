@@ -323,7 +323,6 @@ CC2sServer::Fini()
 }
 
 unsigned long
-PRO_CALLTYPE
 CC2sServer::AddRef()
 {
     const unsigned long refCount = CProRefCount::AddRef();
@@ -332,7 +331,6 @@ CC2sServer::AddRef()
 }
 
 unsigned long
-PRO_CALLTYPE
 CC2sServer::Release()
 {
     const unsigned long refCount = CProRefCount::Release();
@@ -374,7 +372,6 @@ CC2sServer::Reconfig(const C2S_SERVER_CONFIG_INFO& configInfo)
 }
 
 void
-PRO_CALLTYPE
 CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
                     const RTP_MSG_USER* myUser,
                     const char*         myPublicIp)
@@ -440,7 +437,6 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
 }
 
 void
-PRO_CALLTYPE
 CC2sServer::OnCloseC2s(IRtpMsgC2s* msgC2s,
                        long        errorCode,
                        long        sslCode,
@@ -505,7 +501,6 @@ CC2sServer::OnCloseC2s(IRtpMsgC2s* msgC2s,
 }
 
 void
-PRO_CALLTYPE
 CC2sServer::OnOkUser(IRtpMsgC2s*         msgC2s,
                      const RTP_MSG_USER* user,
                      const char*         userPublicIp)
@@ -560,7 +555,6 @@ CC2sServer::OnOkUser(IRtpMsgC2s*         msgC2s,
 }
 
 void
-PRO_CALLTYPE
 CC2sServer::OnCloseUser(IRtpMsgC2s*         msgC2s,
                         const RTP_MSG_USER* user,
                         long                errorCode,

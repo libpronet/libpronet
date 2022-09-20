@@ -33,7 +33,6 @@
 
 static
 TEST_MODE
-PRO_CALLTYPE
 String2Mode_i(const char* modeString)
 {
     TEST_MODE mode = 0;

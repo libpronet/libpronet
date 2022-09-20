@@ -67,34 +67,32 @@ public:
         unsigned long     mask
         );
 
-    virtual PRO_UINT64 PRO_CALLTYPE ScheduleTimer(
+    virtual PRO_UINT64 ScheduleTimer(
         IProOnTimer* onTimer,
         PRO_UINT64   timeSpan,
         bool         recurring,
         PRO_INT64    userData /* = 0 */
         );
 
-    virtual PRO_UINT64 PRO_CALLTYPE ScheduleHeartbeatTimer(
+    virtual PRO_UINT64 ScheduleHeartbeatTimer(
         IProOnTimer* onTimer,
         PRO_INT64    userData /* = 0 */
         );
 
-    virtual bool PRO_CALLTYPE UpdateHeartbeatTimers(
-        unsigned long htbtIntervalInSeconds
-        );
+    virtual bool UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds);
 
-    virtual void PRO_CALLTYPE CancelTimer(PRO_UINT64 timerId);
+    virtual void CancelTimer(PRO_UINT64 timerId);
 
-    virtual PRO_UINT64 PRO_CALLTYPE ScheduleMmTimer(
+    virtual PRO_UINT64 ScheduleMmTimer(
         IProOnTimer* onTimer,
         PRO_UINT64   timeSpan,
         bool         recurring,
         PRO_INT64    userData /* = 0 */
         );
 
-    virtual void PRO_CALLTYPE CancelMmTimer(PRO_UINT64 timerId);
+    virtual void CancelMmTimer(PRO_UINT64 timerId);
 
-    virtual void PRO_CALLTYPE GetTraceInfo(
+    virtual void GetTraceInfo(
         char*  buf,
         size_t size
         ) const;
