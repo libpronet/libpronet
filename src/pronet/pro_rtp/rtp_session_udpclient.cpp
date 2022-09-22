@@ -183,6 +183,13 @@ void
 CRtpSessionUdpclient::SetRemoteIpAndPort(const char*    remoteIp,   /* = NULL */
                                          unsigned short remotePort) /* = 0 */
 {
+    const char* const anyIp = "0.0.0.0";
+    if (remoteIp == NULL || remoteIp[0] == '\0' || remotePort == 0)
+    {
+        remoteIp   = anyIp;
+        remotePort = 0;
+    }
+
     pbsd_sockaddr_in remoteAddrConfig;
     memset(&remoteAddrConfig, 0, sizeof(pbsd_sockaddr_in));
     remoteAddrConfig.sin_family      = AF_INET;

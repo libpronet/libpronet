@@ -54,8 +54,6 @@ private:
 
     virtual void RemoveMcastReceiver(const char* mcastIp);
 
-private:
-
     virtual void OnRecv(
         IProTransport*          trans,
         const pbsd_sockaddr_in* remoteAddr

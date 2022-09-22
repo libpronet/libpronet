@@ -147,7 +147,7 @@ static unsigned long                    g_s_tlsKey1       = (unsigned long)-1;
 static PRO_INT64                        g_s_globalTick    = 0;
 #elif defined(PRO_MACH_ABSOLUTE_TIME)
 static volatile bool                    g_s_timebaseFlag  = false;
-static mach_timebase_info_data_t        g_s_timebaseInfo  = { 0, 0 };
+static mach_timebase_info_data_t        g_s_timebaseInfo  = { 0 };
 #endif
 static volatile bool                    g_s_socketFlag    = false;
 static PRO_INT64                        g_s_sockId        = -1;

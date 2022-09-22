@@ -354,7 +354,7 @@ int mbedtls_sha512_finish_ret( mbedtls_sha512_context *ctx,
     /*
      * Add padding: 0x80 then 0x00 until 16 bytes remain for the length
      */
-    used = ctx->total[0] & 0x7F;
+    used = (unsigned) ( ctx->total[0] & 0x7F ); ////
 
     ctx->buffer[used++] = 0x80;
 

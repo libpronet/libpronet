@@ -59,17 +59,16 @@ pbsd_inet_addr_i(const char* ipstring)
 {
     if (ipstring == NULL || ipstring[0] == '\0')
     {
-        return (0);
+        return ((PRO_UINT32)-1);
     }
 
     CProStlString ipstring2 = ipstring;
-
     if (ipstring2.find_first_not_of("0123456789.") != CProStlString::npos)
     {
         return ((PRO_UINT32)-1);
     }
 
-    const char* p[4] = { NULL, NULL, NULL, NULL };
+    const char* p[4] = { 0 };
     const char* q1   = &ipstring2[0];
     char*       q2   = (char*)q1;
 
@@ -387,26 +386,30 @@ pbsd_gethostname(char* name,
 PRO_UINT32
 pbsd_inet_aton(const char* ipornamestring)
 {
+    if (ipornamestring == NULL || ipornamestring[0] == '\0')
+    {
+        return ((PRO_UINT32)-1);
+    }
+
     const char* const loopipstring = "127.0.0.1";
-    if (ipornamestring != NULL && stricmp(ipornamestring, "localhost") == 0)
+    if (stricmp(ipornamestring, "localhost") == 0)
     {
         ipornamestring = loopipstring;
     }
 
-    const PRO_UINT32 ip = pbsd_inet_addr_i(ipornamestring);
-    if (ip != (PRO_UINT32)-1)
+    PRO_UINT32 ip = pbsd_inet_addr_i(ipornamestring);
+
+    if (ip == (PRO_UINT32)-1)
     {
-        return (ip);
+        PRO_UINT32          ips[8];
+        const unsigned long count = PBSD_GET_IPS(ipornamestring, ips);
+        if (count > 0)
+        {
+            ip = ips[0];
+        }
     }
 
-    PRO_UINT32          ips[8];
-    const unsigned long count = PBSD_GET_IPS(ipornamestring, ips);
-    if (count > 0)
-    {
-        return (ips[0]);
-    }
-
-    return ((PRO_UINT32)-1);
+    return (ip);
 }
 
 const char*
@@ -1432,7 +1435,7 @@ ProCheckIpString(const char* ipString)
 {
     const PRO_UINT32 ip = pbsd_inet_addr_i(ipString);
 
-    return (ip != (PRO_UINT32)-1 && ip != 0);
+    return (ip != (PRO_UINT32)-1);
 }
 
 const char*

@@ -76,17 +76,10 @@ class __default_alloc_template
 {
 private:
 
-#if defined(__SUNPRO_CC) || defined(__GNUC__) || defined(__HP_aCC)
-    static __Obj* _S_free_list[];
-    static size_t _S_obj_size[];
-    static size_t _S_busy_obj_num[];
-    static size_t _S_total_obj_num[];
-#else
     static __Obj* _S_free_list[__NFREELISTS];
     static size_t _S_obj_size[__NFREELISTS];
     static size_t _S_busy_obj_num[__NFREELISTS];
     static size_t _S_total_obj_num[__NFREELISTS];
-#endif
 
     static int _S_freelist_index(size_t __bytes)
     {
@@ -436,25 +429,19 @@ template<int __inst>
 char* __default_alloc_template<__inst>::_S_start_free = 0;
 
 template<int __inst>
-char* __default_alloc_template<__inst>::_S_end_free   = 0;
+char* __default_alloc_template<__inst>::_S_end_free = 0;
 
 template<int __inst>
 size_t __default_alloc_template<__inst>::_S_heap_size = 0;
 
 template<int __inst>
-__Obj*
-__default_alloc_template<__inst>::_S_free_list[__NFREELISTS] =
-{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0 };
+__Obj* __default_alloc_template<__inst>::_S_free_list[__NFREELISTS] = { 0 };
 
 /*
  * refer to the "jemalloc/tcmalloc"
  */
 template<int __inst>
-size_t
-__default_alloc_template<__inst>::_S_obj_size[__NFREELISTS] =
+size_t __default_alloc_template<__inst>::_S_obj_size[__NFREELISTS] =
 { 8 +    8, 8 +   16,                                               /*   8 */
   8 +   32, 8 +   48, 8 +   64, 8 +   80, 8 + 96, 8 + 112, 8 + 128, /*  16 */
   8 +  160, 8 +  192, 8 +  224, 8 +  256,                           /*  32 */
@@ -470,20 +457,10 @@ __default_alloc_template<__inst>::_S_obj_size[__NFREELISTS] =
   8 + 1024 * 80, 8 + 1024 * 96, 8 + 1024 * 112, 8 + 1024 * 128 };   /* 16K */
 
 template<int __inst>
-size_t
-__default_alloc_template<__inst>::_S_busy_obj_num[__NFREELISTS] =
-{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0 };
+size_t __default_alloc_template<__inst>::_S_busy_obj_num[__NFREELISTS] = { 0 };
 
 template<int __inst>
-size_t
-__default_alloc_template<__inst>::_S_total_obj_num[__NFREELISTS] =
-{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  0 };
+size_t __default_alloc_template<__inst>::_S_total_obj_num[__NFREELISTS] = { 0 };
 
 ____STD_END
 

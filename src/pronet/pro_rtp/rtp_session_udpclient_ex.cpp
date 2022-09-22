@@ -333,9 +333,9 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
                  */
                 m_trans->UdpConnResetAsError(&m_remoteAddr);
 
-                char localIp[64] = "";
+                char theIp[64] = "";
                 m_localAddr.sin_port        = pbsd_hton16(m_trans->GetLocalPort());
-                m_localAddr.sin_addr.s_addr = pbsd_inet_aton(m_trans->GetLocalIp(localIp));
+                m_localAddr.sin_addr.s_addr = pbsd_inet_aton(m_trans->GetLocalIp(theIp));
             }
             else
             {

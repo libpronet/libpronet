@@ -134,7 +134,7 @@ static int gcm_gen_table( mbedtls_gcm_context *ctx )
 
     for( i = 4; i > 0; i >>= 1 )
     {
-        uint32_t T = ( vl & 1 ) * 0xe1000000U;
+        uint32_t T = (uint32_t) ( ( vl & 1 ) * 0xe1000000U ); ////
         vl  = ( vh << 63 ) | ( vl >> 1 );
         vh  = ( vh >> 1 ) ^ ( (uint64_t) T << 32);
 
