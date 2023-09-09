@@ -27,7 +27,7 @@
 #include "pro_time_util.h"
 #include "pro_z.h"
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 #include <windows.h>
 #include <mmsystem.h>
 #endif
@@ -35,11 +35,7 @@
 #include <cassert>
 
 #if defined(_MSC_VER)
-#if defined(_WIN32_WCE)
-#pragma comment(lib, "mmtimer.lib")
-#elif defined(_WIN32)
 #pragma comment(lib, "winmm.lib")
-#endif
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
@@ -95,7 +91,7 @@ CProTimerFactory::Start(bool mmTimer)
             return (false);
         }
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
         if (mmTimer)
         {
             TIMECAPS tc;
@@ -169,7 +165,7 @@ CProTimerFactory::Stop()
     {
         CProThreadMutexGuard mon(m_lock);
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
         if (m_mmTimer && m_mmResolution > 0)
         {
             ::timeEndPeriod(m_mmResolution);

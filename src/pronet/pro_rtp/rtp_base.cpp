@@ -30,7 +30,7 @@
 #include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 #include <windows.h>
 #endif
 
@@ -45,9 +45,7 @@ extern "C" {
 
 #define TRACE_EXT_NAME ".pro_rtp.trace"
 
-#if !defined(_WIN32_WCE)
 CProFileMonitor               g_fileMonitor;
-#endif
 
 static CRtpPortAllocator*     g_s_udpPortAllocator   = NULL;
 static CRtpPortAllocator*     g_s_tcpPortAllocator   = NULL;
@@ -91,13 +89,11 @@ ProRtpInit()
         g_s_tcpRecvPoolSize[i]    = 1024 * 65;
     }
 
-#if !defined(_WIN32_WCE)
     char exeRoot[1024] = "";
     ProGetExePath(exeRoot);
     strncat(exeRoot, TRACE_EXT_NAME, sizeof(exeRoot) - 1);
     g_fileMonitor.Init(exeRoot);
     g_fileMonitor.UpdateFileExist();
-#endif
 }
 
 PRO_RTP_API

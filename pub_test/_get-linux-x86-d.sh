@@ -1,5 +1,4 @@
 #!/bin/sh
-
 THIS_MOD=$(readlink -f "$0")
 THIS_DIR=$(dirname "${THIS_MOD}")
 

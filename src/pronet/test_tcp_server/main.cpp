@@ -207,7 +207,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
     } /* end of for (...) */
 }
 
-#if !defined(_WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32)
 
 static
 void
@@ -284,7 +284,7 @@ SetupSignalHandlers_i()
     sigaction(SIGTERM, &sa, NULL);
 }
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -365,7 +365,7 @@ int main(int argc, char* argv[])
         goto EXIT;
     }
 
-#if !defined(_WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32)
     SetupSignalHandlers_i();
 #endif
 

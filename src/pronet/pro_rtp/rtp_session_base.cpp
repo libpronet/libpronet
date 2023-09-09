@@ -31,7 +31,7 @@
 #include "../pro_util/pro_timer_factory.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 #include <windows.h>
 #endif
 
@@ -44,9 +44,7 @@
 extern "C" {
 #endif
 
-#if !defined(_WIN32_WCE)
 extern CProFileMonitor g_fileMonitor;
-#endif
 
 #if defined(__cplusplus)
 } /* extern "C" */
@@ -611,7 +609,6 @@ CRtpSessionBase::OnClose(IProTransport* trans,
 void
 CRtpSessionBase::OnHeartbeat(IProTransport* trans)
 {
-#if !defined(_WIN32_WCE)
     bool enableTrace = false;
     if (
         (m_info.mmType >= RTP_MMT_MSG_MIN &&
@@ -626,7 +623,6 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
     {
         enableTrace = g_fileMonitor.QueryFileExist();
     }
-#endif
 
     assert(trans != NULL);
     if (trans == NULL)
@@ -651,7 +647,6 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
             return;
         }
 
-#if !defined(_WIN32_WCE)
         do
         {{{
             if (!enableTrace)
@@ -1052,7 +1047,6 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
             ProFree(buffer);
         }}}
         while (0);
-#endif /* _WIN32_WCE */
 
         if (!m_onOkCalledPost)
         {

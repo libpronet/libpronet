@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * Copyright (C) 2018-2019 Eric Tung <libpronet@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License"),
@@ -66,19 +66,19 @@ extern "C" {
 ////
 
 /*
- * ÏûÏ¢ÓÃ»§ºÅ. 1-2-*, 1-3-*, ...; 2-1-*, 2-2-*, 2-3-*, ...; ...
+ * æ¶ˆæ¯ç”¨æˆ·å·. 1-2-*, 1-3-*, ...; 2-1-*, 2-2-*, 2-3-*, ...; ...
  *
- * classId : 8bits. ¸Ã×Ö¶ÎÓÃÓÚ±êÊ¶ÓÃ»§Àà±ğ, ÒÔ±ãÓÚÓ¦ÓÃ³ÌĞò·ÖÀà¹ÜÀí.
- * (cid)     0ÎŞĞ§, 1Ó¦ÓÃ·şÎñÆ÷½Úµã, 2~255Ó¦ÓÃ¿Í»§¶Ë½Úµã
+ * classId : 8bits. è¯¥å­—æ®µç”¨äºæ ‡è¯†ç”¨æˆ·ç±»åˆ«, ä»¥ä¾¿äºåº”ç”¨ç¨‹åºåˆ†ç±»ç®¡ç†.
+ * (cid)     0æ— æ•ˆ, 1åº”ç”¨æœåŠ¡å™¨èŠ‚ç‚¹, 2~255åº”ç”¨å®¢æˆ·ç«¯èŠ‚ç‚¹
  *
- * userId  : 40bits. ¸Ã×Ö¶ÎÓÃÓÚ±êÊ¶ÓÃ»§id(Èçµç»°ºÅÂë), ÓÉÏûÏ¢·şÎñÆ÷·ÖÅä»òĞí¿É.
- * (uid)     0¶¯Ì¬·ÖÅä, ÓĞĞ§·¶Î§Îª[0xF000000000 ~ 0xFFFFFFFFFF];
- *           ·ñÔò¾²Ì¬·ÖÅä, ÓĞĞ§·¶Î§Îª[1 ~ 0xEFFFFFFFFF]
+ * userId  : 40bits. è¯¥å­—æ®µç”¨äºæ ‡è¯†ç”¨æˆ·id(å¦‚ç”µè¯å·ç ), ç”±æ¶ˆæ¯æœåŠ¡å™¨åˆ†é…æˆ–è®¸å¯.
+ * (uid)     0åŠ¨æ€åˆ†é…, æœ‰æ•ˆèŒƒå›´ä¸º[0xF000000000 ~ 0xFFFFFFFFFF];
+ *           å¦åˆ™é™æ€åˆ†é…, æœ‰æ•ˆèŒƒå›´ä¸º[1 ~ 0xEFFFFFFFFF]
  *
- * instId  : 16bits. ¸Ã×Ö¶ÎÓÃÓÚ±êÊ¶ÓÃ»§ÊµÀıid(Èçµç»°·Ö»úºÅ), ÓÉÏûÏ¢·şÎñÆ÷·ÖÅä
- * (iid)     »òĞí¿É. ÓĞĞ§·¶Î§Îª[0 ~ 65535]
+ * instId  : 16bits. è¯¥å­—æ®µç”¨äºæ ‡è¯†ç”¨æˆ·å®ä¾‹id(å¦‚ç”µè¯åˆ†æœºå·), ç”±æ¶ˆæ¯æœåŠ¡å™¨åˆ†é…
+ * (iid)     æˆ–è®¸å¯. æœ‰æ•ˆèŒƒå›´ä¸º[0 ~ 65535]
  *
- * ËµÃ÷    : cid-uid-iid Ö® 1-1-* ±£Áô, ÓÃÓÚ±êÊ¶ÏûÏ¢·şÎñÆ÷±¾Éí(root)
+ * è¯´æ˜    : cid-uid-iid ä¹‹ 1-1-* ä¿ç•™, ç”¨äºæ ‡è¯†æ¶ˆæ¯æœåŠ¡å™¨æœ¬èº«(root)
  */
 struct RTP_MSG_USER
 {
@@ -237,7 +237,7 @@ struct RTP_MSG_USER
 };
 
 /*
- * ÏûÏ¢ÎÕÊÖÍ·
+ * æ¶ˆæ¯æ¡æ‰‹å¤´
  */
 struct RTP_MSG_HEADER0
 {
@@ -252,7 +252,7 @@ struct RTP_MSG_HEADER0
 };
 
 /*
- * ÏûÏ¢Êı¾İÍ·
+ * æ¶ˆæ¯æ•°æ®å¤´
  */
 struct RTP_MSG_HEADER
 {
@@ -267,7 +267,7 @@ struct RTP_MSG_HEADER
 ////
 
 /*
- * ÏûÏ¢¿Í»§¶Ë
+ * æ¶ˆæ¯å®¢æˆ·ç«¯
  */
 class IRtpMsgClient
 {
@@ -280,90 +280,90 @@ public:
     virtual unsigned long Release() = 0;
 
     /*
-     * »ñÈ¡Ã½ÌåÀàĞÍ. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
+     * è·å–åª’ä½“ç±»å‹. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
      */
     virtual RTP_MM_TYPE GetMmType() const = 0;
 
     /*
-     * »ñÈ¡ÓÃ»§ºÅ
+     * è·å–ç”¨æˆ·å·
      */
     virtual void GetUser(RTP_MSG_USER* myUser) const = 0;
 
     /*
-     * »ñÈ¡¼ÓÃÜÌ×¼ş
+     * è·å–åŠ å¯†å¥—ä»¶
      */
     virtual PRO_SSL_SUITE_ID GetSslSuite(char suiteName[64]) const = 0;
 
     /*
-     * »ñÈ¡±¾µØipµØÖ·
+     * è·å–æœ¬åœ°ipåœ°å€
      */
     virtual const char* GetLocalIp(char localIp[64]) const = 0;
 
     /*
-     * »ñÈ¡±¾µØ¶Ë¿ÚºÅ
+     * è·å–æœ¬åœ°ç«¯å£å·
      */
     virtual unsigned short GetLocalPort() const = 0;
 
     /*
-     * »ñÈ¡Ô¶¶ËipµØÖ·
+     * è·å–è¿œç«¯ipåœ°å€
      */
     virtual const char* GetRemoteIp(char remoteIp[64]) const = 0;
 
     /*
-     * »ñÈ¡Ô¶¶Ë¶Ë¿ÚºÅ
+     * è·å–è¿œç«¯ç«¯å£å·
      */
     virtual unsigned short GetRemotePort() const = 0;
 
     /*
-     * ·¢ËÍÏûÏ¢
+     * å‘é€æ¶ˆæ¯
      *
-     * ÏµÍ³ÄÚ²¿ÓĞÏûÏ¢·¢ËÍ¶ÓÁĞ
+     * ç³»ç»Ÿå†…éƒ¨æœ‰æ¶ˆæ¯å‘é€é˜Ÿåˆ—
      */
     virtual bool SendMsg(
-        const void*         buf,         /* ÏûÏ¢ÄÚÈİ */
-        unsigned long       size,        /* ÏûÏ¢³¤¶È */
-        PRO_UINT16          charset,     /* ÓÃ»§×Ô¶¨ÒåµÄÏûÏ¢×Ö·û¼¯´úÂë */
-        const RTP_MSG_USER* dstUsers,    /* ÏûÏ¢½ÓÊÕÕß */
-        unsigned char       dstUserCount /* ×î¶à255¸öÄ¿±ê */
+        const void*         buf,         /* æ¶ˆæ¯å†…å®¹ */
+        unsigned long       size,        /* æ¶ˆæ¯é•¿åº¦ */
+        PRO_UINT16          charset,     /* ç”¨æˆ·è‡ªå®šä¹‰çš„æ¶ˆæ¯å­—ç¬¦é›†ä»£ç  */
+        const RTP_MSG_USER* dstUsers,    /* æ¶ˆæ¯æ¥æ”¶è€… */
+        unsigned char       dstUserCount /* æœ€å¤š255ä¸ªç›®æ ‡ */
         ) = 0;
 
     /*
-     * ·¢ËÍÏûÏ¢(buf1 + buf2)
+     * å‘é€æ¶ˆæ¯(buf1 + buf2)
      *
-     * ÏµÍ³ÄÚ²¿ÓĞÏûÏ¢·¢ËÍ¶ÓÁĞ
+     * ç³»ç»Ÿå†…éƒ¨æœ‰æ¶ˆæ¯å‘é€é˜Ÿåˆ—
      */
     virtual bool SendMsg2(
-        const void*         buf1,        /* ÏûÏ¢ÄÚÈİ1 */
-        unsigned long       size1,       /* ÏûÏ¢³¤¶È1 */
-        const void*         buf2,        /* ÏûÏ¢ÄÚÈİ2. ¿ÉÒÔÊÇNULL */
-        unsigned long       size2,       /* ÏûÏ¢³¤¶È2. ¿ÉÒÔÊÇ0 */
-        PRO_UINT16          charset,     /* ÓÃ»§×Ô¶¨ÒåµÄÏûÏ¢×Ö·û¼¯´úÂë */
-        const RTP_MSG_USER* dstUsers,    /* ÏûÏ¢½ÓÊÕÕß */
-        unsigned char       dstUserCount /* ×î¶à255¸öÄ¿±ê */
+        const void*         buf1,        /* æ¶ˆæ¯å†…å®¹1 */
+        unsigned long       size1,       /* æ¶ˆæ¯é•¿åº¦1 */
+        const void*         buf2,        /* æ¶ˆæ¯å†…å®¹2. å¯ä»¥æ˜¯NULL */
+        unsigned long       size2,       /* æ¶ˆæ¯é•¿åº¦2. å¯ä»¥æ˜¯0 */
+        PRO_UINT16          charset,     /* ç”¨æˆ·è‡ªå®šä¹‰çš„æ¶ˆæ¯å­—ç¬¦é›†ä»£ç  */
+        const RTP_MSG_USER* dstUsers,    /* æ¶ˆæ¯æ¥æ”¶è€… */
+        unsigned char       dstUserCount /* æœ€å¤š255ä¸ªç›®æ ‡ */
         ) = 0;
 
     /*
-     * ÉèÖÃÁ´Â··¢ËÍºìÏß. Ä¬ÈÏ(1024 * 1024)×Ö½Ú
+     * è®¾ç½®é“¾è·¯å‘é€çº¢çº¿. é»˜è®¤(1024 * 1024)å­—èŠ‚
      *
-     * Èç¹ûredlineBytesÎª0, ÔòÖ±½Ó·µ»Ø, Ê²Ã´¶¼²»×ö
+     * å¦‚æœredlineBytesä¸º0, åˆ™ç›´æ¥è¿”å›, ä»€ä¹ˆéƒ½ä¸åš
      */
     virtual void SetOutputRedline(unsigned long redlineBytes) = 0;
 
     /*
-     * »ñÈ¡Á´Â··¢ËÍºìÏß. Ä¬ÈÏ(1024 * 1024)×Ö½Ú
+     * è·å–é“¾è·¯å‘é€çº¢çº¿. é»˜è®¤(1024 * 1024)å­—èŠ‚
      */
     virtual unsigned long GetOutputRedline() const = 0;
 
     /*
-     * »ñÈ¡Á´Â·»º´æµÄÉĞÎ´·¢ËÍµÄ×Ö½ÚÊı
+     * è·å–é“¾è·¯ç¼“å­˜çš„å°šæœªå‘é€çš„å­—èŠ‚æ•°
      */
     virtual unsigned long GetSendingBytes() const = 0;
 };
 
 /*
- * ÏûÏ¢¿Í»§¶Ë»Øµ÷Ä¿±ê
+ * æ¶ˆæ¯å®¢æˆ·ç«¯å›è°ƒç›®æ ‡
  *
- * Ê¹ÓÃÕßĞèÒªÊµÏÖ¸Ã½Ó¿Ú
+ * ä½¿ç”¨è€…éœ€è¦å®ç°è¯¥æ¥å£
  */
 class IRtpMsgClientObserver
 {
@@ -376,7 +376,7 @@ public:
     virtual unsigned long Release() = 0;
 
     /*
-     * µÇÂ¼³É¹¦Ê±, ¸Ãº¯Êı½«±»»Øµ÷
+     * ç™»å½•æˆåŠŸæ—¶, è¯¥å‡½æ•°å°†è¢«å›è°ƒ
      */
     virtual void OnOkMsg(
         IRtpMsgClient*      msgClient,
@@ -385,7 +385,7 @@ public:
         ) = 0;
 
     /*
-     * ÏûÏ¢µ½À´Ê±, ¸Ãº¯Êı½«±»»Øµ÷
+     * æ¶ˆæ¯åˆ°æ¥æ—¶, è¯¥å‡½æ•°å°†è¢«å›è°ƒ
      */
     virtual void OnRecvMsg(
         IRtpMsgClient*      msgClient,
@@ -396,19 +396,19 @@ public:
         ) = 0;
 
     /*
-     * ÍøÂç´íÎó»ò³¬Ê±Ê±, ¸Ãº¯Êı½«±»»Øµ÷
+     * ç½‘ç»œé”™è¯¯æˆ–è¶…æ—¶æ—¶, è¯¥å‡½æ•°å°†è¢«å›è°ƒ
      */
     virtual void OnCloseMsg(
         IRtpMsgClient* msgClient,
-        long           errorCode,   /* ÏµÍ³´íÎóÂë */
-        long           sslCode,     /* ssl´íÎóÂë. ²Î¼û"mbedtls/error.h, ssl.h, x509.h, ..." */
-        bool           tcpConnected /* tcpÁ¬½ÓÊÇ·ñÒÑ¾­½¨Á¢ */
+        long           errorCode,   /* ç³»ç»Ÿé”™è¯¯ç  */
+        long           sslCode,     /* sslé”™è¯¯ç . å‚è§"mbedtls/error.h, ssl.h, x509.h, ..." */
+        bool           tcpConnected /* tcpè¿æ¥æ˜¯å¦å·²ç»å»ºç«‹ */
         ) = 0;
 
     /*
-     * ĞÄÌø·¢ÉúÊ±, ¸Ãº¯Êı½«±»»Øµ÷
+     * å¿ƒè·³å‘ç”Ÿæ—¶, è¯¥å‡½æ•°å°†è¢«å›è°ƒ
      *
-     * Ö÷ÒªÓÃÓÚµ÷ÊÔ
+     * ä¸»è¦ç”¨äºè°ƒè¯•
      */
     virtual void OnHeartbeatMsg(
         IRtpMsgClient* msgClient,
@@ -420,7 +420,7 @@ public:
 ////
 
 /*
- * ÏûÏ¢·şÎñÆ÷
+ * æ¶ˆæ¯æœåŠ¡å™¨
  */
 class IRtpMsgServer
 {
@@ -433,17 +433,17 @@ public:
     virtual unsigned long Release() = 0;
 
     /*
-     * »ñÈ¡Ã½ÌåÀàĞÍ. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
+     * è·å–åª’ä½“ç±»å‹. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
      */
     virtual RTP_MM_TYPE GetMmType() const = 0;
 
     /*
-     * »ñÈ¡·şÎñ¶Ë¿ÚºÅ
+     * è·å–æœåŠ¡ç«¯å£å·
      */
     virtual unsigned short GetServicePort() const = 0;
 
     /*
-     * »ñÈ¡Á´Â·¼ÓÃÜÌ×¼ş
+     * è·å–é“¾è·¯åŠ å¯†å¥—ä»¶
      */
     virtual PRO_SSL_SUITE_ID GetSslSuite(
         const RTP_MSG_USER* user,
@@ -451,7 +451,7 @@ public:
         ) const = 0;
 
     /*
-     * »ñÈ¡ÓÃ»§Êı
+     * è·å–ç”¨æˆ·æ•°
      */
     virtual void GetUserCount(
         unsigned long* pendingUserCount, /* = NULL */
@@ -460,72 +460,72 @@ public:
         ) const = 0;
 
     /*
-     * Ìß³öÓÃ»§
+     * è¸¢å‡ºç”¨æˆ·
      */
     virtual void KickoutUser(const RTP_MSG_USER* user) = 0;
 
     /*
-     * ·¢ËÍÏûÏ¢
+     * å‘é€æ¶ˆæ¯
      *
-     * ÏµÍ³ÄÚ²¿ÓĞÏûÏ¢·¢ËÍ¶ÓÁĞ
+     * ç³»ç»Ÿå†…éƒ¨æœ‰æ¶ˆæ¯å‘é€é˜Ÿåˆ—
      */
     virtual bool SendMsg(
-        const void*         buf,         /* ÏûÏ¢ÄÚÈİ */
-        unsigned long       size,        /* ÏûÏ¢³¤¶È */
-        PRO_UINT16          charset,     /* ÓÃ»§×Ô¶¨ÒåµÄÏûÏ¢×Ö·û¼¯´úÂë */
-        const RTP_MSG_USER* dstUsers,    /* ÏûÏ¢½ÓÊÕÕß */
-        unsigned char       dstUserCount /* ×î¶à255¸öÄ¿±ê */
+        const void*         buf,         /* æ¶ˆæ¯å†…å®¹ */
+        unsigned long       size,        /* æ¶ˆæ¯é•¿åº¦ */
+        PRO_UINT16          charset,     /* ç”¨æˆ·è‡ªå®šä¹‰çš„æ¶ˆæ¯å­—ç¬¦é›†ä»£ç  */
+        const RTP_MSG_USER* dstUsers,    /* æ¶ˆæ¯æ¥æ”¶è€… */
+        unsigned char       dstUserCount /* æœ€å¤š255ä¸ªç›®æ ‡ */
         ) = 0;
 
     /*
-     * ·¢ËÍÏûÏ¢(buf1 + buf2)
+     * å‘é€æ¶ˆæ¯(buf1 + buf2)
      *
-     * ÏµÍ³ÄÚ²¿ÓĞÏûÏ¢·¢ËÍ¶ÓÁĞ
+     * ç³»ç»Ÿå†…éƒ¨æœ‰æ¶ˆæ¯å‘é€é˜Ÿåˆ—
      */
     virtual bool SendMsg2(
-        const void*         buf1,        /* ÏûÏ¢ÄÚÈİ1 */
-        unsigned long       size1,       /* ÏûÏ¢³¤¶È1 */
-        const void*         buf2,        /* ÏûÏ¢ÄÚÈİ2. ¿ÉÒÔÊÇNULL */
-        unsigned long       size2,       /* ÏûÏ¢³¤¶È2. ¿ÉÒÔÊÇ0 */
-        PRO_UINT16          charset,     /* ÓÃ»§×Ô¶¨ÒåµÄÏûÏ¢×Ö·û¼¯´úÂë */
-        const RTP_MSG_USER* dstUsers,    /* ÏûÏ¢½ÓÊÕÕß */
-        unsigned char       dstUserCount /* ×î¶à255¸öÄ¿±ê */
+        const void*         buf1,        /* æ¶ˆæ¯å†…å®¹1 */
+        unsigned long       size1,       /* æ¶ˆæ¯é•¿åº¦1 */
+        const void*         buf2,        /* æ¶ˆæ¯å†…å®¹2. å¯ä»¥æ˜¯NULL */
+        unsigned long       size2,       /* æ¶ˆæ¯é•¿åº¦2. å¯ä»¥æ˜¯0 */
+        PRO_UINT16          charset,     /* ç”¨æˆ·è‡ªå®šä¹‰çš„æ¶ˆæ¯å­—ç¬¦é›†ä»£ç  */
+        const RTP_MSG_USER* dstUsers,    /* æ¶ˆæ¯æ¥æ”¶è€… */
+        unsigned char       dstUserCount /* æœ€å¤š255ä¸ªç›®æ ‡ */
         ) = 0;
 
     /*
-     * ÉèÖÃserver->c2sÁ´Â·µÄ·¢ËÍºìÏß. Ä¬ÈÏ(1024 * 1024 * 8)×Ö½Ú
+     * è®¾ç½®server->c2sé“¾è·¯çš„å‘é€çº¢çº¿. é»˜è®¤(1024 * 1024 * 8)å­—èŠ‚
      *
-     * Èç¹ûredlineBytesÎª0, ÔòÖ±½Ó·µ»Ø, Ê²Ã´¶¼²»×ö
+     * å¦‚æœredlineBytesä¸º0, åˆ™ç›´æ¥è¿”å›, ä»€ä¹ˆéƒ½ä¸åš
      */
     virtual void SetOutputRedlineToC2s(unsigned long redlineBytes) = 0;
 
     /*
-     * »ñÈ¡server->c2sÁ´Â·µÄ·¢ËÍºìÏß. Ä¬ÈÏ(1024 * 1024 * 8)×Ö½Ú
+     * è·å–server->c2sé“¾è·¯çš„å‘é€çº¢çº¿. é»˜è®¤(1024 * 1024 * 8)å­—èŠ‚
      */
     virtual unsigned long GetOutputRedlineToC2s() const = 0;
 
     /*
-     * ÉèÖÃserver->userÁ´Â·µÄ·¢ËÍºìÏß. Ä¬ÈÏ(1024 * 1024)×Ö½Ú
+     * è®¾ç½®server->useré“¾è·¯çš„å‘é€çº¢çº¿. é»˜è®¤(1024 * 1024)å­—èŠ‚
      *
-     * Èç¹ûredlineBytesÎª0, ÔòÖ±½Ó·µ»Ø, Ê²Ã´¶¼²»×ö
+     * å¦‚æœredlineBytesä¸º0, åˆ™ç›´æ¥è¿”å›, ä»€ä¹ˆéƒ½ä¸åš
      */
     virtual void SetOutputRedlineToUsr(unsigned long redlineBytes) = 0;
 
     /*
-     * »ñÈ¡server->userÁ´Â·µÄ·¢ËÍºìÏß. Ä¬ÈÏ(1024 * 1024)×Ö½Ú
+     * è·å–server->useré“¾è·¯çš„å‘é€çº¢çº¿. é»˜è®¤(1024 * 1024)å­—èŠ‚
      */
     virtual unsigned long GetOutputRedlineToUsr() const = 0;
 
     /*
-     * »ñÈ¡Á´Â·»º´æµÄÉĞÎ´·¢ËÍµÄ×Ö½ÚÊı
+     * è·å–é“¾è·¯ç¼“å­˜çš„å°šæœªå‘é€çš„å­—èŠ‚æ•°
      */
     virtual unsigned long GetSendingBytes(const RTP_MSG_USER* user) const = 0;
 };
 
 /*
- * ÏûÏ¢·şÎñÆ÷»Øµ÷Ä¿±ê
+ * æ¶ˆæ¯æœåŠ¡å™¨å›è°ƒç›®æ ‡
  *
- * Ê¹ÓÃÕßĞèÒªÊµÏÖ¸Ã½Ó¿Ú
+ * ä½¿ç”¨è€…éœ€è¦å®ç°è¯¥æ¥å£
  */
 class IRtpMsgServerObserver
 {
@@ -538,51 +538,51 @@ public:
     virtual unsigned long Release() = 0;
 
     /*
-     * ÓÃ»§ÇëÇóµÇÂ¼Ê±, ¸Ãº¯Êı½«±»»Øµ÷
+     * ç”¨æˆ·è¯·æ±‚ç™»å½•æ—¶, è¯¥å‡½æ•°å°†è¢«å›è°ƒ
      *
-     * ÉÏ²ãÓ¦¸Ã¸ù¾İÓÃ»§ºÅ, ÕÒµ½Æ¥ÅäµÄÓÃ»§¿ÚÁî, È»ºóµ÷ÓÃCheckRtpServiceData(...)
-     * ½øĞĞĞ£Ñé
+     * ä¸Šå±‚åº”è¯¥æ ¹æ®ç”¨æˆ·å·, æ‰¾åˆ°åŒ¹é…çš„ç”¨æˆ·å£ä»¤, ç„¶åè°ƒç”¨CheckRtpServiceData(...)
+     * è¿›è¡Œæ ¡éªŒ
      *
-     * ·µ»ØÖµ±íÊ¾ÊÇ·ñÔÊĞí¸ÃÓÃ»§µÇÂ¼
+     * è¿”å›å€¼è¡¨ç¤ºæ˜¯å¦å…è®¸è¯¥ç”¨æˆ·ç™»å½•
      */
     virtual bool OnCheckUser(
         IRtpMsgServer*      msgServer,
-        const RTP_MSG_USER* user,         /* ÓÃ»§·¢À´µÄµÇÂ¼ÓÃ»§ºÅ */
-        const char*         userPublicIp, /* ÓÃ»§µÄipµØÖ· */
-        const RTP_MSG_USER* c2sUser,      /* ¾­ÓÉÄÄ¸öc2s¶øÀ´. ¿ÉÒÔÊÇNULL */
-        const char          hash[32],     /* ÓÃ»§·¢À´µÄ¿ÚÁîhashÖµ */
-        const char          nonce[32],    /* »á»°Ëæ»úÊı. ÓÃÓÚCheckRtpServiceData(...)Ğ£Ñé¿ÚÁîhashÖµ */
-        PRO_UINT64*         userId,       /* ÉÏ²ã·ÖÅä»òĞí¿ÉµÄuid */
-        PRO_UINT16*         instId,       /* ÉÏ²ã·ÖÅä»òĞí¿ÉµÄiid */
-        PRO_INT64*          appData,      /* ÉÏ²ãÉèÖÃµÄ±êÊ¶Êı¾İ. ºóĞøµÄOnOkUser(...)»á´ø»ØÀ´ */
-        bool*               isC2s         /* ÉÏ²ãÉèÖÃµÄÊÇ·ñ¸Ã½ÚµãÎªc2s */
+        const RTP_MSG_USER* user,         /* ç”¨æˆ·å‘æ¥çš„ç™»å½•ç”¨æˆ·å· */
+        const char*         userPublicIp, /* ç”¨æˆ·çš„ipåœ°å€ */
+        const RTP_MSG_USER* c2sUser,      /* ç»ç”±å“ªä¸ªc2sè€Œæ¥. å¯ä»¥æ˜¯NULL */
+        const char          hash[32],     /* ç”¨æˆ·å‘æ¥çš„å£ä»¤hashå€¼ */
+        const char          nonce[32],    /* ä¼šè¯éšæœºæ•°. ç”¨äºCheckRtpServiceData(...)æ ¡éªŒå£ä»¤hashå€¼ */
+        PRO_UINT64*         userId,       /* ä¸Šå±‚åˆ†é…æˆ–è®¸å¯çš„uid */
+        PRO_UINT16*         instId,       /* ä¸Šå±‚åˆ†é…æˆ–è®¸å¯çš„iid */
+        PRO_INT64*          appData,      /* ä¸Šå±‚è®¾ç½®çš„æ ‡è¯†æ•°æ®. åç»­çš„OnOkUser(...)ä¼šå¸¦å›æ¥ */
+        bool*               isC2s         /* ä¸Šå±‚è®¾ç½®çš„æ˜¯å¦è¯¥èŠ‚ç‚¹ä¸ºc2s */
         ) = 0;
 
     /*
-     * ÓÃ»§µÇÂ¼³É¹¦Ê±, ¸Ãº¯Êı½«±»»Øµ÷
+     * ç”¨æˆ·ç™»å½•æˆåŠŸæ—¶, è¯¥å‡½æ•°å°†è¢«å›è°ƒ
      */
     virtual void OnOkUser(
         IRtpMsgServer*      msgServer,
-        const RTP_MSG_USER* user,         /* ÉÏ²ã·ÖÅä»òĞí¿ÉµÄÓÃ»§ºÅ */
-        const char*         userPublicIp, /* ÓÃ»§µÄipµØÖ· */
-        const RTP_MSG_USER* c2sUser,      /* ¾­ÓÉÄÄ¸öc2s¶øÀ´. ¿ÉÒÔÊÇNULL */
-        PRO_INT64           appData       /* OnCheckUser(...)Ê±ÉÏ²ãÉèÖÃµÄ±êÊ¶Êı¾İ */
+        const RTP_MSG_USER* user,         /* ä¸Šå±‚åˆ†é…æˆ–è®¸å¯çš„ç”¨æˆ·å· */
+        const char*         userPublicIp, /* ç”¨æˆ·çš„ipåœ°å€ */
+        const RTP_MSG_USER* c2sUser,      /* ç»ç”±å“ªä¸ªc2sè€Œæ¥. å¯ä»¥æ˜¯NULL */
+        PRO_INT64           appData       /* OnCheckUser(...)æ—¶ä¸Šå±‚è®¾ç½®çš„æ ‡è¯†æ•°æ® */
         ) = 0;
 
     /*
-     * ÓÃ»§ÍøÂç´íÎó»ò³¬Ê±Ê±, ¸Ãº¯Êı½«±»»Øµ÷
+     * ç”¨æˆ·ç½‘ç»œé”™è¯¯æˆ–è¶…æ—¶æ—¶, è¯¥å‡½æ•°å°†è¢«å›è°ƒ
      */
     virtual void OnCloseUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
-        long                errorCode, /* ÏµÍ³´íÎóÂë */
-        long                sslCode    /* ssl´íÎóÂë. ²Î¼û"mbedtls/error.h, ssl.h, x509.h, ..." */
+        long                errorCode, /* ç³»ç»Ÿé”™è¯¯ç  */
+        long                sslCode    /* sslé”™è¯¯ç . å‚è§"mbedtls/error.h, ssl.h, x509.h, ..." */
         ) = 0;
 
     /*
-     * ÓÃ»§ĞÄÌø·¢ÉúÊ±, ¸Ãº¯Êı½«±»»Øµ÷
+     * ç”¨æˆ·å¿ƒè·³å‘ç”Ÿæ—¶, è¯¥å‡½æ•°å°†è¢«å›è°ƒ
      *
-     * Ö÷ÒªÓÃÓÚµ÷ÊÔ
+     * ä¸»è¦ç”¨äºè°ƒè¯•
      */
     virtual void OnHeartbeatUser(
         IRtpMsgServer*      msgServer,
@@ -591,7 +591,7 @@ public:
         ) = 0;
 
     /*
-     * ÏûÏ¢µ½À´Ê±, ¸Ãº¯Êı½«±»»Øµ÷
+     * æ¶ˆæ¯åˆ°æ¥æ—¶, è¯¥å‡½æ•°å°†è¢«å›è°ƒ
      */
     virtual void OnRecvMsg(
         IRtpMsgServer*      msgServer,
@@ -606,10 +606,10 @@ public:
 ////
 
 /*
- * ÏûÏ¢c2s
+ * æ¶ˆæ¯c2s
  *
- * c2sÎ»ÓÚclientÓëserverÖ®¼ä, Ëü¿ÉÒÔ·ÖÉ¢serverµÄ¸ºÔØ, »¹¿ÉÒÔÒş²ØserverµÄÎ»ÖÃ.
- * ¶ÔÓÚclient¶øÑÔ, c2sÊÇÍ¸Ã÷µÄ, clientÎŞ·¨Çø·ÖËüÁ¬½ÓµÄÊÇserver»¹ÊÇc2s
+ * c2sä½äºclientä¸serverä¹‹é—´, å®ƒå¯ä»¥åˆ†æ•£serverçš„è´Ÿè½½, è¿˜å¯ä»¥éšè—serverçš„ä½ç½®.
+ * å¯¹äºclientè€Œè¨€, c2sæ˜¯é€æ˜çš„, clientæ— æ³•åŒºåˆ†å®ƒè¿æ¥çš„æ˜¯serverè¿˜æ˜¯c2s
  */
 class IRtpMsgC2s
 {
@@ -622,64 +622,64 @@ public:
     virtual unsigned long Release() = 0;
 
     /*
-     * »ñÈ¡Ã½ÌåÀàĞÍ. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
+     * è·å–åª’ä½“ç±»å‹. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
      */
     virtual RTP_MM_TYPE GetMmType() const = 0;
 
     /*
-     * »ñÈ¡c2s<->serverÁ´Â·µÄÓÃ»§ºÅ
+     * è·å–c2s<->serveré“¾è·¯çš„ç”¨æˆ·å·
      */
     virtual void GetUplinkUser(RTP_MSG_USER* myUser) const = 0;
 
     /*
-     * »ñÈ¡c2s<->serverÁ´Â·µÄ¼ÓÃÜÌ×¼ş
+     * è·å–c2s<->serveré“¾è·¯çš„åŠ å¯†å¥—ä»¶
      */
     virtual PRO_SSL_SUITE_ID GetUplinkSslSuite(char suiteName[64]) const = 0;
 
     /*
-     * »ñÈ¡c2s<->serverÁ´Â·µÄ±¾µØipµØÖ·
+     * è·å–c2s<->serveré“¾è·¯çš„æœ¬åœ°ipåœ°å€
      */
     virtual const char* GetUplinkLocalIp(char localIp[64]) const = 0;
 
     /*
-     * »ñÈ¡c2s<->serverÁ´Â·µÄ±¾µØ¶Ë¿ÚºÅ
+     * è·å–c2s<->serveré“¾è·¯çš„æœ¬åœ°ç«¯å£å·
      */
     virtual unsigned short GetUplinkLocalPort() const = 0;
 
     /*
-     * »ñÈ¡c2s<->serverÁ´Â·µÄÔ¶¶ËipµØÖ·
+     * è·å–c2s<->serveré“¾è·¯çš„è¿œç«¯ipåœ°å€
      */
     virtual const char* GetUplinkRemoteIp(char remoteIp[64]) const = 0;
 
     /*
-     * »ñÈ¡c2s<->serverÁ´Â·µÄÔ¶¶Ë¶Ë¿ÚºÅ
+     * è·å–c2s<->serveré“¾è·¯çš„è¿œç«¯ç«¯å£å·
      */
     virtual unsigned short GetUplinkRemotePort() const = 0;
 
     /*
-     * ÉèÖÃc2s->serverÁ´Â·µÄ·¢ËÍºìÏß. Ä¬ÈÏ(1024 * 1024 * 8)×Ö½Ú
+     * è®¾ç½®c2s->serveré“¾è·¯çš„å‘é€çº¢çº¿. é»˜è®¤(1024 * 1024 * 8)å­—èŠ‚
      *
-     * Èç¹ûredlineBytesÎª0, ÔòÖ±½Ó·µ»Ø, Ê²Ã´¶¼²»×ö
+     * å¦‚æœredlineBytesä¸º0, åˆ™ç›´æ¥è¿”å›, ä»€ä¹ˆéƒ½ä¸åš
      */
     virtual void SetUplinkOutputRedline(unsigned long redlineBytes) = 0;
 
     /*
-     * »ñÈ¡c2s->serverÁ´Â·µÄ·¢ËÍºìÏß. Ä¬ÈÏ(1024 * 1024 * 8)×Ö½Ú
+     * è·å–c2s->serveré“¾è·¯çš„å‘é€çº¢çº¿. é»˜è®¤(1024 * 1024 * 8)å­—èŠ‚
      */
     virtual unsigned long GetUplinkOutputRedline() const = 0;
 
     /*
-     * »ñÈ¡c2s->serverÁ´Â·»º´æµÄÉĞÎ´·¢ËÍµÄ×Ö½ÚÊı
+     * è·å–c2s->serveré“¾è·¯ç¼“å­˜çš„å°šæœªå‘é€çš„å­—èŠ‚æ•°
      */
     virtual unsigned long GetUplinkSendingBytes() const = 0;
 
     /*
-     * »ñÈ¡±¾µØ·şÎñ¶Ë¿ÚºÅ
+     * è·å–æœ¬åœ°æœåŠ¡ç«¯å£å·
      */
     virtual unsigned short GetLocalServicePort() const = 0;
 
     /*
-     * »ñÈ¡±¾µØÁ´Â·¼ÓÃÜÌ×¼ş
+     * è·å–æœ¬åœ°é“¾è·¯åŠ å¯†å¥—ä»¶
      */
     virtual PRO_SSL_SUITE_ID GetLocalSslSuite(
         const RTP_MSG_USER* user,
@@ -687,7 +687,7 @@ public:
         ) const = 0;
 
     /*
-     * »ñÈ¡±¾µØÓÃ»§Êı
+     * è·å–æœ¬åœ°ç”¨æˆ·æ•°
      */
     virtual void GetLocalUserCount(
         unsigned long* pendingUserCount, /* = NULL */
@@ -695,32 +695,32 @@ public:
         ) const = 0;
 
     /*
-     * Ìß³ö±¾µØÓÃ»§
+     * è¸¢å‡ºæœ¬åœ°ç”¨æˆ·
      */
     virtual void KickoutLocalUser(const RTP_MSG_USER* user) = 0;
 
     /*
-     * ÉèÖÃc2s->userÁ´Â·µÄ·¢ËÍºìÏß. Ä¬ÈÏ(1024 * 1024)×Ö½Ú
+     * è®¾ç½®c2s->useré“¾è·¯çš„å‘é€çº¢çº¿. é»˜è®¤(1024 * 1024)å­—èŠ‚
      *
-     * Èç¹ûredlineBytesÎª0, ÔòÖ±½Ó·µ»Ø, Ê²Ã´¶¼²»×ö
+     * å¦‚æœredlineBytesä¸º0, åˆ™ç›´æ¥è¿”å›, ä»€ä¹ˆéƒ½ä¸åš
      */
     virtual void SetLocalOutputRedline(unsigned long redlineBytes) = 0;
 
     /*
-     * »ñÈ¡c2s->userÁ´Â·µÄ·¢ËÍºìÏß. Ä¬ÈÏ(1024 * 1024)×Ö½Ú
+     * è·å–c2s->useré“¾è·¯çš„å‘é€çº¢çº¿. é»˜è®¤(1024 * 1024)å­—èŠ‚
      */
     virtual unsigned long GetLocalOutputRedline() const = 0;
 
     /*
-     * »ñÈ¡c2s->userÁ´Â·»º´æµÄÉĞÎ´·¢ËÍµÄ×Ö½ÚÊı
+     * è·å–c2s->useré“¾è·¯ç¼“å­˜çš„å°šæœªå‘é€çš„å­—èŠ‚æ•°
      */
     virtual unsigned long GetLocalSendingBytes(const RTP_MSG_USER* user) const = 0;
 };
 
 /*
- * ÏûÏ¢c2s»Øµ÷Ä¿±ê
+ * æ¶ˆæ¯c2så›è°ƒç›®æ ‡
  *
- * Ê¹ÓÃÕßĞèÒªÊµÏÖ¸Ã½Ó¿Ú
+ * ä½¿ç”¨è€…éœ€è¦å®ç°è¯¥æ¥å£
  */
 class IRtpMsgC2sObserver
 {
@@ -733,7 +733,7 @@ public:
     virtual unsigned long Release() = 0;
 
     /*
-     * c2sµÇÂ¼³É¹¦Ê±, ¸Ãº¯Êı½«±»»Øµ÷
+     * c2sç™»å½•æˆåŠŸæ—¶, è¯¥å‡½æ•°å°†è¢«å›è°ƒ
      */
     virtual void OnOkC2s(
         IRtpMsgC2s*         msgC2s,
@@ -742,19 +742,19 @@ public:
         ) = 0;
 
     /*
-     * c2sÍøÂç´íÎó»ò³¬Ê±Ê±, ¸Ãº¯Êı½«±»»Øµ÷
+     * c2sç½‘ç»œé”™è¯¯æˆ–è¶…æ—¶æ—¶, è¯¥å‡½æ•°å°†è¢«å›è°ƒ
      */
     virtual void OnCloseC2s(
         IRtpMsgC2s* msgC2s,
-        long        errorCode,   /* ÏµÍ³´íÎóÂë */
-        long        sslCode,     /* ssl´íÎóÂë. ²Î¼û"mbedtls/error.h, ssl.h, x509.h, ..." */
-        bool        tcpConnected /* tcpÁ¬½ÓÊÇ·ñÒÑ¾­½¨Á¢ */
+        long        errorCode,   /* ç³»ç»Ÿé”™è¯¯ç  */
+        long        sslCode,     /* sslé”™è¯¯ç . å‚è§"mbedtls/error.h, ssl.h, x509.h, ..." */
+        bool        tcpConnected /* tcpè¿æ¥æ˜¯å¦å·²ç»å»ºç«‹ */
         ) = 0;
 
     /*
-     * c2sĞÄÌø·¢ÉúÊ±, ¸Ãº¯Êı½«±»»Øµ÷
+     * c2så¿ƒè·³å‘ç”Ÿæ—¶, è¯¥å‡½æ•°å°†è¢«å›è°ƒ
      *
-     * Ö÷ÒªÓÃÓÚµ÷ÊÔ
+     * ä¸»è¦ç”¨äºè°ƒè¯•
      */
     virtual void OnHeartbeatC2s(
         IRtpMsgC2s* msgC2s,
@@ -762,7 +762,7 @@ public:
         ) = 0;
 
     /*
-     * ÓÃ»§µÇÂ¼³É¹¦Ê±, ¸Ãº¯Êı½«±»»Øµ÷
+     * ç”¨æˆ·ç™»å½•æˆåŠŸæ—¶, è¯¥å‡½æ•°å°†è¢«å›è°ƒ
      */
     virtual void OnOkUser(
         IRtpMsgC2s*         msgC2s,
@@ -771,19 +771,19 @@ public:
         ) = 0;
 
     /*
-     * ÓÃ»§ÍøÂç´íÎó»ò³¬Ê±Ê±, ¸Ãº¯Êı½«±»»Øµ÷
+     * ç”¨æˆ·ç½‘ç»œé”™è¯¯æˆ–è¶…æ—¶æ—¶, è¯¥å‡½æ•°å°†è¢«å›è°ƒ
      */
     virtual void OnCloseUser(
         IRtpMsgC2s*         msgC2s,
         const RTP_MSG_USER* user,
-        long                errorCode, /* ÏµÍ³´íÎóÂë */
-        long                sslCode    /* ssl´íÎóÂë. ²Î¼û"mbedtls/error.h, ssl.h, x509.h, ..." */
+        long                errorCode, /* ç³»ç»Ÿé”™è¯¯ç  */
+        long                sslCode    /* sslé”™è¯¯ç . å‚è§"mbedtls/error.h, ssl.h, x509.h, ..." */
         ) = 0;
 
     /*
-     * ÓÃ»§ĞÄÌø·¢ÉúÊ±, ¸Ãº¯Êı½«±»»Øµ÷
+     * ç”¨æˆ·å¿ƒè·³å‘ç”Ÿæ—¶, è¯¥å‡½æ•°å°†è¢«å›è°ƒ
      *
-     * Ö÷ÒªÓÃÓÚµ÷ÊÔ
+     * ä¸»è¦ç”¨äºè°ƒè¯•
      */
     virtual void OnHeartbeatUser(
         IRtpMsgC2s*         msgC2s,
@@ -796,24 +796,24 @@ public:
 ////
 
 /*
- * ¹¦ÄÜ: ´´½¨Ò»¸öÏûÏ¢¿Í»§¶Ë
+ * åŠŸèƒ½: åˆ›å»ºä¸€ä¸ªæ¶ˆæ¯å®¢æˆ·ç«¯
  *
- * ²ÎÊı:
- * observer         : »Øµ÷Ä¿±ê
- * reactor          : ·´Ó¦Æ÷
- * mmType           : Ã½ÌåÀàĞÍ. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
- * sslConfig        : sslÅäÖÃ. NULL±íÊ¾Ã÷ÎÄ´«Êä
- * sslSni           : ssl·şÎñÃû. Èç¹ûÓĞĞ§, Ôò²ÎÓëÈÏÖ¤·şÎñ¶ËÖ¤Êé
- * remoteIp         : ·şÎñÆ÷µÄipµØÖ·»òÓòÃû
- * remotePort       : ·şÎñÆ÷µÄ¶Ë¿ÚºÅ
- * user             : ÓÃ»§ºÅ
- * password         : ÓÃ»§¿ÚÁî
- * localIp          : Òª°ó¶¨µÄ±¾µØipµØÖ·. Èç¹ûÎªNULL, ÏµÍ³½«Ê¹ÓÃ0.0.0.0
- * timeoutInSeconds : ÎÕÊÖ³¬Ê±. Ä¬ÈÏ20Ãë
+ * å‚æ•°:
+ * observer         : å›è°ƒç›®æ ‡
+ * reactor          : ååº”å™¨
+ * mmType           : åª’ä½“ç±»å‹. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
+ * sslConfig        : sslé…ç½®. NULLè¡¨ç¤ºæ˜æ–‡ä¼ è¾“
+ * sslSni           : sslæœåŠ¡å. å¦‚æœæœ‰æ•ˆ, åˆ™å‚ä¸è®¤è¯æœåŠ¡ç«¯è¯ä¹¦
+ * remoteIp         : æœåŠ¡å™¨çš„ipåœ°å€æˆ–åŸŸå
+ * remotePort       : æœåŠ¡å™¨çš„ç«¯å£å·
+ * user             : ç”¨æˆ·å·
+ * password         : ç”¨æˆ·å£ä»¤
+ * localIp          : è¦ç»‘å®šçš„æœ¬åœ°ipåœ°å€. å¦‚æœä¸ºNULL, ç³»ç»Ÿå°†ä½¿ç”¨0.0.0.0
+ * timeoutInSeconds : æ¡æ‰‹è¶…æ—¶. é»˜è®¤20ç§’
  *
- * ·µ»ØÖµ: ÏûÏ¢¿Í»§¶Ë¶ÔÏó»òNULL
+ * è¿”å›å€¼: æ¶ˆæ¯å®¢æˆ·ç«¯å¯¹è±¡æˆ–NULL
  *
- * ËµÃ÷: sslConfigÖ¸¶¨µÄ¶ÔÏó±ØĞëÔÚÏûÏ¢¿Í»§¶ËµÄÉúÃüÖÜÆÚÄÚÒ»Ö±ÓĞĞ§
+ * è¯´æ˜: sslConfigæŒ‡å®šçš„å¯¹è±¡å¿…é¡»åœ¨æ¶ˆæ¯å®¢æˆ·ç«¯çš„ç”Ÿå‘½å‘¨æœŸå†…ä¸€ç›´æœ‰æ•ˆ
  */
 PRO_RTP_API
 IRtpMsgClient*
@@ -830,34 +830,34 @@ CreateRtpMsgClient(IRtpMsgClientObserver*       observer,
                    unsigned long                timeoutInSeconds); /* = 0 */
 
 /*
- * ¹¦ÄÜ: É¾³ıÒ»¸öÏûÏ¢¿Í»§¶Ë
+ * åŠŸèƒ½: åˆ é™¤ä¸€ä¸ªæ¶ˆæ¯å®¢æˆ·ç«¯
  *
- * ²ÎÊı:
- * msgClient : ÏûÏ¢¿Í»§¶Ë¶ÔÏó
+ * å‚æ•°:
+ * msgClient : æ¶ˆæ¯å®¢æˆ·ç«¯å¯¹è±¡
  *
- * ·µ»ØÖµ: ÎŞ
+ * è¿”å›å€¼: æ— 
  *
- * ËµÃ÷: ÎŞ
+ * è¯´æ˜: æ— 
  */
 PRO_RTP_API
 void
 DeleteRtpMsgClient(IRtpMsgClient* msgClient);
 
 /*
- * ¹¦ÄÜ: ´´½¨Ò»¸öÏûÏ¢·şÎñÆ÷
+ * åŠŸèƒ½: åˆ›å»ºä¸€ä¸ªæ¶ˆæ¯æœåŠ¡å™¨
  *
- * ²ÎÊı:
- * observer         : »Øµ÷Ä¿±ê
- * reactor          : ·´Ó¦Æ÷
- * mmType           : Ã½ÌåÀàĞÍ. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
- * sslConfig        : sslÅäÖÃ. NULL±íÊ¾Ã÷ÎÄ´«Êä
- * sslForced        : ÊÇ·ñÇ¿ÖÆÊ¹ÓÃssl´«Êä. sslConfigÎªNULLÊ±¸Ã²ÎÊıºöÂÔ
- * serviceHubPort   : ·şÎñhubµÄ¶Ë¿ÚºÅ
- * timeoutInSeconds : ÎÕÊÖ³¬Ê±. Ä¬ÈÏ20Ãë
+ * å‚æ•°:
+ * observer         : å›è°ƒç›®æ ‡
+ * reactor          : ååº”å™¨
+ * mmType           : åª’ä½“ç±»å‹. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
+ * sslConfig        : sslé…ç½®. NULLè¡¨ç¤ºæ˜æ–‡ä¼ è¾“
+ * sslForced        : æ˜¯å¦å¼ºåˆ¶ä½¿ç”¨sslä¼ è¾“. sslConfigä¸ºNULLæ—¶è¯¥å‚æ•°å¿½ç•¥
+ * serviceHubPort   : æœåŠ¡hubçš„ç«¯å£å·
+ * timeoutInSeconds : æ¡æ‰‹è¶…æ—¶. é»˜è®¤20ç§’
  *
- * ·µ»ØÖµ: ÏûÏ¢·şÎñÆ÷¶ÔÏó»òNULL
+ * è¿”å›å€¼: æ¶ˆæ¯æœåŠ¡å™¨å¯¹è±¡æˆ–NULL
  *
- * ËµÃ÷: sslConfigÖ¸¶¨µÄ¶ÔÏó±ØĞëÔÚÏûÏ¢·şÎñÆ÷µÄÉúÃüÖÜÆÚÄÚÒ»Ö±ÓĞĞ§
+ * è¯´æ˜: sslConfigæŒ‡å®šçš„å¯¹è±¡å¿…é¡»åœ¨æ¶ˆæ¯æœåŠ¡å™¨çš„ç”Ÿå‘½å‘¨æœŸå†…ä¸€ç›´æœ‰æ•ˆ
  */
 PRO_RTP_API
 IRtpMsgServer*
@@ -870,42 +870,42 @@ CreateRtpMsgServer(IRtpMsgServerObserver*       observer,
                    unsigned long                timeoutInSeconds); /* = 0 */
 
 /*
- * ¹¦ÄÜ: É¾³ıÒ»¸öÏûÏ¢·şÎñÆ÷
+ * åŠŸèƒ½: åˆ é™¤ä¸€ä¸ªæ¶ˆæ¯æœåŠ¡å™¨
  *
- * ²ÎÊı:
- * msgServer : ÏûÏ¢·şÎñÆ÷¶ÔÏó
+ * å‚æ•°:
+ * msgServer : æ¶ˆæ¯æœåŠ¡å™¨å¯¹è±¡
  *
- * ·µ»ØÖµ: ÎŞ
+ * è¿”å›å€¼: æ— 
  *
- * ËµÃ÷: ÎŞ
+ * è¯´æ˜: æ— 
  */
 PRO_RTP_API
 void
 DeleteRtpMsgServer(IRtpMsgServer* msgServer);
 
 /*
- * ¹¦ÄÜ: ´´½¨Ò»¸öÏûÏ¢c2s
+ * åŠŸèƒ½: åˆ›å»ºä¸€ä¸ªæ¶ˆæ¯c2s
  *
- * ²ÎÊı:
- * observer               : »Øµ÷Ä¿±ê
- * reactor                : ·´Ó¦Æ÷
- * mmType                 : Ã½ÌåÀàĞÍ. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
- * uplinkSslConfig        : ¼¶ÁªµÄsslÅäÖÃ. NULL±íÊ¾c2s<->serverÖ®¼äÃ÷ÎÄ´«Êä
- * uplinkSslSni           : ¼¶ÁªµÄssl·şÎñÃû. Èç¹ûÓĞĞ§, Ôò²ÎÓëÈÏÖ¤·şÎñ¶ËÖ¤Êé
- * uplinkIp               : ·şÎñÆ÷µÄipµØÖ·»òÓòÃû
- * uplinkPort             : ·şÎñÆ÷µÄ¶Ë¿ÚºÅ
- * uplinkUser             : c2sµÄÓÃ»§ºÅ
- * uplinkPassword         : c2sµÄÓÃ»§¿ÚÁî
- * uplinkLocalIp          : ¼¶ÁªÊ±Òª°ó¶¨µÄ±¾µØipµØÖ·. Èç¹ûÎªNULL, ÏµÍ³½«Ê¹ÓÃ0.0.0.0
- * uplinkTimeoutInSeconds : ¼¶ÁªµÄÎÕÊÖ³¬Ê±. Ä¬ÈÏ20Ãë
- * localSslConfig         : ½ü¶ËµÄsslÅäÖÃ. NULL±íÊ¾Ã÷ÎÄ´«Êä
- * localSslForced         : ½ü¶ËÊÇ·ñÇ¿ÖÆÊ¹ÓÃssl´«Êä. localSslConfigÎªNULLÊ±¸Ã²ÎÊıºöÂÔ
- * localServiceHubPort    : ½ü¶ËµÄ·şÎñhubµÄ¶Ë¿ÚºÅ
- * localTimeoutInSeconds  : ½ü¶ËµÄÎÕÊÖ³¬Ê±. Ä¬ÈÏ20Ãë
+ * å‚æ•°:
+ * observer               : å›è°ƒç›®æ ‡
+ * reactor                : ååº”å™¨
+ * mmType                 : åª’ä½“ç±»å‹. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
+ * uplinkSslConfig        : çº§è”çš„sslé…ç½®. NULLè¡¨ç¤ºc2s<->serverä¹‹é—´æ˜æ–‡ä¼ è¾“
+ * uplinkSslSni           : çº§è”çš„sslæœåŠ¡å. å¦‚æœæœ‰æ•ˆ, åˆ™å‚ä¸è®¤è¯æœåŠ¡ç«¯è¯ä¹¦
+ * uplinkIp               : æœåŠ¡å™¨çš„ipåœ°å€æˆ–åŸŸå
+ * uplinkPort             : æœåŠ¡å™¨çš„ç«¯å£å·
+ * uplinkUser             : c2sçš„ç”¨æˆ·å·
+ * uplinkPassword         : c2sçš„ç”¨æˆ·å£ä»¤
+ * uplinkLocalIp          : çº§è”æ—¶è¦ç»‘å®šçš„æœ¬åœ°ipåœ°å€. å¦‚æœä¸ºNULL, ç³»ç»Ÿå°†ä½¿ç”¨0.0.0.0
+ * uplinkTimeoutInSeconds : çº§è”çš„æ¡æ‰‹è¶…æ—¶. é»˜è®¤20ç§’
+ * localSslConfig         : è¿‘ç«¯çš„sslé…ç½®. NULLè¡¨ç¤ºæ˜æ–‡ä¼ è¾“
+ * localSslForced         : è¿‘ç«¯æ˜¯å¦å¼ºåˆ¶ä½¿ç”¨sslä¼ è¾“. localSslConfigä¸ºNULLæ—¶è¯¥å‚æ•°å¿½ç•¥
+ * localServiceHubPort    : è¿‘ç«¯çš„æœåŠ¡hubçš„ç«¯å£å·
+ * localTimeoutInSeconds  : è¿‘ç«¯çš„æ¡æ‰‹è¶…æ—¶. é»˜è®¤20ç§’
  *
- * ·µ»ØÖµ: ÏûÏ¢c2s¶ÔÏó»òNULL
+ * è¿”å›å€¼: æ¶ˆæ¯c2så¯¹è±¡æˆ–NULL
  *
- * ËµÃ÷: localSslConfigÖ¸¶¨µÄ¶ÔÏó±ØĞëÔÚÏûÏ¢c2sµÄÉúÃüÖÜÆÚÄÚÒ»Ö±ÓĞĞ§
+ * è¯´æ˜: localSslConfigæŒ‡å®šçš„å¯¹è±¡å¿…é¡»åœ¨æ¶ˆæ¯c2sçš„ç”Ÿå‘½å‘¨æœŸå†…ä¸€ç›´æœ‰æ•ˆ
  */
 PRO_RTP_API
 IRtpMsgC2s*
@@ -926,29 +926,29 @@ CreateRtpMsgC2s(IRtpMsgC2sObserver*          observer,
                 unsigned long                localTimeoutInSeconds); /* = 0 */
 
 /*
- * ¹¦ÄÜ: É¾³ıÒ»¸öÏûÏ¢c2s
+ * åŠŸèƒ½: åˆ é™¤ä¸€ä¸ªæ¶ˆæ¯c2s
  *
- * ²ÎÊı:
- * msgC2s : ÏûÏ¢c2s¶ÔÏó
+ * å‚æ•°:
+ * msgC2s : æ¶ˆæ¯c2så¯¹è±¡
  *
- * ·µ»ØÖµ: ÎŞ
+ * è¿”å›å€¼: æ— 
  *
- * ËµÃ÷: ÎŞ
+ * è¯´æ˜: æ— 
  */
 PRO_RTP_API
 void
 DeleteRtpMsgC2s(IRtpMsgC2s* msgC2s);
 
 /*
- * ¹¦ÄÜ: ½«RTP_MSG_USER½á¹¹×ª»»Îª"cid-uid-iid"¸ñÊ½µÄ´®
+ * åŠŸèƒ½: å°†RTP_MSG_USERç»“æ„è½¬æ¢ä¸º"cid-uid-iid"æ ¼å¼çš„ä¸²
  *
- * ²ÎÊı:
- * user     : ÊäÈëÊı¾İ
- * idString : Êä³ö½á¹û
+ * å‚æ•°:
+ * user     : è¾“å…¥æ•°æ®
+ * idString : è¾“å‡ºç»“æœ
  *
- * ·µ»ØÖµ: ÎŞ
+ * è¿”å›å€¼: æ— 
  *
- * ËµÃ÷: ÎŞ
+ * è¯´æ˜: æ— 
  */
 PRO_RTP_API
 void
@@ -956,15 +956,15 @@ RtpMsgUser2String(const RTP_MSG_USER* user,
                   char                idString[64]);
 
 /*
- * ¹¦ÄÜ: ½«"cid-uid"»ò"cid-uid-iid"¸ñÊ½µÄ´®×ª»»ÎªRTP_MSG_USER½á¹¹
+ * åŠŸèƒ½: å°†"cid-uid"æˆ–"cid-uid-iid"æ ¼å¼çš„ä¸²è½¬æ¢ä¸ºRTP_MSG_USERç»“æ„
  *
- * ²ÎÊı:
- * idString : ÊäÈëÊı¾İ
- * user     : Êä³ö½á¹û
+ * å‚æ•°:
+ * idString : è¾“å…¥æ•°æ®
+ * user     : è¾“å‡ºç»“æœ
  *
- * ·µ»ØÖµ: ÎŞ
+ * è¿”å›å€¼: æ— 
  *
- * ËµÃ÷: ÎŞ
+ * è¯´æ˜: æ— 
  */
 PRO_RTP_API
 void

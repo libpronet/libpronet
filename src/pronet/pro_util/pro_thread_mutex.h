@@ -70,14 +70,14 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 
 class CProRecursiveThreadMutex : public CProThreadMutex
 {
     DECLARE_SGI_POOL(0)
 };
 
-#else  /* _WIN32, _WIN32_WCE */
+#else  /* _WIN32 */
 
 class CProRecursiveThreadMutex
 {
@@ -102,7 +102,7 @@ private:
     DECLARE_SGI_POOL(0)
 };
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
 
 /////////////////////////////////////////////////////////////////////////////
 ////

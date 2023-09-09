@@ -88,14 +88,14 @@ struct PRO_SERVICE_PACKET_S2C
         serviceOpt = 0;
 
         memset(&nonce, 0, sizeof(PRO_NONCE));
-#if defined(_WIN32) && !defined(_WIN32_WCE)
+#if defined(_WIN32)
         memset(&protocolInfo, 0, sizeof(WSAPROTOCOL_INFO));
 #endif
     }
 
     unsigned char    serviceOpt;
     PRO_NONCE        nonce;
-#if defined(_WIN32) && !defined(_WIN32_WCE)
+#if defined(_WIN32)
     WSAPROTOCOL_INFO protocolInfo;
 #endif
     PRO_SERVICE_SOCK oldSock;

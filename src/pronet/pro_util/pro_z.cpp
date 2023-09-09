@@ -19,7 +19,7 @@
 #include "pro_a.h"
 #include "pro_z.h"
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 #include <windows.h>
 #endif
 
@@ -30,7 +30,7 @@ extern "C" {
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if !defined(_WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32)
 
 static
 inline
@@ -58,12 +58,12 @@ toupper_i(char c)
     return (c);
 }
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if !defined(_WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32)
 
 char*
 strlwr(char* str)
@@ -93,7 +93,7 @@ strupr(char* str)
     return (str);
 }
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
 
 char*
 strncpy_pro(char*       dest,
@@ -147,8 +147,6 @@ snprintf_pro(char*       dest,
 
     return (ret);
 }
-
-#if !defined(_WIN32_WCE)
 
 void
 ProGetExeDir_(char buf[1024])
@@ -215,8 +213,6 @@ ProGetExePath(char buf[1024])
     }
 #endif
 }
-
-#endif /* _WIN32_WCE */
 
 /////////////////////////////////////////////////////////////////////////////
 ////

@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * Copyright (C) 2018-2019 Eric Tung <libpronet@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License"),
@@ -22,7 +22,7 @@
 #include "pro_a.h"
 #include "pro_memory_pool.h"
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 
 #if !defined(PRO_FD_SETSIZE)
 #define PRO_FD_SETSIZE 1024
@@ -44,7 +44,7 @@
 #include <mswsock.h>
 #include <ws2tcpip.h>
 
-#else  /* _WIN32, _WIN32_WCE */
+#else  /* _WIN32 */
 
 #include <errno.h>
 #include <fcntl.h>
@@ -69,15 +69,11 @@
 #endif
 #define PRO_FD_SETSIZE FD_SETSIZE
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
 
 #if defined(_MSC_VER)
-#if defined(_WIN32_WCE)
-#pragma comment(lib, "ws2.lib")
-#elif defined(_WIN32)
 #pragma comment(lib, "mswsock.lib")
 #pragma comment(lib, "ws2_32.lib")
-#endif
 #endif
 
 #if defined(__cplusplus)
@@ -87,7 +83,7 @@ extern "C" {
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 
 #if !defined(AF_UNIX)
 #define AF_UNIX                1
@@ -115,7 +111,7 @@ extern "C" {
 #define PBSD_FD_CLR(fd, set)   FD_CLR(((SOCKET)(fd)), set)
 #define PBSD_FD_ISSET(fd, set) FD_ISSET(((SOCKET)(fd)), set)
 
-#else  /* _WIN32, _WIN32_WCE */
+#else  /* _WIN32 */
 
 #define PBSD_EBADF             EBADF          /*   9 */
 #define PBSD_EWOULDBLOCK       EAGAIN         /*  11 */
@@ -129,7 +125,7 @@ extern "C" {
 #define PBSD_FD_CLR(fd, set)   FD_CLR(((int)(fd)), set)
 #define PBSD_FD_ISSET(fd, set) FD_ISSET(((int)(fd)), set)
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
 
 struct pbsd_fd_set : public fd_set
 {
@@ -141,7 +137,7 @@ struct pbsd_sockaddr_in : public sockaddr_in
     DECLARE_SGI_POOL(0)
 };
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 
 struct pbsd_sockaddr_un /* a dummy on Windows */
 {
@@ -157,7 +153,7 @@ struct pbsd_msghdr      /* a dummy on Windows */
     DECLARE_SGI_POOL(0)
 };
 
-#else  /* _WIN32, _WIN32_WCE */
+#else  /* _WIN32 */
 
 struct pbsd_sockaddr_un : public sockaddr_un
 {
@@ -169,7 +165,7 @@ struct pbsd_msghdr : public msghdr
     DECLARE_SGI_POOL(0)
 };
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
 
 #if defined(PRO_HAS_EPOLL)
 
@@ -372,42 +368,42 @@ pbsd_closesocket(PRO_INT64 fd,
 ////
 
 /*
- * ¹¦ÄÜ: Ğ£Ñé¸ø¶¨µÄip×Ö·û´®ÊÇ·ñÓĞĞ§
+ * åŠŸèƒ½: æ ¡éªŒç»™å®šçš„ipå­—ç¬¦ä¸²æ˜¯å¦æœ‰æ•ˆ
  *
- * ²ÎÊı:
- * ipString : ´ıĞ£ÑéµÄip×Ö·û´®
+ * å‚æ•°:
+ * ipString : å¾…æ ¡éªŒçš„ipå­—ç¬¦ä¸²
  *
- * ·µ»ØÖµ: trueÓĞĞ§, falseÎŞĞ§
+ * è¿”å›å€¼: trueæœ‰æ•ˆ, falseæ— æ•ˆ
  *
- * ËµÃ÷: ÎŞ
+ * è¯´æ˜: æ— 
  */
 bool
 ProCheckIpString(const char* ipString);
 
 /*
- * ¹¦ÄÜ: »ñÈ¡±¾µØµÄÊ×Ñ¡ipµØÖ·
+ * åŠŸèƒ½: è·å–æœ¬åœ°çš„é¦–é€‰ipåœ°å€
  *
- * ²ÎÊı:
- * localFirstIp : Êä³ö½á¹û
- * peerIpOrName : ²Î¿¼µÄÔ¶¶ËµØÖ·»òÓòÃû
+ * å‚æ•°:
+ * localFirstIp : è¾“å‡ºç»“æœ
+ * peerIpOrName : å‚è€ƒçš„è¿œç«¯åœ°å€æˆ–åŸŸå
  *
- * ·µ»ØÖµ: localFirstIp²ÎÊı±¾Éí
+ * è¿”å›å€¼: localFirstIpå‚æ•°æœ¬èº«
  *
- * ËµÃ÷: ²Î¿¼µØÖ·ÓÃÓÚ±¾µØ¶àipµÄÇé¿öÏÂÑ¡Ôñ×îÆ¥ÅäµÄÒ»¸ö
+ * è¯´æ˜: å‚è€ƒåœ°å€ç”¨äºæœ¬åœ°å¤šipçš„æƒ…å†µä¸‹é€‰æ‹©æœ€åŒ¹é…çš„ä¸€ä¸ª
  */
 const char*
 ProGetLocalFirstIp(char        localFirstIp[64],
                    const char* peerIpOrName = NULL);
 
 /*
- * ¹¦ÄÜ: »ñÈ¡±¾µØµÄipµØÖ·ÁĞ±í
+ * åŠŸèƒ½: è·å–æœ¬åœ°çš„ipåœ°å€åˆ—è¡¨
  *
- * ²ÎÊı:
- * localIpList : Êä³ö½á¹û
+ * å‚æ•°:
+ * localIpList : è¾“å‡ºç»“æœ
  *
- * ·µ»ØÖµ: ÁĞ±íÔªËØ¸öÊı
+ * è¿”å›å€¼: åˆ—è¡¨å…ƒç´ ä¸ªæ•°
  *
- * ËµÃ÷: ÎŞ
+ * è¯´æ˜: æ— 
  */
 unsigned long
 ProGetLocalIpList(char localIpList[8][64]);

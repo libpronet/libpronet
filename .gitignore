@@ -1,8 +1,5 @@
 /build/
-!/build/_sp_for_vs6/
 !/build/DEFINE.txt
-!/build/**/*.dsw
-!/build/**/*.dsp
 !/build/**/*.sln
 !/build/**/*.vcxproj
 !/build/**/*.vcxproj.filters
@@ -19,5 +16,6 @@
 .deps/
 
 *.o
+*.obj
 .dirstamp
 .DS_Store

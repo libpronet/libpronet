@@ -32,7 +32,7 @@ extern "C" {
 
 #define PBSD_EPOLL_SIZE   10000
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 #define PBSD_EINTR        WSAEINTR        /* 10004 */
 #define PBSD_EINVAL       WSAEINVAL       /* 10022 */
 #define PBSD_ENOTSOCK     WSAENOTSOCK     /* 10038 */
@@ -204,7 +204,7 @@ pbsd_gethostbyname_r_i(const char* name,
 
     struct hostent* phe = NULL;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     phe = gethostbyname(name);
 #elif !defined(PRO_LACKS_GETHOSTBYNAME_R) /* for non-MacOS */
     struct hostent he;
@@ -329,7 +329,7 @@ pbsd_startup()
     }
     s_flag = true;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     WSADATA wsaData;
     ::WSAStartup(MAKEWORD(2, 2), &wsaData);
 #else
@@ -349,7 +349,7 @@ pbsd_errno(void* action) /* = NULL */
 {
     int errcode = 0;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 
     errcode = ::WSAGetLastError();
 
@@ -358,11 +358,11 @@ pbsd_errno(void* action) /* = NULL */
         errcode = PBSD_EINPROGRESS;
     }
 
-#else  /* _WIN32, _WIN32_WCE */
+#else  /* _WIN32 */
 
     errcode = errno;
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
 
     if (errcode == PBSD_ENOTSOCK)
     {
@@ -505,7 +505,7 @@ pbsd_socket(int af,
 {
     PRO_INT64 fd = -1;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 
     if (sizeof(SOCKET) == 8)
     {
@@ -516,7 +516,7 @@ pbsd_socket(int af,
         fd = (PRO_INT32)socket(af, type, protocol);
     }
 
-#else  /* _WIN32, _WIN32_WCE */
+#else  /* _WIN32 */
 
 #if defined(SOCK_CLOEXEC)
     static bool s_hasclose = true;
@@ -540,7 +540,7 @@ pbsd_socket(int af,
 #endif
     }
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
 
     if (fd >= 0)
     {
@@ -553,7 +553,7 @@ pbsd_socket(int af,
             pbsd_setsockopt(
                 fd, SOL_SOCKET, SO_BROADCAST, &option, sizeof(int));
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
             long          arg           = 0;
             unsigned long bytesReturned = 0;
             ::WSAIoctl((SOCKET)fd, (unsigned long)SIO_UDP_CONNRESET,
@@ -577,7 +577,7 @@ pbsd_socketpair(PRO_INT64 fds[2])
 
     int retc = -1;
 
-#if !defined(_WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32)
 
     int fds2[2] = { -1, -1 };
 
@@ -626,7 +626,7 @@ pbsd_socketpair(PRO_INT64 fds[2])
     fds[0] = fds2[0];
     fds[1] = fds2[1];
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
 
     return (retc);
 }
@@ -643,7 +643,7 @@ pbsd_ioctl_nonblock(PRO_INT64 fd,
     int retc1 = -1;
     int retc2 = -1;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 
     do
     {
@@ -653,7 +653,7 @@ pbsd_ioctl_nonblock(PRO_INT64 fd,
     }
     while (0);
 
-#else  /* _WIN32, _WIN32_WCE */
+#else  /* _WIN32 */
 
     do
     {
@@ -687,7 +687,7 @@ pbsd_ioctl_nonblock(PRO_INT64 fd,
             pbsd_errno((void*)&pbsd_ioctl_nonblock) == PBSD_EINTR);
     }
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
 
     if (retc1 < 0 && retc2 < 0)
     {
@@ -710,7 +710,7 @@ pbsd_ioctl_closexec(PRO_INT64 fd,
 
     int retc = -1;
 
-#if !defined(_WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32)
 
     do
     {
@@ -738,7 +738,7 @@ pbsd_ioctl_closexec(PRO_INT64 fd,
             pbsd_errno((void*)&pbsd_ioctl_closexec) == PBSD_EINTR);
     }
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
 
     return (retc);
 }
@@ -778,7 +778,7 @@ pbsd_setsockopt(PRO_INT64   fd,
 
     int retc = -1;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     retc = setsockopt((SOCKET)fd, level, optname, (char*)optval, optlen);
 #else
     retc = setsockopt((int)fd, level, optname, optval, optlen);
@@ -796,7 +796,7 @@ pbsd_getsockopt(PRO_INT64 fd,
 {
     int retc = -1;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     retc = getsockopt((SOCKET)fd, level, optname, (char*)optval, optlen);
 #else
     socklen_t optlen2 = 0;
@@ -821,7 +821,7 @@ pbsd_getsockname(PRO_INT64         fd,
 {
     int retc = -1;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     int addrlen = sizeof(pbsd_sockaddr_in);
     retc = getsockname(
         (SOCKET)fd, (struct sockaddr*)addr, addr != NULL ? &addrlen : NULL);
@@ -840,7 +840,7 @@ pbsd_getsockname_un(PRO_INT64         fd,
 {
     int retc = -1;
 
-#if !defined(_WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32)
     socklen_t addrlen = sizeof(pbsd_sockaddr_un);
     retc = getsockname(
         (int)fd, (struct sockaddr*)addr, addr != NULL ? &addrlen : NULL);
@@ -855,7 +855,7 @@ pbsd_getpeername(PRO_INT64         fd,
 {
     int retc = -1;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     int addrlen = sizeof(pbsd_sockaddr_in);
     retc = getpeername(
         (SOCKET)fd, (struct sockaddr*)addr, addr != NULL ? &addrlen : NULL);
@@ -874,7 +874,7 @@ pbsd_getpeername_un(PRO_INT64         fd,
 {
     int retc = -1;
 
-#if !defined(_WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32)
     socklen_t addrlen = sizeof(pbsd_sockaddr_un);
     retc = getpeername(
         (int)fd, (struct sockaddr*)addr, addr != NULL ? &addrlen : NULL);
@@ -895,7 +895,7 @@ pbsd_bind(PRO_INT64               fd,
     }
     else
     {
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
         const int option = 1;
         pbsd_setsockopt(
             fd, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, &option, sizeof(int));
@@ -904,7 +904,7 @@ pbsd_bind(PRO_INT64               fd,
 
     int retc = -1;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     retc = bind((SOCKET)fd,
         (struct sockaddr*)addr, addr != NULL ? sizeof(pbsd_sockaddr_in) : 0);
 #else
@@ -921,7 +921,7 @@ pbsd_bind_un(PRO_INT64               fd,
 {
     int retc = -1;
 
-#if !defined(_WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32)
     retc = bind((int)fd,
         (struct sockaddr*)addr, addr != NULL ? sizeof(pbsd_sockaddr_un) : 0);
 #endif
@@ -934,7 +934,7 @@ pbsd_listen(PRO_INT64 fd)
 {
     int retc = -1;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     retc = listen((SOCKET)fd, SOMAXCONN);
 #else
     retc = listen((int)fd, SOMAXCONN);
@@ -949,7 +949,7 @@ pbsd_accept(PRO_INT64         fd,
 {
     PRO_INT64 newfd = -1;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 
     do
     {
@@ -967,7 +967,7 @@ pbsd_accept(PRO_INT64         fd,
     }
     while (0);
 
-#else  /* _WIN32, _WIN32_WCE */
+#else  /* _WIN32 */
 
 #if defined(PRO_HAS_ACCEPT4) && defined(SOCK_CLOEXEC)
     static bool s_hasclose = true;
@@ -1003,7 +1003,7 @@ pbsd_accept(PRO_INT64         fd,
 #endif
     }
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
 
     if (newfd >= 0)
     {
@@ -1024,7 +1024,7 @@ pbsd_accept_un(PRO_INT64         fd,
 {
     PRO_INT64 newfd = -1;
 
-#if !defined(_WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32)
 
 #if defined(PRO_HAS_ACCEPT4) && defined(SOCK_CLOEXEC)
     static bool s_hasclose = true;
@@ -1070,7 +1070,7 @@ pbsd_accept_un(PRO_INT64         fd,
         newfd = -1;
     }
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
 
     return (newfd);
 }
@@ -1081,7 +1081,7 @@ pbsd_connect(PRO_INT64               fd,
 {
     int retc = -1;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     do
     {
         retc = connect((SOCKET)fd, (struct sockaddr*)addr,
@@ -1106,7 +1106,7 @@ pbsd_connect_un(PRO_INT64               fd,
 {
     int retc = -1;
 
-#if !defined(_WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32)
     do
     {
         retc = connect((int)fd, (struct sockaddr*)addr,
@@ -1126,7 +1126,7 @@ pbsd_send(PRO_INT64   fd,
 {
     int retc = -1;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     do
     {
         retc = send((SOCKET)fd, (char*)buf, buflen, flags);
@@ -1152,7 +1152,7 @@ pbsd_sendto(PRO_INT64               fd,
 {
     int retc = -1;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     do
     {
         retc = sendto(
@@ -1180,7 +1180,7 @@ pbsd_sendmsg(PRO_INT64          fd,
 {
     int retc = -1;
 
-#if !defined(_WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32)
     do
     {
         retc = sendmsg((int)fd, msg, flags);
@@ -1199,7 +1199,7 @@ pbsd_recv(PRO_INT64 fd,
 {
     int retc = -1;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     do
     {
         retc = recv((SOCKET)fd, (char*)buf, buflen, flags);
@@ -1225,7 +1225,7 @@ pbsd_recvfrom(PRO_INT64         fd,
 {
     int retc = -1;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     do
     {
         int addrlen = sizeof(pbsd_sockaddr_in);
@@ -1253,7 +1253,7 @@ pbsd_recvmsg(PRO_INT64    fd,
 {
     int retc = -1;
 
-#if !defined(_WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32)
 
 #if defined(MSG_CMSG_CLOEXEC)
     static bool s_hasclose = true;
@@ -1285,7 +1285,7 @@ pbsd_recvmsg(PRO_INT64    fd,
 #endif
     }
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
 
     return (retc);
 }
@@ -1299,7 +1299,7 @@ pbsd_select(PRO_INT64       nfds,
 {
     int retc = -1;
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     do
     {
         retc = select(0, readfds, writefds, exceptfds, timeout);
@@ -1376,7 +1376,7 @@ pbsd_shutdown_send(PRO_INT64 fd)
         return;
     }
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     shutdown((SOCKET)fd, SD_SEND);
 #else
     shutdown((int)fd, SHUT_WR);
@@ -1391,7 +1391,7 @@ pbsd_shutdown_recv(PRO_INT64 fd)
         return;
     }
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     shutdown((SOCKET)fd, SD_RECEIVE);
 #else
     shutdown((int)fd, SHUT_RD);
@@ -1420,7 +1420,7 @@ pbsd_closesocket(PRO_INT64 fd,
             fd, SOL_SOCKET, SO_LINGER, &option, sizeof(struct linger));
     }
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     closesocket((SOCKET)fd);
 #else
     close((int)fd);

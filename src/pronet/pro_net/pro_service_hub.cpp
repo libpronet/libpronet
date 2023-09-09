@@ -30,7 +30,7 @@
 #include "../pro_util/pro_timer_factory.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 #include <windows.h>
 #endif
 
@@ -271,7 +271,7 @@ CProServiceHub::AcceptIpc(IProAcceptor* acceptor,
     assert(sockId != -1);
     assert(localIp != NULL);
 
-#if !defined(_WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32)
     assert(unixSocket);
     if (!unixSocket)
     {
@@ -394,9 +394,7 @@ CProServiceHub::AcceptApp(IProAcceptor*    acceptor,
         s2cPacket.s2c.oldSock.sockId     = sockId;
         s2cPacket.s2c.oldSock.unixSocket = unixSocket;
 
-#if defined(_WIN32_WCE)
-        pipe->SendData(s2cPacket);
-#elif defined(_WIN32)
+#if defined(_WIN32)
         if (::WSADuplicateSocket((SOCKET)sockId,
             (unsigned long)sp.processId, &s2cPacket.s2c.protocolInfo) != 0)
         {
@@ -472,14 +470,6 @@ CProServiceHub::OnRecv(CProServicePipe*          pipe,
                 return;
             }
 
-#if defined(_WIN32_WCE)
-            assert(packet.c2s.processId == ProGetProcessId());
-            if (packet.c2s.processId != ProGetProcessId())
-            {
-                return;
-            }
-#endif
-
             sp.processId  = packet.c2s.processId;
             sp.expireTick = ProGetTickCount64() + PIPE_TIMEOUT * 1000;
 
@@ -524,10 +514,7 @@ CProServiceHub::OnRecv(CProServicePipe*          pipe,
             if (packet.c2s.oldSock.sockId != -1)
             {
                 m_expireSocks.erase(packet.c2s.oldSock);
-
-#if !defined(_WIN32_WCE)
                 ProCloseSockId(packet.c2s.oldSock.sockId, true); /* linger is true!!! */
-#endif
             }
         }
     }

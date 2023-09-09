@@ -55,7 +55,7 @@ CProNotifyPipe::Init()
         return;
     }
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 
     const PRO_INT64 sockId = pbsd_socket(AF_INET, SOCK_DGRAM, 0);
     if (sockId == -1)
@@ -101,7 +101,7 @@ CProNotifyPipe::Init()
     m_sockIds[0] = sockId;
     m_sockIds[1] = sockId;
 
-#else  /* _WIN32, _WIN32_WCE */
+#else  /* _WIN32 */
 
     PRO_INT64 sockIds[2] = { -1, -1 };
 
@@ -114,13 +114,13 @@ CProNotifyPipe::Init()
     m_sockIds[0] = sockIds[0];
     m_sockIds[1] = sockIds[1];
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
 }
 
 void
 CProNotifyPipe::Fini()
 {
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     pbsd_closesocket(m_sockIds[0]);
 #else
     pbsd_closesocket(m_sockIds[0]);

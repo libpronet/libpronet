@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2018-2019 Eric Tung <libpronet@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License"),
@@ -25,18 +25,18 @@
 ////
 
 /*
- * ����: ����һ��RTP_ST_UDPCLIENT���͵ĻỰ
+ * 功能: 创建一个RTP_ST_UDPCLIENT类型的会话
  *
- * ����:
- * observer  : �ص�Ŀ��
- * reactor   : ��Ӧ��
- * localInfo : �Ự��Ϣ
- * localIp   : Ҫ�󶨵ı���ip��ַ. ���ΪNULL, ϵͳ��ʹ��0.0.0.0
- * localPort : Ҫ�󶨵ı��ض˿ں�. ���Ϊ0, ϵͳ���������һ��
+ * 参数:
+ * observer  : 回调目标
+ * reactor   : 反应器
+ * localInfo : 会话信息
+ * localIp   : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
+ * localPort : 要绑定的本地端口号. 如果为0, 系统将随机分配一个
  *
- * ����ֵ: �Ự�����NULL
+ * 返回值: 会话对象或NULL
  *
- * ˵��: ����ʹ��IRtpSession::GetLocalPort(...)��ȡ���ض˿ں�
+ * 说明: 可以使用IRtpSession::GetLocalPort(...)获取本地端口号
  */
 IRtpSession*
 CreateRtpSessionUdpclient(IRtpSessionObserver*    observer,
@@ -46,18 +46,18 @@ CreateRtpSessionUdpclient(IRtpSessionObserver*    observer,
                           unsigned short          localPort = 0);
 
 /*
- * ����: ����һ��RTP_ST_UDPSERVER���͵ĻỰ
+ * 功能: 创建一个RTP_ST_UDPSERVER类型的会话
  *
- * ����:
- * observer  : �ص�Ŀ��
- * reactor   : ��Ӧ��
- * localInfo : �Ự��Ϣ
- * localIp   : Ҫ�󶨵ı���ip��ַ. ���ΪNULL, ϵͳ��ʹ��0.0.0.0
- * localPort : Ҫ�󶨵ı��ض˿ں�. ���Ϊ0, ϵͳ���������һ��
+ * 参数:
+ * observer  : 回调目标
+ * reactor   : 反应器
+ * localInfo : 会话信息
+ * localIp   : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
+ * localPort : 要绑定的本地端口号. 如果为0, 系统将随机分配一个
  *
- * ����ֵ: �Ự�����NULL
+ * 返回值: 会话对象或NULL
  *
- * ˵��: ����ʹ��IRtpSession::GetLocalPort(...)��ȡ���ض˿ں�
+ * 说明: 可以使用IRtpSession::GetLocalPort(...)获取本地端口号
  */
 IRtpSession*
 CreateRtpSessionUdpserver(IRtpSessionObserver*    observer,
@@ -67,21 +67,21 @@ CreateRtpSessionUdpserver(IRtpSessionObserver*    observer,
                           unsigned short          localPort = 0);
 
 /*
- * ����: ����һ��RTP_ST_TCPCLIENT���͵ĻỰ
+ * 功能: 创建一个RTP_ST_TCPCLIENT类型的会话
  *
- * ����:
- * observer         : �ص�Ŀ��
- * reactor          : ��Ӧ��
- * localInfo        : �Ự��Ϣ
- * remoteIp         : Զ�˵�ip��ַ������
- * remotePort       : Զ�˵Ķ˿ں�
- * localIp          : Ҫ�󶨵ı���ip��ַ. ���ΪNULL, ϵͳ��ʹ��0.0.0.0
- * timeoutInSeconds : ���ֳ�ʱ. Ĭ��20��
- * suspendRecv      : �Ƿ�����������
+ * 参数:
+ * observer         : 回调目标
+ * reactor          : 反应器
+ * localInfo        : 会话信息
+ * remoteIp         : 远端的ip地址或域名
+ * remotePort       : 远端的端口号
+ * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
+ * timeoutInSeconds : 握手超时. 默认20秒
+ * suspendRecv      : 是否挂起接收能力
  *
- * ����ֵ: �Ự�����NULL
+ * 返回值: 会话对象或NULL
  *
- * ˵��: suspendRecv����һЩ��Ҫ��ȷ����ʱ��ĳ���
+ * 说明: suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
 CreateRtpSessionTcpclient(IRtpSessionObserver*    observer,
@@ -94,22 +94,22 @@ CreateRtpSessionTcpclient(IRtpSessionObserver*    observer,
                           bool                    suspendRecv      = false);
 
 /*
- * ����: ����һ��RTP_ST_TCPSERVER���͵ĻỰ
+ * 功能: 创建一个RTP_ST_TCPSERVER类型的会话
  *
- * ����:
- * observer         : �ص�Ŀ��
- * reactor          : ��Ӧ��
- * localInfo        : �Ự��Ϣ
- * localIp          : Ҫ�󶨵ı���ip��ַ. ���ΪNULL, ϵͳ��ʹ��0.0.0.0
- * localPort        : Ҫ�󶨵ı��ض˿ں�. ���Ϊ0, ϵͳ���������һ��
- * timeoutInSeconds : ���ֳ�ʱ. Ĭ��20��
- * suspendRecv      : �Ƿ�����������
+ * 参数:
+ * observer         : 回调目标
+ * reactor          : 反应器
+ * localInfo        : 会话信息
+ * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
+ * localPort        : 要绑定的本地端口号. 如果为0, 系统将随机分配一个
+ * timeoutInSeconds : 握手超时. 默认20秒
+ * suspendRecv      : 是否挂起接收能力
  *
- * ����ֵ: �Ự�����NULL
+ * 返回值: 会话对象或NULL
  *
- * ˵��: ����ʹ��IRtpSession::GetLocalPort(...)��ȡ���ض˿ں�
+ * 说明: 可以使用IRtpSession::GetLocalPort(...)获取本地端口号
  *
- *       suspendRecv����һЩ��Ҫ��ȷ����ʱ��ĳ���
+ *       suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
 CreateRtpSessionTcpserver(IRtpSessionObserver*    observer,
@@ -121,20 +121,20 @@ CreateRtpSessionTcpserver(IRtpSessionObserver*    observer,
                           bool                    suspendRecv      = false);
 
 /*
- * ����: ����һ��RTP_ST_UDPCLIENT_EX���͵ĻỰ
+ * 功能: 创建一个RTP_ST_UDPCLIENT_EX类型的会话
  *
- * ����:
- * observer         : �ص�Ŀ��
- * reactor          : ��Ӧ��
- * localInfo        : �Ự��Ϣ
- * remoteIp         : Զ�˵�ip��ַ������
- * remotePort       : Զ�˵Ķ˿ں�
- * localIp          : Ҫ�󶨵ı���ip��ַ. ���ΪNULL, ϵͳ��ʹ��0.0.0.0
- * timeoutInSeconds : ���ֳ�ʱ. Ĭ��10��
+ * 参数:
+ * observer         : 回调目标
+ * reactor          : 反应器
+ * localInfo        : 会话信息
+ * remoteIp         : 远端的ip地址或域名
+ * remotePort       : 远端的端口号
+ * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
+ * timeoutInSeconds : 握手超时. 默认10秒
  *
- * ����ֵ: �Ự�����NULL
+ * 返回值: 会话对象或NULL
  *
- * ˵��: ��
+ * 说明: 无
  */
 IRtpSession*
 CreateRtpSessionUdpclientEx(IRtpSessionObserver*    observer,
@@ -146,19 +146,19 @@ CreateRtpSessionUdpclientEx(IRtpSessionObserver*    observer,
                             unsigned long           timeoutInSeconds = 0);
 
 /*
- * ����: ����һ��RTP_ST_UDPSERVER_EX���͵ĻỰ
+ * 功能: 创建一个RTP_ST_UDPSERVER_EX类型的会话
  *
- * ����:
- * observer         : �ص�Ŀ��
- * reactor          : ��Ӧ��
- * localInfo        : �Ự��Ϣ
- * localIp          : Ҫ�󶨵ı���ip��ַ. ���ΪNULL, ϵͳ��ʹ��0.0.0.0
- * localPort        : Ҫ�󶨵ı��ض˿ں�. ���Ϊ0, ϵͳ���������һ��
- * timeoutInSeconds : ���ֳ�ʱ. Ĭ��10��
+ * 参数:
+ * observer         : 回调目标
+ * reactor          : 反应器
+ * localInfo        : 会话信息
+ * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
+ * localPort        : 要绑定的本地端口号. 如果为0, 系统将随机分配一个
+ * timeoutInSeconds : 握手超时. 默认10秒
  *
- * ����ֵ: �Ự�����NULL
+ * 返回值: 会话对象或NULL
  *
- * ˵��: ����ʹ��IRtpSession::GetLocalPort(...)��ȡ���ض˿ں�
+ * 说明: 可以使用IRtpSession::GetLocalPort(...)获取本地端口号
  */
 IRtpSession*
 CreateRtpSessionUdpserverEx(IRtpSessionObserver*    observer,
@@ -169,22 +169,22 @@ CreateRtpSessionUdpserverEx(IRtpSessionObserver*    observer,
                             unsigned long           timeoutInSeconds = 0);
 
 /*
- * ����: ����һ��RTP_ST_TCPCLIENT_EX���͵ĻỰ
+ * 功能: 创建一个RTP_ST_TCPCLIENT_EX类型的会话
  *
- * ����:
- * observer         : �ص�Ŀ��
- * reactor          : ��Ӧ��
- * localInfo        : �Ự��Ϣ
- * remoteIp         : Զ�˵�ip��ַ������
- * remotePort       : Զ�˵Ķ˿ں�
- * password         : �Ự����
- * localIp          : Ҫ�󶨵ı���ip��ַ. ���ΪNULL, ϵͳ��ʹ��0.0.0.0
- * timeoutInSeconds : ���ֳ�ʱ. Ĭ��20��
- * suspendRecv      : �Ƿ�����������
+ * 参数:
+ * observer         : 回调目标
+ * reactor          : 反应器
+ * localInfo        : 会话信息
+ * remoteIp         : 远端的ip地址或域名
+ * remotePort       : 远端的端口号
+ * password         : 会话口令
+ * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
+ * timeoutInSeconds : 握手超时. 默认20秒
+ * suspendRecv      : 是否挂起接收能力
  *
- * ����ֵ: �Ự�����NULL
+ * 返回值: 会话对象或NULL
  *
- * ˵��: suspendRecv����һЩ��Ҫ��ȷ����ʱ��ĳ���
+ * 说明: suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
 CreateRtpSessionTcpclientEx(IRtpSessionObserver*    observer,
@@ -198,21 +198,21 @@ CreateRtpSessionTcpclientEx(IRtpSessionObserver*    observer,
                             bool                    suspendRecv      = false);
 
 /*
- * ����: ����һ��RTP_ST_TCPSERVER_EX���͵ĻỰ
+ * 功能: 创建一个RTP_ST_TCPSERVER_EX类型的会话
  *
- * ����:
- * observer    : �ص�Ŀ��
- * reactor     : ��Ӧ��
- * localInfo   : �Ự��Ϣ. ����IRtpServiceObserver::OnAcceptSession(...)��remoteInfo����
- * sockId      : �׽���id. ��Դ��IRtpServiceObserver::OnAcceptSession(...)
- * unixSocket  : �Ƿ�unix�׽���
- * useAckData  : �Ƿ�ʹ���Զ���ĻỰӦ������
- * ackData     : �Զ���ĻỰӦ������
- * suspendRecv : �Ƿ�����������
+ * 参数:
+ * observer    : 回调目标
+ * reactor     : 反应器
+ * localInfo   : 会话信息. 根据IRtpServiceObserver::OnAcceptSession(...)的remoteInfo构造
+ * sockId      : 套接字id. 来源于IRtpServiceObserver::OnAcceptSession(...)
+ * unixSocket  : 是否unix套接字
+ * useAckData  : 是否使用自定义的会话应答数据
+ * ackData     : 自定义的会话应答数据
+ * suspendRecv : 是否挂起接收能力
  *
- * ����ֵ: �Ự�����NULL
+ * 返回值: 会话对象或NULL
  *
- * ˵��: suspendRecv����һЩ��Ҫ��ȷ����ʱ��ĳ���
+ * 说明: suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
 CreateRtpSessionTcpserverEx(IRtpSessionObserver*    observer,
@@ -225,26 +225,26 @@ CreateRtpSessionTcpserverEx(IRtpSessionObserver*    observer,
                             bool                    suspendRecv = false);
 
 /*
- * ����: ����һ��RTP_ST_SSLCLIENT_EX���͵ĻỰ
+ * 功能: 创建一个RTP_ST_SSLCLIENT_EX类型的会话
  *
- * ����:
- * observer         : �ص�Ŀ��
- * reactor          : ��Ӧ��
- * localInfo        : �Ự��Ϣ
- * sslConfig        : ssl����
- * sslSni           : ssl������. �����Ч, �������֤�����֤��
- * remoteIp         : Զ�˵�ip��ַ������
- * remotePort       : Զ�˵Ķ˿ں�
- * password         : �Ự����
- * localIp          : Ҫ�󶨵ı���ip��ַ. ���ΪNULL, ϵͳ��ʹ��0.0.0.0
- * timeoutInSeconds : ���ֳ�ʱ. Ĭ��20��
- * suspendRecv      : �Ƿ�����������
+ * 参数:
+ * observer         : 回调目标
+ * reactor          : 反应器
+ * localInfo        : 会话信息
+ * sslConfig        : ssl配置
+ * sslSni           : ssl服务名. 如果有效, 则参与认证服务端证书
+ * remoteIp         : 远端的ip地址或域名
+ * remotePort       : 远端的端口号
+ * password         : 会话口令
+ * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
+ * timeoutInSeconds : 握手超时. 默认20秒
+ * suspendRecv      : 是否挂起接收能力
  *
- * ����ֵ: �Ự�����NULL
+ * 返回值: 会话对象或NULL
  *
- * ˵��: sslConfigָ���Ķ�������ڻỰ������������һֱ��Ч
+ * 说明: sslConfig指定的对象必须在会话的生命周期内一直有效
  *
- *       suspendRecv����һЩ��Ҫ��ȷ����ʱ��ĳ���
+ *       suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
 CreateRtpSessionSslclientEx(IRtpSessionObserver*         observer,
@@ -260,25 +260,25 @@ CreateRtpSessionSslclientEx(IRtpSessionObserver*         observer,
                             bool                         suspendRecv      = false);
 
 /*
- * ����: ����һ��RTP_ST_SSLSERVER_EX���͵ĻỰ
+ * 功能: 创建一个RTP_ST_SSLSERVER_EX类型的会话
  *
- * ����:
- * observer    : �ص�Ŀ��
- * reactor     : ��Ӧ��
- * localInfo   : �Ự��Ϣ. ����IRtpServiceObserver::OnAcceptSession(...)��remoteInfo����
- * sslCtx      : ssl������
- * sockId      : �׽���id. ��Դ��IRtpServiceObserver::OnAcceptSession(...)
- * unixSocket  : �Ƿ�unix�׽���
- * useAckData  : �Ƿ�ʹ���Զ���ĻỰӦ������
- * ackData     : �Զ���ĻỰӦ������
- * suspendRecv : �Ƿ�����������
+ * 参数:
+ * observer    : 回调目标
+ * reactor     : 反应器
+ * localInfo   : 会话信息. 根据IRtpServiceObserver::OnAcceptSession(...)的remoteInfo构造
+ * sslCtx      : ssl上下文
+ * sockId      : 套接字id. 来源于IRtpServiceObserver::OnAcceptSession(...)
+ * unixSocket  : 是否unix套接字
+ * useAckData  : 是否使用自定义的会话应答数据
+ * ackData     : 自定义的会话应答数据
+ * suspendRecv : 是否挂起接收能力
  *
- * ����ֵ: �Ự�����NULL
+ * 返回值: 会话对象或NULL
  *
- * ˵��: ��������ɹ�, �Ự����Ϊ(sslCtx, sockId)������; ����, ������Ӧ��
- *       �ͷ�(sslCtx, sockId)��Ӧ����Դ
+ * 说明: 如果创建成功, 会话将成为(sslCtx, sockId)的属主; 否则, 调用者应该
+ *       释放(sslCtx, sockId)对应的资源
  *
- *       suspendRecv����һЩ��Ҫ��ȷ����ʱ��ĳ���
+ *       suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
 CreateRtpSessionSslserverEx(IRtpSessionObserver*    observer,
@@ -292,23 +292,23 @@ CreateRtpSessionSslserverEx(IRtpSessionObserver*    observer,
                             bool                    suspendRecv = false);
 
 /*
- * ����: ����һ��RTP_ST_MCAST���͵ĻỰ
+ * 功能: 创建一个RTP_ST_MCAST类型的会话
  *
- * ����:
- * observer  : �ص�Ŀ��
- * reactor   : ��Ӧ��
- * localInfo : �Ự��Ϣ
- * mcastIp   : Ҫ�󶨵Ķಥ��ַ
- * mcastPort : Ҫ�󶨵Ķಥ�˿ں�. ���Ϊ0, ϵͳ���������һ��
- * localIp   : Ҫ�󶨵ı���ip��ַ. ���ΪNULL, ϵͳ��ʹ��0.0.0.0
+ * 参数:
+ * observer  : 回调目标
+ * reactor   : 反应器
+ * localInfo : 会话信息
+ * mcastIp   : 要绑定的多播地址
+ * mcastPort : 要绑定的多播端口号. 如果为0, 系统将随机分配一个
+ * localIp   : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
  *
- * ����ֵ: �Ự�����NULL
+ * 返回值: 会话对象或NULL
  *
- * ˵��: �Ϸ��Ķಥ��ַΪ[224.0.0.0 ~ 239.255.255.255],
- *       �Ƽ��Ķಥ��ַΪ[224.0.1.0 ~ 238.255.255.255],
+ * 说明: 合法的多播地址为[224.0.0.0 ~ 239.255.255.255],
+ *       推荐的多播地址为[224.0.1.0 ~ 238.255.255.255],
  *       RFC-1112(IGMPv1), RFC-2236(IGMPv2), RFC-3376(IGMPv3)
  *
- *       ����ʹ��IRtpSession::GetLocalPort(...)��ȡ�ಥ�˿ں�
+ *       可以使用IRtpSession::GetLocalPort(...)获取多播端口号
  */
 IRtpSession*
 CreateRtpSessionMcast(IRtpSessionObserver*    observer,
@@ -319,23 +319,23 @@ CreateRtpSessionMcast(IRtpSessionObserver*    observer,
                       const char*             localIp   = NULL);
 
 /*
- * ����: ����һ��RTP_ST_MCAST_EX���͵ĻỰ
+ * 功能: 创建一个RTP_ST_MCAST_EX类型的会话
  *
- * ����:
- * observer  : �ص�Ŀ��
- * reactor   : ��Ӧ��
- * localInfo : �Ự��Ϣ
- * mcastIp   : Ҫ�󶨵Ķಥ��ַ
- * mcastPort : Ҫ�󶨵Ķಥ�˿ں�. ���Ϊ0, ϵͳ���������һ��
- * localIp   : Ҫ�󶨵ı���ip��ַ. ���ΪNULL, ϵͳ��ʹ��0.0.0.0
+ * 参数:
+ * observer  : 回调目标
+ * reactor   : 反应器
+ * localInfo : 会话信息
+ * mcastIp   : 要绑定的多播地址
+ * mcastPort : 要绑定的多播端口号. 如果为0, 系统将随机分配一个
+ * localIp   : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
  *
- * ����ֵ: �Ự�����NULL
+ * 返回值: 会话对象或NULL
  *
- * ˵��: �Ϸ��Ķಥ��ַΪ[224.0.0.0 ~ 239.255.255.255],
- *       �Ƽ��Ķಥ��ַΪ[224.0.1.0 ~ 238.255.255.255],
+ * 说明: 合法的多播地址为[224.0.0.0 ~ 239.255.255.255],
+ *       推荐的多播地址为[224.0.1.0 ~ 238.255.255.255],
  *       RFC-1112(IGMPv1), RFC-2236(IGMPv2), RFC-3376(IGMPv3)
  *
- *       ����ʹ��IRtpSession::GetLocalPort(...)��ȡ�ಥ�˿ں�
+ *       可以使用IRtpSession::GetLocalPort(...)获取多播端口号
  */
 IRtpSession*
 CreateRtpSessionMcastEx(IRtpSessionObserver*    observer,
@@ -346,14 +346,14 @@ CreateRtpSessionMcastEx(IRtpSessionObserver*    observer,
                         const char*             localIp   = NULL);
 
 /*
- * ����: ɾ��һ���Ự
+ * 功能: 删除一个会话
  *
- * ����:
- * session : �Ự����
+ * 参数:
+ * session : 会话对象
  *
- * ����ֵ: ��
+ * 返回值: 无
  *
- * ˵��: ��
+ * 说明: 无
  */
 void
 DeleteRtpSession(IRtpSession* session);

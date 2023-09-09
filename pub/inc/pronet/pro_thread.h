@@ -54,9 +54,7 @@ protected:
 
 private:
 
-#if defined(_WIN32_WCE)
-    static unsigned long __stdcall SvcRun(void* arg);
-#elif defined(_WIN32)
+#if defined(_WIN32)
     static unsigned int __stdcall SvcRun(void* arg);
 #else
     static void* SvcRun(void* arg);
@@ -65,7 +63,7 @@ private:
 private:
 
     unsigned long                m_threadCount;
-#if !defined(_WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32)
     CProStlMap<PRO_UINT64, bool> m_threadId2Realtime;
 #endif
     CProThreadMutexCondition     m_cond;

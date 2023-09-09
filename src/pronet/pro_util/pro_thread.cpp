@@ -25,9 +25,7 @@
 #include "pro_time_util.h"
 #include "pro_z.h"
 
-#if defined(_WIN32_WCE)
-#include <windows.h>
-#elif defined(_WIN32)
+#if defined(_WIN32)
 #include <windows.h>
 #include <process.h>
 #else
@@ -59,25 +57,7 @@ CProThreadBase::Spawn(bool realtime)
     {
         CProThreadMutexGuard mon(m_lock);
 
-#if defined(_WIN32_WCE)
-
-        const HANDLE threadHandle = ::CreateThread(
-            NULL, PRO_THREAD_STACK_SIZE, &CProThreadBase::SvcRun, this,
-            CREATE_SUSPENDED | STACK_SIZE_PARAM_IS_A_RESERVATION, NULL);
-        if (threadHandle == NULL)
-        {
-            return (false);
-        }
-
-        if (realtime)
-        {
-            ::SetThreadPriority(threadHandle, THREAD_PRIORITY_TIME_CRITICAL);
-        }
-
-        ::ResumeThread(threadHandle);
-        ::CloseHandle(threadHandle);
-
-#elif defined(_WIN32)
+#if defined(_WIN32)
 
         const HANDLE threadHandle = (HANDLE)::_beginthreadex(
             NULL, PRO_THREAD_STACK_SIZE, &CProThreadBase::SvcRun, this,
@@ -95,7 +75,7 @@ CProThreadBase::Spawn(bool realtime)
         ::ResumeThread(threadHandle);
         ::CloseHandle(threadHandle);
 
-#else
+#else  /* _WIN32 */
 
         int retc = -1;
 
@@ -150,7 +130,7 @@ CProThreadBase::Spawn(bool realtime)
             return (false);
         }
 
-#endif
+#endif /* _WIN32 */
 
         ++m_threadCount;
     }
@@ -198,11 +178,7 @@ CProThreadBase::WaitAll()
     }
 }
 
-#if defined(_WIN32_WCE)
-unsigned long
-__stdcall
-CProThreadBase::SvcRun(void* arg)
-#elif defined(_WIN32)
+#if defined(_WIN32)
 unsigned int
 __stdcall
 CProThreadBase::SvcRun(void* arg)
@@ -219,7 +195,7 @@ CProThreadBase::SvcRun(void* arg)
 
     ProSrand(); /* TLS */
 
-#if !defined(_WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32)
 
     sigset_t mask;
     sigemptyset(&mask);
@@ -253,7 +229,7 @@ CProThreadBase::SvcRun(void* arg)
         threadObj->m_threadId2Realtime.erase(threadId);
     }
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
 
     threadObj->Svc();
 
@@ -264,7 +240,7 @@ CProThreadBase::SvcRun(void* arg)
         threadObj->m_cond.Signal();
     }
 
-#if !defined(_WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32)
     pthread_detach((pthread_t)threadId);
 #endif
 
@@ -277,7 +253,7 @@ CProThreadBase::SvcRun(void* arg)
 PRO_UINT64
 ProGetThreadId()
 {
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     const PRO_UINT64 tid = (PRO_UINT64)::GetCurrentThreadId();
 #else
     const PRO_UINT64 tid = (PRO_UINT64)pthread_self();
@@ -289,7 +265,7 @@ ProGetThreadId()
 PRO_UINT64
 ProGetProcessId()
 {
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
     const PRO_UINT64 pid = (PRO_UINT64)::GetCurrentProcessId();
 #else
     const PRO_UINT64 pid = (PRO_UINT64)getpid();

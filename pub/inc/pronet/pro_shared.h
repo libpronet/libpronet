@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright (C) 2018-2019 Eric Tung <libpronet@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License"),
@@ -17,23 +17,23 @@
  */
 
 /*
- * pro_shared������ģ����Ҫ��Ϊ�˽��"Thread Local Storage"(TLS)�������ڴ��
- * ��ʵ����������, ��������ʵ����ɢ�����ڽ����ڸ���ģ������ݶ���
+ * pro_shared共享库模块主要是为了解决"Thread Local Storage"(TLS)变量和内存池
+ * 的实例控制问题, 避免上述实例分散存在于进程内各个模块的数据段中
  *
- * ����, srand()/rand()������������TLS�洢���͵�. ��һ������ص��̵߳�ִ��·
- * ����һ�εִ�ĳ��ģ��ʱ, �ٶ����ڸ�ģ�����õ���rand(), �����߳��ڸ�ģ����
- * ��Ӧ������ʵ��������δ��ʼ��, �ǵ����߾ͻ�õ�һ������ȷ��α���������...
+ * 比如, srand()/rand()关联的种子是TLS存储类型的. 当一个网络回调线程的执行路
+ * 径第一次抵达某个模块时, 假定它在该模块中用到了rand(), 但该线程在该模块中
+ * 对应的种子实例可能尚未初始化, 那调用者就会得到一个不正确的伪随机数序列...
  *
- * ���ģ���м�¼����̵߳��״ν��벢������!!!
+ * 多个模块中记录多个线程的首次进入并不方便!!!
  *
- * ͨ�������, ��������ɲ���ϵͳ�ͱ�����ͨ��������DllMain(...)�ķ��������.
- * �����ǵ���ֲͨ���Ժ�ά���ɿ���, ���ǲ�������ķ���������, �Ǿ����ø���ģ
- * �����pro_sharedģ���ṩ���������, �����ǵ���srand()/rand(). ����, ĳ��
- * �߳�ԭ���ڸ���ģ���ж�Ӧ������ʵ���ͻ�"�ϲ�"��pro_sharedģ����, ���̶߳�
- * ģ��������ת��Ϊ���̵߳�ģ�������. ֻҪpro_sharedģ���������ʵ����ʼ
- * ����, ����ģ��Ϳ��԰�ȫʹ����
+ * 通常情况下, 这个问题由操作系统和编译器通过类似于DllMain(...)的方法来解决.
+ * 但考虑到移植通用性和维护可控性, 我们采用另外的方法来处理, 那就是让各个模
+ * 块调用pro_shared模块提供的替代函数, 而不是调用srand()/rand(). 这样, 某个
+ * 线程原本在各个模块中对应的种子实例就会"合并"到pro_shared模块里, 多线程多
+ * 模块的问题就转化为多线程单模块的问题. 只要pro_shared模块里的种子实例初始
+ * 化了, 其他模块就可以安全使用了
  *
- * �ڴ�ط�������ά��, ��Ҫ��Ϊ��ȫ�ֵ�����Դ
+ * 内存池放在这里维护, 主要是为了全局调度资源
  */
 
 #if !defined(____PRO_SHARED_H____)
@@ -65,16 +65,16 @@ extern "C" {
 ////
 
 /*
- * ����: ��ȡ�ÿ�İ汾��
+ * 功能: 获取该库的版本号
  *
- * ����:
- * major : ���汾��
- * minor : �ΰ汾��
- * patch : ������
+ * 参数:
+ * major : 主版本号
+ * minor : 次版本号
+ * patch : 补丁号
  *
- * ����ֵ: ��
+ * 返回值: 无
  *
- * ˵��: �ú�����ʽ�㶨
+ * 说明: 该函数格式恒定
  */
 PRO_SHARED_API
 void
@@ -83,110 +83,110 @@ ProSharedVersion(unsigned char* major,  /* = NULL */
                  unsigned char* patch); /* = NULL */
 
 /*
- * ����: ��ʼ����ǰ�̵߳�α���������
+ * 功能: 初始化当前线程的伪随机数种子
  *
- * ����: ��
+ * 参数: 无
  *
- * ����ֵ: ��
+ * 返回值: 无
  *
- * ˵��: �μ��ļ�ͷ��ע��
+ * 说明: 参见文件头部注释
  */
 PRO_SHARED_API
 void
 ProSrand();
 
 /*
- * ����: ��ȡһ��α�����
+ * 功能: 获取一个伪随机数
  *
- * ����: ��
+ * 参数: 无
  *
- * ����ֵ: [0.0 ~ 1.0]֮���α�����
+ * 返回值: [0.0 ~ 1.0]之间的伪随机数
  *
- * ˵��: �μ��ļ�ͷ��ע��
+ * 说明: 参见文件头部注释
  */
 PRO_SHARED_API
 double
 ProRand_0_1();
 
 /*
- * ����: ��ȡһ��α�����
+ * 功能: 获取一个伪随机数
  *
- * ����: ��
+ * 参数: 无
  *
- * ����ֵ: [0 ~ 32767]֮���α�����
+ * 返回值: [0 ~ 32767]之间的伪随机数
  *
- * ˵��: �μ��ļ�ͷ��ע��
+ * 说明: 参见文件头部注释
  */
 PRO_SHARED_API
 int
 ProRand_0_32767();
 
 /*
- * ����: ��ȡ��ǰ��ϵͳtickֵ
+ * 功能: 获取当前的系统tick值
  *
- * ����: ��
+ * 参数: 无
  *
- * ����ֵ: tickֵ. ��λ(ms)
+ * 返回值: tick值. 单位(ms)
  *
- * ˵��: Windows�汾ʹ��TLSʵ��
+ * 说明: Windows版本使用TLS实现
  */
 PRO_SHARED_API
 PRO_INT64
 ProGetTickCount64_s();
 
 /*
- * ����: ���ߵ�ǰ�߳�
+ * 功能: 休眠当前线程
  *
- * ����:
- * milliseconds : ����ʱ��. ��λ(ms)
+ * 参数:
+ * milliseconds : 休眠时间. 单位(ms)
  *
- * ����ֵ: ��
+ * 返回值: 无
  *
- * ˵��: ʹ���׽��ֽ�ϴ���ʱ��select(...)ʵ��, ���ȸ���Sleep(...)/usleep(...)
+ * 说明: 使用套接字结合带超时的select(...)实现, 精度高于Sleep(...)/usleep(...)
  *
- *       ����pro_shared������������Ƿ��ھ�̬����ʵ��, ��Ҫ��Ϊ�˱�����̵�
- *       ���ģ��ռ�ö���׽�����Դ
+ *       放在pro_shared共享库里而不是放在静态库里实现, 主要是为了避免进程的
+ *       多个模块占用多份套接字资源
  */
 PRO_SHARED_API
 void
 ProSleep_s(PRO_UINT32 milliseconds);
 
 /*
- * ����: ����һ����ͨ��ʱ��id
+ * 功能: 生成一个普通定时器id
  *
- * ����: ��
+ * 参数: 无
  *
- * ����ֵ: ��ʱ��id
+ * 返回值: 定时器id
  *
- * ˵��: ��
+ * 说明: 无
  */
 PRO_SHARED_API
 PRO_UINT64
 ProMakeTimerId();
 
 /*
- * ����: ����һ����ý�嶨ʱ��id
+ * 功能: 生成一个多媒体定时器id
  *
- * ����: ��
+ * 参数: 无
  *
- * ����ֵ: ��ʱ��id
+ * 返回值: 定时器id
  *
- * ˵��: ��
+ * 说明: 无
  */
 PRO_SHARED_API
 PRO_UINT64
 ProMakeMmTimerId();
 
 /*
- * ����: ��SGI�ڴ�������һ���ڴ�
+ * 功能: 从SGI内存池里分配一块内存
  *
- * ����:
- * size      : ������ֽ���
- * poolIndex : �ڴ��������. [0 ~ 9], һ��10���ڴ��
+ * 参数:
+ * size      : 分配的字节数
+ * poolIndex : 内存池索引号. [0 ~ 9], 一共10个内存池
  *
- * ����ֵ: ������ڴ��ַ��NULL
+ * 返回值: 分配的内存地址或NULL
  *
- * ˵��: ÿ���ڴ�����Լ��ķ�����
+ * 说明: 每个内存池有自己的访问锁
  */
 PRO_SHARED_API
 void*
@@ -194,16 +194,16 @@ ProAllocateSgiPoolBuffer(size_t        size,
                          unsigned long poolIndex); /* 0 ~ 9 */
 
 /*
- * ����: ��SGI�ڴ�������·���һ���ڴ�
+ * 功能: 从SGI内存池里重新分配一块内存
  *
- * ����:
- * buf       : ԭ��������ڴ��ַ
- * newSize   : ���·�����ֽ���
- * poolIndex : �ڴ��������. [0 ~ 9], һ��10���ڴ��
+ * 参数:
+ * buf       : 原来分配的内存地址
+ * newSize   : 重新分配的字节数
+ * poolIndex : 内存池索引号. [0 ~ 9], 一共10个内存池
  *
- * ����ֵ: ���·�����ڴ��ַ��NULL
+ * 返回值: 重新分配的内存地址或NULL
  *
- * ˵��: ÿ���ڴ�����Լ��ķ�����
+ * 说明: 每个内存池有自己的访问锁
  */
 PRO_SHARED_API
 void*
@@ -212,15 +212,15 @@ ProReallocateSgiPoolBuffer(void*         buf,
                            unsigned long poolIndex); /* 0 ~ 9 */
 
 /*
- * ����: �ͷ�һ���ڴ浽SGI�ڴ����
+ * 功能: 释放一块内存到SGI内存池里
  *
- * ����:
- * buf       : �ڴ��ַ
- * poolIndex : �ڴ��������. [0 ~ 9], һ��10���ڴ��
+ * 参数:
+ * buf       : 内存地址
+ * poolIndex : 内存池索引号. [0 ~ 9], 一共10个内存池
  *
- * ����ֵ: ��
+ * 返回值: 无
  *
- * ˵��: ��
+ * 说明: 无
  */
 PRO_SHARED_API
 void
@@ -228,19 +228,19 @@ ProDeallocateSgiPoolBuffer(void*         buf,
                            unsigned long poolIndex); /* 0 ~ 9 */
 
 /*
- * ����: ��ȡSGI�ڴ����Ϣ
+ * 功能: 获取SGI内存池信息
  *
- * ����:
- * freeList    : ���ص���������
- * objSize     : ���صĶ���ߴ�����
- * busyObjNum  : ���ص�æ������Ŀ����
- * totalObjNum : ���ص��ܶ�����Ŀ����
- * heapBytes   : ���صĶ�������
- * poolIndex   : �ڴ��������. [0 ~ 9], һ��10���ڴ��
+ * 参数:
+ * freeList    : 返回的链表序列
+ * objSize     : 返回的对象尺寸序列
+ * busyObjNum  : 返回的忙对象数目序列
+ * totalObjNum : 返回的总对象数目序列
+ * heapBytes   : 返回的堆总容量
+ * poolIndex   : 内存池索引号. [0 ~ 9], 一共10个内存池
  *
- * ����ֵ: ��
+ * 返回值: 无
  *
- * ˵��: �ú������ڵ��Ի�״̬���
+ * 说明: 该函数用于调试或状态监控
  */
 PRO_SHARED_API
 void

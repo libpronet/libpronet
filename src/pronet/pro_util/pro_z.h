@@ -26,14 +26,10 @@
 #endif
 
 #include <cctype>
-#if !defined(_WIN32_WCE)
 #include <cerrno>
-#endif
 #include <clocale>
 #include <cmath>
-#if !defined(_WIN32_WCE)
 #include <csignal>
-#endif
 #include <cstdarg>
 #include <cstddef>
 #include <cstdio>
@@ -43,20 +39,14 @@
 #include <memory>
 #include <stdint.h>
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
-
-#if !defined(_WIN32_WCE)
+#if defined(_WIN32)
 #include <conio.h>
-#endif
 #include <tchar.h>
-
-#else  /* _WIN32, _WIN32_WCE */
-
+#else
 #include <unistd.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-
-#endif /* _WIN32, _WIN32_WCE */
+#endif
 
 #if defined(__cplusplus)
 extern "C" {
@@ -65,7 +55,7 @@ extern "C" {
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 
 #define strlwr    _strlwr
 #define strupr    _strupr
@@ -73,21 +63,18 @@ extern "C" {
 #define strnicmp  _strnicmp
 #define snprintf  _snprintf
 #define vsnprintf _vsnprintf
-#if defined(_WIN32_WCE)
-#define time      _time64
-#endif
 
-#else  /* _WIN32, _WIN32_WCE */
+#else  /* _WIN32 */
 
 #define stricmp   strcasecmp
 #define strnicmp  strncasecmp
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if !defined(_WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32)
 
 char*
 strlwr(char* str);
@@ -95,7 +82,7 @@ strlwr(char* str);
 char*
 strupr(char* str);
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
 
 char*
 strncpy_pro(char*       dest,
@@ -108,15 +95,11 @@ snprintf_pro(char*       dest,
              const char* format,
              ...);
 
-#if !defined(_WIN32_WCE)
-
 void
 ProGetExeDir_(char buf[1024]);
 
 void
 ProGetExePath(char buf[1024]);
-
-#endif /* _WIN32_WCE */
 
 /////////////////////////////////////////////////////////////////////////////
 ////

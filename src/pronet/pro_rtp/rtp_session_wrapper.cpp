@@ -34,7 +34,7 @@
 #include "../pro_util/pro_timer_factory.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 #include <windows.h>
 #endif
 
@@ -50,9 +50,7 @@
 extern "C" {
 #endif
 
-#if !defined(_WIN32_WCE)
 extern CProFileMonitor g_fileMonitor;
-#endif
 
 #if defined(__cplusplus)
 } /* extern "C" */
@@ -591,7 +589,6 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
         m_reactor  = initArgs2.comm.reactor;
         m_session->GetInfo(&m_info); /* retrieve the real info */
 
-#if !defined(_WIN32_WCE)
         bool enableTrace = false;
         if (
             (m_info.mmType >= RTP_MMT_MSG_MIN &&
@@ -611,7 +608,6 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
             m_timerId = m_reactor->ScheduleTimer(
                 this, HEARTBEAT_INTERVAL * 1000, true);
         }
-#endif
     }
 
     return (true);
@@ -1677,7 +1673,6 @@ CRtpSessionWrapper::OnTimer(void*      factory,
 
         if (timerId == m_timerId)
         {
-#if !defined(_WIN32_WCE)
             do
             {{{
                 if (tick - m_traceTick < TRACE_INTERVAL * 1000)
@@ -1848,7 +1843,6 @@ CRtpSessionWrapper::OnTimer(void*      factory,
                 }
             }}}
             while (0);
-#endif /* _WIN32_WCE */
         }
         else if (timerId == m_sendTimerId)
         {

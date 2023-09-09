@@ -45,7 +45,7 @@ public:
 
 private:
 
-#if defined(_WIN32) || defined(_WIN32_WCE) || defined(PRO_HAS_ATOMOP)
+#if defined(_WIN32) || defined(PRO_HAS_ATOMOP)
     volatile unsigned long m_refCount;
 #else
     unsigned long          m_refCount;

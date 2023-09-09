@@ -153,29 +153,21 @@ the file "build/DEFINE.txt" for more.
 
    > make install
 
-2. VS6 on Windows
+2. VS2015 on Windows
 
-   1) Apply patchs that is under the directory of "build/_sp_for_vs6"
+   The solution file is "build/windows-vs2015/pronet.sln"
 
-   2) Open the workspace file "build/windows-vs6/pronet.dsw"
+3. Qt Creator on Windows
 
-3. VS2010/VS2015 on Windows
+   Open the project file "build/windows-qt-gcc/mbedtls/mbedtls.pro"
 
-   The solution file for VS2010 is "build/windows-vs2010/pronet.sln"
+   Open the project file "build/windows-qt-gcc/pro_util/pro_util.pro"
 
-   The solution file for VS2015 is "build/windows-vs2015/pronet.sln"
-
-4. Qt Creator on Windows
-
-   Open the project file "build/windows-qt487-gcc482/mbedtls/mbedtls.pro"
-
-   Open the project file "build/windows-qt487-gcc482/pro_util/pro_util.pro"
-
-5. Android NDK on Windows
+4. Android NDK on Windows
 
    Run the script "build/android-clang-r/rebuil-all.bat"
 
-6. Xcode on Mac OS X
+5. Xcode on Mac OS X
 
    You will need to create project files manually.
 

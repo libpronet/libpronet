@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * Copyright (C) 2018-2019 Eric Tung <libpronet@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License"),
@@ -188,16 +188,16 @@ ProBase64DecodeStr(const char*          inputString,
 /*-------------------------------------------------------------------------*/
 
 /*
- * ¹¦ÄÜ: ¼ÆËã(»á»°Ëæ»úÊı+¿ÚÁî)×éºÏµÄHASH(SHA-256)Öµ
+ * åŠŸèƒ½: è®¡ç®—(ä¼šè¯éšæœºæ•°+å£ä»¤)ç»„åˆçš„HASH(SHA-256)å€¼
  *
- * ²ÎÊı:
- * nonce        : »á»°Ëæ»úÊı
- * password     : ¿ÚÁî
- * passwordHash : Êä³ö½á¹û
+ * å‚æ•°:
+ * nonce        : ä¼šè¯éšæœºæ•°
+ * password     : å£ä»¤
+ * passwordHash : è¾“å‡ºç»“æœ
  *
- * ·µ»ØÖµ: ÎŞ
+ * è¿”å›å€¼: æ— 
  *
- * ËµÃ÷: ÎŞ
+ * è¯´æ˜: æ— 
  */
 void
 ProCalcPasswordHash(const char  nonce[32],
@@ -205,15 +205,15 @@ ProCalcPasswordHash(const char  nonce[32],
                     char        passwordHash[32]);
 
 /*
- * ¹¦ÄÜ: °²È«ÇåÁã
+ * åŠŸèƒ½: å®‰å…¨æ¸…é›¶
  *
- * ²ÎÊı:
- * buf  : »º³åÇøµØÖ·
- * size : »º³åÇø³¤¶È
+ * å‚æ•°:
+ * buf  : ç¼“å†²åŒºåœ°å€
+ * size : ç¼“å†²åŒºé•¿åº¦
  *
- * ·µ»ØÖµ: ÎŞ
+ * è¿”å›å€¼: æ— 
  *
- * ËµÃ÷: ¸Ãº¯ÊıËÙ¶È½ÏÂı, Ö»ÓÃÓÚ¿ÚÁîµÈÃô¸ĞÊı¾İµÄ²Á³ı
+ * è¯´æ˜: è¯¥å‡½æ•°é€Ÿåº¦è¾ƒæ…¢, åªç”¨äºå£ä»¤ç­‰æ•æ„Ÿæ•°æ®çš„æ“¦é™¤
  */
 void
 ProZeroMemory(char*  buf,

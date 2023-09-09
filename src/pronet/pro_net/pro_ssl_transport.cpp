@@ -102,7 +102,7 @@ CProSslTransport::Init(IProTransportObserver* observer,
             return (false);
         }
 
-#if !defined(_WIN32) && !defined(_WIN32_WCE)
+#if !defined(_WIN32)
         if (unixSocket)
         {
             pbsd_sockaddr_un localAddrUn;

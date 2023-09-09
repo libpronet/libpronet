@@ -1,4 +1,4 @@
-/*
+ï»¿/*
  * Copyright (C) 2018-2019 Eric Tung <libpronet@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License"),
@@ -50,9 +50,9 @@ static const PRO_SSL_AUTH_LEVEL PRO_SSL_AUTHLV_REQUIRED = 2;
 /*
  * [[[[ SSL/TLS suites
  *
- * ÕâÀï¶¼ÊÇ»ùÓÚÖ¤ÊéµÄAEAD¼ÓÃÜÌ×¼þ, ²¢ÇÒ, ÎÒÃÇÖ»ÍÆ¼öÇ°Ïò°²È«(PFS)µÄ¼ÓÃÜÌ×¼þ.
- * Èç¹ûÐèÒªÔ¤Ö÷ÃÜÔ¿(PSK)»úÖÆ»ò¸ü¼Ó·á¸»µÄ¼ÓÃÜÌ×¼þ, Ê¹ÓÃÕß¿ÉÒÔÖ±½ÓÒýÓÃmbedtls
- * ¿âµÄ¶¨Òå
+ * è¿™é‡Œéƒ½æ˜¯åŸºäºŽè¯ä¹¦çš„AEADåŠ å¯†å¥—ä»¶, å¹¶ä¸”, æˆ‘ä»¬åªæŽ¨èå‰å‘å®‰å…¨(PFS)çš„åŠ å¯†å¥—ä»¶.
+ * å¦‚æžœéœ€è¦é¢„ä¸»å¯†é’¥(PSK)æœºåˆ¶æˆ–æ›´åŠ ä¸°å¯Œçš„åŠ å¯†å¥—ä»¶, ä½¿ç”¨è€…å¯ä»¥ç›´æŽ¥å¼•ç”¨mbedtls
+ * åº“çš„å®šä¹‰
  *
  * please refer to "mbedtls/ssl_ciphersuites.h"
  */
@@ -86,44 +86,44 @@ static const PRO_SSL_SUITE_ID PRO_SSL_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256     
 ////
 
 /*
- * ¹¦ÄÜ: ´´½¨Ò»¸ö·þÎñ¶ËSSLÅäÖÃ
+ * åŠŸèƒ½: åˆ›å»ºä¸€ä¸ªæœåŠ¡ç«¯SSLé…ç½®
  *
- * ²ÎÊý: ÎÞ
+ * å‚æ•°: æ— 
  *
- * ·µ»ØÖµ: SSLÅäÖÃ¶ÔÏó»òNULL
+ * è¿”å›žå€¼: SSLé…ç½®å¯¹è±¡æˆ–NULL
  *
- * ËµÃ÷: PRO_SSL_SERVER_CONFIG¼Ì³Ð×Ômbedtls_ssl_config. Èç¹ûÐèÒª, ¿ÉÒÔÍ¨¹ý
- *       mbedtls¿â²Ù×Ý¸Ã¶ÔÏó
+ * è¯´æ˜Ž: PRO_SSL_SERVER_CONFIGç»§æ‰¿è‡ªmbedtls_ssl_config. å¦‚æžœéœ€è¦, å¯ä»¥é€šè¿‡
+ *       mbedtlsåº“æ“çºµè¯¥å¯¹è±¡
  */
 PRO_NET_API
 PRO_SSL_SERVER_CONFIG*
 ProSslServerConfig_Create();
 
 /*
- * ¹¦ÄÜ: É¾³ýÒ»¸ö·þÎñ¶ËSSLÅäÖÃ
+ * åŠŸèƒ½: åˆ é™¤ä¸€ä¸ªæœåŠ¡ç«¯SSLé…ç½®
  *
- * ²ÎÊý:
- * config : SSLÅäÖÃ¶ÔÏó
+ * å‚æ•°:
+ * config : SSLé…ç½®å¯¹è±¡
  *
- * ·µ»ØÖµ: ÎÞ
+ * è¿”å›žå€¼: æ— 
  *
- * ËµÃ÷: ÎÞ
+ * è¯´æ˜Ž: æ— 
  */
 PRO_NET_API
 void
 ProSslServerConfig_Delete(PRO_SSL_SERVER_CONFIG* config);
 
 /*
- * ¹¦ÄÜ: ÉèÖÃ¼ÓÃÜÌ×¼þ
+ * åŠŸèƒ½: è®¾ç½®åŠ å¯†å¥—ä»¶
  *
- * ²ÎÊý:
- * config     : SSLÅäÖÃ¶ÔÏó
- * suites     : ¼ÓÃÜÌ×¼þÁÐ±í. ¿Í»§¶ËµÄÌ×¼þÁÐ±íË³ÐòÓÅÏÈ
- * suiteCount : ÁÐ±í³¤¶È
+ * å‚æ•°:
+ * config     : SSLé…ç½®å¯¹è±¡
+ * suites     : åŠ å¯†å¥—ä»¶åˆ—è¡¨. å®¢æˆ·ç«¯çš„å¥—ä»¶åˆ—è¡¨é¡ºåºä¼˜å…ˆ
+ * suiteCount : åˆ—è¡¨é•¿åº¦
  *
- * ·µ»ØÖµ: true³É¹¦, falseÊ§°Ü
+ * è¿”å›žå€¼: trueæˆåŠŸ, falseå¤±è´¥
  *
- * ËµÃ÷: Èç¹ûÐèÒª, ¿ÉÒÔÍ¨¹ýmbedtls¿âÉèÖÃ¸ü¼Ó·á¸»µÄ¼ÓÃÜÌ×¼þ
+ * è¯´æ˜Ž: å¦‚æžœéœ€è¦, å¯ä»¥é€šè¿‡mbedtlsåº“è®¾ç½®æ›´åŠ ä¸°å¯Œçš„åŠ å¯†å¥—ä»¶
  */
 PRO_NET_API
 bool
@@ -132,16 +132,16 @@ ProSslServerConfig_SetSuiteList(PRO_SSL_SERVER_CONFIG*  config,
                                 size_t                  suiteCount);
 
 /*
- * ¹¦ÄÜ: ÉèÖÃALPN
+ * åŠŸèƒ½: è®¾ç½®ALPN
  *
- * ²ÎÊý:
- * config    : SSLÅäÖÃ¶ÔÏó
- * alpns     : ALPNÁÐ±í. ¿Í»§¶ËµÄÁÐ±íË³ÐòÓÅÏÈ
- * alpnCount : ÁÐ±í³¤¶È
+ * å‚æ•°:
+ * config    : SSLé…ç½®å¯¹è±¡
+ * alpns     : ALPNåˆ—è¡¨. å®¢æˆ·ç«¯çš„åˆ—è¡¨é¡ºåºä¼˜å…ˆ
+ * alpnCount : åˆ—è¡¨é•¿åº¦
  *
- * ·µ»ØÖµ: true³É¹¦, falseÊ§°Ü
+ * è¿”å›žå€¼: trueæˆåŠŸ, falseå¤±è´¥
  *
- * ËµÃ÷: ÎÞ
+ * è¯´æ˜Ž: æ— 
  */
 PRO_NET_API
 bool
@@ -150,15 +150,15 @@ ProSslServerConfig_SetAlpnList(PRO_SSL_SERVER_CONFIG* config,
                                size_t                 alpnCount); /* = 0 */
 
 /*
- * ¹¦ÄÜ: ÊÇ·ñÖ§³ÖSHA-1Ö¤Êé
+ * åŠŸèƒ½: æ˜¯å¦æ”¯æŒSHA-1è¯ä¹¦
  *
- * ²ÎÊý:
- * config : SSLÅäÖÃ¶ÔÏó
- * enable : trueÖ§³Ö, false²»Ö§³Ö
+ * å‚æ•°:
+ * config : SSLé…ç½®å¯¹è±¡
+ * enable : trueæ”¯æŒ, falseä¸æ”¯æŒ
  *
- * ·µ»ØÖµ: ÎÞ
+ * è¿”å›žå€¼: æ— 
  *
- * ËµÃ÷: Ä¬ÈÏ²»Ö§³ÖSHA-1Ö¤Êé
+ * è¯´æ˜Ž: é»˜è®¤ä¸æ”¯æŒSHA-1è¯ä¹¦
  */
 PRO_NET_API
 void
@@ -166,20 +166,20 @@ ProSslServerConfig_EnableSha1Cert(PRO_SSL_SERVER_CONFIG* config,
                                   bool                   enable);
 
 /*
- * ¹¦ÄÜ: ÉèÖÃCAÖ¤ÊéÁÐ±í
+ * åŠŸèƒ½: è®¾ç½®CAè¯ä¹¦åˆ—è¡¨
  *
- * ²ÎÊý:
- * config       : SSLÅäÖÃ¶ÔÏó
- * caFiles      : CAÎÄ¼þÁÐ±í
- * caFileCount  : CAÁÐ±í³¤¶È
- * crlFiles     : CRLÎÄ¼þÁÐ±í
- * crlFileCount : CRLÁÐ±í³¤¶È
+ * å‚æ•°:
+ * config       : SSLé…ç½®å¯¹è±¡
+ * caFiles      : CAæ–‡ä»¶åˆ—è¡¨
+ * caFileCount  : CAåˆ—è¡¨é•¿åº¦
+ * crlFiles     : CRLæ–‡ä»¶åˆ—è¡¨
+ * crlFileCount : CRLåˆ—è¡¨é•¿åº¦
  *
- * ·µ»ØÖµ: true³É¹¦, falseÊ§°Ü
+ * è¿”å›žå€¼: trueæˆåŠŸ, falseå¤±è´¥
  *
- * ËµÃ÷: caFiles¿ÉÒÔ°üº¬Á½ÀàÖ¤Êé,
- *       1)¿ÉÐÅµÄCAÖ¤Êé;
- *       2)¿ÉÐÅµÄ×ÔÇ©ÃûÖÕ¶ËÓÃ»§Ö¤Êé. ´ËÊ±, Ö¤ÊéµÄCA±êÖ¾Î»¿ÉÒÔ²»ÉèÖÃ
+ * è¯´æ˜Ž: caFileså¯ä»¥åŒ…å«ä¸¤ç±»è¯ä¹¦,
+ *       1)å¯ä¿¡çš„CAè¯ä¹¦;
+ *       2)å¯ä¿¡çš„è‡ªç­¾åç»ˆç«¯ç”¨æˆ·è¯ä¹¦. æ­¤æ—¶, è¯ä¹¦çš„CAæ ‡å¿—ä½å¯ä»¥ä¸è®¾ç½®
  */
 PRO_NET_API
 bool
@@ -190,18 +190,18 @@ ProSslServerConfig_SetCaList(PRO_SSL_SERVER_CONFIG* config,
                              size_t                 crlFileCount); /* = 0 */
 
 /*
- * ¹¦ÄÜ: ×·¼ÓÒ»ÌõÖ¤ÊéÁ´
+ * åŠŸèƒ½: è¿½åŠ ä¸€æ¡è¯ä¹¦é“¾
  *
- * ²ÎÊý:
- * config        : SSLÅäÖÃ¶ÔÏó
- * certFiles     : Ö¤ÊéÎÄ¼þÁÐ±í
- * certFileCount : ÁÐ±í³¤¶È
- * keyFile       : Ë½Ô¿ÎÄ¼þ. ÓëcertFiles[0]¶ÔÓ¦
- * password      : Ë½Ô¿ÎÄ¼þ¿ÚÁî
+ * å‚æ•°:
+ * config        : SSLé…ç½®å¯¹è±¡
+ * certFiles     : è¯ä¹¦æ–‡ä»¶åˆ—è¡¨
+ * certFileCount : åˆ—è¡¨é•¿åº¦
+ * keyFile       : ç§é’¥æ–‡ä»¶. ä¸ŽcertFiles[0]å¯¹åº”
+ * password      : ç§é’¥æ–‡ä»¶å£ä»¤
  *
- * ·µ»ØÖµ: true³É¹¦, falseÊ§°Ü
+ * è¿”å›žå€¼: trueæˆåŠŸ, falseå¤±è´¥
  *
- * ËµÃ÷: ÎÞ
+ * è¯´æ˜Ž: æ— 
  */
 PRO_NET_API
 bool
@@ -212,15 +212,15 @@ ProSslServerConfig_AppendCertChain(PRO_SSL_SERVER_CONFIG* config,
                                    const char*            password); /* = NULL */
 
 /*
- * ¹¦ÄÜ: ÉèÖÃÈÏÖ¤¼¶±ð
+ * åŠŸèƒ½: è®¾ç½®è®¤è¯çº§åˆ«
  *
- * ²ÎÊý:
- * config : SSLÅäÖÃ¶ÔÏó
- * level  : ÈÏÖ¤¼¶±ð
+ * å‚æ•°:
+ * config : SSLé…ç½®å¯¹è±¡
+ * level  : è®¤è¯çº§åˆ«
  *
- * ·µ»ØÖµ: true³É¹¦, falseÊ§°Ü
+ * è¿”å›žå€¼: trueæˆåŠŸ, falseå¤±è´¥
  *
- * ËµÃ÷: Ä¬ÈÏÇé¿öÏÂ, server²»ÈÏÖ¤client
+ * è¯´æ˜Ž: é»˜è®¤æƒ…å†µä¸‹, serverä¸è®¤è¯client
  */
 PRO_NET_API
 bool
@@ -228,15 +228,15 @@ ProSslServerConfig_SetAuthLevel(PRO_SSL_SERVER_CONFIG* config,
                                 PRO_SSL_AUTH_LEVEL     level);
 
 /*
- * ¹¦ÄÜ: Ìí¼ÓÒ»¸öSNIÌõÄ¿
+ * åŠŸèƒ½: æ·»åŠ ä¸€ä¸ªSNIæ¡ç›®
  *
- * ²ÎÊý:
- * config  : SSLÅäÖÃ¶ÔÏó
- * sniName : SNI·þÎñÃû
+ * å‚æ•°:
+ * config  : SSLé…ç½®å¯¹è±¡
+ * sniName : SNIæœåŠ¡å
  *
- * ·µ»ØÖµ: true³É¹¦, falseÊ§°Ü
+ * è¿”å›žå€¼: trueæˆåŠŸ, falseå¤±è´¥
  *
- * ËµÃ÷: ÎÞ
+ * è¯´æ˜Ž: æ— 
  */
 PRO_NET_API
 bool
@@ -244,15 +244,15 @@ ProSslServerConfig_AddSni(PRO_SSL_SERVER_CONFIG* config,
                           const char*            sniName);
 
 /*
- * ¹¦ÄÜ: É¾³ýÒ»¸öSNIÌõÄ¿
+ * åŠŸèƒ½: åˆ é™¤ä¸€ä¸ªSNIæ¡ç›®
  *
- * ²ÎÊý:
- * config  : SSLÅäÖÃ¶ÔÏó
- * sniName : SNI·þÎñÃû
+ * å‚æ•°:
+ * config  : SSLé…ç½®å¯¹è±¡
+ * sniName : SNIæœåŠ¡å
  *
- * ·µ»ØÖµ: ÎÞ
+ * è¿”å›žå€¼: æ— 
  *
- * ËµÃ÷: ÎÞ
+ * è¯´æ˜Ž: æ— 
  */
 PRO_NET_API
 void
@@ -260,21 +260,21 @@ ProSslServerConfig_RemoveSni(PRO_SSL_SERVER_CONFIG* config,
                              const char*            sniName);
 
 /*
- * ¹¦ÄÜ: ÉèÖÃÌØ¶¨SNIÌõÄ¿µÄCAÖ¤ÊéÁÐ±í
+ * åŠŸèƒ½: è®¾ç½®ç‰¹å®šSNIæ¡ç›®çš„CAè¯ä¹¦åˆ—è¡¨
  *
- * ²ÎÊý:
- * config       : SSLÅäÖÃ¶ÔÏó
- * sniName      : SNI·þÎñÃû
- * caFiles      : CAÎÄ¼þÁÐ±í
- * caFileCount  : CAÁÐ±í³¤¶È
- * crlFiles     : CRLÎÄ¼þÁÐ±í
- * crlFileCount : CRLÁÐ±í³¤¶È
+ * å‚æ•°:
+ * config       : SSLé…ç½®å¯¹è±¡
+ * sniName      : SNIæœåŠ¡å
+ * caFiles      : CAæ–‡ä»¶åˆ—è¡¨
+ * caFileCount  : CAåˆ—è¡¨é•¿åº¦
+ * crlFiles     : CRLæ–‡ä»¶åˆ—è¡¨
+ * crlFileCount : CRLåˆ—è¡¨é•¿åº¦
  *
- * ·µ»ØÖµ: true³É¹¦, falseÊ§°Ü
+ * è¿”å›žå€¼: trueæˆåŠŸ, falseå¤±è´¥
  *
- * ËµÃ÷: caFiles¿ÉÒÔ°üº¬Á½ÀàÖ¤Êé,
- *       1)¿ÉÐÅµÄCAÖ¤Êé;
- *       2)¿ÉÐÅµÄ×ÔÇ©ÃûÖÕ¶ËÓÃ»§Ö¤Êé. ´ËÊ±, Ö¤ÊéµÄCA±êÖ¾Î»¿ÉÒÔ²»ÉèÖÃ
+ * è¯´æ˜Ž: caFileså¯ä»¥åŒ…å«ä¸¤ç±»è¯ä¹¦,
+ *       1)å¯ä¿¡çš„CAè¯ä¹¦;
+ *       2)å¯ä¿¡çš„è‡ªç­¾åç»ˆç«¯ç”¨æˆ·è¯ä¹¦. æ­¤æ—¶, è¯ä¹¦çš„CAæ ‡å¿—ä½å¯ä»¥ä¸è®¾ç½®
  */
 PRO_NET_API
 bool
@@ -286,19 +286,19 @@ ProSslServerConfig_SetSniCaList(PRO_SSL_SERVER_CONFIG* config,
                                 size_t                 crlFileCount); /* = 0 */
 
 /*
- * ¹¦ÄÜ: ×·¼ÓÌØ¶¨SNIÌõÄ¿µÄÒ»ÌõÖ¤ÊéÁ´
+ * åŠŸèƒ½: è¿½åŠ ç‰¹å®šSNIæ¡ç›®çš„ä¸€æ¡è¯ä¹¦é“¾
  *
- * ²ÎÊý:
- * config        : SSLÅäÖÃ¶ÔÏó
- * sniName       : SNI·þÎñÃû
- * certFiles     : Ö¤ÊéÎÄ¼þÁÐ±í
- * certFileCount : ÁÐ±í³¤¶È
- * keyFile       : Ë½Ô¿ÎÄ¼þ. ÓëcertFiles[0]¶ÔÓ¦
- * password      : Ë½Ô¿ÎÄ¼þ¿ÚÁî
+ * å‚æ•°:
+ * config        : SSLé…ç½®å¯¹è±¡
+ * sniName       : SNIæœåŠ¡å
+ * certFiles     : è¯ä¹¦æ–‡ä»¶åˆ—è¡¨
+ * certFileCount : åˆ—è¡¨é•¿åº¦
+ * keyFile       : ç§é’¥æ–‡ä»¶. ä¸ŽcertFiles[0]å¯¹åº”
+ * password      : ç§é’¥æ–‡ä»¶å£ä»¤
  *
- * ·µ»ØÖµ: true³É¹¦, falseÊ§°Ü
+ * è¿”å›žå€¼: trueæˆåŠŸ, falseå¤±è´¥
  *
- * ËµÃ÷: ÎÞ
+ * è¯´æ˜Ž: æ— 
  */
 PRO_NET_API
 bool
@@ -310,15 +310,15 @@ ProSslServerConfig_AppendSniCertChain(PRO_SSL_SERVER_CONFIG* config,
                                       const char*            password); /* = NULL */
 
 /*
- * ¹¦ÄÜ: ÉèÖÃÌØ¶¨SNIÌõÄ¿µÄÈÏÖ¤¼¶±ð
+ * åŠŸèƒ½: è®¾ç½®ç‰¹å®šSNIæ¡ç›®çš„è®¤è¯çº§åˆ«
  *
- * ²ÎÊý:
- * config : SSLÅäÖÃ¶ÔÏó
- * level  : ÈÏÖ¤¼¶±ð
+ * å‚æ•°:
+ * config : SSLé…ç½®å¯¹è±¡
+ * level  : è®¤è¯çº§åˆ«
  *
- * ·µ»ØÖµ: true³É¹¦, falseÊ§°Ü
+ * è¿”å›žå€¼: trueæˆåŠŸ, falseå¤±è´¥
  *
- * ËµÃ÷: Ä¬ÈÏÇé¿öÏÂ, server²»ÈÏÖ¤client
+ * è¯´æ˜Ž: é»˜è®¤æƒ…å†µä¸‹, serverä¸è®¤è¯client
  */
 PRO_NET_API
 bool
@@ -329,44 +329,44 @@ ProSslServerConfig_SetSniAuthLevel(PRO_SSL_SERVER_CONFIG* config,
 /*-------------------------------------------------------------------------*/
 
 /*
- * ¹¦ÄÜ: ´´½¨Ò»¸ö¿Í»§¶ËSSLÅäÖÃ
+ * åŠŸèƒ½: åˆ›å»ºä¸€ä¸ªå®¢æˆ·ç«¯SSLé…ç½®
  *
- * ²ÎÊý: ÎÞ
+ * å‚æ•°: æ— 
  *
- * ·µ»ØÖµ: SSLÅäÖÃ¶ÔÏó»òNULL
+ * è¿”å›žå€¼: SSLé…ç½®å¯¹è±¡æˆ–NULL
  *
- * ËµÃ÷: PRO_SSL_CLIENT_CONFIG¼Ì³Ð×Ômbedtls_ssl_config. Èç¹ûÐèÒª, ¿ÉÒÔÍ¨¹ý
- *       mbedtls¿â²Ù×Ý¸Ã¶ÔÏó
+ * è¯´æ˜Ž: PRO_SSL_CLIENT_CONFIGç»§æ‰¿è‡ªmbedtls_ssl_config. å¦‚æžœéœ€è¦, å¯ä»¥é€šè¿‡
+ *       mbedtlsåº“æ“çºµè¯¥å¯¹è±¡
  */
 PRO_NET_API
 PRO_SSL_CLIENT_CONFIG*
 ProSslClientConfig_Create();
 
 /*
- * ¹¦ÄÜ: É¾³ýÒ»¸ö¿Í»§¶ËSSLÅäÖÃ
+ * åŠŸèƒ½: åˆ é™¤ä¸€ä¸ªå®¢æˆ·ç«¯SSLé…ç½®
  *
- * ²ÎÊý:
- * config : SSLÅäÖÃ¶ÔÏó
+ * å‚æ•°:
+ * config : SSLé…ç½®å¯¹è±¡
  *
- * ·µ»ØÖµ: ÎÞ
+ * è¿”å›žå€¼: æ— 
  *
- * ËµÃ÷: ÎÞ
+ * è¯´æ˜Ž: æ— 
  */
 PRO_NET_API
 void
 ProSslClientConfig_Delete(PRO_SSL_CLIENT_CONFIG* config);
 
 /*
- * ¹¦ÄÜ: ÉèÖÃ¼ÓÃÜÌ×¼þ
+ * åŠŸèƒ½: è®¾ç½®åŠ å¯†å¥—ä»¶
  *
- * ²ÎÊý:
- * config     : SSLÅäÖÃ¶ÔÏó
- * suites     : ¼ÓÃÜÌ×¼þÁÐ±í
- * suiteCount : ÁÐ±í³¤¶È
+ * å‚æ•°:
+ * config     : SSLé…ç½®å¯¹è±¡
+ * suites     : åŠ å¯†å¥—ä»¶åˆ—è¡¨
+ * suiteCount : åˆ—è¡¨é•¿åº¦
  *
- * ·µ»ØÖµ: true³É¹¦, falseÊ§°Ü
+ * è¿”å›žå€¼: trueæˆåŠŸ, falseå¤±è´¥
  *
- * ËµÃ÷: Èç¹ûÐèÒª, ¿ÉÒÔÍ¨¹ýmbedtls¿âÉèÖÃ¸ü¼Ó·á¸»µÄ¼ÓÃÜÌ×¼þ
+ * è¯´æ˜Ž: å¦‚æžœéœ€è¦, å¯ä»¥é€šè¿‡mbedtlsåº“è®¾ç½®æ›´åŠ ä¸°å¯Œçš„åŠ å¯†å¥—ä»¶
  */
 PRO_NET_API
 bool
@@ -375,16 +375,16 @@ ProSslClientConfig_SetSuiteList(PRO_SSL_CLIENT_CONFIG*  config,
                                 size_t                  suiteCount);
 
 /*
- * ¹¦ÄÜ: ÉèÖÃALPN
+ * åŠŸèƒ½: è®¾ç½®ALPN
  *
- * ²ÎÊý:
- * config    : SSLÅäÖÃ¶ÔÏó
- * alpns     : ALPNÁÐ±í
- * alpnCount : ÁÐ±í³¤¶È
+ * å‚æ•°:
+ * config    : SSLé…ç½®å¯¹è±¡
+ * alpns     : ALPNåˆ—è¡¨
+ * alpnCount : åˆ—è¡¨é•¿åº¦
  *
- * ·µ»ØÖµ: true³É¹¦, falseÊ§°Ü
+ * è¿”å›žå€¼: trueæˆåŠŸ, falseå¤±è´¥
  *
- * ËµÃ÷: ÎÞ
+ * è¯´æ˜Ž: æ— 
  */
 PRO_NET_API
 bool
@@ -393,15 +393,15 @@ ProSslClientConfig_SetAlpnList(PRO_SSL_CLIENT_CONFIG* config,
                                size_t                 alpnCount); /* = 0 */
 
 /*
- * ¹¦ÄÜ: ÊÇ·ñÖ§³ÖSHA-1Ö¤Êé
+ * åŠŸèƒ½: æ˜¯å¦æ”¯æŒSHA-1è¯ä¹¦
  *
- * ²ÎÊý:
- * config : SSLÅäÖÃ¶ÔÏó
- * enable : trueÖ§³Ö, false²»Ö§³Ö
+ * å‚æ•°:
+ * config : SSLé…ç½®å¯¹è±¡
+ * enable : trueæ”¯æŒ, falseä¸æ”¯æŒ
  *
- * ·µ»ØÖµ: ÎÞ
+ * è¿”å›žå€¼: æ— 
  *
- * ËµÃ÷: Ä¬ÈÏ²»Ö§³ÖSHA-1Ö¤Êé
+ * è¯´æ˜Ž: é»˜è®¤ä¸æ”¯æŒSHA-1è¯ä¹¦
  */
 PRO_NET_API
 void
@@ -409,20 +409,20 @@ ProSslClientConfig_EnableSha1Cert(PRO_SSL_CLIENT_CONFIG* config,
                                   bool                   enable);
 
 /*
- * ¹¦ÄÜ: ÉèÖÃCAÖ¤ÊéÁÐ±í
+ * åŠŸèƒ½: è®¾ç½®CAè¯ä¹¦åˆ—è¡¨
  *
- * ²ÎÊý:
- * config       : SSLÅäÖÃ¶ÔÏó
- * caFiles      : CAÎÄ¼þÁÐ±í
- * caFileCount  : CAÁÐ±í³¤¶È
- * crlFiles     : CRLÎÄ¼þÁÐ±í
- * crlFileCount : CRLÁÐ±í³¤¶È
+ * å‚æ•°:
+ * config       : SSLé…ç½®å¯¹è±¡
+ * caFiles      : CAæ–‡ä»¶åˆ—è¡¨
+ * caFileCount  : CAåˆ—è¡¨é•¿åº¦
+ * crlFiles     : CRLæ–‡ä»¶åˆ—è¡¨
+ * crlFileCount : CRLåˆ—è¡¨é•¿åº¦
  *
- * ·µ»ØÖµ: true³É¹¦, falseÊ§°Ü
+ * è¿”å›žå€¼: trueæˆåŠŸ, falseå¤±è´¥
  *
- * ËµÃ÷: caFiles¿ÉÒÔ°üº¬Á½ÀàÖ¤Êé,
- *       1)¿ÉÐÅµÄCAÖ¤Êé;
- *       2)¿ÉÐÅµÄ×ÔÇ©ÃûÖÕ¶ËÓÃ»§Ö¤Êé. ´ËÊ±, Ö¤ÊéµÄCA±êÖ¾Î»¿ÉÒÔ²»ÉèÖÃ
+ * è¯´æ˜Ž: caFileså¯ä»¥åŒ…å«ä¸¤ç±»è¯ä¹¦,
+ *       1)å¯ä¿¡çš„CAè¯ä¹¦;
+ *       2)å¯ä¿¡çš„è‡ªç­¾åç»ˆç«¯ç”¨æˆ·è¯ä¹¦. æ­¤æ—¶, è¯ä¹¦çš„CAæ ‡å¿—ä½å¯ä»¥ä¸è®¾ç½®
  */
 PRO_NET_API
 bool
@@ -433,18 +433,18 @@ ProSslClientConfig_SetCaList(PRO_SSL_CLIENT_CONFIG* config,
                              size_t                 crlFileCount); /* = 0 */
 
 /*
- * ¹¦ÄÜ: ÉèÖÃÖ¤ÊéÁ´
+ * åŠŸèƒ½: è®¾ç½®è¯ä¹¦é“¾
  *
- * ²ÎÊý:
- * config        : SSLÅäÖÃ¶ÔÏó
- * certFiles     : Ö¤ÊéÎÄ¼þÁÐ±í
- * certFileCount : ÁÐ±í³¤¶È
- * keyFile       : Ë½Ô¿ÎÄ¼þ. ÓëcertFiles[0]¶ÔÓ¦
- * password      : Ë½Ô¿ÎÄ¼þ¿ÚÁî
+ * å‚æ•°:
+ * config        : SSLé…ç½®å¯¹è±¡
+ * certFiles     : è¯ä¹¦æ–‡ä»¶åˆ—è¡¨
+ * certFileCount : åˆ—è¡¨é•¿åº¦
+ * keyFile       : ç§é’¥æ–‡ä»¶. ä¸ŽcertFiles[0]å¯¹åº”
+ * password      : ç§é’¥æ–‡ä»¶å£ä»¤
  *
- * ·µ»ØÖµ: true³É¹¦, falseÊ§°Ü
+ * è¿”å›žå€¼: trueæˆåŠŸ, falseå¤±è´¥
  *
- * ËµÃ÷: ¸Ãº¯ÊýÖ»ÄÜ³É¹¦µ÷ÓÃÒ»´Î
+ * è¯´æ˜Ž: è¯¥å‡½æ•°åªèƒ½æˆåŠŸè°ƒç”¨ä¸€æ¬¡
  */
 PRO_NET_API
 bool
@@ -455,15 +455,15 @@ ProSslClientConfig_SetCertChain(PRO_SSL_CLIENT_CONFIG* config,
                                 const char*            password); /* = NULL */
 
 /*
- * ¹¦ÄÜ: ÉèÖÃÈÏÖ¤¼¶±ð
+ * åŠŸèƒ½: è®¾ç½®è®¤è¯çº§åˆ«
  *
- * ²ÎÊý:
- * config : SSLÅäÖÃ¶ÔÏó
- * level  : ÈÏÖ¤¼¶±ð
+ * å‚æ•°:
+ * config : SSLé…ç½®å¯¹è±¡
+ * level  : è®¤è¯çº§åˆ«
  *
- * ·µ»ØÖµ: true³É¹¦, falseÊ§°Ü
+ * è¿”å›žå€¼: trueæˆåŠŸ, falseå¤±è´¥
  *
- * ËµÃ÷: Ä¬ÈÏÇé¿öÏÂ, clientÒªÇóÈÏÖ¤server
+ * è¯´æ˜Ž: é»˜è®¤æƒ…å†µä¸‹, clientè¦æ±‚è®¤è¯server
  */
 PRO_NET_API
 bool
@@ -473,20 +473,20 @@ ProSslClientConfig_SetAuthLevel(PRO_SSL_CLIENT_CONFIG* config,
 /*-------------------------------------------------------------------------*/
 
 /*
- * ¹¦ÄÜ: ´´½¨Ò»¸ö·þÎñ¶ËSSLÉÏÏÂÎÄ
+ * åŠŸèƒ½: åˆ›å»ºä¸€ä¸ªæœåŠ¡ç«¯SSLä¸Šä¸‹æ–‡
  *
- * ²ÎÊý:
- * config : SSLÅäÖÃ¶ÔÏó
- * sockId : Ì×½Ó×Öid
- * nonce  : ÈÅ¶¯Ëæ»úÊý. NULL±íÊ¾ÎÞÈÅ¶¯
+ * å‚æ•°:
+ * config : SSLé…ç½®å¯¹è±¡
+ * sockId : å¥—æŽ¥å­—id
+ * nonce  : æ‰°åŠ¨éšæœºæ•°. NULLè¡¨ç¤ºæ— æ‰°åŠ¨
  *
- * ·µ»ØÖµ: SSLÉÏÏÂÎÄ¶ÔÏó»òNULL
+ * è¿”å›žå€¼: SSLä¸Šä¸‹æ–‡å¯¹è±¡æˆ–NULL
  *
- * ËµÃ÷: PRO_SSL_CTX¼Ì³Ð×Ômbedtls_ssl_context. Èç¹ûÐèÒª, ¿ÉÒÔÍ¨¹ýmbedtls¿â
- *       ²Ù×Ý¸Ã¶ÔÏó
+ * è¯´æ˜Ž: PRO_SSL_CTXç»§æ‰¿è‡ªmbedtls_ssl_context. å¦‚æžœéœ€è¦, å¯ä»¥é€šè¿‡mbedtlsåº“
+ *       æ“çºµè¯¥å¯¹è±¡
  *
- *       nonceÓÃÓÚÎª³õÆÚÎÕÊÖÁ÷Á¿Ìí¼ÓÈÅ¶¯, Ö÷ÒªÓÃÓÚ·ÀÖ¹ÎÕÊÖ³õÆÚµÄÃ÷ÎÄÖ¤Êé±»
- *       ¹ýÂËÀ¹½Ø. c/sÁ½¶Ë±ØÐëÒ»ÖÂ, Ò»°ãÀ´Ô´ÓÚOnAccept(...)»òOnConnectOk(...)
+ *       nonceç”¨äºŽä¸ºåˆæœŸæ¡æ‰‹æµé‡æ·»åŠ æ‰°åŠ¨, ä¸»è¦ç”¨äºŽé˜²æ­¢æ¡æ‰‹åˆæœŸçš„æ˜Žæ–‡è¯ä¹¦è¢«
+ *       è¿‡æ»¤æ‹¦æˆª. c/sä¸¤ç«¯å¿…é¡»ä¸€è‡´, ä¸€èˆ¬æ¥æºäºŽOnAccept(...)æˆ–OnConnectOk(...)
  */
 PRO_NET_API
 PRO_SSL_CTX*
@@ -495,21 +495,21 @@ ProSslCtx_CreateS(const PRO_SSL_SERVER_CONFIG* config,
                   const PRO_NONCE*             nonce); /* = NULL */
 
 /*
- * ¹¦ÄÜ: ´´½¨Ò»¸ö¿Í»§¶ËSSLÉÏÏÂÎÄ
+ * åŠŸèƒ½: åˆ›å»ºä¸€ä¸ªå®¢æˆ·ç«¯SSLä¸Šä¸‹æ–‡
  *
- * ²ÎÊý:
- * config         : SSLÅäÖÃ¶ÔÏó
- * serverHostName : serverÖ÷»úÃû. Èç¹ûÓÐÐ§, Ôò²ÎÓëÈÏÖ¤serverÖ¤Êé
- * sockId         : Ì×½Ó×Öid
- * nonce          : ÈÅ¶¯Ëæ»úÊý. NULL±íÊ¾ÎÞÈÅ¶¯
+ * å‚æ•°:
+ * config         : SSLé…ç½®å¯¹è±¡
+ * serverHostName : serverä¸»æœºå. å¦‚æžœæœ‰æ•ˆ, åˆ™å‚ä¸Žè®¤è¯serverè¯ä¹¦
+ * sockId         : å¥—æŽ¥å­—id
+ * nonce          : æ‰°åŠ¨éšæœºæ•°. NULLè¡¨ç¤ºæ— æ‰°åŠ¨
  *
- * ·µ»ØÖµ: SSLÉÏÏÂÎÄ¶ÔÏó»òNULL
+ * è¿”å›žå€¼: SSLä¸Šä¸‹æ–‡å¯¹è±¡æˆ–NULL
  *
- * ËµÃ÷: PRO_SSL_CTX¼Ì³Ð×Ômbedtls_ssl_context. Èç¹ûÐèÒª, ¿ÉÒÔÍ¨¹ýmbedtls¿â
- *       ²Ù×Ý¸Ã¶ÔÏó
+ * è¯´æ˜Ž: PRO_SSL_CTXç»§æ‰¿è‡ªmbedtls_ssl_context. å¦‚æžœéœ€è¦, å¯ä»¥é€šè¿‡mbedtlsåº“
+ *       æ“çºµè¯¥å¯¹è±¡
  *
- *       nonceÓÃÓÚÎª³õÆÚÎÕÊÖÁ÷Á¿Ìí¼ÓÈÅ¶¯, Ö÷ÒªÓÃÓÚ·ÀÖ¹ÎÕÊÖ³õÆÚµÄÃ÷ÎÄÖ¤Êé±»
- *       ¹ýÂËÀ¹½Ø. c/sÁ½¶Ë±ØÐëÒ»ÖÂ, Ò»°ãÀ´Ô´ÓÚOnAccept(...)»òOnConnectOk(...)
+ *       nonceç”¨äºŽä¸ºåˆæœŸæ¡æ‰‹æµé‡æ·»åŠ æ‰°åŠ¨, ä¸»è¦ç”¨äºŽé˜²æ­¢æ¡æ‰‹åˆæœŸçš„æ˜Žæ–‡è¯ä¹¦è¢«
+ *       è¿‡æ»¤æ‹¦æˆª. c/sä¸¤ç«¯å¿…é¡»ä¸€è‡´, ä¸€èˆ¬æ¥æºäºŽOnAccept(...)æˆ–OnConnectOk(...)
  */
 PRO_NET_API
 PRO_SSL_CTX*
@@ -519,29 +519,29 @@ ProSslCtx_CreateC(const PRO_SSL_CLIENT_CONFIG* config,
                   const PRO_NONCE*             nonce);         /* = NULL */
 
 /*
- * ¹¦ÄÜ: É¾³ýÒ»¸öSSLÉÏÏÂÎÄ
+ * åŠŸèƒ½: åˆ é™¤ä¸€ä¸ªSSLä¸Šä¸‹æ–‡
  *
- * ²ÎÊý:
- * ctx : SSLÉÏÏÂÎÄ¶ÔÏó
+ * å‚æ•°:
+ * ctx : SSLä¸Šä¸‹æ–‡å¯¹è±¡
  *
- * ·µ»ØÖµ: ÎÞ
+ * è¿”å›žå€¼: æ— 
  *
- * ËµÃ÷: ÎÞ
+ * è¯´æ˜Ž: æ— 
  */
 PRO_NET_API
 void
 ProSslCtx_Delete(PRO_SSL_CTX* ctx);
 
 /*
- * ¹¦ÄÜ: »ñÈ¡c/sÐ­ÉÌµÄ»á»°¼ÓÃÜÌ×¼þ
+ * åŠŸèƒ½: èŽ·å–c/såå•†çš„ä¼šè¯åŠ å¯†å¥—ä»¶
  *
- * ²ÎÊý:
- * ctx       : SSLÉÏÏÂÎÄ¶ÔÏó
- * suiteName : ·µ»ØµÄ¼ÓÃÜÌ×¼þÃû
+ * å‚æ•°:
+ * ctx       : SSLä¸Šä¸‹æ–‡å¯¹è±¡
+ * suiteName : è¿”å›žçš„åŠ å¯†å¥—ä»¶å
  *
- * ·µ»ØÖµ: ¼ÓÃÜÌ×¼þid
+ * è¿”å›žå€¼: åŠ å¯†å¥—ä»¶id
  *
- * ËµÃ÷: SSL/TLSÎÕÊÖÍê³Éºó²ÅÓÐÒâÒå
+ * è¯´æ˜Ž: SSL/TLSæ¡æ‰‹å®ŒæˆåŽæ‰æœ‰æ„ä¹‰
  */
 PRO_NET_API
 PRO_SSL_SUITE_ID
@@ -549,14 +549,14 @@ ProSslCtx_GetSuite(PRO_SSL_CTX* ctx,
                    char         suiteName[64]);
 
 /*
- * ¹¦ÄÜ: »ñÈ¡c/sÐ­ÉÌµÄALPNÐ­ÒéÃû
+ * åŠŸèƒ½: èŽ·å–c/såå•†çš„ALPNåè®®å
  *
- * ²ÎÊý:
- * ctx : SSLÉÏÏÂÎÄ¶ÔÏó
+ * å‚æ•°:
+ * ctx : SSLä¸Šä¸‹æ–‡å¯¹è±¡
  *
- * ·µ»ØÖµ: ALPNÐ­ÒéÃû. ¿ÉÒÔÊÇNULL
+ * è¿”å›žå€¼: ALPNåè®®å. å¯ä»¥æ˜¯NULL
  *
- * ËµÃ÷: SSL/TLSÎÕÊÖÍê³Éºó²ÅÓÐÒâÒå
+ * è¯´æ˜Ž: SSL/TLSæ¡æ‰‹å®ŒæˆåŽæ‰æœ‰æ„ä¹‰
  */
 PRO_NET_API
 const char*

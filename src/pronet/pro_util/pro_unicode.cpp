@@ -21,14 +21,14 @@
 #include "pro_stl.h"
 #include "pro_z.h"
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 #include <windows.h>
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if defined(_WIN32) || defined(_WIN32_WCE)
+#if defined(_WIN32)
 
 void
 ProAnsiToUnicode(const CProStlString& src,
@@ -134,4 +134,4 @@ ProUtf8ToAnsi(const CProStlString& src,
     ProUnicodeToAnsi(uni, dst);
 }
 
-#endif /* _WIN32, _WIN32_WCE */
+#endif /* _WIN32 */
