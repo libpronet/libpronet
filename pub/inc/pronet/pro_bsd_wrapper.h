@@ -21,12 +21,10 @@
 
 #include "pro_a.h"
 #include "pro_memory_pool.h"
+#include "pro_stl.h"
+#include "pro_z.h"
 
 #if defined(_WIN32)
-
-#if !defined(PRO_FD_SETSIZE)
-#define PRO_FD_SETSIZE 1024
-#endif
 
 #if defined(FD_SETSIZE)
 #undef  FD_SETSIZE
@@ -39,6 +37,7 @@
 #if !defined(_WINSOCK_DEPRECATED_NO_WARNINGS)
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 #endif
+
 #include <windows.h> /* for (_WIN32_WINNT>=0x0500) */
 #include <winsock2.h>
 #include <mswsock.h>
@@ -46,10 +45,9 @@
 
 #else  /* _WIN32 */
 
-#include <errno.h>
 #include <fcntl.h>
 #include <netdb.h>
-#include <unistd.h>
+#include <poll.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <netinet/tcp.h>
@@ -59,14 +57,9 @@
 #include <sys/ioctl.h>
 #include <sys/select.h>
 #include <sys/socket.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <sys/types.h>
 #include <sys/un.h>
 
-#if defined(PRO_FD_SETSIZE)
 #undef  PRO_FD_SETSIZE
-#endif
 #define PRO_FD_SETSIZE FD_SETSIZE
 
 #endif /* _WIN32 */
@@ -74,10 +67,6 @@
 #if defined(_MSC_VER)
 #pragma comment(lib, "mswsock.lib")
 #pragma comment(lib, "ws2_32.lib")
-#endif
-
-#if defined(__cplusplus)
-extern "C" {
 #endif
 
 /////////////////////////////////////////////////////////////////////////////
@@ -153,6 +142,13 @@ struct pbsd_msghdr      /* a dummy on Windows */
     DECLARE_SGI_POOL(0)
 };
 
+struct pbsd_pollfd      /* a dummy on Windows */
+{
+    char dummy;
+
+    DECLARE_SGI_POOL(0)
+};
+
 #else  /* _WIN32 */
 
 struct pbsd_sockaddr_un : public sockaddr_un
@@ -165,13 +161,14 @@ struct pbsd_msghdr : public msghdr
     DECLARE_SGI_POOL(0)
 };
 
+struct pbsd_pollfd : public pollfd
+{
+    DECLARE_SGI_POOL(0)
+};
+
 #endif /* _WIN32 */
 
 #if defined(PRO_HAS_EPOLL)
-
-#if !defined(PRO_EPOLLFD_GETSIZE)
-#define PRO_EPOLLFD_GETSIZE 1024
-#endif
 
 struct pbsd_epoll_event : public epoll_event
 {
@@ -193,147 +190,152 @@ int
 pbsd_gethostname(char* name,
                  int   namelen);
 
-PRO_UINT32
-pbsd_inet_aton(const char* ipornamestring);
+uint32_t
+pbsd_inet_aton(const char* ipornamestring); /* = NULL */
 
 const char*
-pbsd_inet_ntoa(PRO_UINT32 ip,
-               char       ipstring[64]);
+pbsd_inet_ntoa(uint32_t ip,
+               char     ipstring[64]);
 
-PRO_UINT16
-pbsd_hton16(PRO_UINT16 host16);
+uint16_t
+pbsd_hton16(uint16_t host16);
 
-PRO_UINT16
-pbsd_ntoh16(PRO_UINT16 net16);
+uint16_t
+pbsd_ntoh16(uint16_t net16);
 
-PRO_UINT32
-pbsd_hton32(PRO_UINT32 host32);
+uint32_t
+pbsd_hton32(uint32_t host32);
 
-PRO_UINT32
-pbsd_ntoh32(PRO_UINT32 net32);
+uint32_t
+pbsd_ntoh32(uint32_t net32);
 
-PRO_UINT64
-pbsd_hton64(PRO_UINT64 host64);
+uint64_t
+pbsd_hton64(uint64_t host64);
 
-PRO_UINT64
-pbsd_ntoh64(PRO_UINT64 net64);
+uint64_t
+pbsd_ntoh64(uint64_t net64);
 
-PRO_INT64
+int64_t
 pbsd_socket(int af,
             int type,
             int protocol);
 
 int
-pbsd_socketpair(PRO_INT64 fds[2]);
+pbsd_socketpair(int64_t fds[2]);
 
 int
-pbsd_ioctl_nonblock(PRO_INT64 fd,
-                    long      on = true);
+pbsd_ioctl_nonblock(int64_t fd,
+                    bool    on = true);
 
 int
-pbsd_ioctl_closexec(PRO_INT64 fd,
-                    long      on = true);
+pbsd_ioctl_closexec(int64_t fd,
+                    bool    on = true);
 
 int
-pbsd_setsockopt(PRO_INT64   fd,
+pbsd_setsockopt(int64_t     fd,
                 int         level,
                 int         optname,
                 const void* optval,
                 int         optlen);
 
 int
-pbsd_getsockopt(PRO_INT64 fd,
-                int       level,
-                int       optname,
-                void*     optval,
-                int*      optlen);
+pbsd_getsockopt(int64_t fd,
+                int     level,
+                int     optname,
+                void*   optval,
+                int*    optlen);
 
 int
-pbsd_getsockname(PRO_INT64         fd,
+pbsd_getsockname(int64_t           fd,
                  pbsd_sockaddr_in* addr);
 
 int
-pbsd_getsockname_un(PRO_INT64         fd,
+pbsd_getsockname_un(int64_t           fd,
                     pbsd_sockaddr_un* addr);
 
 int
-pbsd_getpeername(PRO_INT64         fd,
+pbsd_getpeername(int64_t           fd,
                  pbsd_sockaddr_in* addr);
 
 int
-pbsd_getpeername_un(PRO_INT64         fd,
+pbsd_getpeername_un(int64_t           fd,
                     pbsd_sockaddr_un* addr);
 
 int
-pbsd_bind(PRO_INT64               fd,
+pbsd_bind(int64_t                 fd,
           const pbsd_sockaddr_in* addr,
           bool                    reuseaddr);
 
 int
-pbsd_bind_un(PRO_INT64               fd,
+pbsd_bind_un(int64_t                 fd,
              const pbsd_sockaddr_un* addr);
 
 int
-pbsd_listen(PRO_INT64 fd);
+pbsd_listen(int64_t fd);
 
-PRO_INT64
-pbsd_accept(PRO_INT64         fd,
+int64_t
+pbsd_accept(int64_t           fd,
             pbsd_sockaddr_in* addr);
 
-PRO_INT64
-pbsd_accept_un(PRO_INT64         fd,
+int64_t
+pbsd_accept_un(int64_t           fd,
                pbsd_sockaddr_un* addr);
 
 int
-pbsd_connect(PRO_INT64               fd,
+pbsd_connect(int64_t                 fd,
              const pbsd_sockaddr_in* addr);
 
 int
-pbsd_connect_un(PRO_INT64               fd,
+pbsd_connect_un(int64_t                 fd,
                 const pbsd_sockaddr_un* addr);
 
 int
-pbsd_send(PRO_INT64   fd,
+pbsd_send(int64_t     fd,
           const void* buf,
           int         buflen,
           int         flags);
 
 int
-pbsd_sendto(PRO_INT64               fd,
+pbsd_sendto(int64_t                 fd,
             const void*             buf,
             int                     buflen,
             int                     flags,
             const pbsd_sockaddr_in* addr);
 
 int
-pbsd_sendmsg(PRO_INT64          fd,
+pbsd_sendmsg(int64_t            fd,
              const pbsd_msghdr* msg,
              int                flags);
 
 int
-pbsd_recv(PRO_INT64 fd,
-          void*     buf,
-          int       buflen,
-          int       flags);
+pbsd_recv(int64_t fd,
+          void*   buf,
+          int     buflen,
+          int     flags);
 
 int
-pbsd_recvfrom(PRO_INT64         fd,
+pbsd_recvfrom(int64_t           fd,
               void*             buf,
               int               buflen,
               int               flags,
               pbsd_sockaddr_in* addr);
 
 int
-pbsd_recvmsg(PRO_INT64    fd,
+pbsd_recvmsg(int64_t      fd,
              pbsd_msghdr* msg,
              int          flags);
 
 int
-pbsd_select(PRO_INT64       nfds,
+pbsd_select(int64_t         nfds,
             pbsd_fd_set*    readfds,
             pbsd_fd_set*    writefds,
             pbsd_fd_set*    exceptfds,
             struct timeval* timeout);
+
+int
+pbsd_poll(pbsd_pollfd* fds,
+          size_t       nfds,
+          int          timeout);
 
 #if defined(PRO_HAS_EPOLL)
 
@@ -343,7 +345,7 @@ pbsd_epoll_create();
 int
 pbsd_epoll_ctl(int               epfd,
                int               op,
-               PRO_INT64         fd,
+               int64_t           fd,
                pbsd_epoll_event* event);
 
 int
@@ -355,14 +357,14 @@ pbsd_epoll_wait(int               epfd,
 #endif /* PRO_HAS_EPOLL */
 
 void
-pbsd_shutdown_send(PRO_INT64 fd);
+pbsd_shutdown_send(int64_t fd);
 
 void
-pbsd_shutdown_recv(PRO_INT64 fd);
+pbsd_shutdown_recv(int64_t fd);
 
 void
-pbsd_closesocket(PRO_INT64 fd,
-                 bool      linger = false);
+pbsd_closesocket(int64_t fd,
+                 bool    linger = false);
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -375,7 +377,7 @@ pbsd_closesocket(PRO_INT64 fd,
  *
  * 返回值: true有效, false无效
  *
- * 说明: 无
+ * 说明: "0.0.0.0"是有效的
  */
 bool
 ProCheckIpString(const char* ipString);
@@ -401,18 +403,14 @@ ProGetLocalFirstIp(char        localFirstIp[64],
  * 参数:
  * localIpList : 输出结果
  *
- * 返回值: 列表元素个数
+ * 返回值: 无
  *
- * 说明: 无
+ * 说明: 不包括本地回环地址
  */
-unsigned long
-ProGetLocalIpList(char localIpList[8][64]);
+void
+ProGetLocalIpList(CProStlVector<CProStlString>& localIpList);
 
 /////////////////////////////////////////////////////////////////////////////
 ////
-
-#if defined(__cplusplus)
-} /* extern "C" */
-#endif
 
 #endif /* ____PRO_BSD_WRAPPER_H____ */

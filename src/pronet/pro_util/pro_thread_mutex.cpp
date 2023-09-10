@@ -18,8 +18,11 @@
 
 #include "pro_a.h"
 #include "pro_thread_mutex.h"
+#include "pro_bsd_wrapper.h"
 #include "pro_memory_pool.h"
+#include "pro_notify_pipe.h"
 #include "pro_thread.h"
+#include "pro_time_util.h"
 #include "pro_z.h"
 
 #if defined(_WIN32)
@@ -57,6 +60,11 @@ public:
         ::LeaveCriticalSection(&m_cs);
     }
 
+    void* GetNativePthreadObj()
+    {
+        return NULL;
+    }
+
 private:
 
     CRITICAL_SECTION m_cs;
@@ -68,7 +76,7 @@ class CProThreadMutexConditionImpl
 {
 public:
 
-    CProThreadMutexConditionImpl()
+    CProThreadMutexConditionImpl(bool isSocketMode) /* = false */
     {
         m_sem = ::CreateSemaphore(NULL, 0, 1, NULL);
     }
@@ -82,34 +90,32 @@ public:
         }
     }
 
-    void Wait(CProThreadMutex* mutex)
+    bool Wait(
+        CProThreadMutex* mutex,
+        unsigned int     milliseconds /* = 0xFFFFFFFF */
+        )
     {
-        if (mutex != NULL)
-        {
-            mutex->Unlock();
-        }
+        assert(mutex != NULL);
 
-        ::WaitForSingleObject(m_sem, INFINITE);
+        mutex->Unlock();
+        const unsigned long retc = ::WaitForSingleObject(m_sem, milliseconds);
+        mutex->Lock();
 
-        if (mutex != NULL)
-        {
-            mutex->Lock();
-        }
+        return retc == WAIT_OBJECT_0;
     }
 
-    void Waitrc(CProRecursiveThreadMutex* rcmutex)
+    bool Wait_rc(
+        CProRecursiveThreadMutex* mutex,
+        unsigned int              milliseconds /* = 0xFFFFFFFF */
+        )
     {
-        if (rcmutex != NULL)
-        {
-            rcmutex->Unlock();
-        }
+        assert(mutex != NULL);
 
-        ::WaitForSingleObject(m_sem, INFINITE);
+        mutex->Unlock();
+        const unsigned long retc = ::WaitForSingleObject(m_sem, milliseconds);
+        mutex->Lock();
 
-        if (rcmutex != NULL)
-        {
-            rcmutex->Lock();
-        }
+        return retc == WAIT_OBJECT_0;
     }
 
     void Signal()
@@ -152,6 +158,11 @@ public:
         pthread_mutex_unlock(&m_mutext);
     }
 
+    void* GetNativePthreadObj()
+    {
+        return &m_mutext;
+    }
+
 private:
 
     pthread_mutex_t m_mutext;
@@ -163,89 +174,311 @@ class CProThreadMutexConditionImpl
 {
 public:
 
-    CProThreadMutexConditionImpl()
+    CProThreadMutexConditionImpl(bool isSocketMode) /* = false */
+    : m_isSocketMode(isSocketMode)
     {
         m_signal  = false;
         m_waiters = 0;
-        pthread_cond_init(&m_condt, NULL);
+
+        if (isSocketMode)
+        {
+            m_pipe.Init();
+        }
+        else
+        {
+#if defined(PRO_HAS_PTHREAD_CONDATTR_SETCLOCK)
+            pthread_condattr_t attr;
+            pthread_condattr_init(&attr);
+            pthread_condattr_setclock(&attr, CLOCK_MONOTONIC);
+            pthread_cond_init(&m_condt, &attr);
+            pthread_condattr_destroy(&attr);
+#else
+            pthread_cond_init(&m_condt, NULL);
+#endif
+        }
     }
 
     ~CProThreadMutexConditionImpl()
     {
-        pthread_cond_destroy(&m_condt);
-    }
-
-    void Wait(CProThreadMutex* mutex)
-    {
-        if (mutex != NULL)
+        if (m_isSocketMode)
         {
-            mutex->Unlock();
+            m_pipe.Fini();
         }
-
-        m_mutex.Lock();   /* [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[ */
-
-        while (!m_signal)
+        else
         {
-            ++m_waiters;
-            pthread_cond_wait(&m_condt, &m_mutex.m_mutext);
-            --m_waiters;
-        }
-
-        m_signal = false;
-
-        m_mutex.Unlock(); /* ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]] */
-
-        if (mutex != NULL)
-        {
-            mutex->Lock();
+            pthread_cond_destroy(&m_condt);
         }
     }
 
-    void Waitrc(CProRecursiveThreadMutex* rcmutex)
+    bool Wait(
+        CProThreadMutex* mutex,
+        unsigned int     milliseconds /* = 0xFFFFFFFF */
+        )
     {
-        if (rcmutex != NULL)
+        bool ret = false;
+
+        if (m_isSocketMode)
         {
-            rcmutex->Unlock();
+            ret = WaitInSocketMode(mutex, false, milliseconds);  /* recursive is false */
+        }
+        else
+        {
+            ret = WaitInPthreadMode(mutex, false, milliseconds); /* recursive is false */
         }
 
-        m_mutex.Lock();   /* [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[ */
+        return ret;
+    }
 
-        while (!m_signal)
+    bool Wait_rc(
+        CProRecursiveThreadMutex* mutex,
+        unsigned int              milliseconds /* = 0xFFFFFFFF */
+        )
+    {
+        bool ret = false;
+
+        if (m_isSocketMode)
         {
-            ++m_waiters;
-            pthread_cond_wait(&m_condt, &m_mutex.m_mutext);
-            --m_waiters;
+            ret = WaitInSocketMode(mutex, true, milliseconds);  /* recursive is true */
+        }
+        else
+        {
+            ret = WaitInPthreadMode(mutex, true, milliseconds); /* recursive is true */
         }
 
-        m_signal = false;
-
-        m_mutex.Unlock(); /* ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]] */
-
-        if (rcmutex != NULL)
-        {
-            rcmutex->Lock();
-        }
+        return ret;
     }
 
     void Signal()
     {
-        m_mutex.Lock();   /* [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[ */
-
         m_signal = true;
-        if (m_waiters > 0)
+        if (m_waiters == 0)
+        {
+            return;
+        }
+
+        if (m_isSocketMode)
+        {
+            m_pipe.Notify();
+        }
+        else
         {
             pthread_cond_signal(&m_condt);
         }
-
-        m_mutex.Unlock(); /* ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]] */
     }
 
 private:
 
-    bool                m_signal;
-    unsigned long       m_waiters;
-    pthread_cond_t      m_condt;
-    CProThreadMutexImpl m_mutex;
+    bool WaitInSocketMode(
+        void*        mutex,
+        bool         recursive,
+        unsigned int milliseconds /* = 0xFFFFFFFF */
+        )
+    {
+        assert(mutex != NULL);
+
+        if (m_signal)
+        {
+            m_signal = false;
+
+            return true;
+        }
+
+        bool ret = true;
+
+        while (!m_signal)
+        {
+            ++m_waiters;
+            WaitSocket(mutex, recursive, milliseconds);
+            --m_waiters;
+
+            if (milliseconds != 0xFFFFFFFF)
+            {
+                ret = m_signal;
+                break;
+            }
+        }
+
+        m_signal = false;
+
+        return ret;
+    }
+
+    void WaitSocket(
+        void*        mutex,
+        bool         recursive,
+        unsigned int milliseconds /* = 0xFFFFFFFF */
+        )
+    {
+        assert(mutex != NULL);
+
+        if (milliseconds == 0)
+        {
+            milliseconds = 1;
+        }
+
+        const int64_t sockId = m_pipe.GetReaderSockId();
+        if (sockId == -1)
+        {
+            m_pipe.Fini();
+            m_pipe.Init();
+
+            Unlock(mutex, recursive);
+            ProSleep(1);
+            Lock(mutex, recursive);
+
+            return;
+        }
+
+        pbsd_pollfd pfd;
+        memset(&pfd, 0, sizeof(pbsd_pollfd));
+        pfd.fd     = (int)sockId;
+        pfd.events = POLLIN;
+
+        Unlock(mutex, recursive);
+        const int retc = pbsd_poll(&pfd, 1, milliseconds);
+        Lock(mutex, recursive);
+
+        if (retc == 0)
+        {
+            return;
+        }
+
+        if (retc < 0 || !m_pipe.Roger())
+        {
+            m_pipe.Fini();
+            m_pipe.Init();
+
+            Unlock(mutex, recursive);
+            ProSleep(1);
+            Lock(mutex, recursive);
+        }
+    }
+
+    bool WaitInPthreadMode(
+        void*        mutex,
+        bool         recursive,
+        unsigned int milliseconds /* = 0xFFFFFFFF */
+        )
+    {
+        assert(mutex != NULL);
+
+        if (milliseconds != 0xFFFFFFFF && milliseconds > 0x7FFFFFFF)
+        {
+            milliseconds = 0x7FFFFFFF;
+        }
+
+        if (m_signal)
+        {
+            m_signal = false;
+
+            return true;
+        }
+
+        pthread_mutex_t* mutext = NULL;
+        if (recursive)
+        {
+            CProRecursiveThreadMutex* const mutex2 = (CProRecursiveThreadMutex*)mutex;
+            mutext = (pthread_mutex_t*)mutex2->GetNativePthreadObj();
+        }
+        else
+        {
+            CProThreadMutex* const mutex2 = (CProThreadMutex*)mutex;
+            mutext = (pthread_mutex_t*)mutex2->GetNativePthreadObj();
+        }
+        if (mutext == NULL)
+        {
+            return false;
+        }
+
+        struct timespec abstime = { 0 };
+
+#if defined(PRO_HAS_PTHREAD_CONDATTR_SETCLOCK)
+        const int64_t tick = ProGetTickCount64() + milliseconds;
+
+        abstime.tv_sec  = (time_t)(tick / 1000);
+        abstime.tv_nsec = (long)  (tick % 1000 * 1000000);
+#else
+        struct timeval localTimeval = { 0 };
+        ProGetLocalTimeval(localTimeval, milliseconds);
+
+        abstime.tv_sec  = (time_t)localTimeval.tv_sec;
+        abstime.tv_nsec = (long) (localTimeval.tv_usec * 1000);
+#endif
+
+        bool ret = true;
+
+        while (!m_signal)
+        {
+            if (milliseconds == 0xFFFFFFFF)
+            {
+                ++m_waiters;
+                pthread_cond_wait(&m_condt, mutext);
+                --m_waiters;
+            }
+            else
+            {
+                ++m_waiters;
+                const int retc = pthread_cond_timedwait(&m_condt, mutext, &abstime);
+                --m_waiters;
+
+                if (retc != 0)
+                {
+                    ret = m_signal;
+                    break;
+                }
+            }
+        }
+
+        m_signal = false;
+
+        return ret;
+    }
+
+    void Lock(
+        void* mutex,
+        bool  recursive
+        )
+    {
+        assert(mutex != NULL);
+
+        if (recursive)
+        {
+            CProRecursiveThreadMutex* const mutex2 = (CProRecursiveThreadMutex*)mutex;
+            mutex2->Lock();
+        }
+        else
+        {
+            CProThreadMutex* const mutex2 = (CProThreadMutex*)mutex;
+            mutex2->Lock();
+        }
+    }
+
+    void Unlock(
+        void* mutex,
+        bool  recursive
+        )
+    {
+        assert(mutex != NULL);
+
+        if (recursive)
+        {
+            CProRecursiveThreadMutex* const mutex2 = (CProRecursiveThreadMutex*)mutex;
+            mutex2->Unlock();
+        }
+        else
+        {
+            CProThreadMutex* const mutex2 = (CProThreadMutex*)mutex;
+            mutex2->Unlock();
+        }
+    }
+
+private:
+
+    const bool     m_isSocketMode;
+    bool           m_signal;
+    size_t         m_waiters;
+    CProNotifyPipe m_pipe;
+    pthread_cond_t m_condt;
 
     DECLARE_SGI_POOL(0)
 };
@@ -289,18 +522,50 @@ CProThreadMutex::Unlock()
     }
 }
 
+void*
+CProThreadMutex::GetNativePthreadObj()
+{
+    if (m_impl == NULL)
+    {
+        return NULL;
+    }
+    else
+    {
+        return m_impl->GetNativePthreadObj();
+    }
+}
+
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-CProNullMutex::CProNullMutex()
-: CProThreadMutex(0)
+CProNullMutex::CProNullMutex() : CProThreadMutex(0)
 {
 }
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if !defined(_WIN32)
+#if defined(_WIN32)
+
+void
+CProRecursiveThreadMutex::Lock()
+{
+    m_mutex.Lock();
+}
+
+void
+CProRecursiveThreadMutex::Unlock()
+{
+    m_mutex.Unlock();
+}
+
+void*
+CProRecursiveThreadMutex::GetNativePthreadObj()
+{
+    return m_mutex.GetNativePthreadObj();
+}
+
+#else  /* _WIN32 */
 
 CProRecursiveThreadMutex::CProRecursiveThreadMutex()
 {
@@ -322,9 +587,9 @@ CProRecursiveThreadMutex::~CProRecursiveThreadMutex()
 void
 CProRecursiveThreadMutex::Lock()
 {
-    const PRO_UINT64 threadId = ProGetThreadId();
+    const uint64_t threadId = ProGetThreadId();
 
-    m_mutex->Lock();   /* [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[ */
+    m_mutex->Lock();   /* [[[[ */
 
     while (m_ownerNestingLevel > 0 && m_ownerThreadId != threadId)
     {
@@ -336,15 +601,15 @@ CProRecursiveThreadMutex::Lock()
     m_ownerThreadId = threadId;
     ++m_ownerNestingLevel;
 
-    m_mutex->Unlock(); /* ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]] */
+    m_mutex->Unlock(); /* ]]]] */
 }
 
 void
 CProRecursiveThreadMutex::Unlock()
 {
-    const PRO_UINT64 threadId = ProGetThreadId();
+    const uint64_t threadId = ProGetThreadId();
 
-    m_mutex->Lock();   /* [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[ */
+    m_mutex->Lock();   /* [[[[ */
 
     if (m_ownerNestingLevel > 0 && m_ownerThreadId == threadId)
     {
@@ -359,7 +624,13 @@ CProRecursiveThreadMutex::Unlock()
         }
     }
 
-    m_mutex->Unlock(); /* ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]] */
+    m_mutex->Unlock(); /* ]]]] */
+}
+
+void*
+CProRecursiveThreadMutex::GetNativePthreadObj()
+{
+    return m_mutex->GetNativePthreadObj();
 }
 
 #endif /* _WIN32 */
@@ -388,7 +659,7 @@ CProRwThreadMutex::~CProRwThreadMutex()
 void
 CProRwThreadMutex::Lock()
 {
-    m_mutex->Lock();   /* [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[ */
+    m_mutex->Lock();   /* [[[[ */
 
     m_lock->Lock();
     while (m_readers > 0)
@@ -401,32 +672,30 @@ CProRwThreadMutex::Lock()
 void
 CProRwThreadMutex::Unlock()
 {
-    m_mutex->Unlock(); /* ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]] */
+    m_mutex->Unlock(); /* ]]]] */
 }
 
 void
 CProRwThreadMutex::Lock_r()
 {
-    m_mutex->Lock();   /* [[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[[ */
+    m_mutex->Lock();   /* [[[[ */
 
     m_lock->Lock();
     ++m_readers;
     m_lock->Unlock();
 
-    m_mutex->Unlock(); /* ]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]]] */
+    m_mutex->Unlock(); /* ]]]] */
 }
 
 void
 CProRwThreadMutex::Unlock_r()
 {
     m_lock->Lock();
-    const unsigned long readers = --m_readers;
-    m_lock->Unlock();
-
-    if (readers == 0)
+    if (--m_readers == 0)
     {
         m_cond->Signal();
     }
+    m_lock->Unlock();
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -442,31 +711,31 @@ CProThreadMutexGuard::CProThreadMutexGuard(CProThreadMutex& mutex)
     mutex.Lock();
 }
 
-CProThreadMutexGuard::CProThreadMutexGuard(CProRecursiveThreadMutex& rcmutex)
+CProThreadMutexGuard::CProThreadMutexGuard(CProRecursiveThreadMutex& mutex)
 {
     m_mutex    = NULL;
-    m_rcmutex  = &rcmutex;
+    m_rcmutex  = &mutex;
     m_rwmutex  = NULL;
     m_readonly = false;
 
-    rcmutex.Lock();
+    mutex.Lock();
 }
 
-CProThreadMutexGuard::CProThreadMutexGuard(CProRwThreadMutex& rwmutex,
-                                           bool               readonly)
+CProThreadMutexGuard::CProThreadMutexGuard(CProRwThreadMutex& mutex,
+                                           bool               readonly) /* = false */
 {
     m_mutex    = NULL;
     m_rcmutex  = NULL;
-    m_rwmutex  = &rwmutex;
+    m_rwmutex  = &mutex;
     m_readonly = readonly;
 
     if (readonly)
     {
-        rwmutex.Lock_r();
+        mutex.Lock_r();
     }
     else
     {
-        rwmutex.Lock();
+        mutex.Lock();
     }
 }
 
@@ -476,11 +745,11 @@ CProThreadMutexGuard::~CProThreadMutexGuard()
     {
         m_mutex->Unlock();
     }
-    else if (m_rcmutex != NULL)
+    if (m_rcmutex != NULL)
     {
         m_rcmutex->Unlock();
     }
-    else if (m_rwmutex != NULL)
+    if (m_rwmutex != NULL)
     {
         if (m_readonly)
         {
@@ -491,9 +760,6 @@ CProThreadMutexGuard::~CProThreadMutexGuard()
             m_rwmutex->Unlock();
         }
     }
-    else
-    {
-    }
 
     m_mutex   = NULL;
     m_rcmutex = NULL;
@@ -503,9 +769,9 @@ CProThreadMutexGuard::~CProThreadMutexGuard()
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-CProThreadMutexCondition::CProThreadMutexCondition()
+CProThreadMutexCondition::CProThreadMutexCondition(bool isSocketMode) /* = false */
 {
-    m_impl = new CProThreadMutexConditionImpl;
+    m_impl = new CProThreadMutexConditionImpl(isSocketMode);
 }
 
 CProThreadMutexCondition::~CProThreadMutexCondition()
@@ -514,18 +780,29 @@ CProThreadMutexCondition::~CProThreadMutexCondition()
     m_impl = NULL;
 }
 
-void
-CProThreadMutexCondition::Wait(CProThreadMutex* mutex)
+/*
+ * The caller should hold the mutex!!!
+ */
+bool
+CProThreadMutexCondition::Wait(CProThreadMutex* mutex,
+                               unsigned int     milliseconds) /* = 0xFFFFFFFF */
 {
-    m_impl->Wait(mutex);
+    return m_impl->Wait(mutex, milliseconds);
 }
 
-void
-CProThreadMutexCondition::Waitrc(CProRecursiveThreadMutex* rcmutex)
+/*
+ * The caller should hold the mutex!!!
+ */
+bool
+CProThreadMutexCondition::Wait_rc(CProRecursiveThreadMutex* mutex,
+                                  unsigned int              milliseconds) /* = 0xFFFFFFFF */
 {
-    m_impl->Waitrc(rcmutex);
+    return m_impl->Wait_rc(mutex, milliseconds);
 }
 
+/*
+ * The caller should hold the mutex!!!
+ */
 void
 CProThreadMutexCondition::Signal()
 {

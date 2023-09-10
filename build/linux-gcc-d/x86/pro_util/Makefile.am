@@ -16,6 +16,7 @@ proinc_HEADERS = ../../../../src/pronet/pro_util/pro_a.h                    \
                  ../../../../src/pronet/pro_util/pro_functor_command_task.h \
                  ../../../../src/pronet/pro_util/pro_log_file.h             \
                  ../../../../src/pronet/pro_util/pro_memory_pool.h          \
+                 ../../../../src/pronet/pro_util/pro_notify_pipe.h          \
                  ../../../../src/pronet/pro_util/pro_ref_count.h            \
                  ../../../../src/pronet/pro_util/pro_shaper.h               \
                  ../../../../src/pronet/pro_util/pro_ssl_util.h             \
@@ -38,7 +39,7 @@ libpro_util_a_SOURCES = ../../../../src/pronet/pro_util/pro_bsd_wrapper.cpp     
                         ../../../../src/pronet/pro_util/pro_functor_command_task.cpp \
                         ../../../../src/pronet/pro_util/pro_log_file.cpp             \
                         ../../../../src/pronet/pro_util/pro_memory_pool.cpp          \
-                        ../../../../src/pronet/pro_util/pro_ref_count.cpp            \
+                        ../../../../src/pronet/pro_util/pro_notify_pipe.cpp          \
                         ../../../../src/pronet/pro_util/pro_shaper.cpp               \
                         ../../../../src/pronet/pro_util/pro_ssl_util.cpp             \
                         ../../../../src/pronet/pro_util/pro_stat.cpp                 \

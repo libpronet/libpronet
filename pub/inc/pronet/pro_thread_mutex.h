@@ -21,6 +21,7 @@
 
 #include "pro_a.h"
 #include "pro_memory_pool.h"
+#include "pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -43,6 +44,8 @@ public:
     void Lock();
 
     void Unlock();
+
+    void* GetNativePthreadObj();
 
 protected:
 
@@ -72,8 +75,24 @@ public:
 
 #if defined(_WIN32)
 
-class CProRecursiveThreadMutex : public CProThreadMutex
+class CProRecursiveThreadMutex
 {
+public:
+
+    CProRecursiveThreadMutex()
+    {
+    }
+
+    void Lock();
+
+    void Unlock();
+
+    void* GetNativePthreadObj();
+
+private:
+
+    CProThreadMutex m_mutex;
+
     DECLARE_SGI_POOL(0)
 };
 
@@ -91,11 +110,13 @@ public:
 
     void Unlock();
 
+    void* GetNativePthreadObj();
+
 private:
 
-    PRO_UINT64                m_ownerThreadId;
-    unsigned long             m_ownerNestingLevel;
-    unsigned long             m_waiters;
+    uint64_t                  m_ownerThreadId;
+    size_t                    m_ownerNestingLevel;
+    size_t                    m_waiters;
     CProThreadMutexCondition* m_cond;
     CProThreadMutex*          m_mutex;
 
@@ -125,7 +146,7 @@ public:
 
 private:
 
-    unsigned long             m_readers;
+    size_t                    m_readers;
     CProThreadMutex*          m_lock;
     CProThreadMutexCondition* m_cond;
     CProThreadMutex*          m_mutex;
@@ -142,11 +163,11 @@ public:
 
     CProThreadMutexGuard(CProThreadMutex& mutex);
 
-    CProThreadMutexGuard(CProRecursiveThreadMutex& rcmutex);
+    CProThreadMutexGuard(CProRecursiveThreadMutex& mutex);
 
     CProThreadMutexGuard(
-        CProRwThreadMutex& rwmutex,
-        bool               readonly
+        CProRwThreadMutex& mutex,
+        bool               readonly = false
         );
 
     ~CProThreadMutexGuard();
@@ -166,20 +187,34 @@ class CProThreadMutexCondition
 {
 public:
 
-    CProThreadMutexCondition();
+    /*
+     * On Linux, the performence in socket-mode is higher than that in pthread-mode.
+     */
+    CProThreadMutexCondition(bool isSocketMode = false);
 
     ~CProThreadMutexCondition();
 
     /*
-     * the "mutex" can be NULL
+     * The caller should hold the mutex!!!
      */
-    void Wait(CProThreadMutex* mutex);
+    bool Wait(
+        CProThreadMutex* mutex,
+        unsigned int     milliseconds = 0xFFFFFFFF
+        );
 
     /*
-     * the "rcmutex" can be NULL
+     * The caller should hold the mutex!!!
      */
-    void Waitrc(CProRecursiveThreadMutex* rcmutex);
+    bool Wait_rc(
+        CProRecursiveThreadMutex* mutex,
+        unsigned int              milliseconds = 0xFFFFFFFF
+        );
 
+    /*
+     * The caller should hold the mutex!!!
+     *
+     * The object will be holding the signal, and this is different from the POSIX standard!!!
+     */
     void Signal();
 
 private:

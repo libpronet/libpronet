@@ -39,10 +39,6 @@
 #define STACK_SIZE_PARAM_IS_A_RESERVATION 0x00010000
 #endif
 
-#if !defined(PRO_THREAD_STACK_SIZE)
-#define PRO_THREAD_STACK_SIZE             (1024 * 1024 - 8192)
-#endif
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -54,94 +50,85 @@ CProThreadBase::CProThreadBase()
 bool
 CProThreadBase::Spawn(bool realtime)
 {
-    {
-        CProThreadMutexGuard mon(m_lock);
+    CProThreadMutexGuard mon(m_lock);
 
 #if defined(_WIN32)
 
-        const HANDLE threadHandle = (HANDLE)::_beginthreadex(
-            NULL, PRO_THREAD_STACK_SIZE, &CProThreadBase::SvcRun, this,
-            CREATE_SUSPENDED | STACK_SIZE_PARAM_IS_A_RESERVATION, NULL);
-        if (threadHandle == NULL)
-        {
-            return (false);
-        }
+    const HANDLE threadHandle = (HANDLE)::_beginthreadex(
+        NULL, PRO_THREAD_STACK_SIZE, &CProThreadBase::SvcRun, this,
+        CREATE_SUSPENDED | STACK_SIZE_PARAM_IS_A_RESERVATION, NULL);
+    if (threadHandle == NULL)
+    {
+        return false;
+    }
 
-        if (realtime)
-        {
-            ::SetThreadPriority(threadHandle, THREAD_PRIORITY_TIME_CRITICAL);
-        }
+    if (realtime)
+    {
+        ::SetThreadPriority(threadHandle, THREAD_PRIORITY_TIME_CRITICAL);
+    }
 
-        ::ResumeThread(threadHandle);
-        ::CloseHandle(threadHandle);
+    ::ResumeThread(threadHandle);
+    ::CloseHandle(threadHandle);
 
 #else  /* _WIN32 */
 
-        int retc = -1;
+    int retc = -1;
 
-        for (int i = 0; i < 2; ++i)
-        {
-            pthread_attr_t attr;
-            pthread_attr_init(&attr);
-            pthread_attr_setstacksize(&attr, PRO_THREAD_STACK_SIZE);
+    for (int i = 0; i < 2; ++i)
+    {
+        pthread_attr_t attr;
+        pthread_attr_init(&attr);
+        pthread_attr_setstacksize(&attr, PRO_THREAD_STACK_SIZE);
 
 #if defined(PRO_HAS_PTHREAD_EXPLICIT_SCHED)
-            if (realtime)
-            {
-                struct sched_param sp;
-                memset(&sp, 0, sizeof(struct sched_param));
-                sp.sched_priority = sched_get_priority_max(SCHED_RR);
+        if (realtime)
+        {
+            struct sched_param sp = { 0 };
+            sp.sched_priority = sched_get_priority_max(SCHED_RR);
 
-                pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
-                pthread_attr_setschedpolicy(&attr, SCHED_RR); /* root is required */
-                pthread_attr_setschedparam(&attr, &sp);
-            }
+            pthread_attr_setinheritsched(&attr, PTHREAD_EXPLICIT_SCHED);
+            pthread_attr_setschedpolicy(&attr, SCHED_RR); /* root is required */
+            pthread_attr_setschedparam(&attr, &sp);
+        }
 #endif
 
-            pthread_t threadId = 0;
-            retc = pthread_create(
-                &threadId, &attr, &CProThreadBase::SvcRun, this);
-            pthread_attr_destroy(&attr);
+        pthread_t threadId = 0;
+        retc = pthread_create(&threadId, &attr, &CProThreadBase::SvcRun, this);
+        pthread_attr_destroy(&attr);
 
-            if (retc == 0)
-            {
-                m_threadId2Realtime[(PRO_UINT64)threadId] = realtime;
-                break;
-            }
-
-            if (threadId != 0)
-            {
-                pthread_detach(threadId);
-            }
-
-            if (!realtime)
-            {
-                break;
-            }
-
-            /*
-             * downgrade and retry
-             */
-            realtime = false;
-        } /* end of for (...) */
-
-        if (retc != 0)
+        if (retc == 0)
         {
-            return (false);
+            m_threadId2Realtime[(uint64_t)threadId] = realtime;
+            break;
         }
+
+        if (threadId != 0)
+        {
+            pthread_detach(threadId);
+        }
+
+        /*
+         * downgrade and retry
+         */
+        realtime = false;
+    } /* end of for () */
+
+    if (retc != 0)
+    {
+        return false;
+    }
 
 #endif /* _WIN32 */
 
-        ++m_threadCount;
-    }
+    ++m_threadCount;
 
-    return (true);
+    return true;
 }
 
-unsigned long
+size_t
 CProThreadBase::GetThreadCount() const
 {
-    unsigned long count = 0;
+    size_t count = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -149,32 +136,28 @@ CProThreadBase::GetThreadCount() const
         count = m_threadCount;
     }
 
-    return (count);
+    return count;
 }
 
 void
 CProThreadBase::Wait1()
 {
-    {
-        CProThreadMutexGuard mon(m_lock);
+    CProThreadMutexGuard mon(m_lock);
 
-        if (m_threadCount > 0)
-        {
-            m_cond.Wait(&m_lock);
-        }
+    if (m_threadCount > 0)
+    {
+        m_cond.Wait(&m_lock);
     }
 }
 
 void
 CProThreadBase::WaitAll()
 {
-    {
-        CProThreadMutexGuard mon(m_lock);
+    CProThreadMutexGuard mon(m_lock);
 
-        while (m_threadCount > 0)
-        {
-            m_cond.Wait(&m_lock);
-        }
+    while (m_threadCount > 0)
+    {
+        m_cond.Wait(&m_lock);
     }
 }
 
@@ -212,15 +195,14 @@ CProThreadBase::SvcRun(void* arg)
     sigaddset(&mask, SIGUSR2);
     pthread_sigmask(SIG_BLOCK, &mask, NULL);
 
-    const PRO_UINT64 threadId = ProGetThreadId();
+    const uint64_t threadId = ProGetThreadId();
 
     {
         CProThreadMutexGuard mon(threadObj->m_lock);
 
         if (threadObj->m_threadId2Realtime[threadId])
         {
-            struct sched_param sp;
-            memset(&sp, 0, sizeof(struct sched_param));
+            struct sched_param sp = { 0 };
             sp.sched_priority = sched_get_priority_max(SCHED_RR);
 
             pthread_setschedparam((pthread_t)threadId, SCHED_RR, &sp);
@@ -244,32 +226,36 @@ CProThreadBase::SvcRun(void* arg)
     pthread_detach((pthread_t)threadId);
 #endif
 
-    return (0);
+    return 0;
 }
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-PRO_UINT64
+uint64_t
 ProGetThreadId()
 {
+    uint64_t tid = 0;
+
 #if defined(_WIN32)
-    const PRO_UINT64 tid = (PRO_UINT64)::GetCurrentThreadId();
+    tid = (uint64_t)::GetCurrentThreadId();
 #else
-    const PRO_UINT64 tid = (PRO_UINT64)pthread_self();
+    tid = (uint64_t)pthread_self();
 #endif
 
-    return (tid);
+    return tid;
 }
 
-PRO_UINT64
+uint64_t
 ProGetProcessId()
 {
+    uint64_t pid = 0;
+
 #if defined(_WIN32)
-    const PRO_UINT64 pid = (PRO_UINT64)::GetCurrentProcessId();
+    pid = (uint64_t)::GetCurrentProcessId();
 #else
-    const PRO_UINT64 pid = (PRO_UINT64)getpid();
+    pid = (uint64_t)getpid();
 #endif
 
-    return (pid);
+    return pid;
 }

@@ -80,6 +80,9 @@
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_z.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_notify_pipe.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_bsd_wrapper.cpp">
@@ -109,9 +112,6 @@
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_memory_pool.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_ref_count.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_shaper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -137,6 +137,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_z.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_notify_pipe.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

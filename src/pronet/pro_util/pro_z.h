@@ -25,19 +25,26 @@
 #pragma warning(disable : 4786)
 #endif
 
+#include <atomic>
+#include <cassert>
 #include <cctype>
 #include <cerrno>
+#if !defined(__STDC_FORMAT_MACROS)
+#define __STDC_FORMAT_MACROS
+#endif
+#include <cinttypes>
 #include <clocale>
 #include <cmath>
 #include <csignal>
 #include <cstdarg>
 #include <cstddef>
+#include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <limits>
 #include <memory>
-#include <stdint.h>
 
 #if defined(_WIN32)
 #include <conio.h>
@@ -45,6 +52,7 @@
 #else
 #include <unistd.h>
 #include <sys/stat.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #endif
 

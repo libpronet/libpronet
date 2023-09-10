@@ -9,7 +9,6 @@ LOCAL_SRC_FILES := pro_acceptor.cpp        \
                    pro_handler_mgr.cpp     \
                    pro_mcast_transport.cpp \
                    pro_net.cpp             \
-                   pro_notify_pipe.cpp     \
                    pro_select_reactor.cpp  \
                    pro_service_host.cpp    \
                    pro_service_hub.cpp     \

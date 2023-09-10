@@ -16,12 +16,12 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
+#include "pro_a.h"
 #include "pro_notify_pipe.h"
-#include "../pro_util/pro_bsd_wrapper.h"
-#include "../pro_util/pro_memory_pool.h"
-#include "../pro_util/pro_time_util.h"
-#include "../pro_util/pro_z.h"
-#include <cassert>
+#include "pro_bsd_wrapper.h"
+#include "pro_memory_pool.h"
+#include "pro_time_util.h"
+#include "pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -29,15 +29,17 @@
 #define RECV_BUF_SIZE (1024 * 8)
 #define SEND_BUF_SIZE (1024 * 8)
 
+static char g_s_buffer[1024];
+
 /////////////////////////////////////////////////////////////////////////////
 ////
 
 CProNotifyPipe::CProNotifyPipe()
 {
-    m_sockIds[0]    = -1;
-    m_sockIds[1]    = -1;
-    m_notifyPending = false;
-    m_notifyTick    = 0;
+    m_sockIds[0] = -1;
+    m_sockIds[1] = -1;
+    m_signal     = false;
+    m_notifyTick = 0;
 }
 
 CProNotifyPipe::~CProNotifyPipe()
@@ -57,7 +59,7 @@ CProNotifyPipe::Init()
 
 #if defined(_WIN32)
 
-    const PRO_INT64 sockId = pbsd_socket(AF_INET, SOCK_DGRAM, 0);
+    const int64_t sockId = pbsd_socket(AF_INET, SOCK_DGRAM, 0);
     if (sockId == -1)
     {
         return;
@@ -103,7 +105,7 @@ CProNotifyPipe::Init()
 
 #else  /* _WIN32 */
 
-    PRO_INT64 sockIds[2] = { -1, -1 };
+    int64_t sockIds[2] = { -1, -1 };
 
     const int retc = pbsd_socketpair(sockIds); /* connected */
     if (retc != 0)
@@ -127,28 +129,29 @@ CProNotifyPipe::Fini()
     pbsd_closesocket(m_sockIds[1]);
 #endif
 
-    m_sockIds[0]    = -1;
-    m_sockIds[1]    = -1;
-    m_notifyPending = false;
-    m_notifyTick    = 0;
+    m_sockIds[0] = -1;
+    m_sockIds[1] = -1;
+    m_signal     = false;
+    m_notifyTick = 0;
 }
 
 void
 CProNotifyPipe::Notify()
 {
-    const PRO_INT64 sockId = GetWriterSockId();
+    const int64_t sockId = GetWriterSockId();
     if (sockId == -1)
     {
         return;
     }
 
-    const PRO_INT64 tick = ProGetTickCount64();
-    if (m_notifyPending && tick > m_notifyTick)
+    const int64_t tick = ProGetTickCount64();
+    if (tick > m_notifyTick)
     {
-        m_notifyPending = false;
-        m_notifyTick    = 0;
+        m_signal     = false;
+        m_notifyTick = 0;
     }
-    if (m_notifyPending)
+
+    if (m_signal)
     {
         return;
     }
@@ -156,14 +159,34 @@ CProNotifyPipe::Notify()
     const char buf[] = { 0 };
     if (pbsd_send(sockId, buf, sizeof(buf), 0) > 0) /* connected */
     {
-        m_notifyPending = true;
-        m_notifyTick    = tick;
+        m_signal     = true;
+        m_notifyTick = tick;
     }
 }
 
-void
+bool
 CProNotifyPipe::Roger()
 {
-    m_notifyPending = false;
-    m_notifyTick    = 0;
+    const int64_t sockId = GetReaderSockId();
+    if (sockId == -1)
+    {
+        return false;
+    }
+
+    const int recvSize = pbsd_recv(sockId, g_s_buffer, sizeof(g_s_buffer), 0); /* connected */
+    if (
+        (recvSize > 0 && recvSize <= (int)sizeof(g_s_buffer))
+        ||
+        (recvSize < 0 && pbsd_errno((void*)&pbsd_recv) == PBSD_EWOULDBLOCK)
+       )
+    {
+        m_signal     = false;
+        m_notifyTick = 0;
+
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }

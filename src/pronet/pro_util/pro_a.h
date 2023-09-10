@@ -22,48 +22,6 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if defined(_MSC_VER) || defined(__MINGW32__) || defined(__CYGWIN__)
-
-#if !defined(PRO_INT8)
-#define PRO_INT8   char
-#endif
-#if !defined(PRO_INT16)
-#define PRO_INT16  short
-#endif
-#if !defined(PRO_INT32)
-#define PRO_INT32  int
-#endif
-#if !defined(PRO_INT64)
-#if defined(_MSC_VER)
-#define PRO_INT64  __int64
-#define PRO_PRT64D "%I64d"
-#else
-#define PRO_INT64  long long
-#define PRO_PRT64D "%lld"
-#endif
-#endif
-
-#if !defined(PRO_UINT8)
-#define PRO_UINT8  unsigned char
-#endif
-#if !defined(PRO_UINT16)
-#define PRO_UINT16 unsigned short
-#endif
-#if !defined(PRO_UINT32)
-#define PRO_UINT32 unsigned int
-#endif
-#if !defined(PRO_UINT64)
-#if defined(_MSC_VER)
-#define PRO_UINT64 unsigned __int64
-#define PRO_PRT64U "%I64u"
-#else
-#define PRO_UINT64 unsigned long long
-#define PRO_PRT64U "%llu"
-#endif
-#endif
-
-#else  /* _MSC_VER, __MINGW32__, __CYGWIN__ */
-
 #if !defined(PRO_INT8)
 #define PRO_INT8   char
 #endif
@@ -75,9 +33,7 @@
 #endif
 #if !defined(PRO_INT64)
 #define PRO_INT64  long long
-#define PRO_PRT64D "%lld"
 #endif
-
 #if !defined(PRO_UINT8)
 #define PRO_UINT8  unsigned char
 #endif
@@ -89,20 +45,12 @@
 #endif
 #if !defined(PRO_UINT64)
 #define PRO_UINT64 unsigned long long
-#define PRO_PRT64U "%llu"
 #endif
-
-#endif /* _MSC_VER, __MINGW32__, __CYGWIN__ */
-
-/*-------------------------------------------------------------------------*/
 
 /*
  * definitions for Linux, see the "build/DEFINE.txt"
  */
 #if defined(__linux__) && !defined(ANDROID)
-#if !defined(PRO_HAS_ATOMOP)
-#define PRO_HAS_ATOMOP
-#endif
 #if !defined(PRO_HAS_ACCEPT4)
 #define PRO_HAS_ACCEPT4
 #endif
@@ -112,25 +60,40 @@
 #if !defined(PRO_HAS_PTHREAD_EXPLICIT_SCHED)
 #define PRO_HAS_PTHREAD_EXPLICIT_SCHED
 #endif
-#endif /* __linux__, ANDROID */
+#if !defined(PRO_HAS_PTHREAD_CONDATTR_SETCLOCK)
+#define PRO_HAS_PTHREAD_CONDATTR_SETCLOCK
+#endif
+#if !defined(PRO_HAS_NANOSLEEP)
+#define PRO_HAS_NANOSLEEP
+#endif
+#endif
+
+/*
+ * definitions for Android, see the "build/DEFINE.txt"
+ */
+#if defined(ANDROID)
+#if !defined(PRO_HAS_PTHREAD_CONDATTR_SETCLOCK)
+#define PRO_HAS_PTHREAD_CONDATTR_SETCLOCK
+#endif
+#if !defined(PRO_HAS_NANOSLEEP)
+#define PRO_HAS_NANOSLEEP
+#endif
+#endif
 
 /*
  * definitions for MacOS/iOS, see the "build/DEFINE.txt"
  */
 #if defined(__APPLE__)
-#if !defined(PRO_LACKS_GETHOSTBYNAME_R)
-#define PRO_LACKS_GETHOSTBYNAME_R
+#if !defined(PRO_HAS_MACH_ABSOLUTE_TIME)
+#define PRO_HAS_MACH_ABSOLUTE_TIME
 #endif
 #if !defined(PRO_LACKS_CLOCK_GETTIME)
 #define PRO_LACKS_CLOCK_GETTIME
 #endif
-#if !defined(PRO_HAS_MACH_ABSOLUTE_TIME)
-#define PRO_HAS_MACH_ABSOLUTE_TIME
-#endif
 #if !defined(PRO_LACKS_UDP_CONNECT)
 #define PRO_LACKS_UDP_CONNECT
 #endif
-#endif /* __APPLE__ */
+#endif
 
 /*
  * optional definitions, see the "build/DEFINE.txt"

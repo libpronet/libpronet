@@ -49,9 +49,6 @@
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_net.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_notify_pipe.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_select_reactor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -109,9 +106,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_net.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_notify_pipe.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_recv_pool.h">

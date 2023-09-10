@@ -46,6 +46,7 @@
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_functor_command_task.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_log_file.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_memory_pool.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_notify_pipe.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_ref_count.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_shaper.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_ssl_util.h" />
@@ -69,7 +70,7 @@
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_functor_command_task.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_log_file.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_memory_pool.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_ref_count.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_notify_pipe.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_shaper.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_ssl_util.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_stat.cpp" />

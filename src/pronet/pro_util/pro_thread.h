@@ -23,6 +23,7 @@
 #include "pro_memory_pool.h"
 #include "pro_stl.h"
 #include "pro_thread_mutex.h"
+#include "pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -34,7 +35,7 @@ class CProThreadBase
 {
 public:
 
-    unsigned long GetThreadCount() const;
+    size_t GetThreadCount() const;
 
 protected:
 
@@ -62,12 +63,12 @@ private:
 
 private:
 
-    unsigned long                m_threadCount;
+    size_t                     m_threadCount;
 #if !defined(_WIN32)
-    CProStlMap<PRO_UINT64, bool> m_threadId2Realtime;
+    CProStlMap<uint64_t, bool> m_threadId2Realtime;
 #endif
-    CProThreadMutexCondition     m_cond;
-    mutable CProThreadMutex      m_lock;
+    CProThreadMutexCondition   m_cond;
+    mutable CProThreadMutex    m_lock;
 
     DECLARE_SGI_POOL(0)
 };
@@ -75,10 +76,10 @@ private:
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-PRO_UINT64
+uint64_t
 ProGetThreadId();
 
-PRO_UINT64
+uint64_t
 ProGetProcessId();
 
 /////////////////////////////////////////////////////////////////////////////

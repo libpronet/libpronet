@@ -15,7 +15,6 @@ libpro_net_so_SOURCES = ../../../../src/pronet/pro_net/pro_acceptor.cpp        \
                         ../../../../src/pronet/pro_net/pro_handler_mgr.cpp     \
                         ../../../../src/pronet/pro_net/pro_mcast_transport.cpp \
                         ../../../../src/pronet/pro_net/pro_net.cpp             \
-                        ../../../../src/pronet/pro_net/pro_notify_pipe.cpp     \
                         ../../../../src/pronet/pro_net/pro_select_reactor.cpp  \
                         ../../../../src/pronet/pro_net/pro_service_host.cpp    \
                         ../../../../src/pronet/pro_net/pro_service_hub.cpp     \

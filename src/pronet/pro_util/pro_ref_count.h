@@ -20,8 +20,7 @@
 #define ____PRO_REF_COUNT_H____
 
 #include "pro_a.h"
-#include "pro_memory_pool.h"
-#include "pro_thread_mutex.h"
+#include "pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -30,29 +29,36 @@ class CProRefCount
 {
 public:
 
+    virtual unsigned long AddRef()
+    {
+        return ++m_count;
+    }
+
+    virtual unsigned long Release()
+    {
+        const unsigned long count = --m_count;
+        if (count == 0)
+        {
+            delete this;
+        }
+
+        return count;
+    }
+
+protected:
+
     CProRefCount()
     {
-        m_refCount = 1;
+        m_count = 1;
     }
 
     virtual ~CProRefCount()
     {
     }
 
-    virtual unsigned long AddRef();
-
-    virtual unsigned long Release();
-
 private:
 
-#if defined(_WIN32) || defined(PRO_HAS_ATOMOP)
-    volatile unsigned long m_refCount;
-#else
-    unsigned long          m_refCount;
-    CProThreadMutex        m_lock;
-#endif
-
-    DECLARE_SGI_POOL(0)
+    std::atomic<unsigned int> m_count;
 };
 
 /////////////////////////////////////////////////////////////////////////////

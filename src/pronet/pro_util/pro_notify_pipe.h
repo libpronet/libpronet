@@ -16,59 +16,47 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(____PRO_THREAD_H____)
-#define ____PRO_THREAD_H____
+#if !defined(____PRO_NOTIFY_PIPE_H____)
+#define ____PRO_NOTIFY_PIPE_H____
 
 #include "pro_a.h"
 #include "pro_memory_pool.h"
-#include "pro_stl.h"
-#include "pro_thread_mutex.h"
 #include "pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-/*
- * Instead of using CProThreadBase, you should use CProFunctorCommandTask.
- */
-class CProThreadBase
+class CProNotifyPipe
 {
 public:
 
-    size_t GetThreadCount() const;
+    CProNotifyPipe();
 
-protected:
+    ~CProNotifyPipe();
 
-    CProThreadBase();
+    void Init();
 
-    virtual ~CProThreadBase()
+    void Fini();
+
+    int64_t GetReaderSockId() const
     {
+        return m_sockIds[0];
     }
 
-    bool Spawn(bool realtime);
+    int64_t GetWriterSockId() const
+    {
+        return m_sockIds[1];
+    }
 
-    void Wait1();
+    void Notify();
 
-    void WaitAll();
-
-    virtual void Svc() = 0;
-
-private:
-
-#if defined(_WIN32)
-    static unsigned int __stdcall SvcRun(void* arg);
-#else
-    static void* SvcRun(void* arg);
-#endif
+    bool Roger();
 
 private:
 
-    size_t                     m_threadCount;
-#if !defined(_WIN32)
-    CProStlMap<uint64_t, bool> m_threadId2Realtime;
-#endif
-    CProThreadMutexCondition   m_cond;
-    mutable CProThreadMutex    m_lock;
+    int64_t m_sockIds[2];
+    bool    m_signal;
+    int64_t m_notifyTick;
 
     DECLARE_SGI_POOL(0)
 };
@@ -76,13 +64,4 @@ private:
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-uint64_t
-ProGetThreadId();
-
-uint64_t
-ProGetProcessId();
-
-/////////////////////////////////////////////////////////////////////////////
-////
-
-#endif /* ____PRO_THREAD_H____ */
+#endif /* ____PRO_NOTIFY_PIPE_H____ */

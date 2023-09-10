@@ -336,7 +336,6 @@
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_handler_mgr.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_mcast_transport.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_net.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_net\pro_notify_pipe.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_select_reactor.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_service_host.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_net\pro_service_hub.cpp" />
@@ -358,7 +357,6 @@
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_handler_mgr.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_mcast_transport.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_net.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_net\pro_notify_pipe.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_recv_pool.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_select_reactor.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_net\pro_send_pool.h" />

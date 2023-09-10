@@ -20,34 +20,22 @@
 #define ____PRO_MEMORY_POOL_H____
 
 #include "pro_a.h"
-
-#if defined(_MSC_VER)
-#pragma warning(disable : 4786)
-#endif
-
-#include <cstddef>
-#include <memory>
+#include "pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
-
-#if !defined(____STD____)
-#define ____STD____
-#define ____STD_BEGIN namespace std {
-#define ____STD_END   }
-#endif
 
 #if defined(DECLARE_SGI_POOL)
 #undef DECLARE_SGI_POOL
 #endif
 
 #if !defined(PRO_LACKS_SGI_POOL) && !defined(PRO_LACKS_SGI_POOL_OPNEW)
-#define DECLARE_SGI_POOL(a)                                                                         \
-public:                                                                                             \
-    static void* operator new(size_t size)        { return (ProAllocateSgiPoolBuffer(size, (a))); } \
-    static void  operator delete(void* p)         { ProDeallocateSgiPoolBuffer(p, (a)); }           \
-    static void* operator new(size_t, void* p0)   { return (p0); }                                  \
-    static void  operator delete(void*, void* p0) { (void)p0; }                                     \
+#define DECLARE_SGI_POOL(a)                                                                       \
+public:                                                                                           \
+    static void* operator new(size_t size)        { return ProAllocateSgiPoolBuffer(size, (a)); } \
+    static void  operator delete(void* p)         { ProDeallocateSgiPoolBuffer(p, (a)); }         \
+    static void* operator new(size_t, void* p0)   { return p0; }                                  \
+    static void  operator delete(void*, void* p0) { (void)p0; }                                   \
 protected:
 #else
 #define DECLARE_SGI_POOL(a)
@@ -74,33 +62,21 @@ ProRealloc(void*  p,
 void
 ProFree(void* p);
 
+extern
 void*
-ProPoolMalloc(size_t        size,
-              unsigned long poolIndex); /* 0 ~ 9 */
-
-void*
-ProPoolCalloc(size_t        count,
-              size_t        size,
-              unsigned long poolIndex); /* 0 ~ 9 */
-
-void*
-ProPoolRealloc(void*         p,
-               size_t        newSize,
-               unsigned long poolIndex); /* 0 ~ 9 */
-
-void
-ProPoolFree(void*         p,
-            unsigned long poolIndex); /* 0 ~ 9 */
+ProAllocateSgiPoolBuffer(size_t       size,
+                         unsigned int poolIndex); /* [0, 3] */
 
 extern
 void*
-ProAllocateSgiPoolBuffer(size_t        size,
-                         unsigned long poolIndex); /* 0 ~ 9 */
+ProReallocateSgiPoolBuffer(void*        buf,
+                           size_t       newSize,
+                           unsigned int poolIndex); /* [0, 3] */
 
 extern
 void
-ProDeallocateSgiPoolBuffer(void*         buf,
-                           unsigned long poolIndex); /* 0 ~ 9 */
+ProDeallocateSgiPoolBuffer(void*        buf,
+                           unsigned int poolIndex); /* [0, 3] */
 
 #if defined(__cplusplus)
 } /* extern "C" */
@@ -109,14 +85,15 @@ ProDeallocateSgiPoolBuffer(void*         buf,
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-____STD_BEGIN
+namespace std {
 
-template<typename ____Ty, unsigned long ____poolIndex = 0>
+template<typename ____Ty, unsigned int ____poolIndex = 0>
 class pro_allocator : public allocator<____Ty>
 {
 public:
 
-    template<class ____Other> struct rebind
+    template<class ____Other>
+    struct rebind
     {
         typedef pro_allocator<____Other, ____poolIndex> other;
     };
@@ -125,8 +102,7 @@ public:
     {
     }
 
-    pro_allocator(const pro_allocator<____Ty, ____poolIndex>&)
-    : allocator<____Ty>()
+    pro_allocator(const pro_allocator<____Ty, ____poolIndex>&) : allocator<____Ty>()
     {
     }
 
@@ -139,47 +115,53 @@ public:
          */
     }
 
-    template<class ____Other> pro_allocator<____Ty, ____poolIndex>&
-    operator=(const pro_allocator<____Other, ____poolIndex>&)
+    template<class ____Other>
+    pro_allocator<____Ty, ____poolIndex>& operator=(const pro_allocator<____Other, ____poolIndex>&)
     {
         /*
          * do nothing
          */
-        return (*this);
+        return *this;
     }
 #endif
 
     ____Ty* allocate(size_t ____N)
     {
+        ____Ty* p = NULL;
+
 #if !defined(PRO_LACKS_SGI_POOL) && !defined(PRO_LACKS_SGI_POOL_STL)
-        ____Ty* const p = (____Ty*)ProAllocateSgiPoolBuffer(sizeof(____Ty) * ____N, ____poolIndex);
+        p = (____Ty*)ProAllocateSgiPoolBuffer(sizeof(____Ty) * ____N, ____poolIndex);
 #else
-        ____Ty* const p = (____Ty*)::operator new(sizeof(____Ty) * ____N);
+        p = (____Ty*)::operator new(sizeof(____Ty) * ____N);
 #endif
 
-        return (p);
+        return p;
     }
 
     ____Ty* allocate(size_t ____N, const void*)
     {
+        ____Ty* p = NULL;
+
 #if !defined(PRO_LACKS_SGI_POOL) && !defined(PRO_LACKS_SGI_POOL_STL)
-        ____Ty* const p = (____Ty*)ProAllocateSgiPoolBuffer(sizeof(____Ty) * ____N, ____poolIndex);
+        p = (____Ty*)ProAllocateSgiPoolBuffer(sizeof(____Ty) * ____N, ____poolIndex);
 #else
-        ____Ty* const p = (____Ty*)::operator new(sizeof(____Ty) * ____N);
+        p = (____Ty*)::operator new(sizeof(____Ty) * ____N);
 #endif
 
-        return (p);
+        return p;
     }
 
     char* _Charalloc(size_t ____N)
     {
+        char* p = NULL;
+
 #if !defined(PRO_LACKS_SGI_POOL) && !defined(PRO_LACKS_SGI_POOL_STL)
-        char* const p = (char*)ProAllocateSgiPoolBuffer(sizeof(char) * ____N, ____poolIndex);
+        p = (char*)ProAllocateSgiPoolBuffer(sizeof(char) * ____N, ____poolIndex);
 #else
-        char* const p = (char*)::operator new(sizeof(char) * ____N);
+        p = (char*)::operator new(sizeof(char) * ____N);
 #endif
 
-        return (p);
+        return p;
     }
 
     void deallocate(void* ____P, size_t)
@@ -199,7 +181,8 @@ class pro_allocator<void> : public allocator<void>
 {
 public:
 
-    template<class ____Other> struct rebind
+    template<class ____Other>
+    struct rebind
     {
         typedef pro_allocator<____Other> other;
     };
@@ -227,20 +210,20 @@ public:
          */
     }
 
-    template<class ____Other> pro_allocator<void>&
-    operator=(const pro_allocator<____Other>&)
+    template<class ____Other>
+    pro_allocator<void>& operator=(const pro_allocator<____Other>&)
     {
         /*
          * do nothing
          */
-        return (*this);
+        return *this;
     }
 #endif
 
     DECLARE_SGI_POOL(0)
 };
 
-____STD_END
+} /* namespace std */
 
 /////////////////////////////////////////////////////////////////////////////
 ////

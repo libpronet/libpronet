@@ -16,10 +16,12 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(PRO_NOTIFY_PIPE_H)
-#define PRO_NOTIFY_PIPE_H
+#if !defined(____PRO_NOTIFY_PIPE_H____)
+#define ____PRO_NOTIFY_PIPE_H____
 
-#include "../pro_util/pro_memory_pool.h"
+#include "pro_a.h"
+#include "pro_memory_pool.h"
+#include "pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -36,25 +38,25 @@ public:
 
     void Fini();
 
-    PRO_INT64 GetReaderSockId() const
+    int64_t GetReaderSockId() const
     {
-        return (m_sockIds[0]);
+        return m_sockIds[0];
     }
 
-    PRO_INT64 GetWriterSockId() const
+    int64_t GetWriterSockId() const
     {
-        return (m_sockIds[1]);
+        return m_sockIds[1];
     }
 
     void Notify();
 
-    void Roger();
+    bool Roger();
 
 private:
 
-    PRO_INT64 m_sockIds[2];
-    bool      m_notifyPending;
-    PRO_INT64 m_notifyTick;
+    int64_t m_sockIds[2];
+    bool    m_signal;
+    int64_t m_notifyTick;
 
     DECLARE_SGI_POOL(0)
 };
@@ -62,4 +64,4 @@ private:
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#endif /* PRO_NOTIFY_PIPE_H */
+#endif /* ____PRO_NOTIFY_PIPE_H____ */
