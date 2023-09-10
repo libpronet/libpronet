@@ -25,9 +25,6 @@
 #pragma warning(disable : 4786)
 #endif
 
-#include <cstddef>
-#include <memory>
-
 #if defined(__cplusplus)
 extern "C" {
 #endif
@@ -43,13 +40,15 @@ ProMalloc(size_t size)
         size = 1;
     }
 
+    void* p = NULL;
+
 #if !defined(PRO_LACKS_SGI_POOL) && !defined(PRO_LACKS_SGI_POOL_MALLOC)
-    void* const p = ProAllocateSgiPoolBuffer(size, 0);
+    p = ProAllocateSgiPoolBuffer(size, 0);
 #else
-    void* const p = malloc(size);
+    p = malloc(size);
 #endif
 
-    return (p);
+    return p;
 }
 
 void*
@@ -65,17 +64,19 @@ ProCalloc(size_t count,
         size  = 1;
     }
 
+    void* p = NULL;
+
 #if !defined(PRO_LACKS_SGI_POOL) && !defined(PRO_LACKS_SGI_POOL_MALLOC)
-    void* const p = ProAllocateSgiPoolBuffer(count * size, 0);
+    p = ProAllocateSgiPoolBuffer(count * size, 0);
     if (p != NULL)
     {
         memset(p, 0, count * size);
     }
 #else
-    void* const p = calloc(count, size);
+    p = calloc(count, size);
 #endif
 
-    return (p);
+    return p;
 }
 
 void*
@@ -87,13 +88,15 @@ ProRealloc(void*  p,
         newSize = 1;
     }
 
+    void* q = NULL;
+
 #if !defined(PRO_LACKS_SGI_POOL) && !defined(PRO_LACKS_SGI_POOL_MALLOC)
-    void* const q = ProReallocateSgiPoolBuffer(p, newSize, 0);
+    q = ProReallocateSgiPoolBuffer(p, newSize, 0);
 #else
-    void* const q = realloc(p, newSize);
+    q = realloc(p, newSize);
 #endif
 
-    return (q);
+    return q;
 }
 
 void
@@ -109,42 +112,6 @@ ProFree(void* p)
 #else
     free(p);
 #endif
-}
-
-void*
-ProPoolMalloc(size_t        size,
-              unsigned long poolIndex) /* 0 ~ 9 */
-{
-    return (ProAllocateSgiPoolBuffer(size, poolIndex));
-}
-
-void*
-ProPoolCalloc(size_t        count,
-              size_t        size,
-              unsigned long poolIndex) /* 0 ~ 9 */
-{
-    void* const p = ProAllocateSgiPoolBuffer(count * size, poolIndex);
-    if (p != NULL)
-    {
-        memset(p, 0, count * size);
-    }
-
-    return (p);
-}
-
-void*
-ProPoolRealloc(void*         p,
-               size_t        newSize,
-               unsigned long poolIndex) /* 0 ~ 9 */
-{
-    return (ProReallocateSgiPoolBuffer(p, newSize, poolIndex));
-}
-
-void
-ProPoolFree(void*         p,
-            unsigned long poolIndex) /* 0 ~ 9 */
-{
-    ProDeallocateSgiPoolBuffer(p, poolIndex);
 }
 
 /////////////////////////////////////////////////////////////////////////////

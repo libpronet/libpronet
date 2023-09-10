@@ -22,6 +22,7 @@
 #include "pro_a.h"
 #include "pro_memory_pool.h"
 #include "pro_stl.h"
+#include "pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -44,96 +45,94 @@ struct PRO_LOCAL_TIME
         millisecond = 0;
     }
 
-    bool operator==(const PRO_LOCAL_TIME& lt) const
+    bool operator==(const PRO_LOCAL_TIME& other) const
     {
-        return (
-            year        == lt.year   &&
-            month       == lt.month  &&
-            day         == lt.day    &&
-            hour        == lt.hour   &&
-            minute      == lt.minute &&
-            second      == lt.second &&
-            millisecond == lt.millisecond
-            );
+        return year        == other.year   &&
+               month       == other.month  &&
+               day         == other.day    &&
+               hour        == other.hour   &&
+               minute      == other.minute &&
+               second      == other.second &&
+               millisecond == other.millisecond;
     }
 
-    bool operator!=(const PRO_LOCAL_TIME& lt) const
+    bool operator!=(const PRO_LOCAL_TIME& other) const
     {
-        return (!(*this == lt));
+        return !(*this == other);
     }
 
-    bool operator<(const PRO_LOCAL_TIME& lt) const
+    bool operator<(const PRO_LOCAL_TIME& other) const
     {
-        if (year < lt.year)
+        if (year < other.year)
         {
-            return (true);
+            return true;
         }
-        if (year > lt.year)
+        if (year > other.year)
         {
-            return (false);
-        }
-
-        if (month < lt.month)
-        {
-            return (true);
-        }
-        if (month > lt.month)
-        {
-            return (false);
+            return false;
         }
 
-        if (day < lt.day)
+        if (month < other.month)
         {
-            return (true);
+            return true;
         }
-        if (day > lt.day)
+        if (month > other.month)
         {
-            return (false);
-        }
-
-        if (hour < lt.hour)
-        {
-            return (true);
-        }
-        if (hour > lt.hour)
-        {
-            return (false);
+            return false;
         }
 
-        if (minute < lt.minute)
+        if (day < other.day)
         {
-            return (true);
+            return true;
         }
-        if (minute > lt.minute)
+        if (day > other.day)
         {
-            return (false);
-        }
-
-        if (second < lt.second)
-        {
-            return (true);
-        }
-        if (second > lt.second)
-        {
-            return (false);
+            return false;
         }
 
-        return (millisecond < lt.millisecond);
+        if (hour < other.hour)
+        {
+            return true;
+        }
+        if (hour > other.hour)
+        {
+            return false;
+        }
+
+        if (minute < other.minute)
+        {
+            return true;
+        }
+        if (minute > other.minute)
+        {
+            return false;
+        }
+
+        if (second < other.second)
+        {
+            return true;
+        }
+        if (second > other.second)
+        {
+            return false;
+        }
+
+        return millisecond < other.millisecond;
     }
 
-    bool operator<=(const PRO_LOCAL_TIME& lt) const
+    bool operator<=(const PRO_LOCAL_TIME& other) const
     {
-        return (*this < lt || *this == lt);
+        return *this < other || *this == other;
     }
 
-    bool operator>(const PRO_LOCAL_TIME& lt) const
+    bool operator>(const PRO_LOCAL_TIME& other) const
     {
-        return (!(*this < lt || *this == lt));
+        return !(*this < other || *this == other);
     }
 
-    bool operator>=(const PRO_LOCAL_TIME& lt) const
+    bool operator>=(const PRO_LOCAL_TIME& other) const
     {
-        return (!(*this < lt));
+        return !(*this < other);
     }
 
     unsigned short year;
@@ -150,19 +149,29 @@ struct PRO_LOCAL_TIME
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-PRO_INT64
+#if defined(__cplusplus)
+extern "C" {
+#endif
+
+extern
+int64_t
 ProGetTickCount64();
 
+extern
 void
-ProSleep(PRO_UINT32 milliseconds);
+ProSleep(unsigned int milliseconds);
+
+#if defined(__cplusplus)
+}
+#endif
 
 void
 ProGetLocalTime(PRO_LOCAL_TIME& localTime,
-                long            deltaSeconds = 0);
+                int             deltaMilliseconds = 0);
 
 const char*
 ProGetLocalTimeString(CProStlString& timeString,
-                      long           deltaSeconds = 0);
+                      int            deltaMilliseconds = 0);
 
 const char*
 ProLocalTime2String(const PRO_LOCAL_TIME& localTime,
@@ -171,6 +180,10 @@ ProLocalTime2String(const PRO_LOCAL_TIME& localTime,
 void
 ProString2LocalTime(const char*     timeString,
                     PRO_LOCAL_TIME& localTime);
+
+void
+ProGetLocalTimeval(struct timeval& localTimeval,
+                   int             deltaMilliseconds = 0);
 
 /////////////////////////////////////////////////////////////////////////////
 ////

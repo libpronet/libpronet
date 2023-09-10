@@ -27,6 +27,8 @@
 #endif
 
 #include <algorithm>
+#include <array>
+#include <bitset>
 #include <deque>
 #include <list>
 #include <map>
@@ -37,28 +39,28 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-template<class ____Ty, unsigned long ____poolIndex = 0>
+template<class ____Ty, unsigned int ____poolIndex = 0>
 class CProStlVector
 : public std::vector<____Ty, std::pro_allocator<____Ty, ____poolIndex> >
 {
     DECLARE_SGI_POOL(0)
 };
 
-template<class ____Ty, unsigned long ____poolIndex = 0>
+template<class ____Ty, unsigned int ____poolIndex = 0>
 class CProStlDeque
 : public std::deque<____Ty, std::pro_allocator<____Ty, ____poolIndex> >
 {
     DECLARE_SGI_POOL(0)
 };
 
-template<class ____Ty, unsigned long ____poolIndex = 0>
+template<class ____Ty, unsigned int ____poolIndex = 0>
 class CProStlList
 : public std::list<____Ty, std::pro_allocator<____Ty, ____poolIndex> >
 {
     DECLARE_SGI_POOL(0)
 };
 
-template<class ____K, class ____Ty, unsigned long ____poolIndex = 0, class ____Pr = std::less<____K> >
+template<class ____K, class ____Ty, unsigned int ____poolIndex = 0, class ____Pr = std::less<____K> >
 class CProStlMap
 #if !defined(_MSC_VER) || (_MSC_VER > 1200) /* 1200 is 6.0 */
 : public std::map<____K, ____Ty, ____Pr, std::pro_allocator<std::pair<const ____K, ____Ty>, ____poolIndex> >
@@ -69,7 +71,7 @@ class CProStlMap
     DECLARE_SGI_POOL(0)
 };
 
-template<class ____K, class ____Ty, unsigned long ____poolIndex = 0, class ____Pr = std::less<____K> >
+template<class ____K, class ____Ty, unsigned int ____poolIndex = 0, class ____Pr = std::less<____K> >
 class CProStlMultimap
 #if !defined(_MSC_VER) || (_MSC_VER > 1200) /* 1200 is 6.0 */
 : public std::multimap<____K, ____Ty, ____Pr, std::pro_allocator<std::pair<const ____K, ____Ty>, ____poolIndex> >
@@ -80,14 +82,14 @@ class CProStlMultimap
     DECLARE_SGI_POOL(0)
 };
 
-template<class ____K, unsigned long ____poolIndex = 0, class ____Pr = std::less<____K> >
+template<class ____K, unsigned int ____poolIndex = 0, class ____Pr = std::less<____K> >
 class CProStlSet
 : public std::set<____K, ____Pr, std::pro_allocator<____K, ____poolIndex> >
 {
     DECLARE_SGI_POOL(0)
 };
 
-template<class ____K, unsigned long ____poolIndex = 0, class ____Pr = std::less<____K> >
+template<class ____K, unsigned int ____poolIndex = 0, class ____Pr = std::less<____K> >
 class CProStlMultiset
 : public std::multiset<____K, ____Pr, std::pro_allocator<____K, ____poolIndex> >
 {

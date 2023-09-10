@@ -11,8 +11,88 @@
  * purpose.  It is provided "as is" without express or implied warranty.
  */
 
-#ifndef __SGI_STL_INTERNAL_ALLOC_H
+#if !defined(__SGI_STL_INTERNAL_ALLOC_H)
 #define __SGI_STL_INTERNAL_ALLOC_H
+
+#include <cstddef>
+#include <cstdlib>
+#include <cstring>
+
+#if defined(_WIN32)
+#if !defined(WIN32_LEAN_AND_MEAN)
+#define WIN32_LEAN_AND_MEAN
+#endif
+#if !defined(_WINSOCK_DEPRECATED_NO_WARNINGS)
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#endif
+#include <windows.h>
+#else
+#include <pthread.h>
+#endif
+
+#if defined(_WIN32)
+
+class CProThreadMutex_i
+{
+public:
+
+    CProThreadMutex_i()
+    {
+        ::InitializeCriticalSection(&m_cs);
+    }
+
+    ~CProThreadMutex_i()
+    {
+        ::DeleteCriticalSection(&m_cs);
+    }
+
+    void Lock()
+    {
+        ::EnterCriticalSection(&m_cs);
+    }
+
+    void Unlock()
+    {
+        ::LeaveCriticalSection(&m_cs);
+    }
+
+private:
+
+    CRITICAL_SECTION m_cs;
+};
+
+#else  /* _WIN32 */
+
+class CProThreadMutex_i
+{
+public:
+
+    CProThreadMutex_i()
+    {
+        pthread_mutex_init(&m_mutext, NULL);
+    }
+
+    ~CProThreadMutex_i()
+    {
+        pthread_mutex_destroy(&m_mutext);
+    }
+
+    void Lock()
+    {
+        pthread_mutex_lock(&m_mutext);
+    }
+
+    void Unlock()
+    {
+        pthread_mutex_unlock(&m_mutext);
+    }
+
+private:
+
+    pthread_mutex_t m_mutext;
+};
+
+#endif /* _WIN32 */
 
 // This implements some standard node allocators.  These are
 // NOT the same as the allocators in the C++ draft standard or in
@@ -20,18 +100,6 @@
 // types; indeed we assume that there is only one pointer type.
 // The allocation primitives are intended to allocate individual objects,
 // not larger arenas as with the original STL allocators.
-
-#include <stddef.h>
-#include <stdlib.h>
-#include <string.h>
-
-#if !defined(____STD____)
-#define ____STD____
-#define ____STD_BEGIN namespace std {
-#define ____STD_END   }
-#endif
-
-____STD_BEGIN
 
 // Default node allocator.
 // With a reasonable compiler, this should be roughly as fast as the
@@ -56,6 +124,8 @@ ____STD_BEGIN
 // Node that containers built on different allocator instances have
 // different types, limiting the utility of this approach.
 
+namespace std {
+
 /*
  * buf_obj = hdr + app_level_obj = 8 + app_level_obj,
  * please refer to "../pro_shared.cpp"
@@ -63,7 +133,7 @@ ____STD_BEGIN
 enum { __MAX_OBJ_BYTES = 8 + 1024 * 128  }; /* sizeof(app_level_obj) <= 128K */
 enum { __BIG_OBJ_BYTES = 8 + 4096        }; /* sizeof(app_level_big_obj) >= 4096 */
 enum { __CHUNK_SIZE    = 1024 * 1024 * 4 }; /* sizeof(chunk) is 4M, >= glibc::M_MMAP_THRESHOLD */
-enum { __NFREELISTS    = 49              }; /* 49 levels */
+enum { __NFREELISTS    = 57              }; /* 57 levels */
 
 union __Obj
 {
@@ -74,24 +144,190 @@ union __Obj
 template<int inst>
 class __default_alloc_template
 {
-private:
+public:
 
-    static __Obj* _S_free_list[__NFREELISTS];
-    static size_t _S_obj_size[__NFREELISTS];
-    static size_t _S_busy_obj_num[__NFREELISTS];
-    static size_t _S_total_obj_num[__NFREELISTS];
+    static void* allocate(
+        size_t             __n,
+        CProThreadMutex_i* __lock /* = NULL */
+        )
+    {
+        if (__n == 0)
+        {
+            return NULL;
+        }
+
+        void* __ret = NULL;
+
+        if (__n > (size_t)__MAX_OBJ_BYTES)
+        {
+            __ret = malloc(__n);
+        }
+        else
+        {
+            if (__lock != NULL)
+            {
+                __lock->Lock();
+            }
+
+            int __index = _S_freelist_index(__n);
+            __Obj** __my_free_list = _S_free_list + __index;
+            __Obj* __result = *__my_free_list;
+
+            if (__result == NULL)
+            {
+                __ret = _S_refill(_S_round_up(__n));
+            }
+            else
+            {
+                *__my_free_list = __result->_M_free_list_link;
+                __ret = __result;
+            }
+
+            if (__ret != NULL)
+            {
+                ++_S_busy_obj_num[__index];
+            }
+
+            if (__lock != NULL)
+            {
+                __lock->Unlock();
+            }
+        }
+
+        return __ret;
+    }
+
+    static void deallocate(
+        void*              __p,
+        size_t             __n,
+        CProThreadMutex_i* __lock /* = NULL */
+        )
+    {
+        if (__p == NULL || __n == 0)
+        {
+            return;
+        }
+
+        if (__n > (size_t)__MAX_OBJ_BYTES)
+        {
+            free(__p);
+        }
+        else
+        {
+            if (__lock != NULL)
+            {
+                __lock->Lock();
+            }
+
+            int __index = _S_freelist_index(__n);
+            __Obj** __my_free_list = _S_free_list + __index;
+            __Obj* __q = (__Obj*)__p;
+
+            __q->_M_free_list_link = *__my_free_list;
+            *__my_free_list = __q;
+
+            --_S_busy_obj_num[__index];
+
+            if (__lock != NULL)
+            {
+                __lock->Unlock();
+            }
+        }
+    }
+
+    static void* reallocate(
+        void*              __p,
+        size_t             __old_sz,
+        size_t             __new_sz,
+        CProThreadMutex_i* __lock /* = NULL */
+        )
+    {
+        if (__p == NULL || __old_sz == 0)
+        {
+            return allocate(__new_sz, __lock);
+        }
+
+        if (__new_sz == 0)
+        {
+            deallocate(__p, __old_sz, __lock);
+
+            return NULL;
+        }
+
+        if (__old_sz > (size_t)__MAX_OBJ_BYTES && __new_sz > (size_t)__MAX_OBJ_BYTES)
+        {
+            return realloc(__p, __new_sz);
+        }
+
+        if (_S_round_up(__old_sz) == _S_round_up(__new_sz))
+        {
+            return __p;
+        }
+
+        if (__lock != NULL)
+        {
+            __lock->Lock();
+        }
+
+        void* __result = allocate(__new_sz, NULL);
+        if (__result != NULL)
+        {
+            size_t __copy_sz = __new_sz > __old_sz ? __old_sz : __new_sz;
+            memcpy(__result, __p, __copy_sz);
+            deallocate(__p, __old_sz, NULL);
+        }
+
+        if (__lock != NULL)
+        {
+            __lock->Unlock();
+        }
+
+        return __result;
+    }
+
+    static void get_info(
+        void*              __free_list[__NFREELISTS],
+        size_t             __obj_size[__NFREELISTS],
+        size_t             __busy_obj_num[__NFREELISTS],
+        size_t             __total_obj_num[__NFREELISTS],
+        size_t*            __heap_size,
+        CProThreadMutex_i* __lock /* = NULL */
+        )
+    {
+        if (__lock != NULL)
+        {
+            __lock->Lock();
+        }
+
+        memcpy(__free_list    , (void*)_S_free_list    , sizeof(_S_free_list));
+        memcpy(__obj_size     , (void*)_S_obj_size     , sizeof(_S_obj_size));
+        memcpy(__busy_obj_num , (void*)_S_busy_obj_num , sizeof(_S_busy_obj_num));
+        memcpy(__total_obj_num, (void*)_S_total_obj_num, sizeof(_S_total_obj_num));
+        if (__heap_size != NULL)
+        {
+            *__heap_size = _S_heap_size;
+        }
+
+        if (__lock != NULL)
+        {
+            __lock->Unlock();
+        }
+    }
+
+private:
 
     static int _S_freelist_index(size_t __bytes)
     {
-        int __l = 0, __r = __NFREELISTS - 1;
+        int __l = 0;
+        int __r = __NFREELISTS - 1;
 
         if (__bytes <= _S_obj_size[__l])
         {
-            return (__l);
+            return __l;
         }
         else if (__bytes >= _S_obj_size[__r])
         {
-            return (__r);
+            return __r;
         }
         else
         {
@@ -102,7 +338,7 @@ private:
             int __m = (__l + __r) / 2;
             if (__bytes == _S_obj_size[__m])
             {
-                return (__m);
+                return __m;
             }
             else if (__bytes > _S_obj_size[__m])
             {
@@ -114,12 +350,12 @@ private:
             }
         }
 
-        return (__l);
+        return __l;
     }
 
     static size_t _S_round_up(size_t __bytes)
     {
-        return (_S_obj_size[_S_freelist_index(__bytes)]);
+        return _S_obj_size[_S_freelist_index(__bytes)];
     }
 
     // Returns an object of size __n, and optionally adds to size __n free list.
@@ -132,138 +368,57 @@ private:
         int&   __nobjs
         );
 
+private:
+
+    static __Obj* _S_free_list[__NFREELISTS];
+    static size_t _S_obj_size[__NFREELISTS];
+    static size_t _S_busy_obj_num[__NFREELISTS];
+    static size_t _S_total_obj_num[__NFREELISTS];
+
     // Chunk allocation state.
     static char*  _S_start_free;
     static char*  _S_end_free;
     static size_t _S_heap_size;
-
-public:
-
-    // __n must be > 0
-    static void* allocate(size_t __n)
-    {
-        if (__n == 0)
-        {
-            return (0);
-        }
-
-        void* __ret = 0;
-
-        if (__n > (size_t)__MAX_OBJ_BYTES)
-        {
-            __ret = malloc(__n);
-        }
-        else
-        {
-            int __index = _S_freelist_index(__n);
-            __Obj** __my_free_list = _S_free_list + __index;
-            __Obj* __result = *__my_free_list;
-
-            if (__result == 0)
-            {
-                __ret = _S_refill(_S_round_up(__n));
-            }
-            else
-            {
-                *__my_free_list = __result->_M_free_list_link;
-                __ret = __result;
-            }
-
-            if (__ret != 0)
-            {
-                ++_S_busy_obj_num[__index];
-            }
-        }
-
-        return (__ret);
-    }
-
-    // __p may not be 0
-    static void deallocate(
-        void*  __p,
-        size_t __n
-        )
-    {
-        if (__p == 0 || __n == 0)
-        {
-            return;
-        }
-
-        if (__n > (size_t)__MAX_OBJ_BYTES)
-        {
-            free(__p);
-        }
-        else
-        {
-            int __index = _S_freelist_index(__n);
-            __Obj** __my_free_list = _S_free_list + __index;
-            __Obj* __q = (__Obj*)__p;
-
-            __q->_M_free_list_link = *__my_free_list;
-            *__my_free_list = __q;
-
-            --_S_busy_obj_num[__index];
-        }
-    }
-
-    static void* reallocate(
-        void*  __p,
-        size_t __old_sz,
-        size_t __new_sz
-        )
-    {
-        if (__p == 0 || __old_sz == 0)
-        {
-            return (allocate(__new_sz));
-        }
-
-        if (__new_sz == 0)
-        {
-            deallocate(__p, __old_sz);
-
-            return (0);
-        }
-
-        if (__old_sz > (size_t)__MAX_OBJ_BYTES &&
-            __new_sz > (size_t)__MAX_OBJ_BYTES)
-        {
-            return (realloc(__p, __new_sz));
-        }
-
-        if (_S_round_up(__old_sz) == _S_round_up(__new_sz))
-        {
-            return (__p);
-        }
-
-        void* __result = allocate(__new_sz);
-        if (__result != 0)
-        {
-            size_t __copy_sz = __new_sz > __old_sz ? __old_sz : __new_sz;
-            memcpy(__result, __p, __copy_sz);
-            deallocate(__p, __old_sz);
-        }
-
-        return (__result);
-    }
-
-    static void get_info(
-        void*   __free_list[__NFREELISTS],
-        size_t  __obj_size[__NFREELISTS],
-        size_t  __busy_obj_num[__NFREELISTS],
-        size_t  __total_obj_num[__NFREELISTS],
-        size_t* __heap_size
-        )
-    {
-        memcpy(__free_list    , (void*)_S_free_list    , sizeof(_S_free_list));
-        memcpy(__obj_size     , (void*)_S_obj_size     , sizeof(_S_obj_size));
-        memcpy(__busy_obj_num , (void*)_S_busy_obj_num , sizeof(_S_busy_obj_num));
-        memcpy(__total_obj_num, (void*)_S_total_obj_num, sizeof(_S_total_obj_num));
-        if (__heap_size != 0)
-        {
-            *__heap_size = _S_heap_size;
-        }
-    }
 };
+
+template<int __inst>
+__Obj* __default_alloc_template<__inst>::_S_free_list[__NFREELISTS] = { 0 };
+
+/*
+ * refer to the "jemalloc/tcmalloc"
+ */
+template<int __inst>
+size_t __default_alloc_template<__inst>::_S_obj_size[__NFREELISTS] =
+{
+    8 +    8, 8 +   16, 8 +   24, 8 +   32, 8 +  40, 8 +  48, 8 +  56, 8 +  64, /* x, x +   8 */
+    8 +   72, 8 +   80, 8 +   88, 8 +   96, 8 + 104, 8 + 112, 8 + 120, 8 + 128, /* x, x +   8 */
+    8 +  144, 8 +  160,                                                         /* x, x +  16 */
+    8 +  192, 8 +  224, 8 +  256,                                               /* x, x +  32 */
+    8 +  320, 8 +  384, 8 +  448, 8 +  512,                                     /* x, x +  64 */
+    8 +  640, 8 +  768, 8 +  896, 8 + 1024,                                     /* x, x + 128 */
+    8 + 1280, 8 + 1536, 8 + 1792, 8 + 2048,                                     /* x, x + 256 */
+    8 + 2560, 8 + 3072, 8 + 3584, 8 + 4096,                                     /* x, x + 512 */
+    8 + 1024 *  5, 8 + 1024 *  6, 8 + 1024 *   7, 8 + 1024 *   8,               /* x, x +  1K */
+    8 + 1024 * 10, 8 + 1024 * 12, 8 + 1024 *  14, 8 + 1024 *  16,               /* x, x +  2K */
+    8 + 1024 * 20, 8 + 1024 * 24, 8 + 1024 *  28, 8 + 1024 *  32,               /* x, x +  4K */
+    8 + 1024 * 40, 8 + 1024 * 48, 8 + 1024 *  56, 8 + 1024 *  64,               /* x, x +  8K */
+    8 + 1024 * 80, 8 + 1024 * 96, 8 + 1024 * 112, 8 + 1024 * 128                /* x, x + 16K */
+};
+
+template<int __inst>
+size_t __default_alloc_template<__inst>::_S_busy_obj_num[__NFREELISTS] = { 0 };
+
+template<int __inst>
+size_t __default_alloc_template<__inst>::_S_total_obj_num[__NFREELISTS] = { 0 };
+
+template<int __inst>
+char* __default_alloc_template<__inst>::_S_start_free = NULL;
+
+template<int __inst>
+char* __default_alloc_template<__inst>::_S_end_free = NULL;
+
+template<int __inst>
+size_t __default_alloc_template<__inst>::_S_heap_size = 0;
 
 // Returns an object of size __n, and optionally adds to size __n free list.
 // We assume that __n is properly aligned.
@@ -272,39 +427,40 @@ void*
 __default_alloc_template<__inst>::_S_refill(size_t __n)
 {
     int     __nobjs        = 20;
-    char*   __chunk        = _S_chunk_alloc(__n, __nobjs); /* (__n * __nobjs) */
-    __Obj** __my_free_list = 0;
-    __Obj*  __result       = 0;
-    __Obj*  __current_obj  = 0;
-    __Obj*  __next_obj     = 0;
+    char*   __chunk        = _S_chunk_alloc(__n, __nobjs); // (__n * __nobjs)
+    __Obj** __my_free_list = NULL;
+    __Obj*  __result       = NULL;
+    __Obj*  __current_obj  = NULL;
+    __Obj*  __next_obj     = NULL;
     int     __index        = _S_freelist_index(__n);
 
-    if (__chunk == 0)
+    if (__chunk == NULL)
     {
-        return (0);
+        return NULL;
     }
 
     if (__nobjs == 1)
     {
         ++_S_total_obj_num[__index];
 
-        return (__chunk);
+        return __chunk;
     }
 
     __my_free_list = _S_free_list + __index;
 
-    // Build free list in chunk
+    // Build free list in chunk.
     __result = (__Obj*)__chunk;
-    *__my_free_list = __next_obj = (__Obj*)(__chunk + __n);
+    __next_obj = (__Obj*)(__chunk + __n);
+    *__my_free_list = __next_obj;
 
-    for (int __i = 1; ; __i++)
+    for (int __i = 1; ; ++__i)
     {
         __current_obj = __next_obj;
         __next_obj = (__Obj*)((char*)__next_obj + __n);
 
-        if (__nobjs - 1 == __i)
+        if (__i == __nobjs - 1)
         {
-            __current_obj->_M_free_list_link = 0;
+            __current_obj->_M_free_list_link = NULL;
             break;
         }
         else
@@ -315,7 +471,7 @@ __default_alloc_template<__inst>::_S_refill(size_t __n)
 
     _S_total_obj_num[__index] += __nobjs;
 
-    return (__result);
+    return __result;
 }
 
 // We allocate memory in large chunks in order to avoid fragmenting
@@ -338,7 +494,7 @@ __default_alloc_template<__inst>::_S_chunk_alloc(size_t __size,
     {
     }
 
-    char*  __result      = 0;
+    char*  __result      = NULL;
     size_t __total_bytes = __size * __nobjs;
     size_t __bytes_left  = _S_end_free - _S_start_free;
 
@@ -347,7 +503,7 @@ __default_alloc_template<__inst>::_S_chunk_alloc(size_t __size,
         __result = _S_start_free;
         _S_start_free += __total_bytes;
 
-        return (__result);
+        return __result;
     }
     else if (__bytes_left >= __size)
     {
@@ -357,7 +513,7 @@ __default_alloc_template<__inst>::_S_chunk_alloc(size_t __size,
         __result = _S_start_free;
         _S_start_free += __total_bytes;
 
-        return (__result);
+        return __result;
     }
     else
     {
@@ -386,19 +542,19 @@ __default_alloc_template<__inst>::_S_chunk_alloc(size_t __size,
         size_t __bytes_to_get = __CHUNK_SIZE;
 
         _S_start_free = (char*)malloc(__bytes_to_get);
-        _S_end_free   = 0;
-        if (_S_start_free == 0)
+        _S_end_free   = NULL;
+        if (_S_start_free == NULL)
         {
             __bytes_to_get = __CHUNK_SIZE / 2;
-            _S_start_free  = (char*)malloc(__bytes_to_get); /* retry */
+            _S_start_free  = (char*)malloc(__bytes_to_get); // retry
         }
 
-        if (_S_start_free != 0)
+        if (_S_start_free != NULL)
         {
             _S_end_free  =  _S_start_free + __bytes_to_get;
             _S_heap_size += __bytes_to_get;
 
-            return (_S_chunk_alloc(__size, __nobjs));
+            return _S_chunk_alloc(__size, __nobjs);
         }
 
         // Try to make do with what we have.  That can't
@@ -407,7 +563,7 @@ __default_alloc_template<__inst>::_S_chunk_alloc(size_t __size,
         for (int __j = _S_freelist_index(__size); __j < __NFREELISTS; ++__j)
         {
             __Obj** __my_free_list = _S_free_list + __j;
-            if (*__my_free_list != 0)
+            if (*__my_free_list != NULL)
             {
                 __Obj* __p = *__my_free_list;
                 *__my_free_list = __p->_M_free_list_link;
@@ -417,51 +573,14 @@ __default_alloc_template<__inst>::_S_chunk_alloc(size_t __size,
 
                 --_S_total_obj_num[__j];
 
-                return (_S_chunk_alloc(__size, __nobjs));
+                return _S_chunk_alloc(__size, __nobjs);
             }
         }
 
-        return (0);
+        return NULL;
     }
 }
 
-template<int __inst>
-char* __default_alloc_template<__inst>::_S_start_free = 0;
+} /* namespace std */
 
-template<int __inst>
-char* __default_alloc_template<__inst>::_S_end_free = 0;
-
-template<int __inst>
-size_t __default_alloc_template<__inst>::_S_heap_size = 0;
-
-template<int __inst>
-__Obj* __default_alloc_template<__inst>::_S_free_list[__NFREELISTS] = { 0 };
-
-/*
- * refer to the "jemalloc/tcmalloc"
- */
-template<int __inst>
-size_t __default_alloc_template<__inst>::_S_obj_size[__NFREELISTS] =
-{ 8 +    8, 8 +   16,                                               /*   8 */
-  8 +   32, 8 +   48, 8 +   64, 8 +   80, 8 + 96, 8 + 112, 8 + 128, /*  16 */
-  8 +  160, 8 +  192, 8 +  224, 8 +  256,                           /*  32 */
-  8 +  320, 8 +  384, 8 +  448, 8 +  512,                           /*  64 */
-  8 +  640, 8 +  768, 8 +  896, 8 + 1024,                           /* 128 */
-  8 + 1280, 8 + 1536, 8 + 1792, 8 + 2048,                           /* 256 */
-  8 + 2560, 8 + 3072, 8 + 3584, 8 + 4096                            /* 512 */
-  ,
-  8 + 1024 *  5, 8 + 1024 *  6, 8 + 1024 *   7, 8 + 1024 *   8,     /*  1K */
-  8 + 1024 * 10, 8 + 1024 * 12, 8 + 1024 *  14, 8 + 1024 *  16,     /*  2K */
-  8 + 1024 * 20, 8 + 1024 * 24, 8 + 1024 *  28, 8 + 1024 *  32,     /*  4K */
-  8 + 1024 * 40, 8 + 1024 * 48, 8 + 1024 *  56, 8 + 1024 *  64,     /*  8K */
-  8 + 1024 * 80, 8 + 1024 * 96, 8 + 1024 * 112, 8 + 1024 * 128 };   /* 16K */
-
-template<int __inst>
-size_t __default_alloc_template<__inst>::_S_busy_obj_num[__NFREELISTS] = { 0 };
-
-template<int __inst>
-size_t __default_alloc_template<__inst>::_S_total_obj_num[__NFREELISTS] = { 0 };
-
-____STD_END
-
-#endif // __SGI_STL_INTERNAL_ALLOC_H
+#endif /* __SGI_STL_INTERNAL_ALLOC_H */

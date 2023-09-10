@@ -19,7 +19,6 @@
 #include "pro_a.h"
 #include "pro_time_util.h"
 #include "pro_memory_pool.h"
-#include "pro_shared.h"
 #include "pro_stl.h"
 #include "pro_z.h"
 
@@ -27,26 +26,12 @@
 #include <windows.h>
 #endif
 
-#include <cassert>
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-PRO_INT64
-ProGetTickCount64()
-{
-    return (ProGetTickCount64_s());
-}
-
-void
-ProSleep(PRO_UINT32 milliseconds)
-{
-    ProSleep_s(milliseconds);
-}
-
 void
 ProGetLocalTime(PRO_LOCAL_TIME& localTime,
-                long            deltaSeconds) /* = 0 */
+                int             deltaMilliseconds) /* = 0 */
 {
     localTime.Zero();
 
@@ -55,7 +40,7 @@ ProGetLocalTime(PRO_LOCAL_TIME& localTime,
     SYSTEMTIME st;
     ::GetLocalTime(&st);
 
-    if (deltaSeconds != 0)
+    if (deltaMilliseconds != 0)
     {
         FILETIME ft;
         if (!::SystemTimeToFileTime(&st, &ft))
@@ -63,13 +48,13 @@ ProGetLocalTime(PRO_LOCAL_TIME& localTime,
             return;
         }
 
-        PRO_INT64 ft64 = ft.dwHighDateTime;
+        int64_t ft64 = ft.dwHighDateTime;
         ft64 <<= 32;
         ft64 |=  ft.dwLowDateTime;
-        ft64 +=  (PRO_INT64)deltaSeconds * 10000000;
+        ft64 +=  (int64_t)deltaMilliseconds * 10000;
 
-        ft.dwLowDateTime  = (PRO_UINT32)ft64;
-        ft.dwHighDateTime = (PRO_UINT32)(ft64 >> 32);
+        ft.dwLowDateTime  = (uint32_t)ft64;
+        ft.dwHighDateTime = (uint32_t)(ft64 >> 32);
 
         if (!::FileTimeToSystemTime(&ft, &st))
         {
@@ -87,53 +72,54 @@ ProGetLocalTime(PRO_LOCAL_TIME& localTime,
 
 #else  /* _WIN32 */
 
-    struct tm theTm;
-    memset(&theTm, 0, sizeof(struct tm));
-
     /*
      * [1970 ~ 2038]
      */
-    time_t theSeconds = time(NULL);
-    if (theSeconds < 0)
+    struct timeval tv = { 0 };
+    gettimeofday(&tv, NULL);
+    if (tv.tv_sec <= 0)
     {
         return;
     }
 
-    theSeconds += deltaSeconds;
-    if (theSeconds < 0)
+    const int64_t tt = (int64_t)tv.tv_sec * 1000000 + tv.tv_usec +
+        (int64_t)deltaMilliseconds * 1000;
+
+    const time_t seconds      = (time_t)(tt / 1000000);
+    const time_t microseconds = (time_t)(tt % 1000000);
+    if (seconds <= 0)
     {
         return;
     }
 
-    const struct tm* const theTm2 = localtime(&theSeconds);
-    if (theTm2 != NULL)
+    const struct tm* const tm = localtime(&seconds);
+    if (tm == NULL)
     {
-        theTm = *theTm2;
-        theTm.tm_year += 1900;
-        theTm.tm_mon  += 1;
+        return;
     }
 
-    localTime.year   = theTm.tm_year;
-    localTime.month  = theTm.tm_mon;
-    localTime.day    = theTm.tm_mday;
-    localTime.hour   = theTm.tm_hour;
-    localTime.minute = theTm.tm_min;
-    localTime.second = theTm.tm_sec;
+    localTime.year        = (unsigned short)(tm->tm_year + 1900);
+    localTime.month       = (unsigned short)(tm->tm_mon + 1);
+    localTime.day         = (unsigned short)tm->tm_mday;
+    localTime.hour        = (unsigned short)tm->tm_hour;
+    localTime.minute      = (unsigned short)tm->tm_min;
+    localTime.second      = (unsigned short)tm->tm_sec;
+    localTime.millisecond = (unsigned short)(microseconds / 1000);
 
 #endif /* _WIN32 */
 }
 
 const char*
 ProGetLocalTimeString(CProStlString& timeString,
-                      long           deltaSeconds) /* = 0 */
+                      int            deltaMilliseconds) /* = 0 */
 {
     PRO_LOCAL_TIME localTime;
     char           timeString2[64] = "";
 
-    ProGetLocalTime(localTime, deltaSeconds);
+    ProGetLocalTime(localTime, deltaMilliseconds);
     timeString = ProLocalTime2String(localTime, timeString2);
 
-    return (timeString.c_str());
+    return timeString.c_str();
 }
 
 const char*
@@ -152,7 +138,7 @@ ProLocalTime2String(const PRO_LOCAL_TIME& localTime,
         (int)localTime.millisecond
         );
 
-    return (timeString);
+    return timeString;
 }
 
 void
@@ -287,4 +273,44 @@ ProString2LocalTime(const char*     timeString,
     localTime.minute      = (unsigned short)minute;
     localTime.second      = (unsigned short)second;
     localTime.millisecond = (unsigned short)millisecond;
+}
+
+void
+ProGetLocalTimeval(struct timeval& localTimeval,
+                   int             deltaMilliseconds) /* = 0 */
+{
+    memset(&localTimeval, 0, sizeof(struct timeval));
+
+    struct timeval tv = { 0 };
+
+#if defined(_WIN32)
+    SYSTEMTIME st;
+    ::GetLocalTime(&st);
+
+    /*
+     * [1970 ~ 2038]
+     */
+    tv.tv_sec  = (long)time(NULL);
+    tv.tv_usec = (long)st.wMilliseconds * 1000;
+#else
+    gettimeofday(&tv, NULL);
+#endif
+
+    if (tv.tv_sec <= 0)
+    {
+        return;
+    }
+
+    const int64_t tt = (int64_t)tv.tv_sec * 1000000 + tv.tv_usec +
+        (int64_t)deltaMilliseconds * 1000;
+
+    const time_t seconds      = (time_t)(tt / 1000000);
+    const time_t microseconds = (time_t)(tt % 1000000);
+    if (seconds <= 0)
+    {
+        return;
+    }
+
+    localTimeval.tv_sec  = (long)seconds;
+    localTimeval.tv_usec = (long)microseconds;
 }
