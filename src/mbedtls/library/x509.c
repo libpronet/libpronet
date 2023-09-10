@@ -69,9 +69,6 @@
 #if defined(MBEDTLS_HAVE_TIME_DATE)
 #include <time.h>
 #endif
-#if defined(_WIN32) && !defined(EFIX64) && !defined(EFI32) ////
-#include <windows.h>
-#endif
 
 #define CHECK(code) if( ( ret = code ) != 0 ){ return( ret ); }
 #define CHECK_RANGE(min, max, val) if( val < min || val > max ){ return( ret ); }
@@ -897,23 +894,6 @@ int mbedtls_x509_key_size_helper( char *buf, size_t buf_size, const char *name )
  * Set the time structure to the current time.
  * Return 0 on success, non-zero on failure.
  */
-#if defined(_MSC_VER) && ( _MSC_VER <= 1200 ) //// 1200 is 6.0
-static int x509_get_current_time( mbedtls_x509_time *now )
-{
-    SYSTEMTIME st;
-
-    GetSystemTime( &st );
-
-    now->year = st.wYear;
-    now->mon  = st.wMonth;
-    now->day  = st.wDay;
-    now->hour = st.wHour;
-    now->min  = st.wMinute;
-    now->sec  = st.wSecond;
-
-    return( 0 );
-}
-#else
 static int x509_get_current_time( mbedtls_x509_time *now )
 {
     struct tm *lt, tm_buf;
@@ -941,7 +921,6 @@ static int x509_get_current_time( mbedtls_x509_time *now )
 
     return( ret );
 }
-#endif
 
 /*
  * Return 0 if before <= after, 1 otherwise
