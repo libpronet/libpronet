@@ -39,13 +39,13 @@ public:
 
     double GetAvgBitRate() const;
 
-    void SetInitialTimeSpan(unsigned long timeSpanInMs); /* = 5 */
+    void SetInitialTimeSpan(unsigned int timeSpanInMs); /* = 5 */
 
-    unsigned long GetInitialTimeSpan() const;
+    unsigned int GetInitialTimeSpan() const;
 
-    void SetMaxTimeSpan(unsigned long timeSpanInMs); /* = 1000 */
+    void SetMaxTimeSpan(unsigned int timeSpanInMs); /* = 1000 */
 
-    unsigned long GetMaxTimeSpan() const;
+    unsigned int GetMaxTimeSpan() const;
 
     double CalcGreenBits();
 

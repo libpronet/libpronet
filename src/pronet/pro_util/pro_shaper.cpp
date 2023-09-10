@@ -20,7 +20,7 @@
 #include "pro_shaper.h"
 #include "pro_memory_pool.h"
 #include "pro_time_util.h"
-#include <cassert>
+#include "pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -55,11 +55,11 @@ CProShaper::SetAvgBitRate(double bitRate)
 double
 CProShaper::GetAvgBitRate() const
 {
-    return (m_avgBitRate);
+    return m_avgBitRate;
 }
 
 void
-CProShaper::SetInitialTimeSpan(unsigned long timeSpanInMs) /* = 5 */
+CProShaper::SetInitialTimeSpan(unsigned int timeSpanInMs) /* = 5 */
 {
     assert(timeSpanInMs > 0);
     if (timeSpanInMs == 0)
@@ -70,14 +70,14 @@ CProShaper::SetInitialTimeSpan(unsigned long timeSpanInMs) /* = 5 */
     m_initTimeSpan = (double)timeSpanInMs;
 }
 
-unsigned long
+unsigned int
 CProShaper::GetInitialTimeSpan() const
 {
-    return ((unsigned long)m_initTimeSpan);
+    return (unsigned int)m_initTimeSpan;
 }
 
 void
-CProShaper::SetMaxTimeSpan(unsigned long timeSpanInMs) /* = 1000 */
+CProShaper::SetMaxTimeSpan(unsigned int timeSpanInMs) /* = 1000 */
 {
     assert(timeSpanInMs > 0);
     if (timeSpanInMs == 0)
@@ -88,10 +88,10 @@ CProShaper::SetMaxTimeSpan(unsigned long timeSpanInMs) /* = 1000 */
     m_maxTimeSpan = (double)timeSpanInMs;
 }
 
-unsigned long
+unsigned int
 CProShaper::GetMaxTimeSpan() const
 {
-    return ((unsigned long)m_maxTimeSpan);
+    return (unsigned int)m_maxTimeSpan;
 }
 
 double
@@ -110,7 +110,7 @@ CProShaper::CalcGreenBits()
 
     const double greenBits = m_avgBitRate * (tick - m_startTick) / 1000;
 
-    return (greenBits > 0 ? greenBits : 0);
+    return greenBits > 0 ? greenBits : 0;
 }
 
 void
