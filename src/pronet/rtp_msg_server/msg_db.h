@@ -22,11 +22,12 @@
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ssl_util.h"
 #include "../pro_util/pro_stl.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-static const PRO_INT64 MAX_NODE_UID = ((PRO_INT64)0xFF << 32) | 0xFFFFFFFF;
+static const int64_t MAX_NODE_UID = 0xFFFFFFFFFFULL;
 
 class  CDbConnection;
 struct RTP_MSG_USER;
@@ -68,10 +69,10 @@ struct TBL_MSG_USER_ROW
         }
     }
 
-    PRO_INT64     _cid_;
-    PRO_INT64     _uid_;
-    PRO_INT64     _maxiids_;
-    PRO_INT64     _isc2s_;
+    int64_t       _cid_;
+    int64_t       _uid_;
+    int64_t       _maxiids_;
+    int64_t       _isc2s_;
     CProStlString _passwd_;
     CProStlString _bindedip_;
 
@@ -103,9 +104,9 @@ struct TBL_MSG_KICKOUT_ROW
         }
     }
 
-    PRO_INT64 _cid_;
-    PRO_INT64 _uid_;
-    PRO_INT64 _iid_;
+    int64_t _cid_;
+    int64_t _uid_;
+    int64_t _iid_;
 
     DECLARE_SGI_POOL(0)
 };

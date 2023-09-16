@@ -26,7 +26,6 @@
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -47,10 +46,7 @@ CRtpSessionUdpclientEx::CreateInstance(const RTP_SESSION_INFO* localInfo)
         return (NULL);
     }
 
-    CRtpSessionUdpclientEx* const session =
-        new CRtpSessionUdpclientEx(*localInfo);
-
-    return (session);
+    return new CRtpSessionUdpclientEx(*localInfo);
 }
 
 CRtpSessionUdpclientEx::CRtpSessionUdpclientEx(const RTP_SESSION_INFO& localInfo)
@@ -104,14 +100,13 @@ CRtpSessionUdpclientEx::Init(IRtpSessionObserver* observer,
         timeoutInSeconds = DEFAULT_TIMEOUT;
     }
 
-    unsigned long sockBufSizeRecv = 0; /* zero by default */
-    unsigned long sockBufSizeSend = 0; /* zero by default */
-    unsigned long recvPoolSize    = 0;
-    GetRtpUdpSocketParams(
-        m_info.mmType, &sockBufSizeRecv, &sockBufSizeSend, &recvPoolSize);
+    size_t sockBufSizeRecv = 0; /* zero by default */
+    size_t sockBufSizeSend = 0; /* zero by default */
+    size_t recvPoolSize    = 0;
+    GetRtpUdpSocketParams(m_info.mmType, &sockBufSizeRecv, &sockBufSizeSend, &recvPoolSize);
 
-    const PRO_UINT32 localIp4    = pbsd_inet_aton(localIp);
-    const bool       bindToLocal = localIp4 != (PRO_UINT32)-1 && localIp4 != 0;
+    const uint32_t localIp4    = pbsd_inet_aton(localIp);
+    const bool     bindToLocal = localIp4 != (uint32_t)-1 && localIp4 != 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -146,7 +141,7 @@ CRtpSessionUdpclientEx::Init(IRtpSessionObserver* observer,
         observer->AddRef();
         m_observer       = observer;
         m_reactor        = reactor;
-        m_timeoutTimerId = reactor->ScheduleTimer(this, (PRO_UINT64)timeoutInSeconds * 1000, false);
+        m_timeoutTimerId = reactor->ScheduleTimer(this, (uint64_t)timeoutInSeconds * 1000, false);
         m_syncTimerId    = reactor->ScheduleTimer(this, SEND_SYNC_INTERVAL_MS, true);
 
         if (!DoHandshake1())
@@ -285,8 +280,8 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
                     break;
                 }
 
-                const PRO_UINT16 size = sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_UDPX_SYNC);
-                char             buffer[size];
+                const uint16_t size = sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_UDPX_SYNC);
+                char           buffer[size];
 
                 recvPool.PeekData(buffer, size);
                 recvPool.Flush(dataSize);
@@ -426,13 +421,13 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
             Fini();
         }
         break;
-    } /* end of while (...) */
+    } /* end of while () */
 }
 
 void
-CRtpSessionUdpclientEx::OnTimer(void*      factory,
-                                PRO_UINT64 timerId,
-                                PRO_INT64  userData)
+CRtpSessionUdpclientEx::OnTimer(void*    factory,
+                                uint64_t timerId,
+                                int64_t  userData)
 {
     CRtpSessionBase::OnTimer(factory, timerId, userData);
 

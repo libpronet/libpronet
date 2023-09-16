@@ -23,7 +23,6 @@
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -49,7 +48,7 @@ sqlite3_prepare_v2_i(sqlite3*       db,
         ProSleep(1);
     }
 
-    return (err);
+    return err;
 }
 
 static
@@ -69,7 +68,7 @@ sqlite3_step_i(sqlite3_stmt* pStmt)
         ProSleep(1);
     }
 
-    return (err);
+    return err;
 }
 
 static
@@ -89,7 +88,7 @@ sqlite3_finalize_i(sqlite3_stmt* pStmt)
         ProSleep(1);
     }
 
-    return (err);
+    return err;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -113,7 +112,7 @@ CDbConnection::Open(const char* fileName) /* UTF-8 */
     assert(fileName[0] != '\0');
     if (fileName == NULL || fileName[0] == '\0')
     {
-        return (false);
+        return false;
     }
 
     int err = SQLITE_ERROR;
@@ -124,7 +123,7 @@ CDbConnection::Open(const char* fileName) /* UTF-8 */
         assert(m_db == NULL);
         if (m_db != NULL)
         {
-            return (false);
+            return false;
         }
 
         static bool s_flag = false;
@@ -133,14 +132,14 @@ CDbConnection::Open(const char* fileName) /* UTF-8 */
             err = sqlite3_config(SQLITE_CONFIG_SERIALIZED);
             if (err != SQLITE_OK)
             {
-                return (false);
+                return false;
             }
 
             s_flag = true;
         }
 
-        err = sqlite3_open_v2(fileName, &m_db,
-            SQLITE_OPEN_READWRITE | SQLITE_OPEN_FULLMUTEX, NULL);
+        err = sqlite3_open_v2(
+            fileName, &m_db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_FULLMUTEX, NULL);
         if (err != SQLITE_OK)
         {
             sqlite3_close_v2(m_db);
@@ -148,38 +147,35 @@ CDbConnection::Open(const char* fileName) /* UTF-8 */
         }
     }
 
-    return (err == SQLITE_OK);
+    return err == SQLITE_OK;
 }
 
 void
 CDbConnection::Close()
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_db == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_db == NULL)
-        {
-            return;
-        }
-
-        if (m_transacting)
-        {
-            sqlite3_stmt* stmt = NULL;
-            const int err =
-                sqlite3_prepare_v2_i(m_db, "ROLLBACK", -1, &stmt, NULL);
-            if (err == SQLITE_OK)
-            {
-                assert(stmt != NULL);
-                sqlite3_step_i(stmt);
-            }
-            sqlite3_finalize_i(stmt);
-
-            m_transacting = false;
-        }
-
-        sqlite3_close_v2(m_db);
-        m_db = NULL;
+        return;
     }
+
+    if (m_transacting)
+    {
+        sqlite3_stmt* stmt = NULL;
+        const int err = sqlite3_prepare_v2_i(m_db, "ROLLBACK", -1, &stmt, NULL);
+        if (err == SQLITE_OK)
+        {
+            assert(stmt != NULL);
+            sqlite3_step_i(stmt);
+        }
+        sqlite3_finalize_i(stmt);
+
+        m_transacting = false;
+    }
+
+    sqlite3_close_v2(m_db);
+    m_db = NULL;
 }
 
 bool
@@ -192,13 +188,13 @@ CDbConnection::BeginTransaction()
 
         if (m_db == NULL)
         {
-            return (false);
+            return false;
         }
 
         assert(!m_transacting);
         if (m_transacting)
         {
-            return (false);
+            return false;
         }
 
         sqlite3_stmt* stmt = NULL;
@@ -216,7 +212,7 @@ CDbConnection::BeginTransaction()
         }
     }
 
-    return (err == SQLITE_DONE);
+    return err == SQLITE_DONE;
 }
 
 bool
@@ -229,13 +225,13 @@ CDbConnection::CommitTransaction()
 
         if (m_db == NULL)
         {
-            return (false);
+            return false;
         }
 
         assert(m_transacting);
         if (!m_transacting)
         {
-            return (false);
+            return false;
         }
 
         sqlite3_stmt* stmt = NULL;
@@ -253,34 +249,31 @@ CDbConnection::CommitTransaction()
         }
     }
 
-    return (err == SQLITE_DONE);
+    return err == SQLITE_DONE;
 }
 
 void
 CDbConnection::RollbackTransaction()
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_db == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
+        return;
+    }
 
-        if (m_db == NULL)
+    if (m_transacting)
+    {
+        sqlite3_stmt* stmt = NULL;
+        const int err = sqlite3_prepare_v2_i(m_db, "ROLLBACK", -1, &stmt, NULL);
+        if (err == SQLITE_OK)
         {
-            return;
+            assert(stmt != NULL);
+            sqlite3_step_i(stmt);
         }
+        sqlite3_finalize_i(stmt);
 
-        if (m_transacting)
-        {
-            sqlite3_stmt* stmt = NULL;
-            const int err =
-                sqlite3_prepare_v2_i(m_db, "ROLLBACK", -1, &stmt, NULL);
-            if (err == SQLITE_OK)
-            {
-                assert(stmt != NULL);
-                sqlite3_step_i(stmt);
-            }
-            sqlite3_finalize_i(stmt);
-
-            m_transacting = false;
-        }
+        m_transacting = false;
     }
 }
 
@@ -292,7 +285,7 @@ CDbConnection::DoSelect(const char* sql,
     assert(sql[0] != '\0');
     if (sql == NULL || sql[0] == '\0')
     {
-        return (false);
+        return false;
     }
 
     const int columns = (int)rows.types_in.size();
@@ -300,7 +293,7 @@ CDbConnection::DoSelect(const char* sql,
     assert(columns > 0);
     if (columns <= 0)
     {
-        return (false);
+        return false;
     }
 
     /*
@@ -313,7 +306,7 @@ CDbConnection::DoSelect(const char* sql,
         assert(type == DB_CT_I64 || type == DB_CT_DBL || type == DB_CT_TXT);
         if (type != DB_CT_I64 && type != DB_CT_DBL && type != DB_CT_TXT)
         {
-            return (false);
+            return false;
         }
     }
 
@@ -326,7 +319,7 @@ CDbConnection::DoSelect(const char* sql,
 
         if (m_db == NULL)
         {
-            return (false);
+            return false;
         }
 
         sqlite3_stmt* stmt = NULL;
@@ -335,7 +328,7 @@ CDbConnection::DoSelect(const char* sql,
         {
             sqlite3_finalize_i(stmt);
 
-            return (false);
+            return false;
         }
 
         while (1)
@@ -366,8 +359,7 @@ CDbConnection::DoSelect(const char* sql,
                     }
                     else
                     {
-                        const char* const txt =
-                            (char*)sqlite3_column_text(stmt, j);
+                        const char* const txt = (char*)sqlite3_column_text(stmt, j);
                         row.cells[j].txt = txt != NULL ? txt : "";
                     }
                 }
@@ -383,7 +375,7 @@ CDbConnection::DoSelect(const char* sql,
             {
                 break;
             }
-        } /* end of while (...) */
+        } /* end of while () */
 
         sqlite3_finalize_i(stmt);
     }
@@ -393,7 +385,7 @@ CDbConnection::DoSelect(const char* sql,
         rows.rows_out.clear();
     }
 
-    return (ret);
+    return ret;
 }
 
 bool
@@ -403,7 +395,7 @@ CDbConnection::DoOther(const char* sql)
     assert(sql[0] != '\0');
     if (sql == NULL || sql[0] == '\0')
     {
-        return (false);
+        return false;
     }
 
     int err = SQLITE_ERROR;
@@ -413,7 +405,7 @@ CDbConnection::DoOther(const char* sql)
 
         if (m_db == NULL)
         {
-            return (false);
+            return false;
         }
 
         sqlite3_stmt* stmt = NULL;
@@ -426,5 +418,5 @@ CDbConnection::DoOther(const char* sql)
         sqlite3_finalize_i(stmt);
     }
 
-    return (err == SQLITE_DONE);
+    return err == SQLITE_DONE;
 }

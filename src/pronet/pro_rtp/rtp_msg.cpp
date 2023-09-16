@@ -189,9 +189,9 @@ RtpMsgUser2String(const RTP_MSG_USER* user,
 
     sprintf(
         idString,
-        "%u-" PRO_PRT64U "-%u",
+        "%u-%llu-%u",
         (unsigned int)user->classId,
-        user->UserId(),
+        (unsigned long long)user->UserId(),
         (unsigned int)user->instId
         );
 }
@@ -211,9 +211,9 @@ RtpMsgString2User(const char*   idString,
         return;
     }
 
-    CProStlString cidString = "";
-    CProStlString uidString = "";
-    CProStlString iidString = "";
+    CProStlString cidString;
+    CProStlString uidString;
+    CProStlString iidString;
 
     for (int i = 0; idString[i] != '\0'; ++i)
     {
@@ -254,22 +254,22 @@ EXIT:
     }
 
     unsigned int cid = 0;
-    PRO_UINT64   uid = 0;
+    uint64_t     uid = 0;
     unsigned int iid = 0;
 
-    sscanf(cidString.c_str(), "%u"      , &cid);
-    sscanf(uidString.c_str(), PRO_PRT64U, &uid);
-    sscanf(iidString.c_str(), "%u"      , &iid);
+    sscanf(cidString.c_str(), "%u"  , &cid);
+    sscanf(uidString.c_str(), "%llu", (unsigned long long*)&uid);
+    sscanf(iidString.c_str(), "%u"  , &iid);
 
     const unsigned char maxCid = 0xFF;
-    const PRO_UINT64    maxUid = ((PRO_UINT64)0xFF << 32) | 0xFFFFFFFF;
-    const PRO_UINT16    maxIid = 0xFFFF;
+    const uint64_t      maxUid = 0xFFFFFFFFFFULL;
+    const uint16_t      maxIid = 0xFFFF;
 
     if (cid <= maxCid && uid <= maxUid && iid <= maxIid)
     {
         user->classId = (unsigned char)cid;
         user->UserId(uid);
-        user->instId  = (PRO_UINT16)iid;
+        user->instId  = (uint16_t)iid;
     }
 }
 

@@ -55,7 +55,7 @@ public:
     {
         if (size == 0)
         {
-            return (false);
+            return false;
         }
 
         m_begin    = NULL;
@@ -67,7 +67,7 @@ public:
 
         if (!m_buf.Resize(size))
         {
-            return (false);
+            return false;
         }
 
         m_begin    = (char*)m_buf.Data();
@@ -75,12 +75,12 @@ public:
         m_idle     = m_begin;
         m_idleSize = size;
 
-        return (true);
+        return true;
     }
 
     virtual unsigned long PeekDataSize() const
     {
-        return ((unsigned long)m_dataSize);
+        return (unsigned long)m_dataSize;
     }
 
     virtual void PeekData(
@@ -97,8 +97,7 @@ public:
         if (size > continuousSize)
         {
             memcpy(buf, m_data, continuousSize);
-            memcpy((char*)buf + continuousSize, m_begin,
-                size - continuousSize);
+            memcpy((char*)buf + continuousSize, m_begin, size - continuousSize);
         }
         else
         {
@@ -152,22 +151,22 @@ public:
 
     virtual unsigned long GetFreeSize() const
     {
-        return ((unsigned long)m_idleSize);
+        return (unsigned long)m_idleSize;
     }
 
     void* ContinuousIdleBuf()
     {
-        return (m_idle);
+        return m_idle;
     }
 
     unsigned long ContinuousIdleSize() const
     {
         if (m_idle + m_idleSize > m_end)
         {
-            return ((unsigned long)(m_end - m_idle));
+            return (unsigned long)(m_end - m_idle);
         }
 
-        return ((unsigned long)m_idleSize);
+        return (unsigned long)m_idleSize;
     }
 
     void Fill(size_t size)
@@ -206,10 +205,10 @@ private:
     {
         if (m_data + m_dataSize > m_end)
         {
-            return (m_end - m_data);
+            return m_end - m_data;
         }
 
-        return (m_dataSize);
+        return m_dataSize;
     }
 
 private:

@@ -211,7 +211,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         else
         {
         }
-    } /* end of for (...) */
+    } /* end of for () */
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -222,16 +222,16 @@ int main(int argc, char* argv[])
     ProNetInit();
     ProRtpInit();
 
-    CProLogFile*   const   logFile         = new CProLogFile;
-    CDbConnection* const   db              = new CDbConnection;
-    IProReactor*           reactor         = NULL;
-    CMsgServer*            server          = NULL;
-    CProStlString          logFileName     = "";
-    CProStlString          dbFileName      = "";
-    CProStlString          configFileName  = "";
+    CProLogFile*   const   logFile = new CProLogFile;
+    CDbConnection* const   db      = new CDbConnection;
+    IProReactor*           reactor = NULL;
+    CMsgServer*            server  = NULL;
+    CProStlString          logFileName;
+    CProStlString          dbFileName;
+    CProStlString          configFileName;
     MSG_SERVER_CONFIG_INFO configInfo;
 
-    CProStlString timeString = "";
+    CProStlString timeString;
     ProGetLocalTimeString(timeString);
 
     char exeRoot[1024] = "";
@@ -246,7 +246,7 @@ int main(int argc, char* argv[])
         configFileName += CONFIG_FILE_NAME;
     }
 
-    static char s_traceInfo[1024] = "";
+    static char s_traceInfo[4096] = "";
 
     logFile->Reinit(logFileName.c_str(), true); /* append mode */
     logFile->SetMaxSize(LOG_LOOP_BYTES);
@@ -387,7 +387,7 @@ int main(int argc, char* argv[])
         printf("\nMSG-Svr>");
         fflush(stdout);
 
-        static char s_cmdText[1024]      = "";
+        static char s_cmdText[4096]      = "";
         s_cmdText[0]                     = '\0';
         s_cmdText[sizeof(s_cmdText) - 1] = '\0';
 
@@ -452,11 +452,7 @@ int main(int argc, char* argv[])
             {
                 const TBL_MSG_KICKOUT_ROW& row = rows[i];
 
-                const RTP_MSG_USER user(
-                    (unsigned char)row._cid_,
-                    row._uid_,
-                    (PRO_UINT16)row._iid_
-                    );
+                const RTP_MSG_USER user((unsigned char)row._cid_, row._uid_, (uint16_t)row._iid_);
                 users.insert(user);
             }
 
@@ -520,7 +516,7 @@ int main(int argc, char* argv[])
                 {
                     users.insert(user);
                 }
-            } /* end of while (...) */
+            } /* end of while () */
 
             if (users.size() > 0)
             {
@@ -614,7 +610,7 @@ int main(int argc, char* argv[])
         else
         {
         }
-    } /* end of while (...) */
+    } /* end of while () */
 
 EXIT:
 

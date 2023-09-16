@@ -35,8 +35,6 @@
 #include <windows.h>
 #endif
 
-#include <cassert>
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -96,17 +94,13 @@ CRtpSessionBase::~CRtpSessionBase()
 unsigned long
 CRtpSessionBase::AddRef()
 {
-    const unsigned long refCount = CProRefCount::AddRef();
-
-    return (refCount);
+    return CProRefCount::AddRef();
 }
 
 unsigned long
 CRtpSessionBase::Release()
 {
-    const unsigned long refCount = CProRefCount::Release();
-
-    return (refCount);
+    return CProRefCount::Release();
 }
 
 void
@@ -163,13 +157,13 @@ CRtpSessionBase::GetSslSuite(char suiteName[64]) const
         }
     }
 
-    return (suiteId);
+    return suiteId;
 }
 
-PRO_INT64
+int64_t
 CRtpSessionBase::GetSockId() const
 {
-    PRO_INT64 sockId = -1;
+    int64_t sockId = -1;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -180,7 +174,7 @@ CRtpSessionBase::GetSockId() const
         }
     }
 
-    return (sockId);
+    return sockId;
 }
 
 const char*
@@ -192,7 +186,7 @@ CRtpSessionBase::GetLocalIp(char localIp[64]) const
         pbsd_inet_ntoa(m_localAddr.sin_addr.s_addr, localIp);
     }
 
-    return (localIp);
+    return localIp;
 }
 
 unsigned short
@@ -206,7 +200,7 @@ CRtpSessionBase::GetLocalPort() const
         localPort = pbsd_ntoh16(m_localAddr.sin_port);
     }
 
-    return (localPort);
+    return localPort;
 }
 
 const char*
@@ -215,8 +209,7 @@ CRtpSessionBase::GetRemoteIp(char remoteIp[64]) const
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_info.sessionType == RTP_ST_UDPCLIENT ||
-            m_info.sessionType == RTP_ST_UDPSERVER)
+        if (m_info.sessionType == RTP_ST_UDPCLIENT || m_info.sessionType == RTP_ST_UDPSERVER)
         {
             if (m_remoteAddr.sin_addr.s_addr != 0)
             {
@@ -233,7 +226,7 @@ CRtpSessionBase::GetRemoteIp(char remoteIp[64]) const
         }
     }
 
-    return (remoteIp);
+    return remoteIp;
 }
 
 unsigned short
@@ -244,8 +237,7 @@ CRtpSessionBase::GetRemotePort() const
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_info.sessionType == RTP_ST_UDPCLIENT ||
-            m_info.sessionType == RTP_ST_UDPSERVER)
+        if (m_info.sessionType == RTP_ST_UDPCLIENT || m_info.sessionType == RTP_ST_UDPSERVER)
         {
             if (m_remoteAddr.sin_addr.s_addr != 0)
             {
@@ -262,21 +254,7 @@ CRtpSessionBase::GetRemotePort() const
         }
     }
 
-    return (remotePort);
-}
-
-bool
-CRtpSessionBase::IsTcpConnected() const
-{
-    bool connected = false;
-
-    {
-        CProThreadMutexGuard mon(m_lock);
-
-        connected = m_tcpConnected;
-    }
-
-    return (connected);
+    return remotePort;
 }
 
 bool
@@ -291,10 +269,10 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
     assert(packet != NULL);
     if (packet == NULL)
     {
-        return (false);
+        return false;
     }
 
-    PRO_UINT16 otherSize = 0;
+    uint16_t otherSize = 0;
 
     switch (m_info.sessionType)
     {
@@ -308,7 +286,7 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
     case RTP_ST_TCPCLIENT:
     case RTP_ST_TCPSERVER:
         {
-            otherSize = sizeof(PRO_UINT16) + sizeof(RTP_HEADER);
+            otherSize = sizeof(uint16_t) + sizeof(RTP_HEADER);
             break;
         }
     case RTP_ST_UDPCLIENT_EX:
@@ -326,7 +304,7 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
             assert(packet->GetPackMode() == m_info.packMode);
             if (packet->GetPackMode() != m_info.packMode)
             {
-                return (false);
+                return false;
             }
 
             if (m_info.packMode == RTP_EPM_DEFAULT)
@@ -335,15 +313,15 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
             }
             else if (m_info.packMode == RTP_EPM_TCP2)
             {
-                otherSize = sizeof(PRO_UINT16);
+                otherSize = sizeof(uint16_t);
             }
             else
             {
-                otherSize = sizeof(PRO_UINT32);
+                otherSize = sizeof(uint32_t);
             }
             break;
         }
-    } /* end of switch (...) */
+    } /* end of switch () */
 
     bool ret = false;
 
@@ -352,7 +330,7 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
 
         if (m_observer == NULL || m_reactor == NULL || m_trans == NULL)
         {
-            return (false);
+            return false;
         }
 
         if (!m_onOkCalledPre)
@@ -362,13 +340,10 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
                 *tryAgain = true;
             }
 
-            return (false);
+            return false;
         }
 
-        assert(
-            m_info.outSrcMmId == 0 ||
-            packet->GetMmId() == m_info.outSrcMmId
-            );
+        assert(m_info.outSrcMmId == 0 || packet->GetMmId() == m_info.outSrcMmId);
         assert(packet->GetMmType() == m_info.mmType);
         if (
             (m_info.outSrcMmId != 0 && packet->GetMmId() != m_info.outSrcMmId)
@@ -376,13 +351,12 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
             packet->GetMmType() != m_info.mmType
            )
         {
-            return (false);
+            return false;
         }
 
         pbsd_sockaddr_in* remoteAddr = &m_remoteAddr;
 
-        if (m_info.sessionType == RTP_ST_UDPCLIENT ||
-            m_info.sessionType == RTP_ST_UDPSERVER)
+        if (m_info.sessionType == RTP_ST_UDPCLIENT || m_info.sessionType == RTP_ST_UDPSERVER)
         {
             if (m_remoteAddr.sin_addr.s_addr != 0)
             {
@@ -394,7 +368,7 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
             }
             else
             {
-                return (false);
+                return false;
             }
         }
 
@@ -429,12 +403,12 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
         }
     }
 
-    return (ret);
+    return ret;
 }
 
 void
-CRtpSessionBase::GetSendOnSendTick(PRO_INT64* onSendTick1,       /* = NULL */
-                                   PRO_INT64* onSendTick2) const /* = NULL */
+CRtpSessionBase::GetSendOnSendTick(int64_t* onSendTick1,       /* = NULL */
+                                   int64_t* onSendTick2) const /* = NULL */
 {
     {
         CProThreadMutexGuard mon(m_lock);
@@ -496,7 +470,7 @@ CRtpSessionBase::ResumeRecv()
 }
 
 void
-CRtpSessionBase::SetMagic(PRO_INT64 magic)
+CRtpSessionBase::SetMagic(int64_t magic)
 {
     {
         CProThreadMutexGuard mon(m_lock);
@@ -505,10 +479,10 @@ CRtpSessionBase::SetMagic(PRO_INT64 magic)
     }
 }
 
-PRO_INT64
+int64_t
 CRtpSessionBase::GetMagic() const
 {
-    PRO_INT64 magic = 0;
+    int64_t magic = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -516,12 +490,12 @@ CRtpSessionBase::GetMagic() const
         magic = m_magic;
     }
 
-    return (magic);
+    return magic;
 }
 
 void
 CRtpSessionBase::OnSend(IProTransport* trans,
-                        PRO_UINT64     actionId)
+                        uint64_t       actionId)
 {
     assert(trans != NULL);
     if (trans == NULL)
@@ -549,8 +523,7 @@ CRtpSessionBase::OnSend(IProTransport* trans,
             return;
         }
 
-        if (!IsUdpSession(m_info.sessionType) &&
-            actionId > 0 && actionId == m_actionId)
+        if (!IsUdpSession(m_info.sessionType) && actionId > 0 && actionId == m_actionId)
         {
             m_onSendTick2 = ProGetTickCount64();
         }
@@ -611,14 +584,11 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
 {
     bool enableTrace = false;
     if (
-        (m_info.mmType >= RTP_MMT_MSG_MIN &&
-         m_info.mmType <= RTP_MMT_MSG_MAX)
+        (m_info.mmType >= RTP_MMT_MSG_MIN && m_info.mmType <= RTP_MMT_MSG_MAX)
         ||
-        (m_info.mmType >= RTP_MMT_AUDIO_MIN &&
-         m_info.mmType <= RTP_MMT_AUDIO_MAX)
+        (m_info.mmType >= RTP_MMT_AUDIO_MIN && m_info.mmType <= RTP_MMT_AUDIO_MAX)
         ||
-        (m_info.mmType >= RTP_MMT_VIDEO_MIN &&
-         m_info.mmType <= RTP_MMT_VIDEO_MAX)
+        (m_info.mmType >= RTP_MMT_VIDEO_MIN && m_info.mmType <= RTP_MMT_VIDEO_MAX)
        )
     {
         enableTrace = g_fileMonitor.QueryFileExist();
@@ -631,8 +601,8 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
     }
 
     IRtpSessionObserver* observer      = NULL;
-    PRO_INT64            peerAliveTick = 0;
-    const PRO_INT64      tick          = ProGetTickCount64();
+    int64_t              peerAliveTick = 0;
+    const int64_t        tick          = ProGetTickCount64();
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -673,8 +643,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
 
             buffer[0] = '\0';
 
-            if (m_info.mmType >= RTP_MMT_MSG_MIN &&
-                m_info.mmType <= RTP_MMT_MSG_MAX)
+            if (m_info.mmType >= RTP_MMT_MSG_MIN && m_info.mmType <= RTP_MMT_MSG_MAX)
             {
                 snprintf_pro(
                     buffer,
@@ -693,13 +662,13 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     "\t CRtpSessionBase(M) - localAddr        : %s:%u \n"
                     "\t CRtpSessionBase(M) - remoteAddr       : %s:%u \n"
                     "\t CRtpSessionBase(M) - remoteAddrConfig : %s:%u (for udp) \n"
-                    "\t CRtpSessionBase(M) - actionId         : " PRO_PRT64U " \n"
-                    "\t CRtpSessionBase(M) - initTick         : " PRO_PRT64D " \n"
-                    "\t CRtpSessionBase(M) - sendTick         : " PRO_PRT64D " \n"
-                    "\t CRtpSessionBase(M) - onSendTick1      : " PRO_PRT64D " (for tcp, tcp_ex, ssl_ex) \n"
-                    "\t CRtpSessionBase(M) - onSendTick2      : " PRO_PRT64D " (for tcp, tcp_ex, ssl_ex) \n"
-                    "\t CRtpSessionBase(M) - peerAliveTick    : " PRO_PRT64D " \n"
-                    "\t CRtpSessionBase(M) - tick             : " PRO_PRT64D " \n"
+                    "\t CRtpSessionBase(M) - actionId         : %llu \n"
+                    "\t CRtpSessionBase(M) - initTick         : %lld \n"
+                    "\t CRtpSessionBase(M) - sendTick         : %lld \n"
+                    "\t CRtpSessionBase(M) - onSendTick1      : %lld (for tcp, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(M) - onSendTick2      : %lld (for tcp, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(M) - peerAliveTick    : %lld \n"
+                    "\t CRtpSessionBase(M) - tick             : %lld \n"
                     "\t CRtpSessionBase(M) - tcpConnected     : %d (for tcp   , tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(M) - handshakeOk      : %d (for udp_ex, tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(M) - onOkCalled       : %d \n"
@@ -724,13 +693,13 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (unsigned int)pbsd_ntoh16(m_remoteAddr.sin_port),
                     remoteIpConfig,
                     (unsigned int)pbsd_ntoh16(m_remoteAddrConfig.sin_port),
-                    m_actionId,
-                    m_initTick,
-                    m_sendTick,
-                    m_onSendTick1,
-                    m_onSendTick2,
-                    m_peerAliveTick,
-                    tick,
+                    (unsigned long long)m_actionId,
+                    (long long)m_initTick,
+                    (long long)m_sendTick,
+                    (long long)m_onSendTick1,
+                    (long long)m_onSendTick2,
+                    (long long)m_peerAliveTick,
+                    (long long)tick,
                     (int)(m_tcpConnected   ? 1 : 0),
                     (int)(m_handshakeOk    ? 1 : 0),
                     (int)(m_onOkCalledPost ? 1 : 0),
@@ -742,10 +711,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                 printf("%s", buffer);
 #endif
             }
-            else if (
-                m_info.mmType >= RTP_MMT_AUDIO_MIN &&
-                m_info.mmType <= RTP_MMT_AUDIO_MAX
-                )
+            else if (m_info.mmType >= RTP_MMT_AUDIO_MIN && m_info.mmType <= RTP_MMT_AUDIO_MAX)
             {
                 snprintf_pro(
                     buffer,
@@ -764,13 +730,13 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     "\t CRtpSessionBase(A) - localAddr        : %s:%u \n"
                     "\t CRtpSessionBase(A) - remoteAddr       : %s:%u \n"
                     "\t CRtpSessionBase(A) - remoteAddrConfig : %s:%u (for udp) \n"
-                    "\t CRtpSessionBase(A) - actionId         : " PRO_PRT64U " \n"
-                    "\t CRtpSessionBase(A) - initTick         : " PRO_PRT64D " \n"
-                    "\t CRtpSessionBase(A) - sendTick         : " PRO_PRT64D " \n"
-                    "\t CRtpSessionBase(A) - onSendTick1      : " PRO_PRT64D " (for tcp, tcp_ex, ssl_ex) \n"
-                    "\t CRtpSessionBase(A) - onSendTick2      : " PRO_PRT64D " (for tcp, tcp_ex, ssl_ex) \n"
-                    "\t CRtpSessionBase(A) - peerAliveTick    : " PRO_PRT64D " \n"
-                    "\t CRtpSessionBase(A) - tick             : " PRO_PRT64D " \n"
+                    "\t CRtpSessionBase(A) - actionId         : %llu \n"
+                    "\t CRtpSessionBase(A) - initTick         : %lld \n"
+                    "\t CRtpSessionBase(A) - sendTick         : %lld \n"
+                    "\t CRtpSessionBase(A) - onSendTick1      : %lld (for tcp, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(A) - onSendTick2      : %lld (for tcp, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(A) - peerAliveTick    : %lld \n"
+                    "\t CRtpSessionBase(A) - tick             : %lld \n"
                     "\t CRtpSessionBase(A) - tcpConnected     : %d (for tcp   , tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(A) - handshakeOk      : %d (for udp_ex, tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(A) - onOkCalled       : %d \n"
@@ -795,13 +761,13 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (unsigned int)pbsd_ntoh16(m_remoteAddr.sin_port),
                     remoteIpConfig,
                     (unsigned int)pbsd_ntoh16(m_remoteAddrConfig.sin_port),
-                    m_actionId,
-                    m_initTick,
-                    m_sendTick,
-                    m_onSendTick1,
-                    m_onSendTick2,
-                    m_peerAliveTick,
-                    tick,
+                    (unsigned long long)m_actionId,
+                    (long long)m_initTick,
+                    (long long)m_sendTick,
+                    (long long)m_onSendTick1,
+                    (long long)m_onSendTick2,
+                    (long long)m_peerAliveTick,
+                    (long long)tick,
                     (int)(m_tcpConnected   ? 1 : 0),
                     (int)(m_handshakeOk    ? 1 : 0),
                     (int)(m_onOkCalledPost ? 1 : 0),
@@ -813,10 +779,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                 printf("%s", buffer);
 #endif
             }
-            else if (
-                m_info.mmType >= RTP_MMT_VIDEO_MIN &&
-                m_info.mmType <= RTP_MMT_VIDEO_MAX
-                )
+            else if (m_info.mmType >= RTP_MMT_VIDEO_MIN && m_info.mmType <= RTP_MMT_VIDEO_MAX)
             {
                 snprintf_pro(
                     buffer,
@@ -835,13 +798,13 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     "\t CRtpSessionBase(V) - localAddr        : %s:%u \n"
                     "\t CRtpSessionBase(V) - remoteAddr       : %s:%u \n"
                     "\t CRtpSessionBase(V) - remoteAddrConfig : %s:%u (for udp) \n"
-                    "\t CRtpSessionBase(V) - actionId         : " PRO_PRT64U " \n"
-                    "\t CRtpSessionBase(V) - initTick         : " PRO_PRT64D " \n"
-                    "\t CRtpSessionBase(V) - sendTick         : " PRO_PRT64D " \n"
-                    "\t CRtpSessionBase(V) - onSendTick1      : " PRO_PRT64D " (for tcp, tcp_ex, ssl_ex) \n"
-                    "\t CRtpSessionBase(V) - onSendTick2      : " PRO_PRT64D " (for tcp, tcp_ex, ssl_ex) \n"
-                    "\t CRtpSessionBase(V) - peerAliveTick    : " PRO_PRT64D " \n"
-                    "\t CRtpSessionBase(V) - tick             : " PRO_PRT64D " \n"
+                    "\t CRtpSessionBase(V) - actionId         : %llu \n"
+                    "\t CRtpSessionBase(V) - initTick         : %lld \n"
+                    "\t CRtpSessionBase(V) - sendTick         : %lld \n"
+                    "\t CRtpSessionBase(V) - onSendTick1      : %lld (for tcp, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(V) - onSendTick2      : %lld (for tcp, tcp_ex, ssl_ex) \n"
+                    "\t CRtpSessionBase(V) - peerAliveTick    : %lld \n"
+                    "\t CRtpSessionBase(V) - tick             : %lld \n"
                     "\t CRtpSessionBase(V) - tcpConnected     : %d (for tcp   , tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(V) - handshakeOk      : %d (for udp_ex, tcp_ex, ssl_ex) \n"
                     "\t CRtpSessionBase(V) - onOkCalled       : %d \n"
@@ -866,13 +829,13 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                     (unsigned int)pbsd_ntoh16(m_remoteAddr.sin_port),
                     remoteIpConfig,
                     (unsigned int)pbsd_ntoh16(m_remoteAddrConfig.sin_port),
-                    m_actionId,
-                    m_initTick,
-                    m_sendTick,
-                    m_onSendTick1,
-                    m_onSendTick2,
-                    m_peerAliveTick,
-                    tick,
+                    (unsigned long long)m_actionId,
+                    (long long)m_initTick,
+                    (long long)m_sendTick,
+                    (long long)m_onSendTick1,
+                    (long long)m_onSendTick2,
+                    (long long)m_peerAliveTick,
+                    (long long)tick,
                     (int)(m_tcpConnected   ? 1 : 0),
                     (int)(m_handshakeOk    ? 1 : 0),
                     (int)(m_onOkCalledPost ? 1 : 0),
@@ -895,8 +858,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
             size_t heapBytes;
 
             {
-                ProGetSgiPoolInfo(
-                    freeList, objSize, busyObjNum, totalObjNum, &heapBytes, 0);
+                ProGetSgiPoolInfo(freeList, objSize, busyObjNum, totalObjNum, &heapBytes, 0);
                 snprintf_pro(
                     buffer,
                     size,
@@ -1061,8 +1023,8 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
         case RTP_ST_TCPCLIENT:
         case RTP_ST_TCPSERVER:
             {
-                PRO_UINT16 zero = 0;
-                m_trans->SendData(&zero, sizeof(PRO_UINT16));
+                uint16_t zero = 0;
+                m_trans->SendData(&zero, sizeof(uint16_t));
 
                 return;
             }
@@ -1089,13 +1051,13 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
                 }
                 else if (m_info.packMode == RTP_EPM_TCP2)
                 {
-                    PRO_UINT16 zero = 0;
-                    m_trans->SendData(&zero, sizeof(PRO_UINT16));
+                    uint16_t zero = 0;
+                    m_trans->SendData(&zero, sizeof(uint16_t));
                 }
                 else
                 {
-                    PRO_UINT32 zero = 0;
-                    m_trans->SendData(&zero, sizeof(PRO_UINT32));
+                    uint32_t zero = 0;
+                    m_trans->SendData(&zero, sizeof(uint32_t));
                 }
                 break;
             }
@@ -1103,7 +1065,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
             {
                 return;
             }
-        } /* end of switch (...) */
+        } /* end of switch () */
 
         peerAliveTick = m_peerAliveTick;
 
@@ -1116,8 +1078,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
         /*
          * a timeout occured?
          */
-        if (tick - peerAliveTick >=
-            (PRO_INT64)GetRtpKeepaliveTimeout() * 1000)
+        if (tick - peerAliveTick >= (int64_t)GetRtpKeepaliveTimeout() * 1000)
         {
             m_canUpcall = false;
             observer->OnCloseSession(this, PBSD_ETIMEDOUT, 0, m_tcpConnected);
@@ -1137,9 +1098,9 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
 }
 
 void
-CRtpSessionBase::OnTimer(void*      factory,
-                         PRO_UINT64 timerId,
-                         PRO_INT64  userData)
+CRtpSessionBase::OnTimer(void*    factory,
+                         uint64_t timerId,
+                         int64_t  userData)
 {
     assert(factory != NULL);
     assert(timerId > 0);

@@ -89,8 +89,8 @@ struct RTP_MSG_USER
 
     RTP_MSG_USER(
         unsigned char __classId,
-        PRO_UINT64    __userId,
-        PRO_UINT16    __instId
+        uint64_t      __userId,
+        uint16_t      __instId
         )
     {
         classId = __classId;
@@ -98,7 +98,7 @@ struct RTP_MSG_USER
         instId  = __instId;
     }
 
-    void UserId(PRO_UINT64 userId)
+    void UserId(uint64_t userId)
     {
         userId5 =  (unsigned char)userId;
         userId >>= 8;
@@ -114,9 +114,9 @@ struct RTP_MSG_USER
     /*
      * userId = userId1.userId2.userId3.userId4.userId5
      */
-    PRO_UINT64 UserId() const
+    uint64_t UserId() const
     {
-        PRO_UINT64 userId = userId1;
+        uint64_t userId = userId1;
         userId <<= 8;
         userId |=  userId2;
         userId <<= 8;
@@ -126,7 +126,7 @@ struct RTP_MSG_USER
         userId <<= 8;
         userId |=  userId5;
 
-        return (userId);
+        return userId;
     }
 
     void Zero()
@@ -142,89 +142,87 @@ struct RTP_MSG_USER
 
     bool IsRoot() const
     {
-        return (classId == 1 && UserId() == 1);
+        return classId == 1 && UserId() == 1;
     }
 
-    bool operator==(const RTP_MSG_USER& user) const
+    bool operator==(const RTP_MSG_USER& other) const
     {
-        return (
-            classId == user.classId &&
-            userId1 == user.userId1 &&
-            userId2 == user.userId2 &&
-            userId3 == user.userId3 &&
-            userId4 == user.userId4 &&
-            userId5 == user.userId5 &&
-            instId  == user.instId
-            );
+        return classId == other.classId &&
+               userId1 == other.userId1 &&
+               userId2 == other.userId2 &&
+               userId3 == other.userId3 &&
+               userId4 == other.userId4 &&
+               userId5 == other.userId5 &&
+               instId  == other.instId;
     }
 
-    bool operator!=(const RTP_MSG_USER& user) const
+    bool operator!=(const RTP_MSG_USER& other) const
     {
-        return (!(*this == user));
+        return !(*this == other);
     }
 
-    bool operator<(const RTP_MSG_USER& user) const
+    bool operator<(const RTP_MSG_USER& other) const
     {
-        if (classId < user.classId)
+        if (classId < other.classId)
         {
-            return (true);
+            return true;
         }
-        if (classId > user.classId)
+        if (classId > other.classId)
         {
-            return (false);
-        }
-
-        if (userId1 < user.userId1)
-        {
-            return (true);
-        }
-        if (userId1 > user.userId1)
-        {
-            return (false);
+            return false;
         }
 
-        if (userId2 < user.userId2)
+        if (userId1 < other.userId1)
         {
-            return (true);
+            return true;
         }
-        if (userId2 > user.userId2)
+        if (userId1 > other.userId1)
         {
-            return (false);
-        }
-
-        if (userId3 < user.userId3)
-        {
-            return (true);
-        }
-        if (userId3 > user.userId3)
-        {
-            return (false);
+            return false;
         }
 
-        if (userId4 < user.userId4)
+        if (userId2 < other.userId2)
         {
-            return (true);
+            return true;
         }
-        if (userId4 > user.userId4)
+        if (userId2 > other.userId2)
         {
-            return (false);
-        }
-
-        if (userId5 < user.userId5)
-        {
-            return (true);
-        }
-        if (userId5 > user.userId5)
-        {
-            return (false);
+            return false;
         }
 
-        return (instId < user.instId);
+        if (userId3 < other.userId3)
+        {
+            return true;
+        }
+        if (userId3 > other.userId3)
+        {
+            return false;
+        }
+
+        if (userId4 < other.userId4)
+        {
+            return true;
+        }
+        if (userId4 > other.userId4)
+        {
+            return false;
+        }
+
+        if (userId5 < other.userId5)
+        {
+            return true;
+        }
+        if (userId5 > other.userId5)
+        {
+            return false;
+        }
+
+        return instId < other.instId;
     }
 
-    bool operator>(const RTP_MSG_USER& user) const
+    bool operator>(const RTP_MSG_USER& other) const
     {
-        return (!(*this < user || *this == user));
+        return !(*this < other || *this == other);
     }
 
     unsigned char classId;
@@ -233,7 +231,7 @@ struct RTP_MSG_USER
     unsigned char userId3;
     unsigned char userId4;
     unsigned char userId5;
-    PRO_UINT16    instId;
+    uint16_t      instId;
 };
 
 /*
@@ -241,13 +239,13 @@ struct RTP_MSG_USER
  */
 struct RTP_MSG_HEADER0
 {
-    PRO_UINT16     version; /* the current protocol version is 02 */
-    RTP_MSG_USER   user;
-    char           reserved1[2];
+    uint16_t     version; /* the current protocol version is 02 */
+    RTP_MSG_USER user;
+    char         reserved1[2];
     union
     {
-        char       reserved2[24];
-        PRO_UINT32 publicIp;
+        char     reserved2[24];
+        uint32_t publicIp;
     };
 };
 
@@ -256,7 +254,7 @@ struct RTP_MSG_HEADER0
  */
 struct RTP_MSG_HEADER
 {
-    PRO_UINT16     charset;      /* ANSI, UTF-8, ... */
+    uint16_t       charset;      /* ANSI, UTF-8, ... */
     RTP_MSG_USER   srcUser;
     char           reserved;
     unsigned char  dstUserCount; /* to 255 users at most */
@@ -321,8 +319,8 @@ public:
      */
     virtual bool SendMsg(
         const void*         buf,         /* 消息内容 */
-        unsigned long       size,        /* 消息长度 */
-        PRO_UINT16          charset,     /* 用户自定义的消息字符集代码 */
+        size_t              size,        /* 消息长度 */
+        uint16_t            charset,     /* 用户自定义的消息字符集代码 */
         const RTP_MSG_USER* dstUsers,    /* 消息接收者 */
         unsigned char       dstUserCount /* 最多255个目标 */
         ) = 0;
@@ -334,10 +332,10 @@ public:
      */
     virtual bool SendMsg2(
         const void*         buf1,        /* 消息内容1 */
-        unsigned long       size1,       /* 消息长度1 */
+        size_t              size1,       /* 消息长度1 */
         const void*         buf2,        /* 消息内容2. 可以是NULL */
-        unsigned long       size2,       /* 消息长度2. 可以是0 */
-        PRO_UINT16          charset,     /* 用户自定义的消息字符集代码 */
+        size_t              size2,       /* 消息长度2. 可以是0 */
+        uint16_t            charset,     /* 用户自定义的消息字符集代码 */
         const RTP_MSG_USER* dstUsers,    /* 消息接收者 */
         unsigned char       dstUserCount /* 最多255个目标 */
         ) = 0;
@@ -347,17 +345,17 @@ public:
      *
      * 如果redlineBytes为0, 则直接返回, 什么都不做
      */
-    virtual void SetOutputRedline(unsigned long redlineBytes) = 0;
+    virtual void SetOutputRedline(size_t redlineBytes) = 0;
 
     /*
      * 获取链路发送红线. 默认(1024 * 1024)字节
      */
-    virtual unsigned long GetOutputRedline() const = 0;
+    virtual size_t GetOutputRedline() const = 0;
 
     /*
      * 获取链路缓存的尚未发送的字节数
      */
-    virtual unsigned long GetSendingBytes() const = 0;
+    virtual size_t GetSendingBytes() const = 0;
 };
 
 /*
@@ -391,7 +389,7 @@ public:
         IRtpMsgClient*      msgClient,
         const void*         buf,
         unsigned long       size,
-        PRO_UINT16          charset,
+        uint16_t            charset,
         const RTP_MSG_USER* srcUser
         ) = 0;
 
@@ -412,7 +410,7 @@ public:
      */
     virtual void OnHeartbeatMsg(
         IRtpMsgClient* msgClient,
-        PRO_INT64      peerAliveTick
+        int64_t        peerAliveTick
         ) = 0;
 };
 
@@ -454,9 +452,9 @@ public:
      * 获取用户数
      */
     virtual void GetUserCount(
-        unsigned long* pendingUserCount, /* = NULL */
-        unsigned long* baseUserCount,    /* = NULL */
-        unsigned long* subUserCount      /* = NULL */
+        size_t* pendingUserCount, /* = NULL */
+        size_t* baseUserCount,    /* = NULL */
+        size_t* subUserCount      /* = NULL */
         ) const = 0;
 
     /*
@@ -471,8 +469,8 @@ public:
      */
     virtual bool SendMsg(
         const void*         buf,         /* 消息内容 */
-        unsigned long       size,        /* 消息长度 */
-        PRO_UINT16          charset,     /* 用户自定义的消息字符集代码 */
+        size_t              size,        /* 消息长度 */
+        uint16_t            charset,     /* 用户自定义的消息字符集代码 */
         const RTP_MSG_USER* dstUsers,    /* 消息接收者 */
         unsigned char       dstUserCount /* 最多255个目标 */
         ) = 0;
@@ -484,10 +482,10 @@ public:
      */
     virtual bool SendMsg2(
         const void*         buf1,        /* 消息内容1 */
-        unsigned long       size1,       /* 消息长度1 */
+        size_t              size1,       /* 消息长度1 */
         const void*         buf2,        /* 消息内容2. 可以是NULL */
-        unsigned long       size2,       /* 消息长度2. 可以是0 */
-        PRO_UINT16          charset,     /* 用户自定义的消息字符集代码 */
+        size_t              size2,       /* 消息长度2. 可以是0 */
+        uint16_t            charset,     /* 用户自定义的消息字符集代码 */
         const RTP_MSG_USER* dstUsers,    /* 消息接收者 */
         unsigned char       dstUserCount /* 最多255个目标 */
         ) = 0;
@@ -497,29 +495,29 @@ public:
      *
      * 如果redlineBytes为0, 则直接返回, 什么都不做
      */
-    virtual void SetOutputRedlineToC2s(unsigned long redlineBytes) = 0;
+    virtual void SetOutputRedlineToC2s(size_t redlineBytes) = 0;
 
     /*
      * 获取server->c2s链路的发送红线. 默认(1024 * 1024 * 8)字节
      */
-    virtual unsigned long GetOutputRedlineToC2s() const = 0;
+    virtual size_t GetOutputRedlineToC2s() const = 0;
 
     /*
      * 设置server->user链路的发送红线. 默认(1024 * 1024)字节
      *
      * 如果redlineBytes为0, 则直接返回, 什么都不做
      */
-    virtual void SetOutputRedlineToUsr(unsigned long redlineBytes) = 0;
+    virtual void SetOutputRedlineToUsr(size_t redlineBytes) = 0;
 
     /*
      * 获取server->user链路的发送红线. 默认(1024 * 1024)字节
      */
-    virtual unsigned long GetOutputRedlineToUsr() const = 0;
+    virtual size_t GetOutputRedlineToUsr() const = 0;
 
     /*
      * 获取链路缓存的尚未发送的字节数
      */
-    virtual unsigned long GetSendingBytes(const RTP_MSG_USER* user) const = 0;
+    virtual size_t GetSendingBytes(const RTP_MSG_USER* user) const = 0;
 };
 
 /*
@@ -540,7 +538,7 @@ public:
     /*
      * 用户请求登录时, 该函数将被回调
      *
-     * 上层应该根据用户号, 找到匹配的用户口令, 然后调用CheckRtpServiceData(...)
+     * 上层应该根据用户号, 找到匹配的用户口令, 然后调用CheckRtpServiceData()
      * 进行校验
      *
      * 返回值表示是否允许该用户登录
@@ -551,10 +549,10 @@ public:
         const char*         userPublicIp, /* 用户的ip地址 */
         const RTP_MSG_USER* c2sUser,      /* 经由哪个c2s而来. 可以是NULL */
         const char          hash[32],     /* 用户发来的口令hash值 */
-        const char          nonce[32],    /* 会话随机数. 用于CheckRtpServiceData(...)校验口令hash值 */
-        PRO_UINT64*         userId,       /* 上层分配或许可的uid */
-        PRO_UINT16*         instId,       /* 上层分配或许可的iid */
-        PRO_INT64*          appData,      /* 上层设置的标识数据. 后续的OnOkUser(...)会带回来 */
+        const char          nonce[32],    /* 会话随机数. 用于CheckRtpServiceData()校验口令hash值 */
+        uint64_t*           userId,       /* 上层分配或许可的uid */
+        uint16_t*           instId,       /* 上层分配或许可的iid */
+        int64_t*            appData,      /* 上层设置的标识数据. 后续的OnOkUser()会带回来 */
         bool*               isC2s         /* 上层设置的是否该节点为c2s */
         ) = 0;
 
@@ -566,7 +564,7 @@ public:
         const RTP_MSG_USER* user,         /* 上层分配或许可的用户号 */
         const char*         userPublicIp, /* 用户的ip地址 */
         const RTP_MSG_USER* c2sUser,      /* 经由哪个c2s而来. 可以是NULL */
-        PRO_INT64           appData       /* OnCheckUser(...)时上层设置的标识数据 */
+        int64_t             appData       /* OnCheckUser()时上层设置的标识数据 */
         ) = 0;
 
     /*
@@ -587,7 +585,7 @@ public:
     virtual void OnHeartbeatUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
-        PRO_INT64           peerAliveTick
+        int64_t             peerAliveTick
         ) = 0;
 
     /*
@@ -597,7 +595,7 @@ public:
         IRtpMsgServer*      msgServer,
         const void*         buf,
         unsigned long       size,
-        PRO_UINT16          charset,
+        uint16_t            charset,
         const RTP_MSG_USER* srcUser
         ) = 0;
 };
@@ -661,17 +659,17 @@ public:
      *
      * 如果redlineBytes为0, 则直接返回, 什么都不做
      */
-    virtual void SetUplinkOutputRedline(unsigned long redlineBytes) = 0;
+    virtual void SetUplinkOutputRedline(size_t redlineBytes) = 0;
 
     /*
      * 获取c2s->server链路的发送红线. 默认(1024 * 1024 * 8)字节
      */
-    virtual unsigned long GetUplinkOutputRedline() const = 0;
+    virtual size_t GetUplinkOutputRedline() const = 0;
 
     /*
      * 获取c2s->server链路缓存的尚未发送的字节数
      */
-    virtual unsigned long GetUplinkSendingBytes() const = 0;
+    virtual size_t GetUplinkSendingBytes() const = 0;
 
     /*
      * 获取本地服务端口号
@@ -690,8 +688,8 @@ public:
      * 获取本地用户数
      */
     virtual void GetLocalUserCount(
-        unsigned long* pendingUserCount, /* = NULL */
-        unsigned long* userCount         /* = NULL */
+        size_t* pendingUserCount, /* = NULL */
+        size_t* userCount         /* = NULL */
         ) const = 0;
 
     /*
@@ -704,17 +702,17 @@ public:
      *
      * 如果redlineBytes为0, 则直接返回, 什么都不做
      */
-    virtual void SetLocalOutputRedline(unsigned long redlineBytes) = 0;
+    virtual void SetLocalOutputRedline(size_t redlineBytes) = 0;
 
     /*
      * 获取c2s->user链路的发送红线. 默认(1024 * 1024)字节
      */
-    virtual unsigned long GetLocalOutputRedline() const = 0;
+    virtual size_t GetLocalOutputRedline() const = 0;
 
     /*
      * 获取c2s->user链路缓存的尚未发送的字节数
      */
-    virtual unsigned long GetLocalSendingBytes(const RTP_MSG_USER* user) const = 0;
+    virtual size_t GetLocalSendingBytes(const RTP_MSG_USER* user) const = 0;
 };
 
 /*
@@ -758,7 +756,7 @@ public:
      */
     virtual void OnHeartbeatC2s(
         IRtpMsgC2s* msgC2s,
-        PRO_INT64   peerAliveTick
+        int64_t     peerAliveTick
         ) = 0;
 
     /*
@@ -788,7 +786,7 @@ public:
     virtual void OnHeartbeatUser(
         IRtpMsgC2s*         msgC2s,
         const RTP_MSG_USER* user,
-        PRO_INT64           peerAliveTick
+        int64_t             peerAliveTick
         ) = 0;
 };
 

@@ -23,7 +23,6 @@
 #include "../pro_util/pro_bsd_wrapper.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -45,10 +44,7 @@ CRtpSessionUdpserverEx::CreateInstance(const RTP_SESSION_INFO* localInfo)
         return (NULL);
     }
 
-    CRtpSessionUdpserverEx* const session =
-        new CRtpSessionUdpserverEx(*localInfo);
-
-    return (session);
+    return new CRtpSessionUdpserverEx(*localInfo);
 }
 
 CRtpSessionUdpserverEx::CRtpSessionUdpserverEx(const RTP_SESSION_INFO& localInfo)
@@ -89,11 +85,10 @@ CRtpSessionUdpserverEx::Init(IRtpSessionObserver* observer,
         timeoutInSeconds = DEFAULT_TIMEOUT;
     }
 
-    unsigned long sockBufSizeRecv = 0; /* zero by default */
-    unsigned long sockBufSizeSend = 0; /* zero by default */
-    unsigned long recvPoolSize    = 0;
-    GetRtpUdpSocketParams(
-        m_info.mmType, &sockBufSizeRecv, &sockBufSizeSend, &recvPoolSize);
+    size_t sockBufSizeRecv = 0; /* zero by default */
+    size_t sockBufSizeSend = 0; /* zero by default */
+    size_t recvPoolSize    = 0;
+    GetRtpUdpSocketParams(m_info.mmType, &sockBufSizeRecv, &sockBufSizeSend, &recvPoolSize);
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -144,7 +139,7 @@ CRtpSessionUdpserverEx::Init(IRtpSessionObserver* observer,
         observer->AddRef();
         m_observer       = observer;
         m_reactor        = reactor;
-        m_timeoutTimerId = reactor->ScheduleTimer(this, (PRO_UINT64)timeoutInSeconds * 1000, false);
+        m_timeoutTimerId = reactor->ScheduleTimer(this, (uint64_t)timeoutInSeconds * 1000, false);
         m_syncTimerId    = reactor->ScheduleTimer(this, SEND_SYNC_INTERVAL_MS, true);
     }
 
@@ -263,8 +258,8 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                     break;
                 }
 
-                const PRO_UINT16 size = sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_UDPX_SYNC);
-                char             buffer[size];
+                const uint16_t size = sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_UDPX_SYNC);
+                char           buffer[size];
 
                 recvPool.PeekData(buffer, size);
                 recvPool.Flush(dataSize);
@@ -293,9 +288,9 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
                 }
 
                 memcpy(
-                    (char*)&m_syncToPeer + sizeof(PRO_UINT16),
-                    (char*)&sync + sizeof(PRO_UINT16),
-                    sizeof(RTP_UDPX_SYNC) - sizeof(PRO_UINT16)
+                    (char*)&m_syncToPeer + sizeof(uint16_t),
+                    (char*)&sync + sizeof(uint16_t),
+                    sizeof(RTP_UDPX_SYNC) - sizeof(uint16_t)
                     );
 
                 m_info.remoteVersion = pbsd_ntoh16(sync.version);
@@ -426,13 +421,13 @@ CRtpSessionUdpserverEx::OnRecv(IProTransport*          trans,
             Fini();
         }
         break;
-    } /* end of while (...) */
+    } /* end of while () */
 }
 
 void
-CRtpSessionUdpserverEx::OnTimer(void*      factory,
-                                PRO_UINT64 timerId,
-                                PRO_INT64  userData)
+CRtpSessionUdpserverEx::OnTimer(void*    factory,
+                                uint64_t timerId,
+                                int64_t  userData)
 {
     CRtpSessionBase::OnTimer(factory, timerId, userData);
 

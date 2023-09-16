@@ -53,7 +53,7 @@ public:
     void Fill(
         const void* buf,
         size_t      size,
-        PRO_UINT64  actionId = 0
+        uint64_t    actionId = 0
         )
     {
         if (buf == NULL || size == 0)
@@ -85,18 +85,17 @@ public:
 
         if (m_bufs.size() == 0)
         {
-            return (NULL);
+            return NULL;
         }
 
         CProBuffer* const buf = m_bufs.front();
-        size = (unsigned long)(
-            (char*)buf->Data() + buf->Size() - m_pendingPos);
+        size = (unsigned long)((char*)buf->Data() + buf->Size() - m_pendingPos);
         if (size == 0)
         {
-            return (NULL);
+            return NULL;
         }
 
-        return (m_pendingPos);
+        return m_pendingPos;
     }
 
     void Flush(size_t size)
@@ -119,16 +118,16 @@ public:
     {
         if (m_bufs.size() == 0)
         {
-            return (NULL);
+            return NULL;
         }
 
         CProBuffer* const buf = m_bufs.front();
         if (m_pendingPos != (char*)buf->Data() + buf->Size())
         {
-            return (NULL);
+            return NULL;
         }
 
-        return (buf);
+        return buf;
     }
 
     void PostSend()

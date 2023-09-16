@@ -26,7 +26,6 @@
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -41,9 +40,7 @@
 CProServicePipe*
 CProServicePipe::CreateInstance()
 {
-    CProServicePipe* const pipe = new CProServicePipe;
-
-    return (pipe);
+    return new CProServicePipe;
 }
 
 CProServicePipe::CProServicePipe()
@@ -62,7 +59,7 @@ bool
 CProServicePipe::Init(bool                     recvFdMode,
                       IProServicePipeObserver* observer,
                       IProReactor*             reactor,
-                      PRO_INT64                sockId,
+                      int64_t                  sockId,
                       bool                     unixSocket)
 {
     assert(observer != NULL);
@@ -266,7 +263,7 @@ CProServicePipe::OnRecv(IProTransport*          trans,
             observer->OnRecv(this, packet);
             observer->Release();
         }
-    } /* end of while (...) */
+    } /* end of while () */
 
     if (error)
     {
@@ -276,7 +273,7 @@ CProServicePipe::OnRecv(IProTransport*          trans,
 
 void
 CProServicePipe::OnRecvFd(IProTransport*            trans,
-                          PRO_INT64                 fd,
+                          int64_t                   fd,
                           bool                      unixSocket,
                           const PRO_SERVICE_PACKET& s2cPacket)
 {
@@ -317,7 +314,7 @@ CProServicePipe::OnRecvFd(IProTransport*            trans,
 
 void
 CProServicePipe::OnSend(IProTransport* trans,
-                        PRO_UINT64     actionId)
+                        uint64_t       actionId)
 {
     assert(trans != NULL);
     if (trans == NULL)
@@ -341,8 +338,7 @@ CProServicePipe::OnSend(IProTransport* trans,
         if (m_packets.size() > 0)
         {
             const PRO_SERVICE_PACKET& packet = m_packets.front();
-            if (m_trans->SendData(
-                &packet, sizeof(PRO_SERVICE_PACKET), 0, NULL))
+            if (m_trans->SendData(&packet, sizeof(PRO_SERVICE_PACKET), 0, NULL))
             {
                 m_packets.pop_front();
             }
@@ -400,7 +396,7 @@ CProServicePipe*
 ProCreateServicePipe(bool                     recvFdMode,
                      IProServicePipeObserver* observer,
                      IProReactor*             reactor,
-                     PRO_INT64                sockId,
+                     int64_t                  sockId,
                      bool                     unixSocket)
 {
     CProServicePipe* const pipe = CProServicePipe::CreateInstance();

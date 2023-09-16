@@ -51,7 +51,7 @@ struct RTP_MSG_AsyncOnAcceptSession
     }
 
     PRO_SSL_CTX*     sslCtx;
-    PRO_INT64        sockId;
+    int64_t          sockId;
     bool             unixSocket;
     CProStlString    remoteIp;
     unsigned short   remotePort;
@@ -124,7 +124,7 @@ public:
 
     virtual RTP_MM_TYPE GetMmType() const
     {
-        return (m_mmType);
+        return m_mmType;
     }
 
     virtual unsigned short GetServicePort() const;
@@ -135,40 +135,40 @@ public:
         ) const;
 
     virtual void GetUserCount(
-        unsigned long* pendingUserCount, /* = NULL */
-        unsigned long* baseUserCount,    /* = NULL */
-        unsigned long* subUserCount      /* = NULL */
+        size_t* pendingUserCount, /* = NULL */
+        size_t* baseUserCount,    /* = NULL */
+        size_t* subUserCount      /* = NULL */
         ) const;
 
     virtual void KickoutUser(const RTP_MSG_USER* user);
 
     virtual bool SendMsg(
         const void*         buf,
-        unsigned long       size,
-        PRO_UINT16          charset,
+        size_t              size,
+        uint16_t            charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount
         );
 
     virtual bool SendMsg2(
         const void*         buf1,
-        unsigned long       size1,
+        size_t              size1,
         const void*         buf2,  /* = NULL */
-        unsigned long       size2, /* = 0 */
-        PRO_UINT16          charset,
+        size_t              size2, /* = 0 */
+        uint16_t            charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount
         );
 
-    virtual void SetOutputRedlineToC2s(unsigned long redlineBytes);
+    virtual void SetOutputRedlineToC2s(size_t redlineBytes);
 
-    virtual unsigned long GetOutputRedlineToC2s() const;
+    virtual size_t GetOutputRedlineToC2s() const;
 
-    virtual void SetOutputRedlineToUsr(unsigned long redlineBytes);
+    virtual void SetOutputRedlineToUsr(size_t redlineBytes);
 
-    virtual unsigned long GetOutputRedlineToUsr() const;
+    virtual size_t GetOutputRedlineToUsr() const;
 
-    virtual unsigned long GetSendingBytes(const RTP_MSG_USER* user) const;
+    virtual size_t GetSendingBytes(const RTP_MSG_USER* user) const;
 
 private:
 
@@ -182,7 +182,7 @@ private:
 
     virtual void OnAcceptSession(
         IRtpService*            service,
-        PRO_INT64               sockId,
+        int64_t                 sockId,
         bool                    unixSocket,
         const char*             remoteIp,
         unsigned short          remotePort,
@@ -193,7 +193,7 @@ private:
     virtual void OnAcceptSession(
         IRtpService*            service,
         PRO_SSL_CTX*            sslCtx,
-        PRO_INT64               sockId,
+        int64_t                 sockId,
         bool                    unixSocket,
         const char*             remoteIp,
         unsigned short          remotePort,
@@ -226,7 +226,7 @@ private:
 
     virtual void OnHeartbeatSession(
         IRtpSession* session,
-        PRO_INT64    peerAliveTick
+        int64_t      peerAliveTick
         );
 
     bool AddBaseUser(
@@ -235,7 +235,7 @@ private:
         const RTP_SESSION_INFO& localInfo,
         const RTP_MSG_USER&     baseUser,
         const CProStlString&    publicIp,
-        PRO_INT64               appData,
+        int64_t                 appData,
         bool                    isC2s
         );
 
@@ -244,7 +244,7 @@ private:
         const RTP_MSG_USER&  subUser,
         const CProStlString& publicIp,
         const CProStlString& msgText,
-        PRO_INT64            appData
+        int64_t              appData
         );
 
     static bool SendMsgToDownlink(
@@ -252,10 +252,10 @@ private:
         IRtpSession**       sessions,
         unsigned char       sessionCount,
         const void*         buf1,
-        unsigned long       size1,
+        size_t              size1,
         const void*         buf2,        /* = NULL */
-        unsigned long       size2,       /* = 0 */
-        PRO_UINT16          charset,
+        size_t              size2,       /* = 0 */
+        uint16_t            charset,
         const RTP_MSG_USER& srcUser,
         const RTP_MSG_USER* dstUsers,    /* = NULL */
         unsigned char       dstUserCount /* = 0 */
@@ -280,13 +280,13 @@ private:
         const RTP_MSG_USER&     c2sUser
         );
 
-    void AsyncKickoutUser(PRO_INT64* args);
+    void AsyncKickoutUser(int64_t* args);
 
-    void AsyncOnAcceptSession(PRO_INT64* args);
+    void AsyncOnAcceptSession(int64_t* args);
 
-    void AsyncOnRecvSession(PRO_INT64* args);
+    void AsyncOnRecvSession(int64_t* args);
 
-    void AsyncOnCloseSession(PRO_INT64* args);
+    void AsyncOnCloseSession(int64_t* args);
 
 private:
 
@@ -299,9 +299,8 @@ private:
     CProFunctorCommandTask*                     m_task;
     IRtpService*                                m_service;
     unsigned short                              m_serviceHubPort;
-    unsigned long                               m_timeoutInSeconds;
-    unsigned long                               m_redlineBytesC2s;
-    unsigned long                               m_redlineBytesUsr;
+    size_t                                      m_redlineBytesC2s;
+    size_t                                      m_redlineBytesUsr;
 
     CProStlMap<IRtpSession*, RTP_MSG_LINK_CTX*> m_session2Ctx;
     CProStlMap<RTP_MSG_USER, RTP_MSG_LINK_CTX*> m_user2Ctx;

@@ -16,6 +16,8 @@ configure            text eol=lf
 Makefile.am          text eol=lf
 Makefile.in          text eol=lf
 Makefile             text eol=lf
+*.pc.in              text eol=lf
+*.pc                 text eol=lf
 Application.mk       text eol=lf
 Android.mk           text eol=lf
 

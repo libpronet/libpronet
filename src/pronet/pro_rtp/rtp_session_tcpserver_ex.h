@@ -36,7 +36,7 @@ public:
     bool Init(
         IRtpSessionObserver* observer,
         IProReactor*         reactor,
-        PRO_INT64            sockId,
+        int64_t              sockId,
         bool                 unixSocket,
         bool                 useAckData,
         char                 ackData[64]

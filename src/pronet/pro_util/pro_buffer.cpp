@@ -20,7 +20,6 @@
 #include "pro_buffer.h"
 #include "pro_memory_pool.h"
 #include "pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -51,12 +50,12 @@ CProBuffer::Resize(size_t size)
     assert(size > 0);
     if (size == 0)
     {
-        return (false);
+        return false;
     }
 
     if (size == m_size)
     {
-        return (true);
+        return true;
     }
 
     ProFree(m_data);
@@ -66,10 +65,10 @@ CProBuffer::Resize(size_t size)
     m_data = (char*)ProMalloc(size);
     if (m_data == NULL)
     {
-        return (false);
+        return false;
     }
 
     m_size = size;
 
-    return (true);
+    return true;
 }

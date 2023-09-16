@@ -56,9 +56,9 @@ private:
         );
 
     virtual void OnTimer(
-        void*      factory,
-        PRO_UINT64 timerId,
-        PRO_INT64  userData
+        void*    factory,
+        uint64_t timerId,
+        int64_t  userData
         );
 
     bool DoHandshake1();
@@ -68,7 +68,7 @@ private:
 private:
 
     RTP_UDPX_SYNC m_syncToPeer; /* network byte order */
-    PRO_UINT64    m_syncTimerId;
+    uint64_t      m_syncTimerId;
 
     DECLARE_SGI_POOL(0)
 };

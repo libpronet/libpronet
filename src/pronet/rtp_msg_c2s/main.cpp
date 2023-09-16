@@ -39,9 +39,9 @@
 #define CONFIG_FILE_NAME "rtp_msg_c2s.cfg"
 #define LOG_LOOP_BYTES   (50 * 1000 * 1000)
 
-static const unsigned char SERVER_CID    = 1;                                     /* 1-... */
-static const PRO_UINT64    NODE_UID_MIN  = 1;                                     /* 1 ~ 0xFFFFFFFFFF */
-static const PRO_UINT64    NODE_UID_MAXX = ((PRO_UINT64)0xFF << 32) | 0xFFFFFFFF; /* 1 ~ 0xFFFFFFFFFF */
+static const unsigned char SERVER_CID    = 1;               /* 1-... */
+static const uint64_t      NODE_UID_MIN  = 1;               /* 1 ~ 0xFFFFFFFFFF */
+static const uint64_t      NODE_UID_MAXX = 0xFFFFFFFFFFULL; /* 1 ~ 0xFFFFFFFFFF */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -318,7 +318,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         else
         {
         }
-    } /* end of for (...) */
+    } /* end of for () */
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -329,14 +329,14 @@ int main(int argc, char* argv[])
     ProNetInit();
     ProRtpInit();
 
-    CProLogFile* const     logFile        = new CProLogFile;
-    IProReactor*           reactor        = NULL;
-    CC2sServer*            server         = NULL;
-    CProStlString          logFileName    = "";
-    CProStlString          configFileName = "";
+    CProLogFile* const     logFile = new CProLogFile;
+    IProReactor*           reactor = NULL;
+    CC2sServer*            server  = NULL;
+    CProStlString          logFileName;
+    CProStlString          configFileName;
     C2S_SERVER_CONFIG_INFO configInfo;
 
-    CProStlString timeString = "";
+    CProStlString timeString;
     ProGetLocalTimeString(timeString);
 
     char exeRoot[1024] = "";
@@ -349,7 +349,7 @@ int main(int argc, char* argv[])
         configFileName += CONFIG_FILE_NAME;
     }
 
-    static char s_traceInfo[1024] = "";
+    static char s_traceInfo[4096] = "";
 
     logFile->Reinit(logFileName.c_str(), true); /* append mode */
     logFile->SetMaxSize(LOG_LOOP_BYTES);
@@ -477,7 +477,7 @@ int main(int argc, char* argv[])
         printf("\nMSG-C2S>");
         fflush(stdout);
 
-        static char s_cmdText[1024]      = "";
+        static char s_cmdText[4096]      = "";
         s_cmdText[0]                     = '\0';
         s_cmdText[sizeof(s_cmdText) - 1] = '\0';
 
@@ -597,7 +597,7 @@ int main(int argc, char* argv[])
         else
         {
         }
-    } /* end of while (...) */
+    } /* end of while () */
 
 EXIT:
 

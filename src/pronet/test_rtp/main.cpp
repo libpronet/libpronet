@@ -21,7 +21,6 @@
 #include "../pro_rtp/rtp_base.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -144,7 +143,7 @@ int main(int argc, char* argv[])
     IProReactor* reactor     = NULL;
     CTest*       tester      = NULL;
 
-    CProStlString timeString = "";
+    CProStlString timeString;
     ProGetLocalTimeString(timeString);
 
     if (argc < 2)
@@ -373,7 +372,7 @@ int main(int argc, char* argv[])
             prm.packet_size = packet_size;
             break;
         }
-    } /* end of switch (...) */
+    } /* end of switch () */
 
     reactor = ProCreateReactor(THREAD_COUNT);
     if (reactor == NULL)

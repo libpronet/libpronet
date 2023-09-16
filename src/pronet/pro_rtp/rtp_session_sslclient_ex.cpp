@@ -19,7 +19,6 @@
 #include "rtp_session_sslclient_ex.h"
 #include "rtp_session_tcpclient_ex.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -50,18 +49,14 @@ CRtpSessionSslclientEx::CreateInstance(const RTP_SESSION_INFO*      localInfo,
         return (NULL);
     }
 
-    CRtpSessionSslclientEx* const session = new CRtpSessionSslclientEx(
-        *localInfo, suspendRecv, sslConfig, sslSni);
-
-    return (session);
+    return new CRtpSessionSslclientEx(*localInfo, suspendRecv, sslConfig, sslSni);
 }
 
 CRtpSessionSslclientEx::CRtpSessionSslclientEx(const RTP_SESSION_INFO&      localInfo,
                                                bool                         suspendRecv,
                                                const PRO_SSL_CLIENT_CONFIG* sslConfig,
                                                const char*                  sslSni) /* = NULL */
-                                               :
-CRtpSessionTcpclientEx(localInfo, suspendRecv, sslConfig, sslSni)
+: CRtpSessionTcpclientEx(localInfo, suspendRecv, sslConfig, sslSni)
 {
     m_info.sessionType = RTP_ST_SSLCLIENT_EX;
 }

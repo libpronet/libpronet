@@ -26,14 +26,9 @@
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
-
-#if !defined(PRO_ACCEPTOR_LENGTH)
-#define PRO_ACCEPTOR_LENGTH     10000
-#endif
 
 #define SERVICE_HANDSHAKE_BYTES 4 /* serviceId + serviceOpt + (r) + (r+1) */
 #define DEFAULT_TIMEOUT         10
@@ -57,23 +52,18 @@ MakeNonce_i(PRO_NONCE& nonce)
 CProAcceptor*
 CProAcceptor::CreateInstance(bool enableServiceExt)
 {
-    CProAcceptor* const acceptor =
-        new CProAcceptor(enableServiceExt, enableServiceExt);
-
-    return (acceptor);
+    return new CProAcceptor(enableServiceExt, enableServiceExt);
 }
 
 CProAcceptor*
 CProAcceptor::CreateInstanceOnlyLoopExt()
 {
-    CProAcceptor* const acceptor = new CProAcceptor(false, true);
-
-    return (acceptor);
+    return new CProAcceptor(false, true);
 }
 
 CProAcceptor::CProAcceptor(bool nonloopExt,
                            bool loopExt)
-                           :
+:
 m_nonloopExt(nonloopExt),
 m_loopExt(loopExt)
 {
@@ -117,12 +107,6 @@ CProAcceptor::Init(IProAcceptorObserver* observer,
         return (false);
     }
 
-    const char* const anyIp = "0.0.0.0";
-    if (localIp == NULL || localIp[0] == '\0')
-    {
-        localIp = anyIp;
-    }
-
     if (timeoutInSeconds == 0)
     {
         timeoutInSeconds = DEFAULT_TIMEOUT;
@@ -134,13 +118,13 @@ CProAcceptor::Init(IProAcceptorObserver* observer,
     localAddr.sin_port        = pbsd_hton16(localPort);
     localAddr.sin_addr.s_addr = pbsd_inet_aton(localIp);
 
-    if (localAddr.sin_addr.s_addr == (PRO_UINT32)-1)
+    if (localAddr.sin_addr.s_addr == (uint32_t)-1)
     {
         return (false);
     }
 
-    PRO_INT64        sockId   = -1;
-    PRO_INT64        sockIdUn = -1;
+    int64_t          sockId   = -1;
+    int64_t          sockIdUn = -1;
     pbsd_sockaddr_un localAddrUn;
     memset(&localAddrUn, 0, sizeof(pbsd_sockaddr_un));
 
@@ -161,8 +145,7 @@ CProAcceptor::Init(IProAcceptorObserver* observer,
         }
 
         const int option = 1;
-        pbsd_setsockopt(
-            sockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
+        pbsd_setsockopt(sockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
 
 #if defined(_WIN32)
         if (pbsd_bind(sockId, &localAddr, false) != 0)
@@ -324,7 +307,7 @@ CProAcceptor::GetLocalPort() const
 }
 
 void
-CProAcceptor::OnInput(PRO_INT64 sockId)
+CProAcceptor::OnInput(int64_t sockId)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -334,7 +317,7 @@ CProAcceptor::OnInput(PRO_INT64 sockId)
 
     IProAcceptorObserver* observer   = NULL;
     IProTcpHandshaker*    handshaker = NULL;
-    PRO_INT64             newSockId  = -1;
+    int64_t               newSockId  = -1;
     bool                  unixSocket = false;
     pbsd_sockaddr_in      localAddr;
     pbsd_sockaddr_in      remoteAddr;
@@ -355,8 +338,7 @@ CProAcceptor::OnInput(PRO_INT64 sockId)
             if (newSockId != -1)
             {
                 const int option = 1;
-                pbsd_setsockopt(
-                    newSockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
+                pbsd_setsockopt(newSockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
 
                 if (pbsd_getsockname(newSockId, &localAddr) != 0)
                 {
@@ -392,8 +374,7 @@ CProAcceptor::OnInput(PRO_INT64 sockId)
         }
 
         bool isLoop = false;
-        if (unixSocket ||
-            localAddr.sin_addr.s_addr == pbsd_inet_aton("127.0.0.1"))
+        if (unixSocket || localAddr.sin_addr.s_addr == pbsd_inet_aton("127.0.0.1"))
         {
             isLoop = true;
         }
@@ -457,7 +438,7 @@ CProAcceptor::OnInput(PRO_INT64 sockId)
 
 void
 CProAcceptor::OnHandshakeOk(IProTcpHandshaker* handshaker,
-                            PRO_INT64          sockId,
+                            int64_t            sockId,
                             bool               unixSocket,
                             const void*        buf,
                             unsigned long      size)

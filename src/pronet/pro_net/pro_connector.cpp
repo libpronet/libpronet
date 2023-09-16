@@ -25,7 +25,6 @@
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -46,17 +45,14 @@ CProConnector::CreateInstance(bool          enableUnixSocket,
     enableUnixSocket = false;
 #endif
 
-    CProConnector* const connector = new CProConnector(
-        enableUnixSocket, enableServiceExt, serviceId, serviceOpt);
-
-    return (connector);
+    return new CProConnector(enableUnixSocket, enableServiceExt, serviceId, serviceOpt);
 }
 
 CProConnector::CProConnector(bool          enableUnixSocket,
                              bool          enableServiceExt,
                              unsigned char serviceId,
                              unsigned char serviceOpt)
-                             :
+:
 m_enableUnixSocket(enableUnixSocket),
 m_enableServiceExt(enableServiceExt),
 m_serviceId (enableServiceExt ? serviceId  : 0),
@@ -102,12 +98,6 @@ CProConnector::Init(IProConnectorObserver* observer,
         return (false);
     }
 
-    const char* const anyIp = "0.0.0.0";
-    if (localBindIp == NULL || localBindIp[0] == '\0')
-    {
-        localBindIp = anyIp;
-    }
-
     if (timeoutInSeconds == 0)
     {
         timeoutInSeconds = DEFAULT_TIMEOUT;
@@ -124,8 +114,8 @@ CProConnector::Init(IProConnectorObserver* observer,
     remoteAddr.sin_port        = pbsd_hton16(remotePort);
     remoteAddr.sin_addr.s_addr = pbsd_inet_aton(remoteIp); /* DNS */
 
-    if (localAddr.sin_addr.s_addr  == (PRO_UINT32)-1 ||
-        remoteAddr.sin_addr.s_addr == (PRO_UINT32)-1 ||
+    if (localAddr.sin_addr.s_addr  == (uint32_t)-1 ||
+        remoteAddr.sin_addr.s_addr == (uint32_t)-1 ||
         remoteAddr.sin_addr.s_addr == 0)
     {
         return (false);
@@ -143,8 +133,7 @@ CProConnector::Init(IProConnectorObserver* observer,
             return (false);
         }
 
-        if (m_enableUnixSocket &&
-            remoteAddr.sin_addr.s_addr == pbsd_inet_aton("127.0.0.1"))
+        if (m_enableUnixSocket && remoteAddr.sin_addr.s_addr == pbsd_inet_aton("127.0.0.1"))
         {
             m_unixSocket = true;
         }
@@ -160,7 +149,7 @@ CProConnector::Init(IProConnectorObserver* observer,
         m_remoteAddr       = remoteAddr;
         m_timeoutInSeconds = timeoutInSeconds;
         m_timerId0         = reactorTask->ScheduleTimer(this, 0, false, 0);
-        m_timerId1         = reactorTask->ScheduleTimer(this, (PRO_UINT64)timeoutInSeconds * 1000, false, 0);
+        m_timerId1         = reactorTask->ScheduleTimer(this, (uint64_t)timeoutInSeconds * 1000, false, 0);
     }
 
     return (true);
@@ -215,13 +204,13 @@ CProConnector::Release()
 }
 
 void
-CProConnector::OnInput(PRO_INT64 sockId)
+CProConnector::OnInput(int64_t sockId)
 {
     OnError(sockId, -1);
 }
 
 void
-CProConnector::OnOutput(PRO_INT64 sockId)
+CProConnector::OnOutput(int64_t sockId)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -336,14 +325,14 @@ EXIT:
 }
 
 void
-CProConnector::OnException(PRO_INT64 sockId)
+CProConnector::OnException(int64_t sockId)
 {
     OnError(sockId, -1);
 }
 
 void
-CProConnector::OnError(PRO_INT64 sockId,
-                       long      errorCode)
+CProConnector::OnError(int64_t sockId,
+                       long    errorCode)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -407,7 +396,7 @@ CProConnector::OnError(PRO_INT64 sockId,
 
 void
 CProConnector::OnHandshakeOk(IProTcpHandshaker* handshaker,
-                             PRO_INT64          sockId,
+                             int64_t            sockId,
                              bool               unixSocket,
                              const void*        buf,
                              unsigned long      size)
@@ -424,8 +413,7 @@ CProConnector::OnHandshakeOk(IProTcpHandshaker* handshaker,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactorTask == NULL ||
-            m_handshaker == NULL)
+        if (m_observer == NULL || m_reactorTask == NULL || m_handshaker == NULL)
         {
             ProCloseSockId(sockId);
 
@@ -533,8 +521,7 @@ CProConnector::OnHandshakeError(IProTcpHandshaker* handshaker,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactorTask == NULL ||
-            m_handshaker == NULL)
+        if (m_observer == NULL || m_reactorTask == NULL || m_handshaker == NULL)
         {
             return;
         }
@@ -584,9 +571,9 @@ CProConnector::OnHandshakeError(IProTcpHandshaker* handshaker,
 }
 
 void
-CProConnector::OnTimer(void*      factory,
-                       PRO_UINT64 timerId,
-                       PRO_INT64  userData)
+CProConnector::OnTimer(void*    factory,
+                       uint64_t timerId,
+                       int64_t  userData)
 {
     assert(factory != NULL);
     assert(timerId > 0);
@@ -655,8 +642,7 @@ CProConnector::OnTimer(void*      factory,
 #endif
             {
                 const int option = 1;
-                pbsd_setsockopt(
-                    m_sockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
+                pbsd_setsockopt(m_sockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
 
                 if (pbsd_bind(m_sockId, &m_localAddr, false) != 0)
                 {

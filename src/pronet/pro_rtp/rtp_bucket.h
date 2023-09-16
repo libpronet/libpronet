@@ -27,6 +27,7 @@
 #include "rtp_flow_stat.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_stl.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -46,9 +47,9 @@ public:
 
     virtual void Destroy();
 
-    virtual unsigned long GetTotalBytes() const
+    virtual size_t GetTotalBytes() const
     {
-        return (m_totalBytes);
+        return m_totalBytes;
     }
 
     virtual IRtpPacket* GetFront();
@@ -60,34 +61,34 @@ public:
     virtual void Reset();
 
     virtual void SetRedline(
-        unsigned long redlineBytes,  /* = 0 */
-        unsigned long redlineFrames, /* = 0 */
-        unsigned long redlineDelayMs /* = 0 */
+        size_t redlineBytes,  /* = 0 */
+        size_t redlineFrames, /* = 0 */
+        size_t redlineDelayMs /* = 0 */
         );
 
     virtual void GetRedline(
-        unsigned long* redlineBytes,  /* = NULL */
-        unsigned long* redlineFrames, /* = NULL */
-        unsigned long* redlineDelayMs /* = NULL */
+        size_t* redlineBytes,  /* = NULL */
+        size_t* redlineFrames, /* = NULL */
+        size_t* redlineDelayMs /* = NULL */
         ) const;
 
     virtual void GetFlowctrlInfo(
-        float*         srcFrameRate, /* = NULL */
-        float*         srcBitRate,   /* = NULL */
-        float*         outFrameRate, /* = NULL */
-        float*         outBitRate,   /* = NULL */
-        unsigned long* cachedBytes,  /* = NULL */
-        unsigned long* cachedFrames  /* = NULL */
+        float*  srcFrameRate, /* = NULL */
+        float*  srcBitRate,   /* = NULL */
+        float*  outFrameRate, /* = NULL */
+        float*  outBitRate,   /* = NULL */
+        size_t* cachedBytes,  /* = NULL */
+        size_t* cachedFrames  /* = NULL */
         ) const;
 
     virtual void ResetFlowctrlInfo();
 
 protected:
 
-    unsigned long             m_redlineBytes;
-    unsigned long             m_redlineFrames;
-    PRO_INT64                 m_redlineDelayMs;
-    unsigned long             m_totalBytes;
+    size_t                    m_redlineBytes;
+    size_t                    m_redlineFrames;
+    int64_t                   m_redlineDelayMs;
+    size_t                    m_totalBytes;
     CProStlDeque<IRtpPacket*> m_packets;
 
     mutable CRtpFlowStat      m_flowStat;
@@ -126,9 +127,9 @@ public:
 
     virtual void Destroy();
 
-    virtual unsigned long GetTotalBytes() const
+    virtual size_t GetTotalBytes() const
     {
-        return (m_totalBytes);
+        return m_totalBytes;
     }
 
     virtual IRtpPacket* GetFront();
@@ -140,24 +141,24 @@ public:
     virtual void Reset();
 
     virtual void SetRedline(
-        unsigned long redlineBytes,  /* = 0 */
-        unsigned long redlineFrames, /* = 0 */
-        unsigned long redlineDelayMs /* = 0 */
+        size_t redlineBytes,  /* = 0 */
+        size_t redlineFrames, /* = 0 */
+        size_t redlineDelayMs /* = 0 */
         );
 
     virtual void GetRedline(
-        unsigned long* redlineBytes,  /* = NULL */
-        unsigned long* redlineFrames, /* = NULL */
-        unsigned long* redlineDelayMs /* = NULL */
+        size_t* redlineBytes,  /* = NULL */
+        size_t* redlineFrames, /* = NULL */
+        size_t* redlineDelayMs /* = NULL */
         ) const;
 
     virtual void GetFlowctrlInfo(
-        float*         srcFrameRate, /* = NULL */
-        float*         srcBitRate,   /* = NULL */
-        float*         outFrameRate, /* = NULL */
-        float*         outBitRate,   /* = NULL */
-        unsigned long* cachedBytes,  /* = NULL */
-        unsigned long* cachedFrames  /* = NULL */
+        float*  srcFrameRate, /* = NULL */
+        float*  srcBitRate,   /* = NULL */
+        float*  outFrameRate, /* = NULL */
+        float*  outBitRate,   /* = NULL */
+        size_t* cachedBytes,  /* = NULL */
+        size_t* cachedFrames  /* = NULL */
         ) const;
 
     virtual void ResetFlowctrlInfo();
@@ -168,11 +169,11 @@ private:
 
 private:
 
-    unsigned long                  m_redlineBytes;
-    unsigned long                  m_redlineFrames;
-    PRO_INT64                      m_redlineDelayMs;
-    unsigned long                  m_totalBytes;
-    unsigned long                  m_totalFrames;
+    size_t                         m_redlineBytes;
+    size_t                         m_redlineFrames;
+    int64_t                        m_redlineDelayMs;
+    size_t                         m_totalBytes;
+    size_t                         m_totalFrames;
     RTP_VIDEO_FRAME*               m_waitingFrame;
     CProStlDeque<RTP_VIDEO_FRAME*> m_frames;
     RTP_VIDEO_FRAME*               m_sendingFrame;

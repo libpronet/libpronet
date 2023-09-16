@@ -31,7 +31,6 @@
 #include "../pro_util/pro_timer_factory.h"
 #include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -43,7 +42,7 @@
 #define REDLINE_BYTES          (1024 * 1024 * 64)
 #define MEDIA_PAYLOAD_TYPE     109
 #define MEDIA_MM_TYPE          RTP_MMT_MSG
-#define SEND_TIMER_MS          1
+#define SEND_TIMER_MS          5
 #define RECV_TIMER_MS          1000
 #define HTBT_TIMER_MS          100
 #define UDP_SERVER_TIMEOUT     20
@@ -106,7 +105,7 @@ CTest::CTest(TEST_MODE mode)
 
     m_outputSeq         = 0;
     m_outputTs64        = -1;
-    m_outputSsrc        = (PRO_UINT32)(ProRand_0_1() * (PRO_UINT32)-1);
+    m_outputSsrc        = (uint32_t)(ProRand_0_1() * (uint32_t)-1);
     m_outputPacketCount = 0;
     m_outputFrameSeq    = 0;
     m_echoClient        = false;
@@ -254,7 +253,7 @@ CTest::CreateUdpServer(IProReactor*   reactor,
         RTP_ST_UDPSERVER_EX, &initArgs, &localInfo);
     if (session != NULL)
     {
-        const PRO_INT64 sockId = session->GetSockId();
+        const int64_t sockId = session->GetSockId();
 
         int option;
         option = (int)SOCK_BUF_SIZE_RECV;
@@ -296,8 +295,7 @@ CTest::CreateTcpServer(IProReactor*   reactor,
             sizeof(initArgs.tcpserver.localIp), localIp);
     }
 
-    IRtpSession* const session = CreateRtpSessionWrapper(
-        RTP_ST_TCPSERVER, &initArgs, &localInfo);
+    IRtpSession* const session = CreateRtpSessionWrapper(RTP_ST_TCPSERVER, &initArgs, &localInfo);
     if (session != NULL)
     {
         session->SetOutputRedline(REDLINE_BYTES, 0, 0);
@@ -339,7 +337,7 @@ CTest::CreateUdpClient(IProReactor*   reactor,
         RTP_ST_UDPCLIENT_EX, &initArgs, &localInfo);
     if (session != NULL)
     {
-        const PRO_INT64 sockId = session->GetSockId();
+        const int64_t sockId = session->GetSockId();
 
         int option;
         option = (int)SOCK_BUF_SIZE_RECV;
@@ -382,8 +380,7 @@ CTest::CreateTcpClient(IProReactor*   reactor,
     strncpy_pro(initArgs.tcpclient.remoteIp,
         sizeof(initArgs.tcpclient.remoteIp), remoteIp);
 
-    IRtpSession* const session = CreateRtpSessionWrapper(
-        RTP_ST_TCPCLIENT, &initArgs, &localInfo);
+    IRtpSession* const session = CreateRtpSessionWrapper(RTP_ST_TCPCLIENT, &initArgs, &localInfo);
     if (session != NULL)
     {
         session->SetOutputRedline(REDLINE_BYTES, 0, 0);
@@ -462,7 +459,7 @@ CTest::PrintSessionCreated(IRtpSession* session)
         strcpy(status, "connecting...");
     }
 
-    CProStlString timeString = "";
+    CProStlString timeString;
     ProGetLocalTimeString(timeString);
 
     printf(
@@ -497,7 +494,7 @@ CTest::PrintSessionConnected(IRtpSession* session)
     localPort  = session->GetLocalPort();
     remotePort = session->GetRemotePort();
 
-    CProStlString timeString = "";
+    CProStlString timeString;
     ProGetLocalTimeString(timeString);
 
     printf(
@@ -531,7 +528,7 @@ CTest::PrintSessionBroken(IRtpSession* session)
     localPort  = session->GetLocalPort();
     remotePort = session->GetRemotePort();
 
-    CProStlString timeString = "";
+    CProStlString timeString;
     ProGetLocalTimeString(timeString);
 
     printf(
@@ -610,7 +607,7 @@ CTest::OnRecvSession(IRtpSession* session,
             return;
         }
 
-        const PRO_INT64 tick = ProGetTickCount64();
+        const int64_t tick = ProGetTickCount64();
         m_session->SetMagic(tick);
 
         if (m_mode == TM_UDPE || m_mode == TM_TCPE)
@@ -677,9 +674,9 @@ CTest::OnCloseSession(IRtpSession* session,
 }
 
 void
-CTest::OnTimer(void*      factory,
-               PRO_UINT64 timerId,
-               PRO_INT64  userData)
+CTest::OnTimer(void*    factory,
+               uint64_t timerId,
+               int64_t  userData)
 {
     if (userData == 1)
     {
@@ -705,8 +702,8 @@ CTest::OnTimer(void*      factory,
 }
 
 void
-CTest::OnTimerSend(PRO_UINT64 timerId,
-                   bool&      tryAgain)
+CTest::OnTimerSend(uint64_t timerId,
+                   bool&    tryAgain)
 {
     tryAgain = false;
 
@@ -749,16 +746,14 @@ CTest::OnTimerSend(PRO_UINT64 timerId,
             return;
         }
 
-        unsigned long cachedBytes = 0;
-        m_session->GetFlowctrlInfo(
-            NULL, NULL, NULL, NULL, &cachedBytes, NULL);
+        size_t cachedBytes = 0;
+        m_session->GetFlowctrlInfo(NULL, NULL, NULL, NULL, &cachedBytes, NULL);
         if (cachedBytes >= REDLINE_BYTES)
         {
             return;
         }
 
-        IRtpPacket* const packet =
-            CreateRtpPacketSpace((unsigned long)packetSize);
+        IRtpPacket* const packet = CreateRtpPacketSpace((size_t)packetSize);
         if (packet == NULL)
         {
             return;
@@ -767,7 +762,7 @@ CTest::OnTimerSend(PRO_UINT64 timerId,
         ++m_outputPacketCount;
         m_outputShaper.FlushGreenBits(packetSize * 8);
 
-        const PRO_INT64 tick = ProGetTickCount64();
+        const int64_t tick = ProGetTickCount64();
 
         if (m_outputTs64 == -1)
         {
@@ -777,7 +772,7 @@ CTest::OnTimerSend(PRO_UINT64 timerId,
         packet->SetMarker(m_outputPacketCount % FRAME_PACKETS == 0);
         packet->SetPayloadType(MEDIA_PAYLOAD_TYPE);
         packet->SetSequence(m_outputSeq++);
-        packet->SetTimeStamp((PRO_UINT32)m_outputTs64);
+        packet->SetTimeStamp((uint32_t)m_outputTs64);
         packet->SetSsrc(m_outputSsrc);
         packet->SetMmType(MEDIA_MM_TYPE);
         packet->SetKeyFrame(m_outputFrameSeq % GOP_FRAMES == 0);
@@ -791,8 +786,7 @@ CTest::OnTimerSend(PRO_UINT64 timerId,
         hdr.version = pbsd_hton16(hdr.version);
         hdr.srcTick = pbsd_hton64(tick);
 
-        TEST_PACKET_HDR* const ptr =
-            (TEST_PACKET_HDR*)packet->GetPayloadBuffer();
+        TEST_PACKET_HDR* const ptr = (TEST_PACKET_HDR*)packet->GetPayloadBuffer();
         *ptr = hdr;
 
         m_session->SendPacket(packet);
@@ -803,7 +797,7 @@ CTest::OnTimerSend(PRO_UINT64 timerId,
 }
 
 void
-CTest::OnTimerRecv(PRO_UINT64 timerId)
+CTest::OnTimerRecv(uint64_t timerId)
 {
     assert(timerId > 0);
     if (timerId == 0)
@@ -833,26 +827,25 @@ CTest::OnTimerRecv(PRO_UINT64 timerId)
         float         srcBitRate     = 0;
         float         outFrameRate   = 0;
         float         outBitRate     = 0;
-        unsigned long cachedBytes    = 0;
-        unsigned long cachedFrames   = 0;
+        size_t        cachedBytes    = 0;
+        size_t        cachedFrames   = 0;
         float         inputFrameRate = 0;
         float         inputBitRate   = 0;
         float         inputLossRate  = 0;
-        PRO_UINT64    inputLossCount = 0;
+        uint64_t      inputLossCount = 0;
         unsigned long rttxDelay      = 0;
 
-        m_session->GetFlowctrlInfo(&srcFrameRate, &srcBitRate,
-            &outFrameRate, &outBitRate, &cachedBytes, &cachedFrames);
-        m_session->GetInputStat(&inputFrameRate, &inputBitRate,
-            &inputLossRate, &inputLossCount);
+        m_session->GetFlowctrlInfo(&srcFrameRate, &srcBitRate, &outFrameRate, &outBitRate,
+            &cachedBytes, &cachedFrames);
+        m_session->GetInputStat(&inputFrameRate, &inputBitRate, &inputLossRate, &inputLossCount);
 
         if (m_mode == TM_UDPE || m_mode == TM_TCPE)
         {{{
             printf(
                 "\n"
-                " SEND(s/o) : %.1f/%.1f(kbps) %u/%u(pps) [%u(KB)] [%u]"
+                " SEND(src/out) : %.1f/%.1f(kbps) %u/%u(pps) [%u(KB)] [%u]"
                 "\t RECV : %.1f(kbps) %u(pps)"
-                "\t LOSS : %.2f%% [" PRO_PRT64U "] \n"
+                "\t LOSS : %.2f%% [%llu] \n"
                 ,
                 srcBitRate / 1000,
                 outBitRate / 1000,
@@ -863,7 +856,7 @@ CTest::OnTimerRecv(PRO_UINT64 timerId)
                 inputBitRate / 1000,
                 (unsigned int)inputFrameRate,
                 inputLossRate * 100,
-                inputLossCount
+                (unsigned long long)inputLossCount
                 );
         }}}
         else if (m_echoClient)
@@ -872,9 +865,9 @@ CTest::OnTimerRecv(PRO_UINT64 timerId)
 
             printf(
                 "\n"
-                " SEND(s/o) : %.1f/%.1f(kbps) %u/%u(pps) [%u(KB)] [%u]"
+                " SEND(src/out) : %.1f/%.1f(kbps) %u/%u(pps) [%u(KB)] [%u]"
                 "\t RECV : %.1f(kbps) %u(pps)"
-                "\t LOSS : %.2f%% [" PRO_PRT64U "]"
+                "\t LOSS : %.2f%% [%llu]"
                 "\t RTT' : %u(ms) \n"
                 ,
                 srcBitRate / 1000,
@@ -886,7 +879,7 @@ CTest::OnTimerRecv(PRO_UINT64 timerId)
                 inputBitRate / 1000,
                 (unsigned int)inputFrameRate,
                 inputLossRate * 100,
-                inputLossCount,
+                (unsigned long long)inputLossCount,
                 (unsigned int)rttxDelay
                 );
         }}}
@@ -894,9 +887,9 @@ CTest::OnTimerRecv(PRO_UINT64 timerId)
         {{{
             printf(
                 "\n"
-                " SEND(s/o) : %.1f/%.1f(kbps) %u/%u(pps) [%u(KB)] [%u]"
+                " SEND(src/out) : %.1f/%.1f(kbps) %u/%u(pps) [%u(KB)] [%u]"
                 "\t RECV : %.1f(kbps) %u(pps)"
-                "\t LOSS : %.2f%% [" PRO_PRT64U "] \n"
+                "\t LOSS : %.2f%% [%llu] \n"
                 ,
                 srcBitRate / 1000,
                 outBitRate / 1000,
@@ -907,14 +900,14 @@ CTest::OnTimerRecv(PRO_UINT64 timerId)
                 inputBitRate / 1000,
                 (unsigned int)inputFrameRate,
                 inputLossRate * 100,
-                inputLossCount
+                (unsigned long long)inputLossCount
                 );
         }}}
     }
 }
 
 void
-CTest::OnTimerHtbt(PRO_UINT64 timerId)
+CTest::OnTimerHtbt(uint64_t timerId)
 {
     assert(timerId > 0);
     if (timerId == 0)
@@ -940,7 +933,7 @@ CTest::OnTimerHtbt(PRO_UINT64 timerId)
          */
         if (m_session != NULL && IsUdpMode(m_mode))
         {
-            const PRO_INT64 magic = m_session->GetMagic();
+            const int64_t magic = m_session->GetMagic();
             if (magic > 0 &&
                 ProGetTickCount64() - magic >= TRAFFIC_BROKEN_TIMEOUT * 1000)
             {

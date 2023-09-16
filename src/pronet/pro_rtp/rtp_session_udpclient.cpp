@@ -23,7 +23,6 @@
 #include "../pro_util/pro_bsd_wrapper.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -43,9 +42,7 @@ CRtpSessionUdpclient::CreateInstance(const RTP_SESSION_INFO* localInfo)
         return (NULL);
     }
 
-    CRtpSessionUdpclient* const session = new CRtpSessionUdpclient(*localInfo);
-
-    return (session);
+    return new CRtpSessionUdpclient(*localInfo);
 }
 
 CRtpSessionUdpclient::CRtpSessionUdpclient(const RTP_SESSION_INFO& localInfo)
@@ -75,11 +72,10 @@ CRtpSessionUdpclient::Init(IRtpSessionObserver* observer,
         return (false);
     }
 
-    unsigned long sockBufSizeRecv = 0; /* zero by default */
-    unsigned long sockBufSizeSend = 0; /* zero by default */
-    unsigned long recvPoolSize    = 0;
-    GetRtpUdpSocketParams(
-        m_info.mmType, &sockBufSizeRecv, &sockBufSizeSend, &recvPoolSize);
+    size_t sockBufSizeRecv = 0; /* zero by default */
+    size_t sockBufSizeSend = 0; /* zero by default */
+    size_t recvPoolSize    = 0;
+    GetRtpUdpSocketParams(m_info.mmType, &sockBufSizeRecv, &sockBufSizeSend, &recvPoolSize);
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -183,10 +179,9 @@ void
 CRtpSessionUdpclient::SetRemoteIpAndPort(const char*    remoteIp,   /* = NULL */
                                          unsigned short remotePort) /* = 0 */
 {
-    const char* const anyIp = "0.0.0.0";
     if (remoteIp == NULL || remoteIp[0] == '\0' || remotePort == 0)
     {
-        remoteIp   = anyIp;
+        remoteIp   = "0.0.0.0";
         remotePort = 0;
     }
 
@@ -196,7 +191,7 @@ CRtpSessionUdpclient::SetRemoteIpAndPort(const char*    remoteIp,   /* = NULL */
     remoteAddrConfig.sin_port        = pbsd_hton16(remotePort);
     remoteAddrConfig.sin_addr.s_addr = pbsd_inet_aton(remoteIp); /* DNS */
 
-    if (remoteAddrConfig.sin_addr.s_addr == (PRO_UINT32)-1)
+    if (remoteAddrConfig.sin_addr.s_addr == (uint32_t)-1)
     {
         return;
     }
@@ -273,7 +268,7 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
 
                 RTP_HEADER  hdr;
                 const char* payloadBuffer = NULL;
-                PRO_UINT16  payloadSize   = 0;
+                uint16_t    payloadSize   = 0;
 
                 const bool ret = CRtpPacket::ParseRtpBuffer(
                     (char*)packet->GetPayloadBuffer(),
@@ -349,5 +344,5 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
             Fini();
         }
         break;
-    } /* end of while (...) */
+    } /* end of while () */
 }

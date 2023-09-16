@@ -33,8 +33,6 @@
 #include <windows.h>
 #endif
 
-#include <cassert>
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -42,9 +40,9 @@
 #define RECONNECT_INTERVAL 5
 #define PIPE_TIMEOUT       10
 
-static CProStlSet<CProServiceHost*>            g_s_hosts;
-static CProStlMap<PRO_INT64, CProServiceHost*> g_s_sockId2Host;
-static CProThreadMutex                         g_s_lock;
+static CProStlSet<CProServiceHost*>          g_s_hosts;
+static CProStlMap<int64_t, CProServiceHost*> g_s_sockId2Host;
+static CProThreadMutex                       g_s_lock;
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -52,9 +50,7 @@ static CProThreadMutex                         g_s_lock;
 CProServiceHost*
 CProServiceHost::CreateInstance(unsigned char serviceId) /* = 0 */
 {
-    CProServiceHost* const host = new CProServiceHost(serviceId);
-
-    return (host);
+    return new CProServiceHost(serviceId);
 }
 
 CProServiceHost::CProServiceHost(unsigned char serviceId)
@@ -185,7 +181,7 @@ CProServiceHost::Release()
 }
 
 void
-CProServiceHost::DecServiceLoad(PRO_INT64 sockId)
+CProServiceHost::DecServiceLoad(int64_t sockId)
 {
     if (sockId == -1)
     {
@@ -199,7 +195,7 @@ CProServiceHost::DecServiceLoad(PRO_INT64 sockId)
 
 void
 CProServiceHost::OnConnectOk(IProConnector*   connector,
-                             PRO_INT64        sockId,
+                             int64_t          sockId,
                              bool             unixSocket,
                              const char*      remoteIp,
                              unsigned short   remotePort,
@@ -249,7 +245,7 @@ CProServiceHost::OnConnectOk(IProConnector*   connector,
         else
         {
             m_onlineLock.Lock();
-            const PRO_UINT32 totalSocks = (PRO_UINT32)m_onlineSockIds.size();
+            const uint32_t totalSocks = (uint32_t)m_onlineSockIds.size();
             m_onlineLock.Unlock();
 
             /*
@@ -333,14 +329,14 @@ CProServiceHost::OnRecv(CProServicePipe*          pipe,
         observer = m_observer;
     }
 
-    PRO_INT64        sockId = -1;
+    int64_t          sockId = -1;
     pbsd_sockaddr_in localAddr;
     pbsd_sockaddr_in remoteAddr;
 
 #if defined(_WIN32)
     if (sizeof(SOCKET) == 8)
     {
-        sockId = (PRO_INT64)::WSASocket(
+        sockId = (int64_t)::WSASocket(
             FROM_PROTOCOL_INFO,
             FROM_PROTOCOL_INFO,
             FROM_PROTOCOL_INFO,
@@ -351,7 +347,7 @@ CProServiceHost::OnRecv(CProServicePipe*          pipe,
     }
     else
     {
-        sockId = (PRO_INT32)::WSASocket(
+        sockId = (int32_t)::WSASocket(
             FROM_PROTOCOL_INFO,
             FROM_PROTOCOL_INFO,
             FROM_PROTOCOL_INFO,
@@ -390,7 +386,7 @@ CProServiceHost::OnRecv(CProServicePipe*          pipe,
 
     m_onlineLock.Lock();
     m_onlineSockIds.insert(sockId);
-    const PRO_UINT32 totalSocks = (PRO_UINT32)m_onlineSockIds.size();
+    const uint32_t totalSocks = (uint32_t)m_onlineSockIds.size();
     m_onlineLock.Unlock();
 
     /*
@@ -447,7 +443,7 @@ CProServiceHost::OnRecv(CProServicePipe*          pipe,
 
 void
 CProServiceHost::OnRecvFd(CProServicePipe*          pipe,
-                          PRO_INT64                 fd,
+                          int64_t                   fd,
                           bool                      unixSocket,
                           const PRO_SERVICE_PACKET& s2cPacket)
 {
@@ -508,7 +504,7 @@ CProServiceHost::OnRecvFd(CProServicePipe*          pipe,
 
     m_onlineLock.Lock();
     m_onlineSockIds.insert(fd);
-    const PRO_UINT32 totalSocks = (PRO_UINT32)m_onlineSockIds.size();
+    const uint32_t totalSocks = (uint32_t)m_onlineSockIds.size();
     m_onlineLock.Unlock();
 
     /*
@@ -592,9 +588,9 @@ CProServiceHost::OnClose(CProServicePipe* pipe)
 }
 
 void
-CProServiceHost::OnTimer(void*      factory,
-                         PRO_UINT64 timerId,
-                         PRO_INT64  userData)
+CProServiceHost::OnTimer(void*    factory,
+                         uint64_t timerId,
+                         int64_t  userData)
 {
     assert(factory != NULL);
     assert(timerId > 0);
@@ -616,7 +612,7 @@ CProServiceHost::OnTimer(void*      factory,
             return;
         }
 
-        const PRO_INT64 tick = ProGetTickCount64();
+        const int64_t tick = ProGetTickCount64();
 
         if (m_pipe == NULL && m_connector == NULL &&
             tick - m_connectTick >= RECONNECT_INTERVAL * 1000)
@@ -638,7 +634,7 @@ CProServiceHost::OnTimer(void*      factory,
         else if (m_pipe != NULL)
         {
             m_onlineLock.Lock();
-            const PRO_UINT32 totalSocks = (PRO_UINT32)m_onlineSockIds.size();
+            const uint32_t totalSocks = (uint32_t)m_onlineSockIds.size();
             m_onlineLock.Unlock();
 
             PRO_SERVICE_PACKET c2sPacket;
@@ -657,7 +653,7 @@ CProServiceHost::OnTimer(void*      factory,
 ////
 
 void
-ProDecServiceLoad(PRO_INT64 sockId)
+ProDecServiceLoad(int64_t sockId)
 {
     if (sockId == -1)
     {
@@ -669,8 +665,7 @@ ProDecServiceLoad(PRO_INT64 sockId)
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlMap<PRO_INT64, CProServiceHost*>::iterator const itr =
-            g_s_sockId2Host.find(sockId);
+        CProStlMap<int64_t, CProServiceHost*>::iterator const itr = g_s_sockId2Host.find(sockId);
         if (itr == g_s_sockId2Host.end())
         {
             return;

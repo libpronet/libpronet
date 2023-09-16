@@ -22,41 +22,39 @@
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
+#define TCP2_PAYLOAD_SIZE (1024 * 63)
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
 CRtpPacket*
 CRtpPacket::CreateInstance(const void*       payloadBuffer,
-                           unsigned long     payloadSize,
+                           size_t            payloadSize,
                            RTP_EXT_PACK_MODE packMode)
 {
     assert(payloadBuffer != NULL);
     assert(payloadSize > 0);
     if (payloadBuffer == NULL || payloadSize == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
-    assert(
-        packMode == RTP_EPM_DEFAULT ||
-        packMode == RTP_EPM_TCP2    ||
-        packMode == RTP_EPM_TCP4
-        );
-    if (packMode != RTP_EPM_DEFAULT &&
-        packMode != RTP_EPM_TCP2    &&
-        packMode != RTP_EPM_TCP4)
+    assert(packMode == RTP_EPM_DEFAULT || packMode == RTP_EPM_TCP2 || packMode == RTP_EPM_TCP4);
+    if (packMode != RTP_EPM_DEFAULT && packMode != RTP_EPM_TCP2 && packMode != RTP_EPM_TCP4)
     {
-        return (NULL);
+        return NULL;
     }
 
     if (packMode == RTP_EPM_DEFAULT || packMode == RTP_EPM_TCP2)
     {
-        assert(payloadSize <= PRO_TCP2_PAYLOAD_SIZE);
-        if (payloadSize > PRO_TCP2_PAYLOAD_SIZE)
+        assert(payloadSize <= TCP2_PAYLOAD_SIZE);
+        if (payloadSize > TCP2_PAYLOAD_SIZE)
         {
-            return (NULL);
+            return NULL;
         }
     }
     else
@@ -64,7 +62,7 @@ CRtpPacket::CreateInstance(const void*       payloadBuffer,
         assert(payloadSize <= PRO_TCP4_PAYLOAD_SIZE);
         if (payloadSize > PRO_TCP4_PAYLOAD_SIZE)
         {
-            return (NULL);
+            return NULL;
         }
     }
 
@@ -76,37 +74,31 @@ CRtpPacket::CreateInstance(const void*       payloadBuffer,
         packet = NULL;
     }
 
-    return (packet);
+    return packet;
 }
 
 CRtpPacket*
-CRtpPacket::CreateInstance(unsigned long     payloadSize,
+CRtpPacket::CreateInstance(size_t            payloadSize,
                            RTP_EXT_PACK_MODE packMode)
 {
     assert(payloadSize > 0);
     if (payloadSize == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
-    assert(
-        packMode == RTP_EPM_DEFAULT ||
-        packMode == RTP_EPM_TCP2    ||
-        packMode == RTP_EPM_TCP4
-        );
-    if (packMode != RTP_EPM_DEFAULT &&
-        packMode != RTP_EPM_TCP2    &&
-        packMode != RTP_EPM_TCP4)
+    assert(packMode == RTP_EPM_DEFAULT || packMode == RTP_EPM_TCP2 || packMode == RTP_EPM_TCP4);
+    if (packMode != RTP_EPM_DEFAULT && packMode != RTP_EPM_TCP2 && packMode != RTP_EPM_TCP4)
     {
-        return (NULL);
+        return NULL;
     }
 
     if (packMode == RTP_EPM_DEFAULT || packMode == RTP_EPM_TCP2)
     {
-        assert(payloadSize <= PRO_TCP2_PAYLOAD_SIZE);
-        if (payloadSize > PRO_TCP2_PAYLOAD_SIZE)
+        assert(payloadSize <= TCP2_PAYLOAD_SIZE);
+        if (payloadSize > TCP2_PAYLOAD_SIZE)
         {
-            return (NULL);
+            return NULL;
         }
     }
     else
@@ -114,7 +106,7 @@ CRtpPacket::CreateInstance(unsigned long     payloadSize,
         assert(payloadSize <= PRO_TCP4_PAYLOAD_SIZE);
         if (payloadSize > PRO_TCP4_PAYLOAD_SIZE)
         {
-            return (NULL);
+            return NULL;
         }
     }
 
@@ -126,7 +118,7 @@ CRtpPacket::CreateInstance(unsigned long     payloadSize,
         packet = NULL;
     }
 
-    return (packet);
+    return packet;
 }
 
 CRtpPacket*
@@ -135,7 +127,7 @@ CRtpPacket::Clone(const IRtpPacket* packet)
     assert(packet != NULL);
     if (packet == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     CRtpPacket* const packet2 = (CRtpPacket*)packet;
@@ -156,15 +148,15 @@ CRtpPacket::Clone(const IRtpPacket* packet)
         *newPacket->m_packet->hdr = *packet2->m_packet->hdr;
     }
 
-    return (newPacket);
+    return newPacket;
 }
 
 bool
 CRtpPacket::ParseRtpBuffer(const char*  buffer,
-                           PRO_UINT16   size,
+                           uint16_t     size,
                            RTP_HEADER&  hdr, /* network byte order */
                            const char*& payloadBuffer,
-                           PRO_UINT16&  payloadSize)
+                           uint16_t&    payloadSize)
 {
     payloadBuffer = NULL;
     payloadSize   = 0;
@@ -173,7 +165,7 @@ CRtpPacket::ParseRtpBuffer(const char*  buffer,
     assert(size > 0);
     if (buffer == NULL || size == 0)
     {
-        return (false);
+        return false;
     }
 
     bool ret = false;
@@ -215,7 +207,7 @@ CRtpPacket::ParseRtpBuffer(const char*  buffer,
 
             now += 2;
 
-            PRO_UINT16 extCount = 0;
+            uint16_t extCount = 0;
             ((char*)&extCount)[0] = now[0];
             ((char*)&extCount)[1] = now[1];
             extCount = pbsd_ntoh16(extCount);
@@ -232,7 +224,7 @@ CRtpPacket::ParseRtpBuffer(const char*  buffer,
         }
 
         payloadBuffer = now;
-        payloadSize   = (PRO_UINT16)(buffer + size - now);
+        payloadSize   = (uint16_t)(buffer + size - now);
 
         if (hdr.p != 0)
         {
@@ -271,18 +263,18 @@ CRtpPacket::ParseRtpBuffer(const char*  buffer,
         payloadSize   = 0;
     }
 
-    return (ret);
+    return ret;
 }
 
 bool
 CRtpPacket::ParseExtBuffer(const char* buffer,
-                           PRO_UINT16  size)
+                           uint16_t    size)
 {
     assert(buffer != NULL);
     assert(size > sizeof(RTP_EXT) + sizeof(RTP_HEADER));
     if (buffer == NULL || size <= sizeof(RTP_EXT) + sizeof(RTP_HEADER))
     {
-        return (false);
+        return false;
     }
 
     RTP_EXT ext;
@@ -290,17 +282,17 @@ CRtpPacket::ParseExtBuffer(const char* buffer,
     ext.hdrAndPayloadSize = pbsd_ntoh16(ext.hdrAndPayloadSize);
     if (sizeof(RTP_EXT) + ext.hdrAndPayloadSize != size)
     {
-        return (false);
+        return false;
     }
 
     RTP_HEADER hdr;
     memcpy(&hdr, buffer + sizeof(RTP_EXT), sizeof(RTP_HEADER));
     if (hdr.v != 2 || hdr.p != 0 || hdr.x != 0 || hdr.cc != 0)
     {
-        return (false);
+        return false;
     }
 
-    return (true);
+    return true;
 }
 
 CRtpPacket::CRtpPacket(RTP_EXT_PACK_MODE packMode)
@@ -319,8 +311,8 @@ CRtpPacket::~CRtpPacket()
 }
 
 void
-CRtpPacket::Init(const void*   payloadBuffer,
-                 unsigned long payloadSize)
+CRtpPacket::Init(const void* payloadBuffer,
+                 size_t      payloadSize)
 {
     assert(payloadSize > 0);
     if (payloadSize == 0)
@@ -338,8 +330,8 @@ CRtpPacket::Init(const void*   payloadBuffer,
     m_packet->ext = (RTP_EXT*)m_packet->dummyBuffer;
     m_packet->hdr = (RTP_HEADER*)(m_packet->ext + 1);
 
-    const PRO_UINT16 payloadSize16 = (PRO_UINT16)payloadSize;
-    const PRO_UINT32 payloadSize32 = (PRO_UINT32)payloadSize;
+    const uint16_t payloadSize16 = (uint16_t)payloadSize;
+    const uint32_t payloadSize32 = (uint32_t)payloadSize;
 
     m_packet->hdr->v                     = 2;
     if (m_packMode == RTP_EPM_DEFAULT)
@@ -364,17 +356,13 @@ CRtpPacket::Init(const void*   payloadBuffer,
 unsigned long
 CRtpPacket::AddRef()
 {
-    const unsigned long refCount = CProRefCount::AddRef();
-
-    return (refCount);
+    return CProRefCount::AddRef();
 }
 
 unsigned long
 CRtpPacket::Release()
 {
-    const unsigned long refCount = CProRefCount::Release();
-
-    return (refCount);
+    return CProRefCount::Release();
 }
 
 void
@@ -386,7 +374,7 @@ CRtpPacket::SetMarker(bool m)
 bool
 CRtpPacket::GetMarker() const
 {
-    return (m_packet->hdr->m != 0);
+    return m_packet->hdr->m != 0;
 }
 
 void
@@ -398,35 +386,35 @@ CRtpPacket::SetPayloadType(char pt)
 char
 CRtpPacket::GetPayloadType() const
 {
-    return (m_packet->hdr->pt);
+    return m_packet->hdr->pt;
 }
 
 void
-CRtpPacket::SetSequence(PRO_UINT16 seq)
+CRtpPacket::SetSequence(uint16_t seq)
 {
     m_packet->hdr->seq = pbsd_hton16(seq);
 }
 
-PRO_UINT16
+uint16_t
 CRtpPacket::GetSequence() const
 {
-    return (pbsd_ntoh16(m_packet->hdr->seq));
+    return pbsd_ntoh16(m_packet->hdr->seq);
 }
 
 void
-CRtpPacket::SetTimeStamp(PRO_UINT32 ts)
+CRtpPacket::SetTimeStamp(uint32_t ts)
 {
     m_packet->hdr->ts = pbsd_hton32(ts);
 }
 
-PRO_UINT32
+uint32_t
 CRtpPacket::GetTimeStamp() const
 {
-    return (pbsd_ntoh32(m_packet->hdr->ts));
+    return pbsd_ntoh32(m_packet->hdr->ts);
 }
 
 void
-CRtpPacket::SetSsrc(PRO_UINT32 ssrc)
+CRtpPacket::SetSsrc(uint32_t ssrc)
 {
     if (m_packMode == RTP_EPM_DEFAULT)
     {
@@ -438,10 +426,10 @@ CRtpPacket::SetSsrc(PRO_UINT32 ssrc)
     }
 }
 
-PRO_UINT32
+uint32_t
 CRtpPacket::GetSsrc() const
 {
-    PRO_UINT32 ssrc = 0;
+    uint32_t ssrc = 0;
 
     if (m_packMode == RTP_EPM_DEFAULT)
     {
@@ -452,19 +440,19 @@ CRtpPacket::GetSsrc() const
         ssrc = m_ssrc;
     }
 
-    return (ssrc);
+    return ssrc;
 }
 
 void
-CRtpPacket::SetMmId(PRO_UINT32 mmId)
+CRtpPacket::SetMmId(uint32_t mmId)
 {
     m_packet->ext->mmId = pbsd_hton32(mmId);
 }
 
-PRO_UINT32
+uint32_t
 CRtpPacket::GetMmId() const
 {
-    return (pbsd_ntoh32(m_packet->ext->mmId));
+    return pbsd_ntoh32(m_packet->ext->mmId);
 }
 
 void
@@ -476,7 +464,7 @@ CRtpPacket::SetMmType(RTP_MM_TYPE mmType)
 RTP_MM_TYPE
 CRtpPacket::GetMmType() const
 {
-    return (m_packet->ext->mmType);
+    return m_packet->ext->mmType;
 }
 
 void
@@ -488,7 +476,7 @@ CRtpPacket::SetKeyFrame(bool keyFrame)
 bool
 CRtpPacket::GetKeyFrame() const
 {
-    return (m_packet->ext->keyFrame != 0);
+    return m_packet->ext->keyFrame != 0;
 }
 
 void
@@ -500,25 +488,25 @@ CRtpPacket::SetFirstPacketOfFrame(bool firstPacket)
 bool
 CRtpPacket::GetFirstPacketOfFrame() const
 {
-    return (m_packet->ext->firstPacketOfFrame != 0);
+    return m_packet->ext->firstPacketOfFrame != 0;
 }
 
 const void*
 CRtpPacket::GetPayloadBuffer() const
 {
-    return (m_packet->hdr + 1);
+    return m_packet->hdr + 1;
 }
 
 void*
 CRtpPacket::GetPayloadBuffer()
 {
-    return (m_packet->hdr + 1);
+    return m_packet->hdr + 1;
 }
 
-unsigned long
+size_t
 CRtpPacket::GetPayloadSize() const
 {
-    unsigned long size = 0;
+    size_t size = 0;
 
     if (m_packMode == RTP_EPM_DEFAULT)
     {
@@ -534,13 +522,13 @@ CRtpPacket::GetPayloadSize() const
         size =  pbsd_ntoh32(m_packet->hdr->len4);
     }
 
-    return (size);
+    return size;
 }
 
-PRO_UINT16
+uint16_t
 CRtpPacket::GetPayloadSize16() const
 {
-    unsigned long size = 0;
+    size_t size = 0;
 
     if (m_packMode == RTP_EPM_DEFAULT)
     {
@@ -554,10 +542,10 @@ CRtpPacket::GetPayloadSize16() const
     else
     {
         size =  pbsd_ntoh32(m_packet->hdr->len4);
-        size =  size <= PRO_TCP2_PAYLOAD_SIZE ? size : 0;
+        size =  size <= TCP2_PAYLOAD_SIZE ? size : 0;
     }
 
-    return ((PRO_UINT16)size);
+    return (uint16_t)size;
 }
 
 void
@@ -569,5 +557,5 @@ CRtpPacket::SetUdpxSync(bool sync)
 bool
 CRtpPacket::GetUdpxSync() const
 {
-    return (m_packet->ext->udpxSync != 0);
+    return m_packet->ext->udpxSync != 0;
 }

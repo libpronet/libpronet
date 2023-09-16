@@ -29,8 +29,6 @@
 
 #include "mbedtls/ssl.h"
 
-#include <cassert>
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -42,9 +40,7 @@
 CProSslHandshaker*
 CProSslHandshaker::CreateInstance()
 {
-    CProSslHandshaker* const handshaker = new CProSslHandshaker;
-
-    return (handshaker);
+    return new CProSslHandshaker;
 }
 
 CProSslHandshaker::CProSslHandshaker()
@@ -74,7 +70,7 @@ bool
 CProSslHandshaker::Init(IProSslHandshakerObserver* observer,
                         CProTpReactorTask*         reactorTask,
                         PRO_SSL_CTX*               ctx,
-                        PRO_INT64                  sockId,
+                        int64_t                    sockId,
                         bool                       unixSocket,
                         const void*                sendData,         /* = NULL */
                         size_t                     sendDataSize,     /* = 0 */
@@ -117,8 +113,7 @@ CProSslHandshaker::Init(IProSslHandshakerObserver* observer,
             return (false);
         }
 
-        if (!reactorTask->AddHandler(
-            sockId, this, PRO_MASK_WRITE | PRO_MASK_READ))
+        if (!reactorTask->AddHandler(sockId, this, PRO_MASK_WRITE | PRO_MASK_READ))
         {
             return (false);
         }
@@ -132,7 +127,7 @@ CProSslHandshaker::Init(IProSslHandshakerObserver* observer,
         m_unixSocket  = unixSocket;
         m_onWr        = true;
         m_recvFirst   = recvFirst;
-        m_timerId     = reactorTask->ScheduleTimer(this, (PRO_UINT64)timeoutInSeconds * 1000, false, 0);
+        m_timerId     = reactorTask->ScheduleTimer(this, (uint64_t)timeoutInSeconds * 1000, false, 0);
     }
 
     return (true);
@@ -159,8 +154,7 @@ CProSslHandshaker::Fini()
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(
-            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
 
         m_reactorTask = NULL;
         observer = m_observer;
@@ -171,20 +165,20 @@ CProSslHandshaker::Fini()
 }
 
 void
-CProSslHandshaker::OnInput(PRO_INT64 sockId)
+CProSslHandshaker::OnInput(int64_t sockId)
 {
     DoRecv(sockId);
 }
 
 void
-CProSslHandshaker::OnOutput(PRO_INT64 sockId)
+CProSslHandshaker::OnOutput(int64_t sockId)
 {
     DoSend(sockId);
     DoRecv(sockId); /* !!! */
 }
 
 void
-CProSslHandshaker::DoRecv(PRO_INT64 sockId)
+CProSslHandshaker::DoRecv(int64_t sockId)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -281,8 +275,7 @@ CProSslHandshaker::DoRecv(PRO_INT64 sockId)
             else if (recvSize > 0)
             {
                 m_recvPool.Fill(recvSize);
-                msgSize = mbedtls_ssl_get_bytes_avail( /* remaining message */
-                    (mbedtls_ssl_context*)m_ctx);
+                msgSize = mbedtls_ssl_get_bytes_avail((mbedtls_ssl_context*)m_ctx); /* remaining message */
 
                 if (m_recvPool.ContinuousIdleSize() > 0)
                 {
@@ -353,8 +346,7 @@ EXIT:
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(
-            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
 
         m_reactorTask = NULL;
         observer = m_observer;
@@ -366,7 +358,7 @@ EXIT:
 }
 
 void
-CProSslHandshaker::DoSend(PRO_INT64 sockId)
+CProSslHandshaker::DoSend(int64_t sockId)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -411,8 +403,7 @@ CProSslHandshaker::DoSend(PRO_INT64 sockId)
             {
                 if (m_onWr)
                 {
-                    m_reactorTask->RemoveHandler(
-                        m_sockId, this, PRO_MASK_WRITE);
+                    m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE);
                     m_onWr = false;
                 }
 
@@ -477,8 +468,7 @@ CProSslHandshaker::DoSend(PRO_INT64 sockId)
             {
                 if (m_onWr)
                 {
-                    m_reactorTask->RemoveHandler(
-                        m_sockId, this, PRO_MASK_WRITE);
+                    m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE);
                     m_onWr = false;
                 }
             }
@@ -530,8 +520,7 @@ EXIT:
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(
-            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
         if (!error)
         {
             ctx = m_ctx;
@@ -546,13 +535,11 @@ EXIT:
 
     if (error)
     {
-        observer->OnHandshakeError(
-            (IProSslHandshaker*)this, errorCode, sslCode);
+        observer->OnHandshakeError((IProSslHandshaker*)this, errorCode, sslCode);
     }
     else
     {
-        observer->OnHandshakeOk(
-            (IProSslHandshaker*)this, ctx, sockId, m_unixSocket, buf, size);
+        observer->OnHandshakeOk((IProSslHandshaker*)this, ctx, sockId, m_unixSocket, buf, size);
     }
 
     ProFree(buf);
@@ -560,8 +547,8 @@ EXIT:
 }
 
 void
-CProSslHandshaker::OnError(PRO_INT64 sockId,
-                           long      errorCode)
+CProSslHandshaker::OnError(int64_t sockId,
+                           long    errorCode)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -588,8 +575,7 @@ CProSslHandshaker::OnError(PRO_INT64 sockId,
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(
-            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
 
         m_reactorTask = NULL;
         observer = m_observer;
@@ -601,9 +587,9 @@ CProSslHandshaker::OnError(PRO_INT64 sockId,
 }
 
 void
-CProSslHandshaker::OnTimer(void*      factory,
-                           PRO_UINT64 timerId,
-                           PRO_INT64  userData)
+CProSslHandshaker::OnTimer(void*    factory,
+                           uint64_t timerId,
+                           int64_t  userData)
 {
     assert(factory != NULL);
     assert(timerId > 0);
@@ -632,8 +618,7 @@ CProSslHandshaker::OnTimer(void*      factory,
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(
-            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
 
         m_reactorTask = NULL;
         observer = m_observer;

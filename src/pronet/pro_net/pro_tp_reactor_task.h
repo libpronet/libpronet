@@ -56,41 +56,41 @@ public:
     void Stop();
 
     bool AddHandler(
-        PRO_INT64         sockId,
+        int64_t           sockId,
         CProEventHandler* handler,
         unsigned long     mask
         );
 
     void RemoveHandler(
-        PRO_INT64         sockId,
+        int64_t           sockId,
         CProEventHandler* handler,
         unsigned long     mask
         );
 
-    virtual PRO_UINT64 ScheduleTimer(
+    virtual uint64_t ScheduleTimer(
         IProOnTimer* onTimer,
-        PRO_UINT64   timeSpan,
+        uint64_t     timeSpan,
         bool         recurring,
-        PRO_INT64    userData /* = 0 */
+        int64_t      userData /* = 0 */
         );
 
-    virtual PRO_UINT64 ScheduleHeartbeatTimer(
+    virtual uint64_t ScheduleHeartbeatTimer(
         IProOnTimer* onTimer,
-        PRO_INT64    userData /* = 0 */
+        int64_t      userData /* = 0 */
         );
 
     virtual bool UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds);
 
-    virtual void CancelTimer(PRO_UINT64 timerId);
+    virtual void CancelTimer(uint64_t timerId);
 
-    virtual PRO_UINT64 ScheduleMmTimer(
+    virtual uint64_t ScheduleMmTimer(
         IProOnTimer* onTimer,
-        PRO_UINT64   timeSpan,
+        uint64_t     timeSpan,
         bool         recurring,
-        PRO_INT64    userData /* = 0 */
+        int64_t      userData /* = 0 */
         );
 
-    virtual void CancelMmTimer(PRO_UINT64 timerId);
+    virtual void CancelMmTimer(uint64_t timerId);
 
     virtual void GetTraceInfo(
         char*  buf,
@@ -114,7 +114,7 @@ private:
     long                            m_ioThreadPriority;
     unsigned long                   m_curThreadCount;
     bool                            m_wantExit;
-    CProStlSet<PRO_UINT64>          m_threadIds;
+    CProStlSet<uint64_t>            m_threadIds;
     CProThreadMutexCondition        m_initCond;
     mutable CProThreadMutex         m_lock;
     CProThreadMutex                 m_lockAtom;

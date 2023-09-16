@@ -27,6 +27,7 @@
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_timer_factory.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -85,11 +86,11 @@ struct TEST_PACKET_HDR
         srcTick   = ProGetTickCount64();
     }
 
-    PRO_UINT16 version;
-    bool       ack;
-    char       reserved1;
-    PRO_UINT32 reserved2;
-    PRO_INT64  srcTick;
+    uint16_t version;
+    bool     ack;
+    char     reserved1;
+    uint32_t reserved2;
+    int64_t  srcTick;
 
     DECLARE_SGI_POOL(0)
 };
@@ -165,15 +166,15 @@ private:
 
     virtual void OnHeartbeatSession(
         IRtpSession* session,
-        PRO_INT64    peerAliveTick
+        int64_t      peerAliveTick
         )
     {
     }
 
     virtual void OnTimer(
-        void*      factory,
-        PRO_UINT64 timerId,
-        PRO_INT64  userData
+        void*    factory,
+        uint64_t timerId,
+        int64_t  userData
         );
 
     IRtpSession* CreateUdpServer(
@@ -207,13 +208,13 @@ private:
     void PrintSessionBroken(IRtpSession* session);
 
     void OnTimerSend(
-        PRO_UINT64 timerId,
-        bool&      tryAgain
+        uint64_t timerId,
+        bool&    tryAgain
         );
 
-    void OnTimerRecv(PRO_UINT64 timerId);
+    void OnTimerRecv(uint64_t timerId);
 
-    void OnTimerHtbt(PRO_UINT64 timerId);
+    void OnTimerHtbt(uint64_t timerId);
 
 private:
 
@@ -222,13 +223,13 @@ private:
     IProReactor*     m_reactor;
     IRtpSession*     m_session;
     CProTimerFactory m_sender; /* a separate, dedicated thread */
-    PRO_UINT64       m_sendTimerId;
-    PRO_UINT64       m_recvTimerId;
-    PRO_UINT64       m_htbtTimerId;
+    uint64_t         m_sendTimerId;
+    uint64_t         m_recvTimerId;
+    uint64_t         m_htbtTimerId;
 
-    PRO_UINT16       m_outputSeq;
-    PRO_INT64        m_outputTs64;
-    PRO_UINT32       m_outputSsrc;
+    uint16_t         m_outputSeq;
+    int64_t          m_outputTs64;
+    uint32_t         m_outputSsrc;
     unsigned long    m_outputPacketCount;
     unsigned long    m_outputFrameSeq;
     CProShaper       m_outputShaper;

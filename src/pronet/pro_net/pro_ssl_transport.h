@@ -35,7 +35,7 @@ public:
         IProTransportObserver* observer,
         CProTpReactorTask*     reactorTask,
         PRO_SSL_CTX*           ctx,
-        PRO_INT64              sockId,
+        int64_t                sockId,
         bool                   unixSocket,
         size_t                 sockBufSizeRecv, /* = 0 */
         size_t                 sockBufSizeSend, /* = 0 */
@@ -46,7 +46,7 @@ public:
 
     virtual PRO_TRANS_TYPE GetType() const
     {
-        return (PRO_TRANS_SSL);
+        return PRO_TRANS_SSL;
     }
 
     virtual PRO_SSL_SUITE_ID GetSslSuite(char suiteName[64]) const;
@@ -57,13 +57,13 @@ private:
 
     virtual ~CProSslTransport();
 
-    virtual void OnInput(PRO_INT64 sockId);
+    virtual void OnInput(int64_t sockId);
 
-    virtual void OnOutput(PRO_INT64 sockId);
+    virtual void OnOutput(int64_t sockId);
 
-    void DoRecv(PRO_INT64 sockId);
+    void DoRecv(int64_t sockId);
 
-    void DoSend(PRO_INT64 sockId);
+    void DoSend(int64_t sockId);
 
 private:
 

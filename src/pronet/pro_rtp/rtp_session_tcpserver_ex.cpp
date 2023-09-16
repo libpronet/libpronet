@@ -23,7 +23,6 @@
 #include "../pro_util/pro_bsd_wrapper.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -51,16 +50,13 @@ CRtpSessionTcpserverEx::CreateInstance(const RTP_SESSION_INFO* localInfo,
         return (NULL);
     }
 
-    CRtpSessionTcpserverEx* const session =
-        new CRtpSessionTcpserverEx(*localInfo, suspendRecv, NULL);
-
-    return (session);
+    return new CRtpSessionTcpserverEx(*localInfo, suspendRecv, NULL);
 }
 
 CRtpSessionTcpserverEx::CRtpSessionTcpserverEx(const RTP_SESSION_INFO& localInfo,
                                                bool                    suspendRecv,
                                                PRO_SSL_CTX*            sslCtx) /* = NULL */
-                                               :
+:
 CRtpSessionBase(suspendRecv),
 m_sslCtx(sslCtx)
 {
@@ -80,7 +76,7 @@ CRtpSessionTcpserverEx::~CRtpSessionTcpserverEx()
 bool
 CRtpSessionTcpserverEx::Init(IRtpSessionObserver* observer,
                              IProReactor*         reactor,
-                             PRO_INT64            sockId,
+                             int64_t              sockId,
                              bool                 unixSocket,
                              bool                 useAckData,
                              char                 ackData[64])
@@ -93,11 +89,10 @@ CRtpSessionTcpserverEx::Init(IRtpSessionObserver* observer,
         return (false);
     }
 
-    unsigned long sockBufSizeRecv = 0; /* zero by default */
-    unsigned long sockBufSizeSend = 0; /* zero by default */
-    unsigned long recvPoolSize    = 0;
-    GetRtpTcpSocketParams(
-        m_info.mmType, &sockBufSizeRecv, &sockBufSizeSend, &recvPoolSize);
+    size_t sockBufSizeRecv = 0; /* zero by default */
+    size_t sockBufSizeSend = 0; /* zero by default */
+    size_t recvPoolSize    = 0;
+    GetRtpTcpSocketParams(m_info.mmType, &sockBufSizeRecv, &sockBufSizeSend, &recvPoolSize);
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -293,7 +288,7 @@ CRtpSessionTcpserverEx::OnRecv(IProTransport*          trans,
         {
             break;
         }
-    } /* end of while (...) */
+    } /* end of while () */
 }
 
 bool
@@ -377,7 +372,7 @@ CRtpSessionTcpserverEx::Recv0(CRtpPacket*& packet,
             continue;
         }
         break;
-    } /* end of while (...) */
+    } /* end of while () */
 
     return (ret);
 }
@@ -400,16 +395,16 @@ CRtpSessionTcpserverEx::Recv2(CRtpPacket*& packet,
         IProRecvPool&       recvPool = *m_trans->GetRecvPool();
         const unsigned long dataSize = recvPool.PeekDataSize();
 
-        if (dataSize < sizeof(PRO_UINT16))
+        if (dataSize < sizeof(uint16_t))
         {
             leave = true;
             break;
         }
 
-        PRO_UINT16 packetSize = 0;
-        recvPool.PeekData(&packetSize, sizeof(PRO_UINT16));
+        uint16_t packetSize = 0;
+        recvPool.PeekData(&packetSize, sizeof(uint16_t));
         packetSize = pbsd_ntoh16(packetSize);
-        if (dataSize < sizeof(PRO_UINT16) + packetSize) /* 2 + ... */
+        if (dataSize < sizeof(uint16_t) + packetSize) /* 2 + ... */
         {
             leave = true;
             break;
@@ -417,7 +412,7 @@ CRtpSessionTcpserverEx::Recv2(CRtpPacket*& packet,
 
         if (packetSize == 0)
         {
-            recvPool.Flush(sizeof(PRO_UINT16));
+            recvPool.Flush(sizeof(uint16_t));
             continue;
         }
 
@@ -428,14 +423,14 @@ CRtpSessionTcpserverEx::Recv2(CRtpPacket*& packet,
             break;
         }
 
-        recvPool.Flush(sizeof(PRO_UINT16));
+        recvPool.Flush(sizeof(uint16_t));
         recvPool.PeekData(packet->GetPayloadBuffer(), packetSize);
         recvPool.Flush(packetSize);
 
         packet->SetMmId(m_info.inSrcMmId);
         packet->SetMmType(m_info.mmType);
         break;
-    } /* end of while (...) */
+    } /* end of while () */
 
     return (ret);
 }
@@ -464,14 +459,14 @@ CRtpSessionTcpserverEx::Recv4(CRtpPacket*& packet,
             /*
              * standard mode
              */
-            if (dataSize < sizeof(PRO_UINT32))
+            if (dataSize < sizeof(uint32_t))
             {
                 leave = true;
                 break;
             }
 
-            PRO_UINT32 packetSize = 0;
-            recvPool.PeekData(&packetSize, sizeof(PRO_UINT32));
+            uint32_t packetSize = 0;
+            recvPool.PeekData(&packetSize, sizeof(uint32_t));
             packetSize = pbsd_ntoh32(packetSize);
             if (packetSize > PRO_TCP4_PAYLOAD_SIZE)
             {
@@ -481,42 +476,40 @@ CRtpSessionTcpserverEx::Recv4(CRtpPacket*& packet,
 
             if (packetSize == 0)
             {
-                recvPool.Flush(sizeof(PRO_UINT32));
+                recvPool.Flush(sizeof(uint32_t));
                 continue;
             }
 
-            if (dataSize + freeSize < sizeof(PRO_UINT32) + packetSize) /* a big-packet */
+            if (dataSize + freeSize < sizeof(uint32_t) + packetSize) /* a big-packet */
             {
-                m_bigPacket = CRtpPacket::CreateInstance(
-                    packetSize, m_info.packMode);
+                m_bigPacket = CRtpPacket::CreateInstance(packetSize, m_info.packMode);
                 if (m_bigPacket == NULL)
                 {
                     ret = false;
                     break;
                 }
 
-                recvPool.Flush(sizeof(PRO_UINT32));
+                recvPool.Flush(sizeof(uint32_t));
 
                 m_bigPacket->SetMmId(m_info.inSrcMmId);
                 m_bigPacket->SetMmType(m_info.mmType);
                 continue; /* switch to big-packet mode */
             }
-            else if (dataSize < sizeof(PRO_UINT32) + packetSize) /* 4 + ... */
+            else if (dataSize < sizeof(uint32_t) + packetSize) /* 4 + ... */
             {
                 leave = true;
                 break;
             }
             else
             {
-                packet = CRtpPacket::CreateInstance(
-                    packetSize, m_info.packMode);
+                packet = CRtpPacket::CreateInstance(packetSize, m_info.packMode);
                 if (packet == NULL)
                 {
                     ret = false;
                     break;
                 }
 
-                recvPool.Flush(sizeof(PRO_UINT32));
+                recvPool.Flush(sizeof(uint32_t));
                 recvPool.PeekData(packet->GetPayloadBuffer(), packetSize);
                 recvPool.Flush(packetSize);
 
@@ -536,9 +529,9 @@ CRtpSessionTcpserverEx::Recv4(CRtpPacket*& packet,
                 break;
             }
 
-            const unsigned long pos = (unsigned long)m_bigPacket->GetMagic2();
-            void* const         buf = (char*)m_bigPacket->GetPayloadBuffer() + pos;
-            unsigned long       len = m_bigPacket->GetPayloadSize() - pos;
+            const size_t pos = (size_t)m_bigPacket->GetMagic2();
+            void* const  buf = (char*)m_bigPacket->GetPayloadBuffer() + pos;
+            size_t       len = m_bigPacket->GetPayloadSize() - pos;
             if (len > dataSize)
             {
                 len = dataSize;
@@ -557,7 +550,7 @@ CRtpSessionTcpserverEx::Recv4(CRtpPacket*& packet,
             m_bigPacket = NULL;
             break;
         }
-    } /* end of while (...) */
+    } /* end of while () */
 
     return (ret);
 }

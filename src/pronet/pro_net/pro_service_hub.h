@@ -26,6 +26,7 @@
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_timer_factory.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -67,7 +68,7 @@ private:
 
     virtual void OnAccept(
         IProAcceptor*  acceptor,
-        PRO_INT64      sockId,
+        int64_t        sockId,
         bool           unixSocket,
         const char*    localIp,
         const char*    remoteIp,
@@ -76,7 +77,7 @@ private:
 
     virtual void OnAccept(
         IProAcceptor*    acceptor,
-        PRO_INT64        sockId,
+        int64_t          sockId,
         bool             unixSocket,
         const char*      localIp,
         const char*      remoteIp,
@@ -93,7 +94,7 @@ private:
 
     virtual void OnRecvFd(
         CProServicePipe*          pipe,
-        PRO_INT64                 fd,
+        int64_t                   fd,
         bool                      unixSocket,
         const PRO_SERVICE_PACKET& s2cPacket
         )
@@ -103,21 +104,21 @@ private:
     virtual void OnClose(CProServicePipe* pipe);
 
     virtual void OnTimer(
-        void*      factory,
-        PRO_UINT64 timerId,
-        PRO_INT64  userData
+        void*    factory,
+        uint64_t timerId,
+        int64_t  userData
         );
 
     void AcceptIpc(
         IProAcceptor* acceptor,
-        PRO_INT64     sockId,
+        int64_t       sockId,
         bool          unixSocket,
         const char*   localIp
         );
 
     void AcceptApp(
         IProAcceptor*    acceptor,
-        PRO_INT64        sockId,
+        int64_t          sockId,
         bool             unixSocket,
         unsigned char    serviceId,
         unsigned char    serviceOpt,
@@ -130,10 +131,10 @@ private:
     const bool                                  m_enableLoadBalance;
     IProReactor*                                m_reactor;
     IProAcceptor*                               m_acceptor;
-    PRO_UINT64                                  m_timerId;
+    uint64_t                                    m_timerId;
 
     CProStlMap<PRO_SERVICE_PIPE, unsigned char> m_pipe2ServiceId;       /* all pipes */
-    CProStlMap<CProServicePipe*, PRO_UINT32>    m_readyPipe2Socks[256]; /* serviceId0 ~ serviceId255 */
+    CProStlMap<CProServicePipe*, uint32_t>      m_readyPipe2Socks[256]; /* serviceId0 ~ serviceId255 */
     CProStlSet<PRO_SERVICE_SOCK>                m_expireSocks;
 
     CProThreadMutex                             m_lock;

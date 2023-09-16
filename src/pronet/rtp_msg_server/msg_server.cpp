@@ -30,7 +30,6 @@
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -136,8 +135,7 @@ CMsgServer::Init(IProReactor*                  reactor,
                     goto EXIT;
                 }
 
-                ProSslServerConfig_EnableSha1Cert(
-                    sslConfig, configInfo.msgs_ssl_enable_sha1cert);
+                ProSslServerConfig_EnableSha1Cert(sslConfig, configInfo.msgs_ssl_enable_sha1cert);
 
                 if (!ProSslServerConfig_SetCaList(
                     sslConfig,
@@ -245,7 +243,7 @@ CMsgServer::KickoutUsers(const CProStlSet<RTP_MSG_USER>& users)
         return;
     }
 
-    CProStlString traceInfo = "";
+    CProStlString traceInfo;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -256,7 +254,7 @@ CMsgServer::KickoutUsers(const CProStlSet<RTP_MSG_USER>& users)
         }
 
         traceInfo += "\n";
-        traceInfo += " CMsgServer::KickoutUsers(...) \n";
+        traceInfo += " CMsgServer::KickoutUsers() \n";
         traceInfo += " [[[ begin \n";
 
         CProStlSet<RTP_MSG_USER>::const_iterator       itr = users.begin();
@@ -327,9 +325,9 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
                         const RTP_MSG_USER* c2sUser, /* = NULL */
                         const char          hash[32],
                         const char          nonce[32],
-                        PRO_UINT64*         userId,
-                        PRO_UINT16*         instId,
-                        PRO_INT64*          appData,
+                        uint64_t*           userId,
+                        uint16_t*           instId,
+                        int64_t*            appData,
                         bool*               isC2s)
 {
     assert(msgServer != NULL);
@@ -356,8 +354,8 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
         RtpMsgUser2String(c2sUser, c2sIdString);
     }
 
-    bool          ret         = false;
-    CProStlString errorString = "";
+    bool          ret = false;
+    CProStlString errorString;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -374,7 +372,7 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
 
         const MSG_USER_CTX* ctx = NULL;
 
-        CProStlMap<PRO_UINT64, MSG_USER_CTX>::iterator const itr =
+        CProStlMap<uint64_t, MSG_USER_CTX>::iterator const itr =
             m_uid2Ctx[user->classId].find(user->UserId());
         if (itr != m_uid2Ctx[user->classId].end())
         {
@@ -405,9 +403,8 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
             }
             else
             {
-                const PRO_UINT32 bindedIp =
-                    pbsd_inet_aton(userRow._bindedip_.c_str());
-                if (bindedIp != (PRO_UINT32)-1 && bindedIp != 0 &&
+                const uint32_t bindedIp = pbsd_inet_aton(userRow._bindedip_.c_str());
+                if (bindedIp != (uint32_t)-1 && bindedIp != 0 &&
                     pbsd_inet_aton(userPublicIp) != bindedIp)
                 {
                     errorString = "Mismatched IP";
@@ -461,11 +458,11 @@ EXIT:
                 traceInfo,
                 sizeof(traceInfo),
                 "\n"
-                " CMsgServer::OnCheckUser(id : %u-" PRO_PRT64U "-%u,"
+                " CMsgServer::OnCheckUser(id : %u-%llu-%u,"
                 " fromIp : %s, fromC2s : %s) ok! \n"
                 ,
                 (unsigned int)user->classId,
-                user->UserId(),
+                (unsigned long long)user->UserId(),
                 (unsigned int)user->instId,
                 userPublicIp,
                 c2sIdString
@@ -477,11 +474,11 @@ EXIT:
                 traceInfo,
                 sizeof(traceInfo),
                 "\n"
-                " CMsgServer::OnCheckUser(id : %u-" PRO_PRT64U "-%u,"
+                " CMsgServer::OnCheckUser(id : %u-%llu-%u,"
                 " fromIp : %s, fromC2s : %s) failed! [%s] \n"
                 ,
                 (unsigned int)user->classId,
-                user->UserId(),
+                (unsigned long long)user->UserId(),
                 (unsigned int)user->instId,
                 userPublicIp,
                 c2sIdString,
@@ -499,7 +496,7 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
                      const RTP_MSG_USER* user,
                      const char*         userPublicIp,
                      const RTP_MSG_USER* c2sUser, /* = NULL */
-                     PRO_INT64           appData)
+                     int64_t             appData)
 {
     assert(msgServer != NULL);
     assert(user != NULL);
@@ -543,8 +540,8 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
     }
 
     {{{
-        unsigned long baseUserCount = 0;
-        unsigned long subUserCount  = 0;
+        size_t baseUserCount = 0;
+        size_t subUserCount  = 0;
         msgServer->GetUserCount(NULL, &baseUserCount, &subUserCount);
 
         char traceInfo[1024] = "";
@@ -552,11 +549,11 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
             traceInfo,
             sizeof(traceInfo),
             "\n"
-            " CMsgServer::OnOkUser(id : %u-" PRO_PRT64U "-%u,"
+            " CMsgServer::OnOkUser(id : %u-%llu-%u,"
             " fromIp : %s, fromC2s : %s, sslSuite : %s, users : %u+%u) \n"
             ,
             (unsigned int)user->classId,
-            user->UserId(),
+            (unsigned long long)user->UserId(),
             (unsigned int)user->instId,
             userPublicIp,
             c2sIdString,
@@ -594,7 +591,7 @@ CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
             return;
         }
 
-        CProStlMap<PRO_UINT64, MSG_USER_CTX>::iterator const itr =
+        CProStlMap<uint64_t, MSG_USER_CTX>::iterator const itr =
             m_uid2Ctx[user->classId].find(user->UserId());
         if (itr == m_uid2Ctx[user->classId].end())
         {
@@ -615,8 +612,8 @@ CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
     }
 
     {{{
-        unsigned long baseUserCount = 0;
-        unsigned long subUserCount  = 0;
+        size_t baseUserCount = 0;
+        size_t subUserCount  = 0;
         msgServer->GetUserCount(NULL, &baseUserCount, &subUserCount);
 
         char traceInfo[1024] = "";
@@ -624,11 +621,11 @@ CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
             traceInfo,
             sizeof(traceInfo),
             "\n"
-            " CMsgServer::OnCloseUser(id : %u-" PRO_PRT64U "-%u,"
+            " CMsgServer::OnCloseUser(id : %u-%llu-%u,"
             " errorCode : [%d, %d], users : %u+%u) \n"
             ,
             (unsigned int)user->classId,
-            user->UserId(),
+            (unsigned long long)user->UserId(),
             (unsigned int)user->instId,
             (int)errorCode,
             (int)sslCode,

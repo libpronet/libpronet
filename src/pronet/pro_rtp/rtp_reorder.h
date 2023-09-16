@@ -22,6 +22,7 @@
 #include "rtp_base.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_stl.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -34,13 +35,13 @@ public:
 
     virtual ~CRtpReorder();
 
-    virtual void SetWallHeightInPackets(unsigned long heightInPackets); /* = 100 */
+    virtual void SetWallHeightInPackets(size_t heightInPackets); /* = 100 */
 
-    virtual void SetWallHeightInMilliseconds(unsigned long heightInMs); /* = 500 */
+    virtual void SetWallHeightInMilliseconds(size_t heightInMs); /* = 500 */
 
-    virtual void SetMaxBrokenDuration(unsigned long brokenDurationInSeconds); /* = 10 */
+    virtual void SetMaxBrokenDuration(size_t brokenDurationInSeconds); /* = 10 */
 
-    virtual unsigned long GetTotalPackets() const;
+    virtual size_t GetTotalPackets() const;
 
     virtual void PushBackAddRef(IRtpPacket* packet);
 
@@ -54,12 +55,12 @@ private:
 
 private:
 
-    unsigned long                      m_heightInPackets;
-    PRO_INT64                          m_heightInMs;
-    PRO_INT64                          m_maxBrokenDuration;
-    PRO_INT64                          m_minSeq64;
-    PRO_INT64                          m_lastValidTick;
-    CProStlMap<PRO_INT64, IRtpPacket*> m_seq64ToPacket;
+    size_t                           m_heightInPackets;
+    int64_t                          m_heightInMs;
+    int64_t                          m_maxBrokenDuration;
+    int64_t                          m_minSeq64;
+    int64_t                          m_lastValidTick;
+    CProStlMap<int64_t, IRtpPacket*> m_seq64ToPacket;
 
     DECLARE_SGI_POOL(0)
 };

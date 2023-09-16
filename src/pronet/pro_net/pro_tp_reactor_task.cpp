@@ -33,8 +33,6 @@
 #include <windows.h>
 #endif
 
-#include <cassert>
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -95,7 +93,7 @@ CProTpReactorTask::Start(unsigned long ioThreadCount,
         }
 
         m_acceptThreadCount = 1;
-        m_ioThreadCount     = ioThreadCount; /* for StopMe(...) */
+        m_ioThreadCount     = ioThreadCount; /* for StopMe() */
         m_ioThreadPriority  = ioThreadPriority;
 
         /*
@@ -237,7 +235,7 @@ CProTpReactorTask::StopMe()
 }
 
 bool
-CProTpReactorTask::AddHandler(PRO_INT64         sockId,
+CProTpReactorTask::AddHandler(int64_t           sockId,
                               CProEventHandler* handler,
                               unsigned long     mask)
 {
@@ -287,8 +285,7 @@ CProTpReactorTask::AddHandler(PRO_INT64         sockId,
                     continue;
                 }
 
-                if (m_ioReactors[i]->GetHandlerCount() <
-                    ioReactor->GetHandlerCount())
+                if (m_ioReactors[i]->GetHandlerCount() < ioReactor->GetHandlerCount())
                 {
                     ioReactor = m_ioReactors[i];
                 }
@@ -297,8 +294,7 @@ CProTpReactorTask::AddHandler(PRO_INT64         sockId,
 
         if (PRO_BIT_ENABLED(mask, PRO_MASK_ACCEPT))
         {
-            ret = m_acceptReactor->AddHandler(
-                sockId, handler, PRO_MASK_ACCEPT);
+            ret = m_acceptReactor->AddHandler(sockId, handler, PRO_MASK_ACCEPT);
             if (!ret)
             {
                 mask = 0;
@@ -324,7 +320,7 @@ CProTpReactorTask::AddHandler(PRO_INT64         sockId,
 }
 
 void
-CProTpReactorTask::RemoveHandler(PRO_INT64         sockId,
+CProTpReactorTask::RemoveHandler(int64_t           sockId,
                                  CProEventHandler* handler,
                                  unsigned long     mask)
 {
@@ -372,13 +368,13 @@ CProTpReactorTask::RemoveHandler(PRO_INT64         sockId,
     }
 }
 
-PRO_UINT64
+uint64_t
 CProTpReactorTask::ScheduleTimer(IProOnTimer* onTimer,
-                                 PRO_UINT64   timeSpan,
+                                 uint64_t     timeSpan,
                                  bool         recurring,
-                                 PRO_INT64    userData) /* = 0 */
+                                 int64_t      userData) /* = 0 */
 {
-    PRO_UINT64 timerId = 0;
+    uint64_t timerId = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -390,18 +386,17 @@ CProTpReactorTask::ScheduleTimer(IProOnTimer* onTimer,
             return (0);
         }
 
-        timerId = m_timerFactory.ScheduleTimer(
-            onTimer, timeSpan, recurring, userData);
+        timerId = m_timerFactory.ScheduleTimer(onTimer, timeSpan, recurring, userData);
     }
 
     return (timerId);
 }
 
-PRO_UINT64
+uint64_t
 CProTpReactorTask::ScheduleHeartbeatTimer(IProOnTimer* onTimer,
-                                          PRO_INT64    userData) /* = 0 */
+                                          int64_t      userData) /* = 0 */
 {
-    PRO_UINT64 timerId = 0;
+    uint64_t timerId = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -441,7 +436,7 @@ CProTpReactorTask::UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds)
 }
 
 void
-CProTpReactorTask::CancelTimer(PRO_UINT64 timerId)
+CProTpReactorTask::CancelTimer(uint64_t timerId)
 {
     {
         CProThreadMutexGuard mon(m_lock);
@@ -456,13 +451,13 @@ CProTpReactorTask::CancelTimer(PRO_UINT64 timerId)
     }
 }
 
-PRO_UINT64
+uint64_t
 CProTpReactorTask::ScheduleMmTimer(IProOnTimer* onTimer,
-                                   PRO_UINT64   timeSpan,
+                                   uint64_t     timeSpan,
                                    bool         recurring,
-                                   PRO_INT64    userData) /* = 0 */
+                                   int64_t      userData) /* = 0 */
 {
-    PRO_UINT64 timerId = 0;
+    uint64_t timerId = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -474,15 +469,14 @@ CProTpReactorTask::ScheduleMmTimer(IProOnTimer* onTimer,
             return (0);
         }
 
-        timerId = m_mmTimerFactory.ScheduleTimer(
-            onTimer, timeSpan, recurring, userData);
+        timerId = m_mmTimerFactory.ScheduleTimer(onTimer, timeSpan, recurring, userData);
     }
 
     return (timerId);
 }
 
 void
-CProTpReactorTask::CancelMmTimer(PRO_UINT64 timerId)
+CProTpReactorTask::CancelMmTimer(uint64_t timerId)
 {
     {
         CProThreadMutexGuard mon(m_lock);
@@ -518,7 +512,7 @@ CProTpReactorTask::GetTraceInfo(char*  buf,
             return;
         }
 
-        CProStlString theInfo     = "";
+        CProStlString theInfo;
         char          theBuf[256] = "";
         int           theValue    = 0;
 
@@ -543,8 +537,7 @@ CProTpReactorTask::GetTraceInfo(char*  buf,
 
         for (int j = 1; j < (int)m_ioThreadCount; ++j)
         {
-            sprintf(theBuf, "+ %d ",
-                (int)m_ioReactors[j]->GetHandlerCount() - 1);
+            sprintf(theBuf, "+ %d ", (int)m_ioReactors[j]->GetHandlerCount() - 1);
             theInfo += theBuf;
         }
 
@@ -569,7 +562,7 @@ CProTpReactorTask::GetTraceInfo(char*  buf,
 void
 CProTpReactorTask::Svc()
 {
-    const PRO_UINT64 threadId = ProGetThreadId();
+    const uint64_t threadId = ProGetThreadId();
 
     unsigned long threadCount = 0;
 

@@ -31,8 +31,6 @@
 #include "mbedtls/threading.h"
 #include "mbedtls/x509_crt.h"
 
-#include <cassert>
-
 #if defined(__cplusplus)
 extern "C" {
 #endif
@@ -361,10 +359,10 @@ struct PRO_SSL_CLIENT_CONFIG : public mbedtls_ssl_config
 struct PRO_SSL_CTX : public mbedtls_ssl_context
 {
     PRO_SSL_CTX(
-        PRO_INT64        __sockId,
+        int64_t          __sockId,
         const PRO_NONCE* __nonce
         )
-        :
+    :
     sockId(__sockId),
     hasNonce(__nonce != NULL)
     {
@@ -381,11 +379,11 @@ struct PRO_SSL_CTX : public mbedtls_ssl_context
         }
     }
 
-    const PRO_INT64  sockId;
-    const bool       hasNonce;
-    PRO_NONCE        nonce;
-    PRO_INT64        sentBytes;
-    PRO_INT64        recvBytes;
+    const int64_t sockId;
+    const bool    hasNonce;
+    PRO_NONCE     nonce;
+    int64_t       sentBytes;
+    int64_t       recvBytes;
 
     DECLARE_SGI_POOL(0)
 };
@@ -1787,7 +1785,7 @@ ProSslClientConfig_SetAuthLevel(PRO_SSL_CLIENT_CONFIG* config,
 PRO_NET_API
 PRO_SSL_CTX*
 ProSslCtx_CreateS(const PRO_SSL_SERVER_CONFIG* config,
-                  PRO_INT64                    sockId,
+                  int64_t                      sockId,
                   const PRO_NONCE*             nonce) /* = NULL */
 {
     assert(config != NULL);
@@ -1817,7 +1815,7 @@ PRO_NET_API
 PRO_SSL_CTX*
 ProSslCtx_CreateC(const PRO_SSL_CLIENT_CONFIG* config,
                   const char*                  serverHostName, /* = NULL */
-                  PRO_INT64                    sockId,
+                  int64_t                      sockId,
                   const PRO_NONCE*             nonce)          /* = NULL */
 {
     assert(config != NULL);

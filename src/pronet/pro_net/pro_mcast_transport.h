@@ -45,7 +45,7 @@ public:
 
     virtual PRO_TRANS_TYPE GetType() const
     {
-        return (PRO_TRANS_MCAST);
+        return PRO_TRANS_MCAST;
     }
 
     virtual bool AddMcastReceiver(const char* mcastIp);

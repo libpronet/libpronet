@@ -43,23 +43,23 @@ struct PRO_SERVICE_SOCK
         unixSocket = false;
     }
 
-    bool operator<(const PRO_SERVICE_SOCK& ss) const
+    bool operator<(const PRO_SERVICE_SOCK& other) const
     {
-        if (expireTick < ss.expireTick)
+        if (expireTick < other.expireTick)
         {
-            return (true);
+            return true;
         }
-        if (expireTick > ss.expireTick)
+        if (expireTick > other.expireTick)
         {
-            return (false);
+            return false;
         }
 
-        return (sockId < ss.sockId);
+        return sockId < other.sockId;
     }
 
-    PRO_INT64 expireTick;
-    PRO_INT64 sockId;
-    bool      unixSocket;
+    int64_t expireTick;
+    int64_t sockId;
+    bool    unixSocket;
 
     DECLARE_SGI_POOL(0)
 };
@@ -74,8 +74,8 @@ struct PRO_SERVICE_PACKET_C2S
     }
 
     unsigned char    serviceId;
-    PRO_UINT64       processId;
-    PRO_UINT32       totalSocks;
+    uint64_t         processId;
+    uint32_t         totalSocks;
     PRO_SERVICE_SOCK oldSock;
 
     DECLARE_SGI_POOL(0)
@@ -113,10 +113,8 @@ struct PRO_SERVICE_PACKET
 
     bool CheckMagic() const
     {
-        return (
-            memcmp(magic1, SERVICE_MAGIC, sizeof(magic1)) == 0 &&
-            memcmp(magic2, SERVICE_MAGIC, sizeof(magic2)) == 0
-            );
+        return memcmp(magic1, SERVICE_MAGIC, sizeof(magic1)) == 0 &&
+               memcmp(magic2, SERVICE_MAGIC, sizeof(magic2)) == 0;
     }
 
     char                   magic1[8];
@@ -143,14 +141,14 @@ struct PRO_SERVICE_PIPE
         expireTick = 0;
     }
 
-    bool operator<(const PRO_SERVICE_PIPE& sp) const
+    bool operator<(const PRO_SERVICE_PIPE& other) const
     {
-        return (pipe < sp.pipe);
+        return pipe < other.pipe;
     }
 
     CProServicePipe* pipe;
-    PRO_UINT64       processId;
-    PRO_INT64        expireTick;
+    uint64_t         processId;
+    int64_t          expireTick;
 
     DECLARE_SGI_POOL(0)
 };
@@ -175,7 +173,7 @@ public:
 
     virtual void OnRecvFd(
         CProServicePipe*          pipe,
-        PRO_INT64                 fd,
+        int64_t                   fd,
         bool                      unixSocket,
         const PRO_SERVICE_PACKET& s2cPacket
         ) = 0;
@@ -196,7 +194,7 @@ public:
         bool                     recvFdMode,
         IProServicePipeObserver* observer,
         IProReactor*             reactor,
-        PRO_INT64                sockId,
+        int64_t                  sockId,
         bool                     unixSocket
         );
 
@@ -223,14 +221,14 @@ private:
 
     virtual void OnRecvFd(
         IProTransport*            trans,
-        PRO_INT64                 fd,
+        int64_t                   fd,
         bool                      unixSocket,
         const PRO_SERVICE_PACKET& s2cPacket
         );
 
     virtual void OnSend(
         IProTransport* trans,
-        PRO_UINT64     actionId
+        uint64_t       actionId
         );
 
     virtual void OnClose(
@@ -262,7 +260,7 @@ CProServicePipe*
 ProCreateServicePipe(bool                     recvFdMode,
                      IProServicePipeObserver* observer,
                      IProReactor*             reactor,
-                     PRO_INT64                sockId,
+                     int64_t                  sockId,
                      bool                     unixSocket);
 
 void

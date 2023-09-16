@@ -63,12 +63,12 @@ public:
 
     virtual PRO_TRANS_TYPE GetType() const
     {
-        return (PRO_TRANS_UDP);
+        return PRO_TRANS_UDP;
     }
 
     virtual PRO_SSL_SUITE_ID GetSslSuite(char suiteName[64]) const;
 
-    virtual PRO_INT64 GetSockId() const;
+    virtual int64_t GetSockId() const;
 
     virtual const char* GetLocalIp(char localIp[64]) const;
 
@@ -80,13 +80,13 @@ public:
 
     virtual IProRecvPool* GetRecvPool()
     {
-        return (&m_recvPool);
+        return &m_recvPool;
     }
 
     virtual bool SendData(
         const void*             buf,
         size_t                  size,
-        PRO_UINT64              actionId,  /* ignored */
+        uint64_t                actionId,  /* ignored */
         const pbsd_sockaddr_in* remoteAddr /* = NULL */
         );
 
@@ -100,7 +100,7 @@ public:
 
     virtual bool AddMcastReceiver(const char* mcastIp)
     {
-        return (false);
+        return false;
     }
 
     virtual void RemoveMcastReceiver(const char* mcastIp)
@@ -128,37 +128,36 @@ protected:
     const size_t            m_recvPoolSize;
     IProTransportObserver*  m_observer;
     CProTpReactorTask*      m_reactorTask;
-    PRO_INT64               m_sockId;
+    int64_t                 m_sockId;
     pbsd_sockaddr_in        m_localAddr;
     pbsd_sockaddr_in        m_defaultRemoteAddr;
     CProRecvPool            m_recvPool;
-    PRO_UINT64              m_timerId;
+    uint64_t                m_timerId;
     mutable CProThreadMutex m_lock;
 
 private:
 
-    virtual void OnInput(PRO_INT64 sockId);
+    virtual void OnInput(int64_t sockId);
 
-    virtual void OnOutput(PRO_INT64 sockId)
+    virtual void OnOutput(int64_t sockId)
     {
     }
 
     virtual void OnError(
-        PRO_INT64 sockId,
-        long      errorCode
+        int64_t sockId,
+        long    errorCode
         );
 
     virtual void OnTimer(
-        void*      factory,
-        PRO_UINT64 timerId,
-        PRO_INT64  userData
+        void*    factory,
+        uint64_t timerId,
+        int64_t  userData
         );
 
 private:
 
-    bool                    m_connResetAsError;
-
-    volatile bool           m_canUpcall;
+    bool          m_connResetAsError;
+    volatile bool m_canUpcall;
 
     DECLARE_SGI_POOL(0)
 };

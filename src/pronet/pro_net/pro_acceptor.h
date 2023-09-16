@@ -25,6 +25,7 @@
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -67,18 +68,18 @@ private:
 
     virtual ~CProAcceptor();
 
-    virtual void OnInput(PRO_INT64 sockId);
+    virtual void OnInput(int64_t sockId);
 
     virtual void OnError(
-        PRO_INT64 sockId,
-        long      errorCode
+        int64_t sockId,
+        long    errorCode
         )
     {
     }
 
     virtual void OnHandshakeOk(
         IProTcpHandshaker* handshaker,
-        PRO_INT64          sockId,
+        int64_t            sockId,
         bool               unixSocket,
         const void*        buf,
         unsigned long      size
@@ -95,8 +96,8 @@ private:
     const bool                                m_loopExt;
     IProAcceptorObserver*                     m_observer;
     CProTpReactorTask*                        m_reactorTask;
-    PRO_INT64                                 m_sockId;
-    PRO_INT64                                 m_sockIdUn;
+    int64_t                                   m_sockId;
+    int64_t                                   m_sockIdUn;
     pbsd_sockaddr_in                          m_localAddr;
     pbsd_sockaddr_un                          m_localAddrUn;
     unsigned long                             m_timeoutInSeconds;

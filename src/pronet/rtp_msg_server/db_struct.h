@@ -21,6 +21,7 @@
 
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_stl.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -46,7 +47,7 @@ struct DB_CELL_UNIT
         txt = "";
     }
 
-    PRO_INT64     i64;
+    int64_t       i64;
     double        dbl;
     CProStlString txt;
 

@@ -8,6 +8,7 @@
 !/build/**/autogen.sh
 !/build/**/configure.ac
 !/build/**/Makefile.am
+!/build/**/*.pc.in
 !/build/**/Application.mk
 !/build/**/Android.mk
 .vs/
@@ -17,5 +18,9 @@
 
 *.o
 *.obj
+*.lo
+*.la
+*.d
+*.tmp
 .dirstamp
 .DS_Store

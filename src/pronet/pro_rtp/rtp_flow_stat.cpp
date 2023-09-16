@@ -20,7 +20,6 @@
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -40,7 +39,7 @@ CRtpFlowStat::CRtpFlowStat()
 }
 
 void
-CRtpFlowStat::SetTimeSpan(unsigned long timeSpanInSeconds) /* = 1 */
+CRtpFlowStat::SetTimeSpan(size_t timeSpanInSeconds) /* = 1 */
 {
     assert(timeSpanInSeconds > 0);
     if (timeSpanInSeconds == 0)
@@ -52,8 +51,8 @@ CRtpFlowStat::SetTimeSpan(unsigned long timeSpanInSeconds) /* = 1 */
 }
 
 void
-CRtpFlowStat::PushData(unsigned long frames,
-                       unsigned long bytes)
+CRtpFlowStat::PushData(size_t frames,
+                       size_t bytes)
 {
     if (m_startTick == 0)
     {
@@ -67,8 +66,8 @@ CRtpFlowStat::PushData(unsigned long frames,
 }
 
 void
-CRtpFlowStat::PopData(unsigned long frames,
-                      unsigned long bytes)
+CRtpFlowStat::PopData(size_t frames,
+                      size_t bytes)
 {
     if (m_startTick == 0)
     {
@@ -115,7 +114,7 @@ CRtpFlowStat::Update()
         return;
     }
 
-    const PRO_INT64 tick = ProGetTickCount64();
+    const int64_t tick = ProGetTickCount64();
 
     if (tick - m_startTick >= m_timeSpan * 1000)
     {

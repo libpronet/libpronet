@@ -24,6 +24,7 @@
 #include "../pro_util/pro_bsd_wrapper.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_thread_mutex.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -70,20 +71,20 @@ private:
 
     virtual ~CProConnector();
 
-    virtual void OnInput(PRO_INT64 sockId);
+    virtual void OnInput(int64_t sockId);
 
-    virtual void OnOutput(PRO_INT64 sockId);
+    virtual void OnOutput(int64_t sockId);
 
-    virtual void OnException(PRO_INT64 sockId);
+    virtual void OnException(int64_t sockId);
 
     virtual void OnError(
-        PRO_INT64 sockId,
-        long      errorCode
+        int64_t sockId,
+        long    errorCode
         );
 
     virtual void OnHandshakeOk(
         IProTcpHandshaker* handshaker,
-        PRO_INT64          sockId,
+        int64_t            sockId,
         bool               unixSocket,
         const void*        buf,
         unsigned long      size
@@ -95,9 +96,9 @@ private:
         );
 
     virtual void OnTimer(
-        void*      factory,
-        PRO_UINT64 timerId,
-        PRO_INT64  userData
+        void*    factory,
+        uint64_t timerId,
+        int64_t  userData
         );
 
 private:
@@ -109,13 +110,13 @@ private:
     IProConnectorObserver* m_observer;
     CProTpReactorTask*     m_reactorTask;
     IProTcpHandshaker*     m_handshaker;
-    PRO_INT64              m_sockId;
+    int64_t                m_sockId;
     bool                   m_unixSocket;
     pbsd_sockaddr_in       m_localAddr;
     pbsd_sockaddr_in       m_remoteAddr;
     unsigned long          m_timeoutInSeconds;
-    PRO_UINT64             m_timerId0;
-    PRO_UINT64             m_timerId1;
+    uint64_t               m_timerId0;
+    uint64_t               m_timerId1;
     CProThreadMutex        m_lock;
 
     DECLARE_SGI_POOL(0)

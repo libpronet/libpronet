@@ -31,6 +31,7 @@
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_timer_factory.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -55,14 +56,12 @@ public:
 
     static bool IsUdpSession(RTP_SESSION_TYPE sessionType)
     {
-        return (
-            sessionType == RTP_ST_UDPCLIENT    ||
-            sessionType == RTP_ST_UDPSERVER    ||
-            sessionType == RTP_ST_UDPCLIENT_EX ||
-            sessionType == RTP_ST_UDPSERVER_EX ||
-            sessionType == RTP_ST_MCAST        ||
-            sessionType == RTP_ST_MCAST_EX
-            );
+        return sessionType == RTP_ST_UDPCLIENT    ||
+               sessionType == RTP_ST_UDPSERVER    ||
+               sessionType == RTP_ST_UDPCLIENT_EX ||
+               sessionType == RTP_ST_UDPSERVER_EX ||
+               sessionType == RTP_ST_MCAST        ||
+               sessionType == RTP_ST_MCAST_EX;
     }
 
 protected:
@@ -79,7 +78,7 @@ protected:
 
     virtual PRO_SSL_SUITE_ID GetSslSuite(char suiteName[64]) const;
 
-    virtual PRO_INT64 GetSockId() const;
+    virtual int64_t GetSockId() const;
 
     virtual const char* GetLocalIp(char localIp[64]) const;
 
@@ -96,11 +95,14 @@ protected:
     {
     }
 
-    virtual bool IsTcpConnected() const;
+    virtual bool IsTcpConnected() const
+    {
+        return m_tcpConnected;
+    }
 
     virtual bool IsReady() const
     {
-        return (m_onOkCalledPre || m_onOkCalledPost);
+        return m_onOkCalledPre || m_onOkCalledPost;
     }
 
     virtual bool SendPacket(
@@ -113,12 +115,12 @@ protected:
         unsigned long sendDurationMs /* = 0 */
         )
     {
-        return (false);
+        return false;
     }
 
     virtual void GetSendOnSendTick(
-        PRO_INT64* onSendTick1, /* = NULL */
-        PRO_INT64* onSendTick2  /* = NULL */
+        int64_t* onSendTick1, /* = NULL */
+        int64_t* onSendTick2  /* = NULL */
         ) const;
 
     virtual void RequestOnSend();
@@ -129,7 +131,7 @@ protected:
 
     virtual bool AddMcastReceiver(const char* mcastIp)
     {
-        return (false);
+        return false;
     }
 
     virtual void RemoveMcastReceiver(const char* mcastIp)
@@ -145,28 +147,28 @@ protected:
     }
 
     virtual void SetOutputRedline(
-        unsigned long redlineBytes,  /* = 0 */
-        unsigned long redlineFrames, /* = 0 */
-        unsigned long redlineDelayMs /* = 0 */
+        size_t redlineBytes,  /* = 0 */
+        size_t redlineFrames, /* = 0 */
+        size_t redlineDelayMs /* = 0 */
         )
     {
     }
 
     virtual void GetOutputRedline(
-        unsigned long* redlineBytes,  /* = NULL */
-        unsigned long* redlineFrames, /* = NULL */
-        unsigned long* redlineDelayMs /* = NULL */
+        size_t* redlineBytes,  /* = NULL */
+        size_t* redlineFrames, /* = NULL */
+        size_t* redlineDelayMs /* = NULL */
         ) const
     {
     }
 
     virtual void GetFlowctrlInfo(
-        float*         srcFrameRate, /* = NULL */
-        float*         srcBitRate,   /* = NULL */
-        float*         outFrameRate, /* = NULL */
-        float*         outBitRate,   /* = NULL */
-        unsigned long* cachedBytes,  /* = NULL */
-        unsigned long* cachedFrames  /* = NULL */
+        float*  srcFrameRate, /* = NULL */
+        float*  srcBitRate,   /* = NULL */
+        float*  outFrameRate, /* = NULL */
+        float*  outBitRate,   /* = NULL */
+        size_t* cachedBytes,  /* = NULL */
+        size_t* cachedFrames  /* = NULL */
         ) const
     {
     }
@@ -176,19 +178,19 @@ protected:
     }
 
     virtual void GetInputStat(
-        float*      frameRate, /* = NULL */
-        float*      bitRate,   /* = NULL */
-        float*      lossRate,  /* = NULL */
-        PRO_UINT64* lossCount  /* = NULL */
+        float*    frameRate, /* = NULL */
+        float*    bitRate,   /* = NULL */
+        float*    lossRate,  /* = NULL */
+        uint64_t* lossCount  /* = NULL */
         ) const
     {
     }
 
     virtual void GetOutputStat(
-        float*      frameRate, /* = NULL */
-        float*      bitRate,   /* = NULL */
-        float*      lossRate,  /* = NULL */
-        PRO_UINT64* lossCount  /* = NULL */
+        float*    frameRate, /* = NULL */
+        float*    bitRate,   /* = NULL */
+        float*    lossRate,  /* = NULL */
+        uint64_t* lossCount  /* = NULL */
         ) const
     {
     }
@@ -201,13 +203,13 @@ protected:
     {
     }
 
-    virtual void SetMagic(PRO_INT64 magic);
+    virtual void SetMagic(int64_t magic);
 
-    virtual PRO_INT64 GetMagic() const;
+    virtual int64_t GetMagic() const;
 
     virtual void OnSend(
         IProTransport* trans,
-        PRO_UINT64     actionId
+        uint64_t       actionId
         );
 
     virtual void OnClose(
@@ -219,9 +221,9 @@ protected:
     virtual void OnHeartbeat(IProTransport* trans);
 
     virtual void OnTimer(
-        void*      factory,
-        PRO_UINT64 timerId,
-        PRO_INT64  userData
+        void*    factory,
+        uint64_t timerId,
+        int64_t  userData
         );
 
     virtual void Fini()
@@ -235,7 +237,7 @@ protected:
     const bool              m_suspendRecv;
     RTP_SESSION_INFO        m_info;
     RTP_SESSION_ACK         m_ack;
-    PRO_INT64               m_magic;
+    int64_t                 m_magic;
     IRtpSessionObserver*    m_observer;
     IProReactor*            m_reactor;
     IProTransport*          m_trans;
@@ -243,16 +245,16 @@ protected:
     pbsd_sockaddr_in        m_localAddr;
     pbsd_sockaddr_in        m_remoteAddr;
     pbsd_sockaddr_in        m_remoteAddrConfig; /* for udp */
-    PRO_INT64               m_dummySockId;
-    PRO_UINT64              m_actionId;
-    PRO_INT64               m_initTick;
-    PRO_INT64               m_sendTick;
-    PRO_INT64               m_onSendTick1;      /* for tcp, tcp_ex, ssl_ex */
-    PRO_INT64               m_onSendTick2;      /* for tcp, tcp_ex, ssl_ex */
-    PRO_INT64               m_peerAliveTick;
-    PRO_UINT64              m_timeoutTimerId;
-    PRO_UINT64              m_onOkTimerId;
-    bool                    m_tcpConnected;     /* for tcp, tcp_ex, ssl_ex */
+    int64_t                 m_dummySockId;
+    uint64_t                m_actionId;
+    int64_t                 m_initTick;
+    int64_t                 m_sendTick;
+    int64_t                 m_onSendTick1;      /* for tcp, tcp_ex, ssl_ex */
+    int64_t                 m_onSendTick2;      /* for tcp, tcp_ex, ssl_ex */
+    int64_t                 m_peerAliveTick;
+    uint64_t                m_timeoutTimerId;
+    uint64_t                m_onOkTimerId;
+    volatile bool           m_tcpConnected;     /* for tcp, tcp_ex, ssl_ex */
     bool                    m_handshakeOk;      /* for udp_ex, tcp_ex, ssl_ex */
     volatile bool           m_onOkCalledPre;
     volatile bool           m_onOkCalledPost;

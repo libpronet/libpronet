@@ -162,7 +162,7 @@ ProRsaDecrypt(void*                ctx,
               CProStlVector<char>& outputBuffer);
 
 bool
-ProRsaKeyGen(unsigned long  keyBytes, /* 128, 256, 512 */
+ProRsaKeyGen(unsigned int   keyBytes, /* 128, 256, 512 */
              CProStlString& pString,
              CProStlString& qString,
              CProStlString& nString,

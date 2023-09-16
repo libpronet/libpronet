@@ -21,15 +21,14 @@
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
 CProHandlerMgr::~CProHandlerMgr()
 {
-    CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator       itr = m_sockId2HandlerInfo.begin();
-    CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator const end = m_sockId2HandlerInfo.end();
+    CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator       itr = m_sockId2HandlerInfo.begin();
+    CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator const end = m_sockId2HandlerInfo.end();
 
     for (; itr != end; ++itr)
     {
@@ -41,7 +40,7 @@ CProHandlerMgr::~CProHandlerMgr()
 }
 
 bool
-CProHandlerMgr::AddHandler(PRO_INT64         sockId,
+CProHandlerMgr::AddHandler(int64_t           sockId,
                            CProEventHandler* handler,
                            unsigned long     mask)
 {
@@ -53,8 +52,7 @@ CProHandlerMgr::AddHandler(PRO_INT64         sockId,
         return (false);
     }
 
-    CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator const itr =
-        m_sockId2HandlerInfo.find(sockId);
+    CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator const itr = m_sockId2HandlerInfo.find(sockId);
     if (itr == m_sockId2HandlerInfo.end())
     {
         PRO_HANDLER_INFO info;
@@ -82,7 +80,7 @@ CProHandlerMgr::AddHandler(PRO_INT64         sockId,
 }
 
 void
-CProHandlerMgr::RemoveHandler(PRO_INT64     sockId,
+CProHandlerMgr::RemoveHandler(int64_t       sockId,
                               unsigned long mask)
 {
     if (sockId == -1 || mask == 0)
@@ -90,8 +88,7 @@ CProHandlerMgr::RemoveHandler(PRO_INT64     sockId,
         return;
     }
 
-    CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator const itr =
-        m_sockId2HandlerInfo.find(sockId);
+    CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator const itr = m_sockId2HandlerInfo.find(sockId);
     if (itr == m_sockId2HandlerInfo.end())
     {
         return;
@@ -107,12 +104,12 @@ CProHandlerMgr::RemoveHandler(PRO_INT64     sockId,
     }
 }
 
-PRO_INT64
+int64_t
 CProHandlerMgr::GetMaxSockId() const
 {
-    PRO_INT64 sockId = -1;
+    int64_t sockId = -1;
 
-    CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::const_reverse_iterator const itr =
+    CProStlMap<int64_t, PRO_HANDLER_INFO>::const_reverse_iterator const itr =
         m_sockId2HandlerInfo.rbegin();
     if (itr != m_sockId2HandlerInfo.rend())
     {
@@ -123,7 +120,7 @@ CProHandlerMgr::GetMaxSockId() const
 }
 
 PRO_HANDLER_INFO
-CProHandlerMgr::FindHandler(PRO_INT64 sockId) const
+CProHandlerMgr::FindHandler(int64_t sockId) const
 {
     PRO_HANDLER_INFO info;
 
@@ -133,7 +130,7 @@ CProHandlerMgr::FindHandler(PRO_INT64 sockId) const
         return (info);
     }
 
-    CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::const_iterator const itr =
+    CProStlMap<int64_t, PRO_HANDLER_INFO>::const_iterator const itr =
         m_sockId2HandlerInfo.find(sockId);
     if (itr != m_sockId2HandlerInfo.end())
     {

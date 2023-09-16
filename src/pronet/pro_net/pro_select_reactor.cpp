@@ -18,17 +18,11 @@
 
 #include "pro_select_reactor.h"
 #include "pro_base_reactor.h"
-#include "pro_notify_pipe.h"
 #include "../pro_util/pro_bsd_wrapper.h"
+#include "../pro_util/pro_notify_pipe.h"
 #include "../pro_util/pro_thread.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
-
-/////////////////////////////////////////////////////////////////////////////
-////
-
-static char g_s_buffer[1024];
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -36,7 +30,7 @@ static char g_s_buffer[1024];
 static
 inline
 bool
-pbsd_fd_preset_i(PRO_INT64    fd,
+pbsd_fd_preset_i(int64_t      fd,
                  pbsd_fd_set& fds)
 {
     if (fd == -1)
@@ -54,7 +48,7 @@ pbsd_fd_preset_i(PRO_INT64    fd,
 static
 inline
 void
-pbsd_fd_set_i(PRO_INT64    fd,
+pbsd_fd_set_i(int64_t      fd,
               pbsd_fd_set& fds)
 {
     if (fd == -1)
@@ -79,7 +73,7 @@ pbsd_fd_set_i(PRO_INT64    fd,
 static
 inline
 void
-pbsd_fd_clr_i(PRO_INT64    fd,
+pbsd_fd_clr_i(int64_t      fd,
               pbsd_fd_set& fds)
 {
     if (fd == -1)
@@ -118,9 +112,6 @@ CProSelectReactor::CProSelectReactor()
 CProSelectReactor::~CProSelectReactor()
 {
     Fini();
-
-    delete m_notifyPipe;
-    m_notifyPipe = NULL;
 }
 
 bool
@@ -131,7 +122,7 @@ CProSelectReactor::Init()
 
         m_notifyPipe->Init();
 
-        const PRO_INT64 sockId = m_notifyPipe->GetReaderSockId();
+        const int64_t sockId = m_notifyPipe->GetReaderSockId();
         if (sockId == -1)
         {
             return (false);
@@ -165,7 +156,7 @@ CProSelectReactor::Fini()
 }
 
 bool
-CProSelectReactor::AddHandler(PRO_INT64         sockId,
+CProSelectReactor::AddHandler(int64_t           sockId,
                               CProEventHandler* handler,
                               unsigned long     mask)
 {
@@ -188,8 +179,7 @@ CProSelectReactor::AddHandler(PRO_INT64         sockId,
     if (PRO_BIT_ENABLED(mask, PRO_MASK_CONNECT))
     {
         PRO_CLR_BITS(mask, PRO_MASK_CONNECT);
-        PRO_SET_BITS(mask,
-            PRO_MASK_WRITE | PRO_MASK_READ | PRO_MASK_EXCEPTION);
+        PRO_SET_BITS(mask, PRO_MASK_WRITE | PRO_MASK_READ | PRO_MASK_EXCEPTION);
     }
 
     {
@@ -268,7 +258,7 @@ CProSelectReactor::AddHandler(PRO_INT64         sockId,
 }
 
 void
-CProSelectReactor::RemoveHandler(PRO_INT64     sockId,
+CProSelectReactor::RemoveHandler(int64_t       sockId,
                                  unsigned long mask)
 {
     mask &= (PRO_MASK_ACCEPT | PRO_MASK_CONNECT |
@@ -287,8 +277,7 @@ CProSelectReactor::RemoveHandler(PRO_INT64     sockId,
     if (PRO_BIT_ENABLED(mask, PRO_MASK_CONNECT))
     {
         PRO_CLR_BITS(mask, PRO_MASK_CONNECT);
-        PRO_SET_BITS(mask,
-            PRO_MASK_WRITE | PRO_MASK_READ | PRO_MASK_EXCEPTION);
+        PRO_SET_BITS(mask, PRO_MASK_WRITE | PRO_MASK_READ | PRO_MASK_EXCEPTION);
     }
 
     {
@@ -342,7 +331,7 @@ CProSelectReactor::WorkerRun()
 
     while (1)
     {
-        PRO_INT64 maxSockId = -1;
+        int64_t maxSockId = -1;
 
         {
             CProThreadMutexGuard mon(m_lock);
@@ -359,10 +348,9 @@ CProSelectReactor::WorkerRun()
         }
 
         /*
-         * select(...)
+         * select()
          */
-        int retc = pbsd_select(
-            maxSockId + 1, &m_fdsRd[1], &m_fdsWr[1], &m_fdsEx[1], NULL);
+        int retc = pbsd_select(maxSockId + 1, &m_fdsRd[1], &m_fdsWr[1], &m_fdsEx[1], NULL);
         if (retc == 0)
         {
             ProSleep(1);
@@ -377,7 +365,7 @@ CProSelectReactor::WorkerRun()
                 continue;
             }
 
-            CProStlMap<PRO_INT64, PRO_HANDLER_INFO> allHandlers;
+            CProStlMap<int64_t, PRO_HANDLER_INFO> allHandlers;
 
             {
                 CProThreadMutexGuard mon(m_lock);
@@ -389,8 +377,8 @@ CProSelectReactor::WorkerRun()
 
                 allHandlers = m_handlerMgr.GetAllHandlers();
 
-                CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator       itr = allHandlers.begin();
-                CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator const end = allHandlers.end();
+                CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator       itr = allHandlers.begin();
+                CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator const end = allHandlers.end();
 
                 for (; itr != end; ++itr)
                 {
@@ -399,29 +387,21 @@ CProSelectReactor::WorkerRun()
                 }
             }
 
-            CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator       itr = allHandlers.begin();
-            CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator const end = allHandlers.end();
+            CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator       itr = allHandlers.begin();
+            CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator const end = allHandlers.end();
 
             for (; itr != end; ++itr)
             {
-                const PRO_INT64         sockId = itr->first;
+                const int64_t           sockId = itr->first;
                 const PRO_HANDLER_INFO& info   = itr->second;
 
                 PBSD_FD_ZERO(&m_fdsRd[1]);
                 pbsd_fd_set_i(sockId, m_fdsRd[1]);
 
-                struct timeval tv;
-                tv.tv_sec  = 0;
-                tv.tv_usec = 0;
+                struct timeval timeout = { 0 };
 
-                retc = pbsd_select(sockId + 1, &m_fdsRd[1], NULL, NULL, &tv);
+                retc = pbsd_select(sockId + 1, &m_fdsRd[1], NULL, NULL, &timeout);
                 if (retc >= 0)
-                {
-                    info.handler->Release();
-                    continue;
-                }
-
-                if (pbsd_errno((void*)&pbsd_select) != PBSD_EBADF)
                 {
                     info.handler->Release();
                     continue;
@@ -430,9 +410,13 @@ CProSelectReactor::WorkerRun()
                 /*
                  * This descriptor is not a socket.
                  */
-                info.handler->OnError(sockId, PBSD_EBADF);
+                if (pbsd_errno((void*)&pbsd_select) == PBSD_EBADF)
+                {
+                    info.handler->OnError(sockId, PBSD_EBADF);
+                }
+
                 info.handler->Release();
-            } /* end of for (...) */
+            } /* end of for () */
 
             /*
              * I am fine now.
@@ -440,7 +424,7 @@ CProSelectReactor::WorkerRun()
             continue;
         }
 
-        CProStlMap<PRO_INT64, PRO_HANDLER_INFO> handlers;
+        CProStlMap<int64_t, PRO_HANDLER_INFO> handlers;
 
         {
             CProThreadMutexGuard mon(m_lock);
@@ -454,17 +438,17 @@ CProSelectReactor::WorkerRun()
 
             for (int i = 0; i < (int)m_fdsWr[1].fd_count; ++i)
             {
-                PRO_INT64        sockId = -1;
+                int64_t          sockId = -1;
                 PRO_HANDLER_INFO info;
 
                 if (sizeof(SOCKET) == 8)
                 {
-                    sockId = (PRO_INT64)m_fdsWr[1].fd_array[i];
+                    sockId = (int64_t)m_fdsWr[1].fd_array[i];
                     info   = m_handlerMgr.FindHandler(sockId);
                 }
                 else
                 {
-                    sockId = (PRO_INT32)m_fdsWr[1].fd_array[i];
+                    sockId = (int32_t)m_fdsWr[1].fd_array[i];
                     info   = m_handlerMgr.FindHandler(sockId);
                 }
 
@@ -479,17 +463,17 @@ CProSelectReactor::WorkerRun()
 
             for (int j = 0; j < (int)m_fdsRd[1].fd_count; ++j)
             {
-                PRO_INT64        sockId = -1;
+                int64_t          sockId = -1;
                 PRO_HANDLER_INFO info;
 
                 if (sizeof(SOCKET) == 8)
                 {
-                    sockId = (PRO_INT64)m_fdsRd[1].fd_array[j];
+                    sockId = (int64_t)m_fdsRd[1].fd_array[j];
                     info   = m_handlerMgr.FindHandler(sockId);
                 }
                 else
                 {
-                    sockId = (PRO_INT32)m_fdsRd[1].fd_array[j];
+                    sockId = (int32_t)m_fdsRd[1].fd_array[j];
                     info   = m_handlerMgr.FindHandler(sockId);
                 }
 
@@ -504,17 +488,17 @@ CProSelectReactor::WorkerRun()
 
             for (int k = 0; k < (int)m_fdsEx[1].fd_count; ++k)
             {
-                PRO_INT64        sockId = -1;
+                int64_t          sockId = -1;
                 PRO_HANDLER_INFO info;
 
                 if (sizeof(SOCKET) == 8)
                 {
-                    sockId = (PRO_INT64)m_fdsEx[1].fd_array[k];
+                    sockId = (int64_t)m_fdsEx[1].fd_array[k];
                     info   = m_handlerMgr.FindHandler(sockId);
                 }
                 else
                 {
-                    sockId = (PRO_INT32)m_fdsEx[1].fd_array[k];
+                    sockId = (int32_t)m_fdsEx[1].fd_array[k];
                     info   = m_handlerMgr.FindHandler(sockId);
                 }
 
@@ -529,15 +513,15 @@ CProSelectReactor::WorkerRun()
 
 #else  /* _WIN32 */
 
-            const CProStlMap<PRO_INT64, PRO_HANDLER_INFO>& allHandlers =
+            const CProStlMap<int64_t, PRO_HANDLER_INFO>& allHandlers =
                 m_handlerMgr.GetAllHandlers();
 
-            CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::const_iterator       itr = allHandlers.begin();
-            CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::const_iterator const end = allHandlers.end();
+            CProStlMap<int64_t, PRO_HANDLER_INFO>::const_iterator       itr = allHandlers.begin();
+            CProStlMap<int64_t, PRO_HANDLER_INFO>::const_iterator const end = allHandlers.end();
 
             for (; itr != end; ++itr)
             {
-                const PRO_INT64         sockId = itr->first;
+                const int64_t           sockId = itr->first;
                 const PRO_HANDLER_INFO& info   = itr->second;
 
                 if (PBSD_FD_ISSET(sockId, &m_fdsWr[1]))
@@ -563,17 +547,17 @@ CProSelectReactor::WorkerRun()
                     info2.handler = info.handler;
                     PRO_SET_BITS(info2.mask, PRO_MASK_EXCEPTION);
                 }
-            } /* end of for (...) */
+            } /* end of for () */
 
 #endif /* _WIN32 */
         }
 
-        CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator       itr = handlers.begin();
-        CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator const end = handlers.end();
+        CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator       itr = handlers.begin();
+        CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator const end = handlers.end();
 
         for (; itr != end; ++itr)
         {
-            const PRO_INT64         sockId = itr->first;
+            const int64_t           sockId = itr->first;
             const PRO_HANDLER_INFO& info   = itr->second;
 
             if (PRO_BIT_ENABLED(info.mask, PRO_MASK_WRITE))
@@ -593,12 +577,12 @@ CProSelectReactor::WorkerRun()
                 info.handler->OnException(sockId);
                 info.handler->Release();
             }
-        } /* end of for (...) */
-    } /* end of while (...) */
+        } /* end of for () */
+    } /* end of while () */
 }
 
 void
-CProSelectReactor::OnInput(PRO_INT64 sockId)
+CProSelectReactor::OnInput(int64_t sockId)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -606,24 +590,17 @@ CProSelectReactor::OnInput(PRO_INT64 sockId)
         return;
     }
 
-    const int recvSize = pbsd_recv(sockId, g_s_buffer, sizeof(g_s_buffer), 0); /* connected */
-    if (
-        (recvSize > 0 && recvSize <= (int)sizeof(g_s_buffer))
-        ||
-        (recvSize < 0 && pbsd_errno((void*)&pbsd_recv) == PBSD_EWOULDBLOCK)
-       )
+    if (m_notifyPipe->Roger())
     {
-        m_notifyPipe->Roger();
+        return;
     }
-    else
-    {
-        OnError(sockId, -1);
-    }
+
+    OnError(sockId, -1);
 }
 
 void
-CProSelectReactor::OnError(PRO_INT64 sockId,
-                           long      errorCode)
+CProSelectReactor::OnError(int64_t sockId,
+                           long    errorCode)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -642,7 +619,7 @@ CProSelectReactor::OnError(PRO_INT64 sockId,
         CProNotifyPipe* const newPipe = new CProNotifyPipe;
         newPipe->Init();
 
-        const PRO_INT64 newSockId = newPipe->GetReaderSockId();
+        const int64_t newSockId = newPipe->GetReaderSockId();
         if (newSockId == -1)
         {
             delete newPipe;

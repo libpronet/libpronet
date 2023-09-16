@@ -26,6 +26,7 @@
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_timer_factory.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -49,10 +50,9 @@ struct TCP_CLIENT_CONFIG_INFO
 
         tcpc_enable_ssl          = false;
         tcpc_ssl_enable_sha1cert = true;
-        tcpc_ssl_sni             = "server.libpro.org";
         tcpc_ssl_aes256          = false;
 
-        tcpc_ssl_cafiles.push_back("./ca.crt");
+        tcpc_ssl_cafiles.push_back("ca.crt");
         tcpc_ssl_cafiles.push_back("");
         tcpc_ssl_crlfiles.push_back("");
         tcpc_ssl_crlfiles.push_back("");
@@ -149,7 +149,7 @@ private:
 
     virtual void OnConnectOk(
         IProConnector* connector,
-        PRO_INT64      sockId,
+        int64_t        sockId,
         bool           unixSocket,
         const char*    remoteIp,
         unsigned short remotePort
@@ -168,7 +168,7 @@ private:
 
     virtual void OnConnectOk(
         IProConnector*   connector,
-        PRO_INT64        sockId,
+        int64_t          sockId,
         bool             unixSocket,
         const char*      remoteIp,
         unsigned short   remotePort,
@@ -188,7 +188,7 @@ private:
 
     virtual void OnHandshakeOk(
         IProTcpHandshaker* handshaker,
-        PRO_INT64          sockId,
+        int64_t            sockId,
         bool               unixSocket,
         const void*        buf,
         unsigned long      size
@@ -202,7 +202,7 @@ private:
     virtual void OnHandshakeOk(
         IProSslHandshaker* handshaker,
         PRO_SSL_CTX*       ctx,
-        PRO_INT64          sockId,
+        int64_t            sockId,
         bool               unixSocket,
         const void*        buf,
         unsigned long      size
@@ -221,7 +221,7 @@ private:
 
     virtual void OnSend(
         IProTransport* trans,
-        PRO_UINT64     actionId
+        uint64_t       actionId
         )
     {
     }
@@ -235,13 +235,13 @@ private:
     virtual void OnHeartbeat(IProTransport* trans);
 
     virtual void OnTimer(
-        void*      factory,
-        PRO_UINT64 timerId,
-        PRO_INT64  userData
+        void*    factory,
+        uint64_t timerId,
+        int64_t  userData
         );
 
     bool DoHandshake(
-        PRO_INT64        sockId,
+        int64_t          sockId,
         bool             unixSocket,
         const PRO_NONCE& nonce
         );
@@ -251,14 +251,14 @@ private:
     IProReactor*                   m_reactor;
     TCP_CLIENT_CONFIG_INFO         m_configInfo;
     PRO_SSL_CLIENT_CONFIG*         m_sslConfig;
-    PRO_UINT64                     m_timerId;
+    uint64_t                       m_timerId;
     CProStlSet<IProConnector*>     m_connectors;
     CProStlSet<IProTcpHandshaker*> m_tcpHandshakers;
     CProStlSet<IProSslHandshaker*> m_sslHandshakers;
     CProStlSet<IProTransport*>     m_transports;
     CProThreadMutex                m_lock;
 
-    PRO_UINT16                     m_heartbeatData[512];
+    uint16_t                       m_heartbeatData[512];
     unsigned long                  m_heartbeatSize; /* 0 ~ 1024 */
     mutable CProThreadMutex        m_lock2;
 

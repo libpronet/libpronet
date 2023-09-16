@@ -36,12 +36,6 @@
 
 struct PRO_CONFIG_ITEM
 {
-    PRO_CONFIG_ITEM()
-    {
-        configName  = "";
-        configValue = "";
-    }
-
     CProStlString configName;
     CProStlString configValue;
 
@@ -55,7 +49,9 @@ class CProConfigFile
 {
 public:
 
-    CProConfigFile();
+    CProConfigFile()
+    {
+    }
 
     void Init(const char* fileName);
 

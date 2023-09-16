@@ -204,7 +204,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         else
         {
         }
-    } /* end of for (...) */
+    } /* end of for () */
 }
 
 #if !defined(_WIN32)
@@ -213,7 +213,7 @@ static
 void
 SignalHandler_i(int sig)
 {
-    CProStlString timeString = "";
+    CProStlString timeString;
     ProGetLocalTimeString(timeString);
 
     switch (sig)
@@ -266,7 +266,7 @@ SignalHandler_i(int sig)
             g_s_tester->Fini();
             _exit(0);
         }
-    } /* end of switch (...) */
+    } /* end of switch () */
 }
 
 static
@@ -296,7 +296,7 @@ int main(int argc, char* argv[])
     IProReactor*           reactor = NULL;
     TCP_SERVER_CONFIG_INFO configInfo;
 
-    CProStlString timeString = "";
+    CProStlString timeString;
     ProGetLocalTimeString(timeString);
 
     char exeRoot[1024] = "";
@@ -329,7 +329,7 @@ int main(int argc, char* argv[])
         ReadConfig_i(exeRoot, configs, configInfo);
     }
 
-    static char s_traceInfo[2048] = "";
+    static char s_traceInfo[4096] = "";
     s_traceInfo[sizeof(s_traceInfo) - 1] = '\0';
 
     reactor = ProCreateReactor(configInfo.tcps_thread_count);
@@ -414,8 +414,7 @@ int main(int argc, char* argv[])
         timeString.c_str(),
         s_traceInfo
         );
-    printf(" [ HTBT Size ] : %u \n",
-        (unsigned int)g_s_tester->GetHeartbeatDataSize());
+    printf(" [ HTBT Size ] : %u \n", (unsigned int)g_s_tester->GetHeartbeatDataSize());
 
     while (1)
     {
@@ -424,7 +423,7 @@ int main(int argc, char* argv[])
         printf("\nTCP-Svr>");
         fflush(stdout);
 
-        static char s_msgText[1024]      = "";
+        static char s_msgText[4096]      = "";
         s_msgText[0]                     = '\0';
         s_msgText[sizeof(s_msgText) - 1] = '\0';
 
@@ -465,8 +464,7 @@ int main(int argc, char* argv[])
                 timeString.c_str(),
                 s_traceInfo
                 );
-            printf(" [ HTBT Size ] : %u \n",
-                (unsigned int)g_s_tester->GetHeartbeatDataSize());
+            printf(" [ HTBT Size ] : %u \n", (unsigned int)g_s_tester->GetHeartbeatDataSize());
             continue;
         }
 
@@ -510,8 +508,7 @@ int main(int argc, char* argv[])
                 timeString.c_str(),
                 s_traceInfo
                 );
-            printf(" [ HTBT Size ] : %u \n",
-                (unsigned int)g_s_tester->GetHeartbeatDataSize());
+            printf(" [ HTBT Size ] : %u \n", (unsigned int)g_s_tester->GetHeartbeatDataSize());
         }
         else if (strnicmp(p, "htbtsize ", 9) == 0)
         {
@@ -541,8 +538,7 @@ int main(int argc, char* argv[])
                 timeString.c_str(),
                 s_traceInfo
                 );
-            printf(" [ HTBT Size ] : %u \n",
-                (unsigned int)g_s_tester->GetHeartbeatDataSize());
+            printf(" [ HTBT Size ] : %u \n", (unsigned int)g_s_tester->GetHeartbeatDataSize());
         }
         else
         {
@@ -555,10 +551,9 @@ int main(int argc, char* argv[])
                 timeString.c_str(),
                 s_traceInfo
                 );
-            printf(" [ HTBT Size ] : %u \n",
-                (unsigned int)g_s_tester->GetHeartbeatDataSize());
+            printf(" [ HTBT Size ] : %u \n", (unsigned int)g_s_tester->GetHeartbeatDataSize());
         }
-    } /* end of while (...) */
+    } /* end of while () */
 
 EXIT:
 

@@ -27,6 +27,7 @@
 #include "../pro_util/pro_ssl_util.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -53,25 +54,24 @@ struct C2S_SERVER_CONFIG_INFO
         c2ss_ssl_local                  = true;
         c2ss_ssl_local_forced           = false;
         c2ss_ssl_uplink_enable_sha1cert = true;
-        c2ss_ssl_uplink_sni             = "server.libpro.org";
         c2ss_ssl_uplink_aes256          = false;
         c2ss_ssl_local_enable_sha1cert  = true;
-        c2ss_ssl_local_keyfile          = "./server.key";
+        c2ss_ssl_local_keyfile          = "server.key";
 
         c2ss_log_loop_bytes             = 50 * 1000 * 1000;
         c2ss_log_level_green            = 0;
 
         RtpMsgString2User("1-10000001-1", &c2ss_uplink_id);
 
-        c2ss_ssl_uplink_cafiles.push_back("./ca.crt");
+        c2ss_ssl_uplink_cafiles.push_back("ca.crt");
         c2ss_ssl_uplink_cafiles.push_back("");
         c2ss_ssl_uplink_crlfiles.push_back("");
         c2ss_ssl_uplink_crlfiles.push_back("");
-        c2ss_ssl_local_cafiles.push_back("./ca.crt");
+        c2ss_ssl_local_cafiles.push_back("ca.crt");
         c2ss_ssl_local_cafiles.push_back("");
         c2ss_ssl_local_crlfiles.push_back("");
         c2ss_ssl_local_crlfiles.push_back("");
-        c2ss_ssl_local_certfiles.push_back("./server.crt");
+        c2ss_ssl_local_certfiles.push_back("server.crt");
         c2ss_ssl_local_certfiles.push_back("");
     }
 
@@ -79,8 +79,7 @@ struct C2S_SERVER_CONFIG_INFO
     {
         if (!c2ss_uplink_password.empty())
         {
-            ProZeroMemory(
-                &c2ss_uplink_password[0], c2ss_uplink_password.length());
+            ProZeroMemory(&c2ss_uplink_password[0], c2ss_uplink_password.length());
             c2ss_uplink_password = "";
         }
     }
@@ -201,7 +200,7 @@ private:
 
     virtual void OnHeartbeatC2s(
         IRtpMsgC2s* msgC2s,
-        PRO_INT64   peerAliveTick
+        int64_t     peerAliveTick
         )
     {
     }
@@ -222,7 +221,7 @@ private:
     virtual void OnHeartbeatUser(
         IRtpMsgC2s*         msgC2s,
         const RTP_MSG_USER* user,
-        PRO_INT64           peerAliveTick
+        int64_t             peerAliveTick
         )
     {
     }
@@ -235,7 +234,7 @@ private:
     PRO_SSL_CLIENT_CONFIG* m_uplinkSslConfig;
     PRO_SSL_SERVER_CONFIG* m_localSslConfig;
     IRtpMsgC2s*            m_msgC2s;
-    PRO_INT64              m_onOkTick;
+    int64_t                m_onOkTick;
     CProThreadMutex        m_lock;
 
     DECLARE_SGI_POOL(0)

@@ -28,10 +28,7 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-class CRtpSessionTcpclient
-:
-public IProConnectorObserver,
-public CRtpSessionBase
+class CRtpSessionTcpclient : public IProConnectorObserver, public CRtpSessionBase
 {
 public:
 
@@ -66,7 +63,7 @@ private:
 
     virtual void OnConnectOk(
         IProConnector* connector,
-        PRO_INT64      sockId,
+        int64_t        sockId,
         bool           unixSocket,
         const char*    remoteIp,
         unsigned short remotePort
@@ -81,7 +78,7 @@ private:
 
     virtual void OnConnectOk(
         IProConnector*   connector,
-        PRO_INT64        sockId,
+        int64_t          sockId,
         bool             unixSocket,
         const char*      remoteIp,
         unsigned short   remotePort,

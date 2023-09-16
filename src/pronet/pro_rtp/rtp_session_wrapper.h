@@ -30,6 +30,7 @@
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_timer_factory.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -70,7 +71,7 @@ private:
 
     virtual PRO_SSL_SUITE_ID GetSslSuite(char suiteName[64]) const;
 
-    virtual PRO_INT64 GetSockId() const;
+    virtual int64_t GetSockId() const;
 
     virtual const char* GetLocalIp(char localIp[64]) const;
 
@@ -89,7 +90,7 @@ private:
 
     virtual bool IsReady() const
     {
-        return (m_onOkCalled);
+        return m_onOkCalled;
     }
 
     virtual bool SendPacket(
@@ -103,8 +104,8 @@ private:
         );
 
     virtual void GetSendOnSendTick(
-        PRO_INT64* onSendTick1, /* = NULL */
-        PRO_INT64* onSendTick2  /* = NULL */
+        int64_t* onSendTick1, /* = NULL */
+        int64_t* onSendTick2  /* = NULL */
         ) const;
 
     virtual void RequestOnSend();
@@ -122,49 +123,49 @@ private:
     virtual void EnableOutput(bool enable);
 
     virtual void SetOutputRedline(
-        unsigned long redlineBytes,  /* = 0 */
-        unsigned long redlineFrames, /* = 0 */
-        unsigned long redlineDelayMs /* = 0 */
+        size_t redlineBytes,  /* = 0 */
+        size_t redlineFrames, /* = 0 */
+        size_t redlineDelayMs /* = 0 */
         );
 
     virtual void GetOutputRedline(
-        unsigned long* redlineBytes,  /* = NULL */
-        unsigned long* redlineFrames, /* = NULL */
-        unsigned long* redlineDelayMs /* = NULL */
+        size_t* redlineBytes,  /* = NULL */
+        size_t* redlineFrames, /* = NULL */
+        size_t* redlineDelayMs /* = NULL */
         ) const;
 
     virtual void GetFlowctrlInfo(
-        float*         srcFrameRate, /* = NULL */
-        float*         srcBitRate,   /* = NULL */
-        float*         outFrameRate, /* = NULL */
-        float*         outBitRate,   /* = NULL */
-        unsigned long* cachedBytes,  /* = NULL */
-        unsigned long* cachedFrames  /* = NULL */
+        float*  srcFrameRate, /* = NULL */
+        float*  srcBitRate,   /* = NULL */
+        float*  outFrameRate, /* = NULL */
+        float*  outBitRate,   /* = NULL */
+        size_t* cachedBytes,  /* = NULL */
+        size_t* cachedFrames  /* = NULL */
         ) const;
 
     virtual void ResetFlowctrlInfo();
 
     virtual void GetInputStat(
-        float*      frameRate, /* = NULL */
-        float*      bitRate,   /* = NULL */
-        float*      lossRate,  /* = NULL */
-        PRO_UINT64* lossCount  /* = NULL */
+        float*    frameRate, /* = NULL */
+        float*    bitRate,   /* = NULL */
+        float*    lossRate,  /* = NULL */
+        uint64_t* lossCount  /* = NULL */
         ) const;
 
     virtual void GetOutputStat(
-        float*      frameRate, /* = NULL */
-        float*      bitRate,   /* = NULL */
-        float*      lossRate,  /* = NULL */
-        PRO_UINT64* lossCount  /* = NULL */
+        float*    frameRate, /* = NULL */
+        float*    bitRate,   /* = NULL */
+        float*    lossRate,  /* = NULL */
+        uint64_t* lossCount  /* = NULL */
         ) const;
 
     virtual void ResetInputStat();
 
     virtual void ResetOutputStat();
 
-    virtual void SetMagic(PRO_INT64 magic);
+    virtual void SetMagic(int64_t magic);
 
-    virtual PRO_INT64 GetMagic() const;
+    virtual int64_t GetMagic() const;
 
     virtual void OnOkSession(IRtpSession* session);
 
@@ -187,13 +188,13 @@ private:
 
     virtual void OnHeartbeatSession(
         IRtpSession* session,
-        PRO_INT64    peerAliveTick
+        int64_t      peerAliveTick
         );
 
     virtual void OnTimer(
-        void*      factory,
-        PRO_UINT64 timerId,
-        PRO_INT64  userData
+        void*    factory,
+        uint64_t timerId,
+        int64_t  userData
         );
 
     bool PushPacket(IRtpPacket* packet);
@@ -203,7 +204,7 @@ private:
 private:
 
     RTP_SESSION_INFO          m_info;
-    PRO_INT64                 m_magic;
+    int64_t                   m_magic;
     IRtpSessionObserver*      m_observer;
     IProReactor*              m_reactor;
     IRtpSession*              m_session;
@@ -214,13 +215,13 @@ private:
     bool                      m_enableInput;
     bool                      m_enableOutput;
     bool                      m_outputPending;
-    PRO_UINT64                m_timerId;
+    uint64_t                  m_timerId;
     volatile bool             m_onOkCalled;
-    PRO_INT64                 m_traceTick;
+    int64_t                   m_traceTick;
 
-    PRO_UINT64                m_sendTimerId;
+    uint64_t                  m_sendTimerId;
     unsigned long             m_sendDurationMs;
-    PRO_INT64                 m_pushTick;
+    int64_t                   m_pushTick;
     CProStlDeque<IRtpPacket*> m_pushPackets;
 
     mutable CProStatBitRate   m_statFrameRateInput;

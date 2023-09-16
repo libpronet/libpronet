@@ -37,7 +37,7 @@ CProConfigStream::BufToConfigs(const void*                     buf,
 
     if (buf == NULL || size == 0)
     {
-        return (true);
+        return true;
     }
 
     bool              ret = true;
@@ -83,8 +83,7 @@ CProConfigStream::BufToConfigs(const void*                     buf,
         {
             bom = true;
 
-            if (p + 2 <= q &&
-                p[0] == (char)0xEF && p[1] == (char)0xBB && p[2] == (char)0xBF)
+            if (p + 2 <= q && p[0] == (char)0xEF && p[1] == (char)0xBB && p[2] == (char)0xBF)
             {
                 p += 3;
             }
@@ -175,7 +174,7 @@ CProConfigStream::BufToConfigs(const void*                     buf,
 
             if (i == 0)
             {
-                item.configName.assign (p, r); /* name */
+                item.configName.assign(p, r);  /* name */
             }
             else
             {
@@ -219,7 +218,7 @@ CProConfigStream::BufToConfigs(const void*                     buf,
                 p = NULL;
                 break;
             }
-        } /* end of for (...) */
+        } /* end of for () */
 
         /*
          * a corrupt line
@@ -231,9 +230,9 @@ CProConfigStream::BufToConfigs(const void*                     buf,
         }
 
         configs.push_back(item);
-    } /* end of while (...) */
+    } /* end of while () */
 
-    return (ret);
+    return ret;
 }
 
 bool
@@ -246,13 +245,10 @@ CProConfigStream::StringToConfigs(const CProStlString&            str,
 
     if (str.empty())
     {
-        return (true);
+        return true;
     }
 
-    const bool ret = BufToConfigs(
-        &str[0], str.length(), configs, aroundCharL, aroundCharR);
-
-    return (ret);
+    return BufToConfigs(&str[0], str.length(), configs, aroundCharL, aroundCharR);
 }
 
 void
@@ -363,17 +359,17 @@ CProConfigStream::AddUint(const CProStlString&               configName,
 
 void
 CProConfigStream::AddInt64(const CProStlString& configName,
-                           PRO_INT64            configValue)
+                           int64_t              configValue)
 {
     char configValue2[64] = "";
-    sprintf(configValue2, PRO_PRT64D, configValue);
+    sprintf(configValue2, "%lld", (long long)configValue);
 
     Add(configName, configValue2);
 }
 
 void
-CProConfigStream::AddInt64(const CProStlString&            configName,
-                           const CProStlVector<PRO_INT64>& configValues)
+CProConfigStream::AddInt64(const CProStlString&          configName,
+                           const CProStlVector<int64_t>& configValues)
 {
     int       i = 0;
     const int c = (int)configValues.size();
@@ -386,17 +382,17 @@ CProConfigStream::AddInt64(const CProStlString&            configName,
 
 void
 CProConfigStream::AddUint64(const CProStlString& configName,
-                            PRO_UINT64           configValue)
+                            uint64_t             configValue)
 {
     char configValue2[64] = "";
-    sprintf(configValue2, PRO_PRT64U, configValue);
+    sprintf(configValue2, "%llu", (unsigned long long)configValue);
 
     Add(configName, configValue2);
 }
 
 void
-CProConfigStream::AddUint64(const CProStlString&             configName,
-                            const CProStlVector<PRO_UINT64>& configValues)
+CProConfigStream::AddUint64(const CProStlString&           configName,
+                            const CProStlVector<uint64_t>& configValues)
 {
     int       i = 0;
     const int c = (int)configValues.size();
@@ -491,8 +487,7 @@ CProConfigStream::Get_i(const CProStlString&            configName,
 {
     configs.clear();
 
-    CProStlMap<CProStlString, CProStlVector<PRO_CONFIG_ITEM> >::const_iterator const itr =
-        m_name2Configs.find(configName);
+    auto itr = m_name2Configs.find(configName);
     if (itr != m_name2Configs.end())
     {
         configs = itr->second;
@@ -538,7 +533,7 @@ CProConfigStream::GetInt(const CProStlString& configName,
 {
     configValue = 0;
 
-    CProStlString configValue2 = "";
+    CProStlString configValue2;
     Get(configName, configValue2);
 
     if (!configValue2.empty())
@@ -579,7 +574,7 @@ CProConfigStream::GetUint(const CProStlString& configName,
 {
     configValue = 0;
 
-    CProStlString configValue2 = "";
+    CProStlString configValue2;
     Get(configName, configValue2);
 
     if (!configValue2.empty())
@@ -616,22 +611,22 @@ CProConfigStream::GetUint(const CProStlString&         configName,
 
 void
 CProConfigStream::GetInt64(const CProStlString& configName,
-                           PRO_INT64&           configValue) const
+                           int64_t&             configValue) const
 {
     configValue = 0;
 
-    CProStlString configValue2 = "";
+    CProStlString configValue2;
     Get(configName, configValue2);
 
     if (!configValue2.empty())
     {
-        sscanf(configValue2.c_str(), PRO_PRT64D, &configValue);
+        sscanf(configValue2.c_str(), "%lld", (long long*)&configValue);
     }
 }
 
 void
-CProConfigStream::GetInt64(const CProStlString&      configName,
-                           CProStlVector<PRO_INT64>& configValues) const
+CProConfigStream::GetInt64(const CProStlString&    configName,
+                           CProStlVector<int64_t>& configValues) const
 {
     configValues.clear();
 
@@ -643,12 +638,12 @@ CProConfigStream::GetInt64(const CProStlString&      configName,
 
     for (; i < c; ++i)
     {
-        PRO_INT64 configValue = 0;
+        int64_t configValue = 0;
 
         const PRO_CONFIG_ITEM& config = configs[i];
         if (!config.configValue.empty())
         {
-            sscanf(config.configValue.c_str(), PRO_PRT64D, &configValue);
+            sscanf(config.configValue.c_str(), "%lld", (long long*)&configValue);
         }
 
         configValues.push_back(configValue);
@@ -657,22 +652,22 @@ CProConfigStream::GetInt64(const CProStlString&      configName,
 
 void
 CProConfigStream::GetUint64(const CProStlString& configName,
-                            PRO_UINT64&          configValue) const
+                            uint64_t&            configValue) const
 {
     configValue = 0;
 
-    CProStlString configValue2 = "";
+    CProStlString configValue2;
     Get(configName, configValue2);
 
     if (!configValue2.empty())
     {
-        sscanf(configValue2.c_str(), PRO_PRT64U, &configValue);
+        sscanf(configValue2.c_str(), "%llu", (unsigned long long*)&configValue);
     }
 }
 
 void
-CProConfigStream::GetUint64(const CProStlString&       configName,
-                            CProStlVector<PRO_UINT64>& configValues) const
+CProConfigStream::GetUint64(const CProStlString&     configName,
+                            CProStlVector<uint64_t>& configValues) const
 {
     configValues.clear();
 
@@ -684,12 +679,12 @@ CProConfigStream::GetUint64(const CProStlString&       configName,
 
     for (; i < c; ++i)
     {
-        PRO_UINT64 configValue = 0;
+        uint64_t configValue = 0;
 
         const PRO_CONFIG_ITEM& config = configs[i];
         if (!config.configValue.empty())
         {
-            sscanf(config.configValue.c_str(), PRO_PRT64U, &configValue);
+            sscanf(config.configValue.c_str(), "%llu", (unsigned long long*)&configValue);
         }
 
         configValues.push_back(configValue);
@@ -702,7 +697,7 @@ CProConfigStream::GetFloat(const CProStlString& configName,
 {
     configValue = 0;
 
-    CProStlString configValue2 = "";
+    CProStlString configValue2;
     Get(configName, configValue2);
 
     if (!configValue2.empty())
@@ -743,7 +738,7 @@ CProConfigStream::GetFloat64(const CProStlString& configName,
 {
     configValue = 0;
 
-    CProStlString configValue2 = "";
+    CProStlString configValue2;
     Get(configName, configValue2);
 
     if (!configValue2.empty())
@@ -783,11 +778,11 @@ CProConfigStream::Get(CProStlVector<PRO_CONFIG_ITEM>& configs) const
 {
     configs.clear();
 
-    CProStlMap<unsigned long, CProStlString> index2Name;
+    CProStlMap<unsigned int, CProStlString> index2Name;
 
     {
-        CProStlMap<CProStlString, unsigned long>::const_iterator       itr = m_name2Index.begin();
-        CProStlMap<CProStlString, unsigned long>::const_iterator const end = m_name2Index.end();
+        auto itr = m_name2Index.begin();
+        auto end = m_name2Index.end();
 
         for (; itr != end; ++itr)
         {
@@ -796,19 +791,17 @@ CProConfigStream::Get(CProStlVector<PRO_CONFIG_ITEM>& configs) const
     }
 
     {
-        CProStlMap<unsigned long, CProStlString>::iterator       itr = index2Name.begin();
-        CProStlMap<unsigned long, CProStlString>::iterator const end = index2Name.end();
+        auto itr = index2Name.begin();
+        auto end = index2Name.end();
 
         for (; itr != end; ++itr)
         {
-            CProStlMap<CProStlString, CProStlVector<PRO_CONFIG_ITEM> >::const_iterator const itr2 =
-                m_name2Configs.find(itr->second);
+            auto itr2 = m_name2Configs.find(itr->second);
             if (itr2 != m_name2Configs.end())
             {
                 const CProStlVector<PRO_CONFIG_ITEM>& configs2 = itr2->second;
 
-                configs.insert(
-                    configs.end(), configs2.begin(), configs2.end());
+                configs.insert(configs.end(), configs2.begin(), configs2.end());
             }
         }
     }

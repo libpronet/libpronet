@@ -19,10 +19,11 @@
 #include "pro_base_reactor.h"
 #include "pro_event_handler.h"
 #include "pro_handler_mgr.h"
-#include "pro_notify_pipe.h"
 #include "../pro_util/pro_bsd_wrapper.h"
 #include "../pro_util/pro_memory_pool.h"
+#include "../pro_util/pro_notify_pipe.h"
 #include "../pro_util/pro_thread_mutex.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -34,10 +35,16 @@ CProBaseReactor::CProBaseReactor()
     m_notifyPipe = new CProNotifyPipe;
 }
 
-unsigned long
+CProBaseReactor::~CProBaseReactor()
+{
+    delete m_notifyPipe;
+    m_notifyPipe = NULL;
+}
+
+size_t
 CProBaseReactor::GetHandlerCount() const
 {
-    unsigned long count = 0;
+    size_t count = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -45,5 +52,5 @@ CProBaseReactor::GetHandlerCount() const
         count = m_handlerMgr.GetHandlerCount();
     }
 
-    return (count);
+    return count;
 }

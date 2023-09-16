@@ -29,7 +29,6 @@
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -97,8 +96,7 @@ CC2sServer::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.c2ss_ssl_uplink_cafiles[i].empty())
                 {
-                    caFiles.push_back(
-                        &configInfo.c2ss_ssl_uplink_cafiles[i][0]);
+                    caFiles.push_back(&configInfo.c2ss_ssl_uplink_cafiles[i][0]);
                 }
             }
 
@@ -109,8 +107,7 @@ CC2sServer::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.c2ss_ssl_uplink_crlfiles[i].empty())
                 {
-                    crlFiles.push_back(
-                        &configInfo.c2ss_ssl_uplink_crlfiles[i][0]);
+                    crlFiles.push_back(&configInfo.c2ss_ssl_uplink_crlfiles[i][0]);
                 }
             }
 
@@ -175,8 +172,7 @@ CC2sServer::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.c2ss_ssl_local_cafiles[i].empty())
                 {
-                    caFiles.push_back(
-                        &configInfo.c2ss_ssl_local_cafiles[i][0]);
+                    caFiles.push_back(&configInfo.c2ss_ssl_local_cafiles[i][0]);
                 }
             }
 
@@ -187,8 +183,7 @@ CC2sServer::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.c2ss_ssl_local_crlfiles[i].empty())
                 {
-                    crlFiles.push_back(
-                        &configInfo.c2ss_ssl_local_crlfiles[i][0]);
+                    crlFiles.push_back(&configInfo.c2ss_ssl_local_crlfiles[i][0]);
                 }
             }
 
@@ -199,8 +194,7 @@ CC2sServer::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.c2ss_ssl_local_certfiles[i].empty())
                 {
-                    certFiles.push_back(
-                        &configInfo.c2ss_ssl_local_certfiles[i][0]);
+                    certFiles.push_back(&configInfo.c2ss_ssl_local_certfiles[i][0]);
                 }
             }
 
@@ -410,7 +404,7 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
         msgC2s->GetUplinkRemoteIp(remoteIp);
         remotePort = msgC2s->GetUplinkRemotePort();
 
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         char traceInfo[1024] = "";
@@ -419,12 +413,12 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
             sizeof(traceInfo),
             "\n"
             "%s \n"
-            " CC2sServer::OnOkC2s(id : %u-" PRO_PRT64U "-%u, publicIp : %s,"
+            " CC2sServer::OnOkC2s(id : %u-%llu-%u, publicIp : %s,"
             " sslSuite : %s, server : %s:%u) \n"
             ,
             timeString.c_str(),
             (unsigned int)myUser->classId,
-            myUser->UserId(),
+            (unsigned long long)myUser->UserId(),
             (unsigned int)myUser->instId,
             myPublicIp,
             suiteName,
@@ -473,7 +467,7 @@ CC2sServer::OnCloseC2s(IRtpMsgC2s* msgC2s,
         msgC2s->GetUplinkRemoteIp(remoteIp);
         remotePort = msgC2s->GetUplinkRemotePort();
 
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         char traceInfo[1024] = "";
@@ -482,12 +476,12 @@ CC2sServer::OnCloseC2s(IRtpMsgC2s* msgC2s,
             sizeof(traceInfo),
             "\n"
             "%s \n"
-            " CC2sServer::OnCloseC2s(id : %u-" PRO_PRT64U "-%u,"
+            " CC2sServer::OnCloseC2s(id : %u-%llu-%u,"
             " errorCode : [%d, %d], tcpConnected : %d, server : %s:%u) \n"
             ,
             timeString.c_str(),
             (unsigned int)myUser.classId,
-            myUser.UserId(),
+            (unsigned long long)myUser.UserId(),
             (unsigned int)myUser.instId,
             (int)errorCode,
             (int)sslCode,
@@ -530,8 +524,8 @@ CC2sServer::OnOkUser(IRtpMsgC2s*         msgC2s,
     }
 
     {{{
-        char          suiteName[64] = "";
-        unsigned long userCount     = 0;
+        char   suiteName[64] = "";
+        size_t userCount     = 0;
         msgC2s->GetLocalSslSuite(user, suiteName);
         msgC2s->GetLocalUserCount(NULL, &userCount);
 
@@ -540,11 +534,11 @@ CC2sServer::OnOkUser(IRtpMsgC2s*         msgC2s,
             traceInfo,
             sizeof(traceInfo),
             "\n"
-            " CC2sServer::OnOkUser(id : %u-" PRO_PRT64U "-%u, fromIp : %s,"
+            " CC2sServer::OnOkUser(id : %u-%llu-%u, fromIp : %s,"
             " sslSuite : %s, users : %u) \n"
             ,
             (unsigned int)user->classId,
-            user->UserId(),
+            (unsigned long long)user->UserId(),
             (unsigned int)user->instId,
             userPublicIp,
             suiteName,
@@ -582,7 +576,7 @@ CC2sServer::OnCloseUser(IRtpMsgC2s*         msgC2s,
     }
 
     {{{
-        unsigned long userCount = 0;
+        size_t userCount = 0;
         msgC2s->GetLocalUserCount(NULL, &userCount);
 
         char traceInfo[1024] = "";
@@ -590,11 +584,11 @@ CC2sServer::OnCloseUser(IRtpMsgC2s*         msgC2s,
             traceInfo,
             sizeof(traceInfo),
             "\n"
-            " CC2sServer::OnCloseUser(id : %u-" PRO_PRT64U "-%u,"
+            " CC2sServer::OnCloseUser(id : %u-%llu-%u,"
             " errorCode : [%d, %d], users : %u) \n"
             ,
             (unsigned int)user->classId,
-            user->UserId(),
+            (unsigned long long)user->UserId(),
             (unsigned int)user->instId,
             (int)errorCode,
             (int)sslCode,

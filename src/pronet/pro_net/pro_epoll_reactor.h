@@ -39,13 +39,13 @@ public:
     virtual void Fini();
 
     virtual bool AddHandler(
-        PRO_INT64         sockId,
+        int64_t           sockId,
         CProEventHandler* handler,
         unsigned long     mask
         );
 
     virtual void RemoveHandler(
-        PRO_INT64     sockId,
+        int64_t       sockId,
         unsigned long mask
         );
 
@@ -53,11 +53,11 @@ public:
 
 private:
 
-    virtual void OnInput(PRO_INT64 sockId);
+    virtual void OnInput(int64_t sockId);
 
     virtual void OnError(
-        PRO_INT64 sockId,
-        long      errorCode
+        int64_t sockId,
+        long    errorCode
         );
 
 private:

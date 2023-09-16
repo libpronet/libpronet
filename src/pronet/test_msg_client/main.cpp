@@ -176,7 +176,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         else
         {
         }
-    } /* end of for (...) */
+    } /* end of for () */
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -223,7 +223,7 @@ int main(int argc, char* argv[])
         local_ip = argv[3];
     }
 
-    CProStlString timeString = "";
+    CProStlString timeString;
     ProGetLocalTimeString(timeString);
 
     char exeRoot[1024] = "";
@@ -309,8 +309,7 @@ int main(int argc, char* argv[])
 
     if (!configInfo.msgc_password.empty())
     {
-        ProZeroMemory(
-            &configInfo.msgc_password[0], configInfo.msgc_password.length());
+        ProZeroMemory(&configInfo.msgc_password[0], configInfo.msgc_password.length());
         configInfo.msgc_password = "";
     }
 
@@ -441,7 +440,7 @@ int main(int argc, char* argv[])
         {
             tester->SendMsg(p, &bindUser);
         }
-    } /* end of while (...) */
+    } /* end of while () */
 
 EXIT:
 

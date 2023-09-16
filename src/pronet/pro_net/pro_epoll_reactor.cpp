@@ -18,12 +18,11 @@
 
 #include "pro_epoll_reactor.h"
 #include "pro_base_reactor.h"
-#include "pro_notify_pipe.h"
 #include "../pro_util/pro_bsd_wrapper.h"
+#include "../pro_util/pro_notify_pipe.h"
 #include "../pro_util/pro_thread.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 #if defined(PRO_HAS_EPOLL)
 
@@ -49,8 +48,6 @@
 #define PRO_EPOLLHUP     EPOLLHUP
 #define PRO_EPOLLERR     EPOLLERR
 
-static char g_s_buffer[1024];
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -68,11 +65,10 @@ CProEpollReactor::~CProEpollReactor()
         pbsd_epoll_event ev;
         memset(&ev, 0, sizeof(pbsd_epoll_event));
 
-        const CProStlMap<PRO_INT64, PRO_HANDLER_INFO>& allHandlers =
-            m_handlerMgr.GetAllHandlers();
+        const CProStlMap<int64_t, PRO_HANDLER_INFO>& allHandlers = m_handlerMgr.GetAllHandlers();
 
-        CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::const_iterator       itr = allHandlers.begin();
-        CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::const_iterator const end = allHandlers.end();
+        CProStlMap<int64_t, PRO_HANDLER_INFO>::const_iterator       itr = allHandlers.begin();
+        CProStlMap<int64_t, PRO_HANDLER_INFO>::const_iterator const end = allHandlers.end();
 
         for (; itr != end; ++itr)
         {
@@ -83,9 +79,6 @@ CProEpollReactor::~CProEpollReactor()
         close(m_epfd);
         m_epfd = -1;
     }
-
-    delete m_notifyPipe;
-    m_notifyPipe = NULL;
 }
 
 bool
@@ -108,7 +101,7 @@ CProEpollReactor::Init()
 
         m_notifyPipe->Init();
 
-        const PRO_INT64 sockId = m_notifyPipe->GetReaderSockId();
+        const int64_t sockId = m_notifyPipe->GetReaderSockId();
         if (sockId == -1)
         {
             close(m_epfd);
@@ -160,7 +153,7 @@ CProEpollReactor::Fini()
 }
 
 bool
-CProEpollReactor::AddHandler(PRO_INT64         sockId,
+CProEpollReactor::AddHandler(int64_t           sockId,
                              CProEventHandler* handler,
                              unsigned long     mask)
 {
@@ -183,8 +176,7 @@ CProEpollReactor::AddHandler(PRO_INT64         sockId,
     if (PRO_BIT_ENABLED(mask, PRO_MASK_CONNECT))
     {
         PRO_CLR_BITS(mask, PRO_MASK_CONNECT);
-        PRO_SET_BITS(mask,
-            PRO_MASK_WRITE | PRO_MASK_READ | PRO_MASK_EXCEPTION);
+        PRO_SET_BITS(mask, PRO_MASK_WRITE | PRO_MASK_READ | PRO_MASK_EXCEPTION);
     }
 
     {
@@ -282,7 +274,7 @@ CProEpollReactor::AddHandler(PRO_INT64         sockId,
 }
 
 void
-CProEpollReactor::RemoveHandler(PRO_INT64     sockId,
+CProEpollReactor::RemoveHandler(int64_t       sockId,
                                 unsigned long mask)
 {
     mask &= (PRO_MASK_ACCEPT | PRO_MASK_CONNECT |
@@ -301,8 +293,7 @@ CProEpollReactor::RemoveHandler(PRO_INT64     sockId,
     if (PRO_BIT_ENABLED(mask, PRO_MASK_CONNECT))
     {
         PRO_CLR_BITS(mask, PRO_MASK_CONNECT);
-        PRO_SET_BITS(mask,
-            PRO_MASK_WRITE | PRO_MASK_READ | PRO_MASK_EXCEPTION);
+        PRO_SET_BITS(mask, PRO_MASK_WRITE | PRO_MASK_READ | PRO_MASK_EXCEPTION);
     }
 
     {
@@ -397,17 +388,16 @@ CProEpollReactor::WorkerRun()
         }
 
         /*
-         * epoll_wait(...)
+         * epoll_wait()
          */
-        const int retc = pbsd_epoll_wait(
-            m_epfd, m_events, PRO_EPOLLFD_GETSIZE, -1);
+        const int retc = pbsd_epoll_wait(m_epfd, m_events, PRO_EPOLLFD_GETSIZE, -1);
         if (retc <= 0)
         {
             ProSleep(1);
             continue;
         }
 
-        CProStlMap<PRO_INT64, PRO_HANDLER_INFO> handlers;
+        CProStlMap<int64_t, PRO_HANDLER_INFO> handlers;
 
         {
             CProThreadMutexGuard mon(m_lock);
@@ -425,8 +415,7 @@ CProEpollReactor::WorkerRun()
                     continue;
                 }
 
-                const PRO_HANDLER_INFO info =
-                    m_handlerMgr.FindHandler(ev.data.fd);
+                const PRO_HANDLER_INFO info = m_handlerMgr.FindHandler(ev.data.fd);
                 if (info.handler == NULL)
                 {
                     continue;
@@ -464,15 +453,15 @@ CProEpollReactor::WorkerRun()
                     info2.handler = info.handler;
                     PRO_SET_BITS(info2.mask, PRO_MASK_EXCEPTION);
                 }
-            } /* end of for (...) */
+            } /* end of for () */
         }
 
-        CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator       itr = handlers.begin();
-        CProStlMap<PRO_INT64, PRO_HANDLER_INFO>::iterator const end = handlers.end();
+        CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator       itr = handlers.begin();
+        CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator const end = handlers.end();
 
         for (; itr != end; ++itr)
         {
-            const PRO_INT64         sockId = itr->first;
+            const int64_t           sockId = itr->first;
             const PRO_HANDLER_INFO& info   = itr->second;
 
             if (PRO_BIT_ENABLED(info.mask, PRO_MASK_ERROR))
@@ -499,12 +488,12 @@ CProEpollReactor::WorkerRun()
                 info.handler->OnException(sockId);
                 info.handler->Release();
             }
-        } /* end of for (...) */
-    } /* end of while (...) */
+        } /* end of for () */
+    } /* end of while () */
 }
 
 void
-CProEpollReactor::OnInput(PRO_INT64 sockId)
+CProEpollReactor::OnInput(int64_t sockId)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -512,24 +501,17 @@ CProEpollReactor::OnInput(PRO_INT64 sockId)
         return;
     }
 
-    const int recvSize = pbsd_recv(sockId, g_s_buffer, sizeof(g_s_buffer), 0); /* connected */
-    if (
-        (recvSize > 0 && recvSize <= (int)sizeof(g_s_buffer))
-        ||
-        (recvSize < 0 && pbsd_errno((void*)&pbsd_recv) == PBSD_EWOULDBLOCK)
-       )
+    if (m_notifyPipe->Roger())
     {
-        m_notifyPipe->Roger();
+        return;
     }
-    else
-    {
-        OnError(sockId, -1);
-    }
+
+    OnError(sockId, -1);
 }
 
 void
-CProEpollReactor::OnError(PRO_INT64 sockId,
-                          long      errorCode)
+CProEpollReactor::OnError(int64_t sockId,
+                          long    errorCode)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -540,8 +522,7 @@ CProEpollReactor::OnError(PRO_INT64 sockId,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_epfd == -1 || m_wantExit ||
-            sockId != m_notifyPipe->GetReaderSockId())
+        if (m_epfd == -1 || m_wantExit || sockId != m_notifyPipe->GetReaderSockId())
         {
             return;
         }
@@ -549,7 +530,7 @@ CProEpollReactor::OnError(PRO_INT64 sockId,
         CProNotifyPipe* const newPipe = new CProNotifyPipe;
         newPipe->Init();
 
-        const PRO_INT64 newSockId = newPipe->GetReaderSockId();
+        const int64_t newSockId = newPipe->GetReaderSockId();
         if (newSockId == -1)
         {
             delete newPipe;

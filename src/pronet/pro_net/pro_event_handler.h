@@ -49,41 +49,37 @@ public:
 
     virtual unsigned long AddRef()
     {
-        const unsigned long refCount = CProRefCount::AddRef();
-
-        return (refCount);
+        return CProRefCount::AddRef();
     }
 
     virtual unsigned long Release()
     {
-        const unsigned long refCount = CProRefCount::Release();
-
-        return (refCount);
+        return CProRefCount::Release();
     }
 
-    virtual void OnInput(PRO_INT64 sockId)
+    virtual void OnInput(int64_t sockId)
     {
     }
 
-    virtual void OnOutput(PRO_INT64 sockId)
+    virtual void OnOutput(int64_t sockId)
     {
     }
 
-    virtual void OnException(PRO_INT64 sockId)
+    virtual void OnException(int64_t sockId)
     {
     }
 
     virtual void OnError(
-        PRO_INT64 sockId,
-        long      errorCode
+        int64_t sockId,
+        long    errorCode
         )
     {
     }
 
     virtual void OnTimer(
-        void*      factory,
-        PRO_UINT64 timerId,
-        PRO_INT64  userData
+        void*    factory,
+        uint64_t timerId,
+        int64_t  userData
         )
     {
     }
@@ -95,7 +91,7 @@ public:
 
     CProBaseReactor* GetReactor() const
     {
-        return (m_reactor);
+        return m_reactor;
     }
 
     void AddMask(unsigned long mask)
@@ -110,7 +106,7 @@ public:
 
     unsigned long GetMask() const
     {
-        return (m_mask);
+        return m_mask;
     }
 
 protected:

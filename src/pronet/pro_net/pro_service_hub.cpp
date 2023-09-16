@@ -34,8 +34,6 @@
 #include <windows.h>
 #endif
 
-#include <cassert>
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -50,15 +48,12 @@ CProServiceHub*
 CProServiceHub::CreateInstance(bool enableServiceExt,
                                bool enableLoadBalance)
 {
-    CProServiceHub* const hub =
-        new CProServiceHub(enableServiceExt, enableLoadBalance);
-
-    return (hub);
+    return new CProServiceHub(enableServiceExt, enableLoadBalance);
 }
 
 CProServiceHub::CProServiceHub(bool enableServiceExt,
                                bool enableLoadBalance)
-                               :
+:
 m_enableServiceExt(enableServiceExt),
 m_enableLoadBalance(enableLoadBalance)
 {
@@ -200,7 +195,7 @@ CProServiceHub::Release()
 
 void
 CProServiceHub::OnAccept(IProAcceptor*  acceptor,
-                         PRO_INT64      sockId,
+                         int64_t        sockId,
                          bool           unixSocket,
                          const char*    localIp,
                          const char*    remoteIp,
@@ -222,7 +217,7 @@ CProServiceHub::OnAccept(IProAcceptor*  acceptor,
 
 void
 CProServiceHub::OnAccept(IProAcceptor*    acceptor,
-                         PRO_INT64        sockId,
+                         int64_t          sockId,
                          bool             unixSocket,
                          const char*      localIp,
                          const char*      remoteIp,
@@ -263,7 +258,7 @@ CProServiceHub::OnAccept(IProAcceptor*    acceptor,
 
 void
 CProServiceHub::AcceptIpc(IProAcceptor* acceptor,
-                          PRO_INT64     sockId,
+                          int64_t       sockId,
                           bool          unixSocket,
                           const char*   localIp)
 {
@@ -328,7 +323,7 @@ CProServiceHub::AcceptIpc(IProAcceptor* acceptor,
 
 void
 CProServiceHub::AcceptApp(IProAcceptor*    acceptor,
-                          PRO_INT64        sockId,
+                          int64_t          sockId,
                           bool             unixSocket,
                           unsigned char    serviceId,
                           unsigned char    serviceOpt,
@@ -355,10 +350,10 @@ CProServiceHub::AcceptApp(IProAcceptor*    acceptor,
         }
 
         CProServicePipe* pipe  = NULL;
-        PRO_UINT32       socks = 0;
+        uint32_t         socks = 0;
 
-        CProStlMap<CProServicePipe*, PRO_UINT32>::iterator       itr = m_readyPipe2Socks[serviceId].begin();
-        CProStlMap<CProServicePipe*, PRO_UINT32>::iterator const end = m_readyPipe2Socks[serviceId].end();
+        CProStlMap<CProServicePipe*, uint32_t>::iterator       itr = m_readyPipe2Socks[serviceId].begin();
+        CProStlMap<CProServicePipe*, uint32_t>::iterator const end = m_readyPipe2Socks[serviceId].end();
 
         for (; itr != end; ++itr)
         {
@@ -460,7 +455,7 @@ CProServiceHub::OnRecv(CProServicePipe*          pipe,
         /*
          * register or update a service host
          */
-        CProStlMap<CProServicePipe*, PRO_UINT32>::iterator const itr2 =
+        CProStlMap<CProServicePipe*, uint32_t>::iterator const itr2 =
             m_readyPipe2Socks[packet.c2s.serviceId].find(pipe);
         if (itr2 == m_readyPipe2Socks[packet.c2s.serviceId].end())
         {
@@ -480,7 +475,7 @@ CProServiceHub::OnRecv(CProServicePipe*          pipe,
             m_readyPipe2Socks[packet.c2s.serviceId][pipe] = 0;
 
             {{{
-                CProStlString timeString = "";
+                CProStlString timeString;
                 ProGetLocalTimeString(timeString);
 
                 printf(
@@ -549,14 +544,14 @@ CProServiceHub::OnClose(CProServicePipe* pipe)
 
         m_pipe2ServiceId.erase(itr);
 
-        CProStlMap<CProServicePipe*, PRO_UINT32>::iterator const itr2 =
+        CProStlMap<CProServicePipe*, uint32_t>::iterator const itr2 =
             m_readyPipe2Socks[id].find(pipe);
         if (itr2 != m_readyPipe2Socks[id].end())
         {
             m_readyPipe2Socks[id].erase(itr2);
 
             {{{
-                CProStlString timeString = "";
+                CProStlString timeString;
                 ProGetLocalTimeString(timeString);
 
                 printf(
@@ -579,9 +574,9 @@ CProServiceHub::OnClose(CProServicePipe* pipe)
 }
 
 void
-CProServiceHub::OnTimer(void*      factory,
-                        PRO_UINT64 timerId,
-                        PRO_INT64  userData)
+CProServiceHub::OnTimer(void*    factory,
+                        uint64_t timerId,
+                        int64_t  userData)
 {
     assert(factory != NULL);
     assert(timerId > 0);
@@ -605,7 +600,7 @@ CProServiceHub::OnTimer(void*      factory,
             return;
         }
 
-        const PRO_INT64 tick = ProGetTickCount64();
+        const int64_t tick = ProGetTickCount64();
 
         {
             CProStlSet<PRO_SERVICE_SOCK>::iterator       itr = m_expireSocks.begin();
@@ -642,7 +637,7 @@ CProServiceHub::OnTimer(void*      factory,
                 m_pipe2ServiceId.erase(itr++);
                 pipes.insert(sp.pipe);
 
-                CProStlMap<CProServicePipe*, PRO_UINT32>::iterator const itr2 =
+                CProStlMap<CProServicePipe*, uint32_t>::iterator const itr2 =
                     m_readyPipe2Socks[id].find(sp.pipe);
                 if (itr2 == m_readyPipe2Socks[id].end())
                 {
@@ -652,7 +647,7 @@ CProServiceHub::OnTimer(void*      factory,
                 m_readyPipe2Socks[id].erase(itr2);
 
                 {{{
-                    CProStlString timeString = "";
+                    CProStlString timeString;
                     ProGetLocalTimeString(timeString);
 
                     printf(
@@ -669,7 +664,7 @@ CProServiceHub::OnTimer(void*      factory,
                         (unsigned int)sp.processId
                         );
                 }}}
-            } /* end of while (...) */
+            } /* end of while () */
         }
     }
 

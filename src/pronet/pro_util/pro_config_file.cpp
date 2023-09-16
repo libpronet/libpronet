@@ -21,7 +21,6 @@
 #include "pro_memory_pool.h"
 #include "pro_stl.h"
 #include "pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -30,11 +29,6 @@
 
 /////////////////////////////////////////////////////////////////////////////
 ////
-
-CProConfigFile::CProConfigFile()
-{
-    m_fileName = "";
-}
 
 void
 CProConfigFile::Init(const char* fileName)
@@ -64,13 +58,13 @@ CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs,
 
     if (m_fileName.empty())
     {
-        return (false);
+        return false;
     }
 
     FILE* const file = fopen(m_fileName.c_str(), "rb");
     if (file == NULL)
     {
-        return (false);
+        return false;
     }
 
     char* const buf = (char*)ProMalloc(LINE_BUF_SIZE + 1);
@@ -78,7 +72,7 @@ CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs,
     {
         fclose(file);
 
-        return (false);
+        return false;
     }
 
     buf[LINE_BUF_SIZE] = '\0';
@@ -108,8 +102,7 @@ CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs,
         {
             bom = true;
 
-            if (p + 2 <= q &&
-                p[0] == (char)0xEF && p[1] == (char)0xBB && p[2] == (char)0xBF)
+            if (p + 2 <= q && p[0] == (char)0xEF && p[1] == (char)0xBB && p[2] == (char)0xBF)
             {
                 p += 3;
             }
@@ -200,7 +193,7 @@ CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs,
 
             if (i == 0)
             {
-                item.configName.assign (p, r); /* name */
+                item.configName.assign(p, r);  /* name */
             }
             else
             {
@@ -244,7 +237,7 @@ CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs,
                 p = NULL;
                 break;
             }
-        } /* end of for (...) */
+        } /* end of for () */
 
         /*
          * a corrupt line
@@ -256,12 +249,12 @@ CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs,
         }
 
         configs.push_back(item);
-    } /* end of while (...) */
+    } /* end of while () */
 
     ProFree(buf);
     fclose(file);
 
-    return (ret);
+    return ret;
 }
 
 bool
@@ -271,13 +264,13 @@ CProConfigFile::Write(const CProStlVector<PRO_CONFIG_ITEM>& configs,
 {
     if (m_fileName.empty())
     {
-        return (false);
+        return false;
     }
 
     FILE* const file = fopen(m_fileName.c_str(), "wb");
     if (file == NULL)
     {
-        return (false);
+        return false;
     }
 
     if (fprintf(file, "//#; %cconfig_name%c    %cconfig_value%c\n\n",
@@ -285,7 +278,7 @@ CProConfigFile::Write(const CProStlVector<PRO_CONFIG_ITEM>& configs,
     {
         fclose(file);
 
-        return (false);
+        return false;
     }
 
     bool ret = true;
@@ -310,5 +303,5 @@ CProConfigFile::Write(const CProStlVector<PRO_CONFIG_ITEM>& configs,
 
     fclose(file);
 
-    return (ret);
+    return ret;
 }

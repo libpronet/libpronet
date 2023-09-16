@@ -24,6 +24,7 @@
 #include "../pro_util/pro_bsd_wrapper.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_thread_mutex.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -39,26 +40,24 @@ public:
 
     CProBaseReactor();
 
-    virtual ~CProBaseReactor()
-    {
-    }
+    virtual ~CProBaseReactor();
 
     virtual bool Init() = 0;
 
     virtual void Fini() = 0;
 
     virtual bool AddHandler(
-        PRO_INT64         sockId,
+        int64_t           sockId,
         CProEventHandler* handler,
         unsigned long     mask
         ) = 0;
 
     virtual void RemoveHandler(
-        PRO_INT64     sockId,
+        int64_t       sockId,
         unsigned long mask
         ) = 0;
 
-    virtual unsigned long GetHandlerCount() const;
+    virtual size_t GetHandlerCount() const;
 
     virtual void WorkerRun() = 0;
 
@@ -66,17 +65,17 @@ protected:
 
     virtual unsigned long AddRef()
     {
-        return (1);
+        return 1;
     }
 
     virtual unsigned long Release()
     {
-        return (1);
+        return 1;
     }
 
 protected:
 
-    PRO_UINT64              m_threadId;
+    uint64_t                m_threadId;
     bool                    m_wantExit;
     CProHandlerMgr          m_handlerMgr;
     CProNotifyPipe*         m_notifyPipe;

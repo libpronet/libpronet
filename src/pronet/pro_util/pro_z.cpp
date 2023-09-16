@@ -42,7 +42,7 @@ tolower_i(char c)
         c = c - 'A' + 'a';
     }
 
-    return (c);
+    return c;
 }
 
 static
@@ -55,7 +55,7 @@ toupper_i(char c)
         c = c - 'a' + 'A';
     }
 
-    return (c);
+    return c;
 }
 
 #endif /* _WIN32 */
@@ -76,7 +76,7 @@ strlwr(char* str)
         }
     }
 
-    return (str);
+    return str;
 }
 
 char*
@@ -90,7 +90,7 @@ strupr(char* str)
         }
     }
 
-    return (str);
+    return str;
 }
 
 #endif /* _WIN32 */
@@ -102,17 +102,17 @@ strncpy_pro(char*       dest,
 {
     if (dest == NULL || destSize == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     *dest = '\0';
 
     if (destSize == 1 || src == NULL)
     {
-        return (dest);
+        return dest;
     }
 
-    return (strncat(dest, src, destSize - 1));
+    return strncat(dest, src, destSize - 1);
 }
 
 int
@@ -123,14 +123,14 @@ snprintf_pro(char*       dest,
 {
     if (dest == NULL || destSize == 0)
     {
-        return (0);
+        return 0;
     }
 
     *dest = '\0';
 
     if (destSize == 1 || format == NULL)
     {
-        return (0);
+        return 0;
     }
 
     va_list ap;
@@ -145,7 +145,7 @@ snprintf_pro(char*       dest,
         ret = (int)destSize - 1;
     }
 
-    return (ret);
+    return ret;
 }
 
 void

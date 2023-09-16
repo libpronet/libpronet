@@ -22,7 +22,6 @@
 #include "pro_udp_transport.h"
 #include "../pro_util/pro_bsd_wrapper.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -35,9 +34,7 @@
 CProMcastTransport*
 CProMcastTransport::CreateInstance(size_t recvPoolSize) /* = 0 */
 {
-    CProMcastTransport* const trans = new CProMcastTransport(recvPoolSize);
-
-    return (trans);
+    return new CProMcastTransport(recvPoolSize);
 }
 
 CProMcastTransport::CProMcastTransport(size_t recvPoolSize) /* = 0 */
@@ -72,27 +69,21 @@ CProMcastTransport::Init(IProTransportObserver* observer,
         return (false);
     }
 
-    const PRO_UINT32 mcastIp2 = pbsd_inet_aton(mcastIp);
-    if (mcastIp2 == (PRO_UINT32)-1 || mcastIp2 == 0)
+    const uint32_t mcastIp2 = pbsd_inet_aton(mcastIp);
+    if (mcastIp2 == (uint32_t)-1 || mcastIp2 == 0)
     {
         return (false);
     }
 
-    const PRO_UINT32 minIp = pbsd_ntoh32(pbsd_inet_aton("224.0.0.0"));
-    const PRO_UINT32 maxIp = pbsd_ntoh32(pbsd_inet_aton("239.255.255.255"));
-    const PRO_UINT32 theIp = pbsd_ntoh32(mcastIp2);
+    const uint32_t minIp = pbsd_ntoh32(pbsd_inet_aton("224.0.0.0"));
+    const uint32_t maxIp = pbsd_ntoh32(pbsd_inet_aton("239.255.255.255"));
+    const uint32_t theIp = pbsd_ntoh32(mcastIp2);
 
     assert(theIp >= minIp);
     assert(theIp <= maxIp);
     if (theIp < minIp || theIp > maxIp)
     {
         return (false);
-    }
-
-    char anyIp[64] = "0.0.0.0";
-    if (localBindIp == NULL || localBindIp[0] == '\0')
-    {
-        localBindIp = anyIp;
     }
 
     pbsd_sockaddr_in localAddr;
@@ -107,7 +98,7 @@ CProMcastTransport::Init(IProTransportObserver* observer,
     remoteAddr.sin_port        = pbsd_hton16(mcastPort);
     remoteAddr.sin_addr.s_addr = mcastIp2;
 
-    if (localAddr.sin_addr.s_addr == (PRO_UINT32)-1)
+    if (localAddr.sin_addr.s_addr == (uint32_t)-1)
     {
         return (false);
     }
@@ -127,7 +118,7 @@ CProMcastTransport::Init(IProTransportObserver* observer,
             return (false);
         }
 
-        const PRO_INT64 sockId = pbsd_socket(AF_INET, SOCK_DGRAM, 0);
+        const int64_t sockId = pbsd_socket(AF_INET, SOCK_DGRAM, 0);
         if (sockId == -1)
         {
             return (false);
@@ -158,20 +149,16 @@ CProMcastTransport::Init(IProTransportObserver* observer,
         mreq.imr_multiaddr.s_addr = remoteAddr.sin_addr.s_addr;
         mreq.imr_interface.s_addr = localAddr.sin_addr.s_addr;
 
-        pbsd_setsockopt(sockId,
-            IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(struct ip_mreq));
+        pbsd_setsockopt(sockId, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(struct ip_mreq));
 
         option = MULTICAST_TTL;
-        pbsd_setsockopt(
-            sockId, IPPROTO_IP, IP_MULTICAST_TTL, &option, sizeof(int));
+        pbsd_setsockopt(sockId, IPPROTO_IP, IP_MULTICAST_TTL, &option, sizeof(int));
         option = 0;
-        pbsd_setsockopt(
-            sockId, IPPROTO_IP, IP_MULTICAST_LOOP, &option, sizeof(int));
+        pbsd_setsockopt(sockId, IPPROTO_IP, IP_MULTICAST_LOOP, &option, sizeof(int));
 
         if (!reactorTask->AddHandler(sockId, this, PRO_MASK_READ))
         {
-            pbsd_setsockopt(sockId,
-                IPPROTO_IP, IP_DROP_MEMBERSHIP, &mreq, sizeof(struct ip_mreq));
+            pbsd_setsockopt(sockId, IPPROTO_IP, IP_DROP_MEMBERSHIP, &mreq, sizeof(struct ip_mreq));
             ProCloseSockId(sockId);
 
             return (false);
@@ -204,16 +191,14 @@ CProMcastTransport::Fini()
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(
-            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
 
         struct ip_mreq mreq;
         memset(&mreq, 0, sizeof(struct ip_mreq));
         mreq.imr_multiaddr.s_addr = m_defaultRemoteAddr.sin_addr.s_addr;
         mreq.imr_interface.s_addr = m_localAddr.sin_addr.s_addr;
 
-        pbsd_setsockopt(m_sockId,
-            IPPROTO_IP, IP_DROP_MEMBERSHIP, &mreq, sizeof(struct ip_mreq));
+        pbsd_setsockopt(m_sockId, IPPROTO_IP, IP_DROP_MEMBERSHIP, &mreq, sizeof(struct ip_mreq));
 
         m_reactorTask = NULL;
         observer = m_observer;
@@ -233,15 +218,15 @@ CProMcastTransport::AddMcastReceiver(const char* mcastIp)
         return (false);
     }
 
-    const PRO_UINT32 mcastIp2 = pbsd_inet_aton(mcastIp);
-    if (mcastIp2 == (PRO_UINT32)-1 || mcastIp2 == 0)
+    const uint32_t mcastIp2 = pbsd_inet_aton(mcastIp);
+    if (mcastIp2 == (uint32_t)-1 || mcastIp2 == 0)
     {
         return (false);
     }
 
-    const PRO_UINT32 minIp = pbsd_ntoh32(pbsd_inet_aton("224.0.0.0"));
-    const PRO_UINT32 maxIp = pbsd_ntoh32(pbsd_inet_aton("239.255.255.255"));
-    const PRO_UINT32 theIp = pbsd_ntoh32(mcastIp2);
+    const uint32_t minIp = pbsd_ntoh32(pbsd_inet_aton("224.0.0.0"));
+    const uint32_t maxIp = pbsd_ntoh32(pbsd_inet_aton("239.255.255.255"));
+    const uint32_t theIp = pbsd_ntoh32(mcastIp2);
 
     assert(theIp >= minIp);
     assert(theIp <= maxIp);
@@ -263,8 +248,7 @@ CProMcastTransport::AddMcastReceiver(const char* mcastIp)
         mreq.imr_multiaddr.s_addr = mcastIp2;
         mreq.imr_interface.s_addr = m_localAddr.sin_addr.s_addr;
 
-        pbsd_setsockopt(m_sockId,
-            IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(struct ip_mreq));
+        pbsd_setsockopt(m_sockId, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(struct ip_mreq));
     }
 
     return (true);
@@ -278,8 +262,8 @@ CProMcastTransport::RemoveMcastReceiver(const char* mcastIp)
         return;
     }
 
-    const PRO_UINT32 mcastIp2 = pbsd_inet_aton(mcastIp);
-    if (mcastIp2 == (PRO_UINT32)-1 || mcastIp2 == 0)
+    const uint32_t mcastIp2 = pbsd_inet_aton(mcastIp);
+    if (mcastIp2 == (uint32_t)-1 || mcastIp2 == 0)
     {
         return;
     }
@@ -297,7 +281,6 @@ CProMcastTransport::RemoveMcastReceiver(const char* mcastIp)
         mreq.imr_multiaddr.s_addr = mcastIp2;
         mreq.imr_interface.s_addr = m_localAddr.sin_addr.s_addr;
 
-        pbsd_setsockopt(m_sockId,
-            IPPROTO_IP, IP_DROP_MEMBERSHIP, &mreq, sizeof(struct ip_mreq));
+        pbsd_setsockopt(m_sockId, IPPROTO_IP, IP_DROP_MEMBERSHIP, &mreq, sizeof(struct ip_mreq));
     }
 }

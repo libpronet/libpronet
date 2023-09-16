@@ -19,7 +19,6 @@
 #include "rtp_session_udpserver.h"
 #include "rtp_session_udpclient.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -34,9 +33,7 @@ CRtpSessionUdpserver::CreateInstance(const RTP_SESSION_INFO* localInfo)
         return (NULL);
     }
 
-    CRtpSessionUdpserver* const session = new CRtpSessionUdpserver(*localInfo);
-
-    return (session);
+    return new CRtpSessionUdpserver(*localInfo);
 }
 
 CRtpSessionUdpserver::CRtpSessionUdpserver(const RTP_SESSION_INFO& localInfo)

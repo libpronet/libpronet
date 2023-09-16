@@ -25,17 +25,13 @@
 
 #include "mbedtls/ssl.h"
 
-#include <cassert>
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
 CProSslTransport*
 CProSslTransport::CreateInstance(size_t recvPoolSize) /* = 0 */
 {
-    CProSslTransport* const trans = new CProSslTransport(recvPoolSize);
-
-    return (trans);
+    return new CProSslTransport(recvPoolSize);
 }
 
 CProSslTransport::CProSslTransport(size_t recvPoolSize) /* = 0 */
@@ -61,7 +57,7 @@ bool
 CProSslTransport::Init(IProTransportObserver* observer,
                        CProTpReactorTask*     reactorTask,
                        PRO_SSL_CTX*           ctx,
-                       PRO_INT64              sockId,
+                       int64_t                sockId,
                        bool                   unixSocket,
                        size_t                 sockBufSizeRecv, /* = 0 */
                        size_t                 sockBufSizeSend, /* = 0 */
@@ -130,9 +126,9 @@ CProSslTransport::Init(IProTransportObserver* observer,
                     return (false);
                 }
 
-                m_localAddr.sin_port         = pbsd_hton16((PRO_UINT16)port);
+                m_localAddr.sin_port         = pbsd_hton16((uint16_t)port);
                 m_localAddr.sin_addr.s_addr  = pbsd_inet_aton("127.0.0.1");
-                m_remoteAddr.sin_port        = pbsd_hton16((PRO_UINT16)65535); /* a dummy for unix socket */
+                m_remoteAddr.sin_port        = pbsd_hton16((uint16_t)65535); /* a dummy for unix socket */
                 m_remoteAddr.sin_addr.s_addr = pbsd_inet_aton("127.0.0.1");
             }
             else
@@ -144,9 +140,9 @@ CProSslTransport::Init(IProTransportObserver* observer,
                     return (false);
                 }
 
-                m_localAddr.sin_port         = pbsd_hton16((PRO_UINT16)65535); /* a dummy for unix socket */
+                m_localAddr.sin_port         = pbsd_hton16((uint16_t)65535); /* a dummy for unix socket */
                 m_localAddr.sin_addr.s_addr  = pbsd_inet_aton("127.0.0.1");
-                m_remoteAddr.sin_port        = pbsd_hton16((PRO_UINT16)port);
+                m_remoteAddr.sin_port        = pbsd_hton16((uint16_t)port);
                 m_remoteAddr.sin_addr.s_addr = pbsd_inet_aton("127.0.0.1");
             }
         }
@@ -174,8 +170,7 @@ CProSslTransport::Init(IProTransportObserver* observer,
         }
         else
         {
-            if (!reactorTask->AddHandler(
-                sockId, this, PRO_MASK_WRITE | PRO_MASK_READ))
+            if (!reactorTask->AddHandler(sockId, this, PRO_MASK_WRITE | PRO_MASK_READ))
             {
                 return (false);
             }
@@ -214,8 +209,7 @@ CProSslTransport::Fini()
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(
-            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
 
         m_reactorTask = NULL;
         observer = m_observer;
@@ -241,20 +235,20 @@ CProSslTransport::GetSslSuite(char suiteName[64]) const
 }
 
 void
-CProSslTransport::OnInput(PRO_INT64 sockId)
+CProSslTransport::OnInput(int64_t sockId)
 {
     DoRecv(sockId);
 }
 
 void
-CProSslTransport::OnOutput(PRO_INT64 sockId)
+CProSslTransport::OnOutput(int64_t sockId)
 {
     DoSend(sockId);
     DoRecv(sockId); /* !!! */
 }
 
 void
-CProSslTransport::DoRecv(PRO_INT64 sockId)
+CProSslTransport::DoRecv(int64_t sockId)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -311,8 +305,7 @@ CProSslTransport::DoRecv(PRO_INT64 sockId)
             else if (recvSize > 0)
             {
                 m_recvPool.Fill(recvSize);
-                msgSize = mbedtls_ssl_get_bytes_avail( /* remaining message */
-                    (mbedtls_ssl_context*)m_ctx);
+                msgSize = mbedtls_ssl_get_bytes_avail((mbedtls_ssl_context*)m_ctx); /* remaining message */
             }
             else if (recvSize == 0)
             {
@@ -382,7 +375,7 @@ EXIT:
 }
 
 void
-CProSslTransport::DoSend(PRO_INT64 sockId)
+CProSslTransport::DoSend(int64_t sockId)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -397,7 +390,7 @@ CProSslTransport::DoSend(PRO_INT64 sockId)
     bool                   error         = false;
     const CProBuffer*      onSendBuf     = NULL;
     bool                   requestOnSend = false;
-    PRO_UINT64             actionId      = 0;
+    uint64_t               actionId      = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -423,8 +416,7 @@ CProSslTransport::DoSend(PRO_INT64 sockId)
             {
                 if (m_onWr)
                 {
-                    m_reactorTask->RemoveHandler(
-                        m_sockId, this, PRO_MASK_WRITE);
+                    m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE);
                     m_onWr = false;
                 }
 
@@ -462,8 +454,7 @@ CProSslTransport::DoSend(PRO_INT64 sockId)
             {
                 if (m_onWr)
                 {
-                    m_reactorTask->RemoveHandler(
-                        m_sockId, this, PRO_MASK_WRITE);
+                    m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE);
                     m_onWr = false;
                 }
             }
@@ -496,13 +487,11 @@ CProSslTransport::DoSend(PRO_INT64 sockId)
             {
                 CProThreadMutexGuard mon(m_lock);
 
-                if (m_observer != NULL && m_reactorTask != NULL &&
-                    m_ctx != NULL)
+                if (m_observer != NULL && m_reactorTask != NULL && m_ctx != NULL)
                 {
                     if (m_onWr && !m_pendingWr && !m_requestOnSend)
                     {
-                        m_reactorTask->RemoveHandler(
-                            m_sockId, this, PRO_MASK_WRITE);
+                        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE);
                         m_onWr = false;
                     }
                 }

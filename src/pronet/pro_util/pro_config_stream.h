@@ -96,22 +96,22 @@ public:
 
     void AddInt64(
         const CProStlString& configName,
-        PRO_INT64            configValue
+        int64_t              configValue
         );
 
     void AddInt64(
-        const CProStlString&            configName,
-        const CProStlVector<PRO_INT64>& configValues
+        const CProStlString&          configName,
+        const CProStlVector<int64_t>& configValues
         );
 
     void AddUint64(
         const CProStlString& configName,
-        PRO_UINT64           configValue
+        uint64_t             configValue
         );
 
     void AddUint64(
-        const CProStlString&             configName,
-        const CProStlVector<PRO_UINT64>& configValues
+        const CProStlString&           configName,
+        const CProStlVector<uint64_t>& configValues
         );
 
     void AddFloat(
@@ -174,22 +174,22 @@ public:
 
     void GetInt64(
         const CProStlString& configName,
-        PRO_INT64&           configValue
+        int64_t&             configValue
         ) const;
 
     void GetInt64(
-        const CProStlString&      configName,
-        CProStlVector<PRO_INT64>& configValues
+        const CProStlString&    configName,
+        CProStlVector<int64_t>& configValues
         ) const;
 
     void GetUint64(
         const CProStlString& configName,
-        PRO_UINT64&          configValue
+        uint64_t&            configValue
         ) const;
 
     void GetUint64(
-        const CProStlString&       configName,
-        CProStlVector<PRO_UINT64>& configValues
+        const CProStlString&     configName,
+        CProStlVector<uint64_t>& configValues
         ) const;
 
     void GetFloat(
@@ -230,8 +230,8 @@ private:
 private:
 
     CProStlMap<CProStlString, CProStlVector<PRO_CONFIG_ITEM> > m_name2Configs;
-    CProStlMap<CProStlString, unsigned long>                   m_name2Index;
-    unsigned long                                              m_nextIndex;
+    CProStlMap<CProStlString, unsigned int>                    m_name2Index;
+    unsigned int                                               m_nextIndex;
 
     DECLARE_SGI_POOL(0)
 };

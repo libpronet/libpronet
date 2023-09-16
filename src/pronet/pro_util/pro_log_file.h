@@ -23,7 +23,7 @@
 #include "pro_memory_pool.h"
 #include "pro_stl.h"
 #include "pro_thread_mutex.h"
-#include <cstdio>
+#include "pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -52,23 +52,23 @@ public:
         bool        append = false
         );
 
-    void SetGreenLevel(long level);
+    void SetGreenLevel(int level);
 
-    long GetGreenLevel() const;
+    int GetGreenLevel() const;
 
     /*
-     * the "size" can be <= 0
+     * if 'size' <= 0, there is no limit
      */
-    void SetMaxSize(PRO_INT32 size);
+    void SetMaxSize(int32_t size);
 
-    PRO_INT32 GetMaxSize() const;
+    int32_t GetMaxSize() const;
 
-    PRO_INT32 GetSize() const;
+    int32_t GetSize() const;
 
     void Log(
         const char* text,
-        long        level,
-        bool        showTime
+        int         level,
+        bool        showTime = false
         );
 
 private:
@@ -81,9 +81,9 @@ private:
 
     CProStlString           m_fileName;
     FILE*                   m_file;
-    PRO_INT64               m_reopenTick;
-    long                    m_greenLevel;
-    PRO_INT32               m_maxSize;
+    int64_t                 m_reopenTick;
+    int                     m_greenLevel;
+    int32_t                 m_maxSize;
     mutable CProThreadMutex m_lock;
 
     DECLARE_SGI_POOL(0)

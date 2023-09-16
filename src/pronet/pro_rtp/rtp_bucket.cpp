@@ -24,7 +24,6 @@
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -47,7 +46,7 @@ struct RTP_VIDEO_FRAME
         bucket.SetRedline(MAX_FRAME_SIZE, 0, 0);
     }
 
-    PRO_INT64  tick;
+    int64_t    tick;
     bool       keyFrame;
     CRtpBucket bucket;
 
@@ -83,12 +82,10 @@ CRtpBucket::GetFront()
 {
     if (m_packets.size() == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
-    IRtpPacket* const packet = m_packets.front();
-
-    return (packet);
+    return m_packets.front();
 }
 
 bool
@@ -97,16 +94,16 @@ CRtpBucket::PushBackAddRef(IRtpPacket* packet)
     assert(packet != NULL);
     if (packet == NULL)
     {
-        return (false);
+        return false;
     }
 
-    const unsigned long size = packet->GetPayloadSize();
+    const size_t size = packet->GetPayloadSize();
     m_flowStat.PushData(1, size);
 
     /*
      * arrival time
      */
-    const PRO_INT64 tick = ProGetTickCount64();
+    const int64_t tick = ProGetTickCount64();
     ((CRtpPacket*)packet)->SetMagic2(tick);
 
     /*
@@ -115,8 +112,7 @@ CRtpBucket::PushBackAddRef(IRtpPacket* packet)
     while (m_packets.size() > 0)
     {
         CRtpPacket* const packet2 = (CRtpPacket*)m_packets.front();
-        if (tick - packet2->GetMagic2() > m_redlineDelayMs &&
-            m_redlineDelayMs > 0)
+        if (tick - packet2->GetMagic2() > m_redlineDelayMs && m_redlineDelayMs > 0)
         {
             m_packets.pop_front();
             m_totalBytes -= packet2->GetPayloadSize();
@@ -134,7 +130,7 @@ CRtpBucket::PushBackAddRef(IRtpPacket* packet)
             (m_packets.size() >= m_redlineFrames && m_redlineFrames > 0)
            )
         {
-            return (false);
+            return false;
         }
     }
 
@@ -142,21 +138,20 @@ CRtpBucket::PushBackAddRef(IRtpPacket* packet)
     m_packets.push_back(packet);
     m_totalBytes += size;
 
-    return (true);
+    return true;
 }
 
 void
 CRtpBucket::PopFrontRelease(IRtpPacket* packet)
 {
-    if (packet == NULL || m_packets.size() == 0 ||
-        packet != m_packets.front())
+    if (packet == NULL || m_packets.size() == 0 || packet != m_packets.front())
     {
         return;
     }
 
     m_packets.pop_front();
 
-    const unsigned long size = packet->GetPayloadSize();
+    const size_t size = packet->GetPayloadSize();
     m_flowStat.PopData(1, size);
 
     m_totalBytes -= size;
@@ -181,9 +176,9 @@ CRtpBucket::Reset()
 }
 
 void
-CRtpBucket::SetRedline(unsigned long redlineBytes,   /* = 0 */
-                       unsigned long redlineFrames,  /* = 0 */
-                       unsigned long redlineDelayMs) /* = 0 */
+CRtpBucket::SetRedline(size_t redlineBytes,   /* = 0 */
+                       size_t redlineFrames,  /* = 0 */
+                       size_t redlineDelayMs) /* = 0 */
 {
     if (redlineBytes > 0)
     {
@@ -200,9 +195,9 @@ CRtpBucket::SetRedline(unsigned long redlineBytes,   /* = 0 */
 }
 
 void
-CRtpBucket::GetRedline(unsigned long* redlineBytes,         /* = NULL */
-                       unsigned long* redlineFrames,        /* = NULL */
-                       unsigned long* redlineDelayMs) const /* = NULL */
+CRtpBucket::GetRedline(size_t* redlineBytes,         /* = NULL */
+                       size_t* redlineFrames,        /* = NULL */
+                       size_t* redlineDelayMs) const /* = NULL */
 {
     if (redlineBytes != NULL)
     {
@@ -214,17 +209,17 @@ CRtpBucket::GetRedline(unsigned long* redlineBytes,         /* = NULL */
     }
     if (redlineDelayMs != NULL)
     {
-        *redlineDelayMs = (unsigned long)m_redlineDelayMs;
+        *redlineDelayMs = (size_t)m_redlineDelayMs;
     }
 }
 
 void
-CRtpBucket::GetFlowctrlInfo(float*         srcFrameRate,       /* = NULL */
-                            float*         srcBitRate,         /* = NULL */
-                            float*         outFrameRate,       /* = NULL */
-                            float*         outBitRate,         /* = NULL */
-                            unsigned long* cachedBytes,        /* = NULL */
-                            unsigned long* cachedFrames) const /* = NULL */
+CRtpBucket::GetFlowctrlInfo(float*  srcFrameRate,       /* = NULL */
+                            float*  srcBitRate,         /* = NULL */
+                            float*  outFrameRate,       /* = NULL */
+                            float*  outBitRate,         /* = NULL */
+                            size_t* cachedBytes,        /* = NULL */
+                            size_t* cachedFrames) const /* = NULL */
 {
     m_flowStat.CalcInfo(srcFrameRate, srcBitRate, outFrameRate, outBitRate);
 
@@ -234,7 +229,7 @@ CRtpBucket::GetFlowctrlInfo(float*         srcFrameRate,       /* = NULL */
     }
     if (cachedFrames != NULL)
     {
-        *cachedFrames = (unsigned long)m_packets.size();
+        *cachedFrames = m_packets.size();
     }
 }
 
@@ -259,16 +254,16 @@ CRtpAudioBucket::PushBackAddRef(IRtpPacket* packet)
     assert(packet != NULL);
     if (packet == NULL)
     {
-        return (false);
+        return false;
     }
 
-    const unsigned long size = packet->GetPayloadSize();
+    const size_t size = packet->GetPayloadSize();
     m_flowStat.PushData(1, size);
 
     /*
      * arrival time
      */
-    const PRO_INT64 tick = ProGetTickCount64();
+    const int64_t tick = ProGetTickCount64();
     ((CRtpPacket*)packet)->SetMagic2(tick);
 
     /*
@@ -277,8 +272,7 @@ CRtpAudioBucket::PushBackAddRef(IRtpPacket* packet)
     while (m_packets.size() > 0)
     {
         CRtpPacket* const packet2 = (CRtpPacket*)m_packets.front();
-        if (tick - packet2->GetMagic2() > m_redlineDelayMs ||
-            m_totalBytes + size > m_redlineBytes)
+        if (tick - packet2->GetMagic2() > m_redlineDelayMs || m_totalBytes + size > m_redlineBytes)
         {
             m_packets.pop_front();
             m_totalBytes -= packet2->GetPayloadSize();
@@ -292,7 +286,7 @@ CRtpAudioBucket::PushBackAddRef(IRtpPacket* packet)
     m_packets.push_back(packet);
     m_totalBytes += size;
 
-    return (true);
+    return true;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -341,15 +335,13 @@ CRtpVideoBucket::GetFront()
 
     if (m_frames.size() == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     m_sendingFrame = m_frames.front();
     m_frames.pop_front();
 
-    IRtpPacket* const packet = m_sendingFrame->bucket.GetFront();
-
-    return (packet);
+    return m_sendingFrame->bucket.GetFront();
 }
 
 bool
@@ -358,14 +350,14 @@ CRtpVideoBucket::PushBackAddRef(IRtpPacket* packet)
     assert(packet != NULL);
     if (packet == NULL)
     {
-        return (false);
+        return false;
     }
 
     const bool marker             = packet->GetMarker();
     const bool keyFrame           = packet->GetKeyFrame();
     const bool firstPacketOfFrame = packet->GetFirstPacketOfFrame();
 
-    const unsigned long size = packet->GetPayloadSize();
+    const size_t size = packet->GetPayloadSize();
     m_flowStat.PushData(marker ? 1 : 0, size);
 
     /*
@@ -375,7 +367,7 @@ CRtpVideoBucket::PushBackAddRef(IRtpPacket* packet)
     {
         if (!keyFrame || !firstPacketOfFrame)
         {
-            return (false);
+            return false;
         }
 
         m_needKeyFrame = false;
@@ -405,7 +397,7 @@ CRtpVideoBucket::PushBackAddRef(IRtpPacket* packet)
             {
                 m_needKeyFrame = true; /* ===resynchronize=== */
 
-                return (false);
+                return false;
             }
         }
 
@@ -427,12 +419,12 @@ CRtpVideoBucket::PushBackAddRef(IRtpPacket* packet)
 
             m_needKeyFrame = true; /* ===resynchronize=== */
 
-            return (false);
+            return false;
         }
 
         if (!marker)
         {
-            return (true);
+            return true;
         }
     }
 
@@ -453,7 +445,7 @@ CRtpVideoBucket::PushBackAddRef(IRtpPacket* packet)
 
             m_needKeyFrame = true; /* ===resynchronize=== */
 
-            return (false);
+            return false;
         }
 
         /*
@@ -467,7 +459,7 @@ CRtpVideoBucket::PushBackAddRef(IRtpPacket* packet)
          */
         RemoveOldFrames();
 
-        return (m_frames.size() > 0);
+        return m_frames.size() > 0;
     }
 
     /*
@@ -493,7 +485,7 @@ CRtpVideoBucket::PushBackAddRef(IRtpPacket* packet)
         m_waitingFrame = NULL;
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -504,7 +496,7 @@ CRtpVideoBucket::RemoveOldFrames()
         return;
     }
 
-    const PRO_INT64 tick = ProGetTickCount64();
+    const int64_t tick = ProGetTickCount64();
 
     /*
      * first frame
@@ -543,13 +535,12 @@ CRtpVideoBucket::RemoveOldFrames()
 void
 CRtpVideoBucket::PopFrontRelease(IRtpPacket* packet)
 {
-    if (packet == NULL || m_sendingFrame == NULL ||
-        packet != m_sendingFrame->bucket.GetFront())
+    if (packet == NULL || m_sendingFrame == NULL || packet != m_sendingFrame->bucket.GetFront())
     {
         return;
     }
 
-    const unsigned long size = packet->GetPayloadSize();
+    const size_t size = packet->GetPayloadSize();
     m_flowStat.PopData(packet->GetMarker() ? 1 : 0, size);
 
     m_totalBytes -= size;
@@ -589,9 +580,9 @@ CRtpVideoBucket::Reset()
 }
 
 void
-CRtpVideoBucket::SetRedline(unsigned long redlineBytes,   /* = 0 */
-                            unsigned long redlineFrames,  /* = 0 */
-                            unsigned long redlineDelayMs) /* = 0 */
+CRtpVideoBucket::SetRedline(size_t redlineBytes,   /* = 0 */
+                            size_t redlineFrames,  /* = 0 */
+                            size_t redlineDelayMs) /* = 0 */
 {
     if (redlineBytes > 0)
     {
@@ -608,9 +599,9 @@ CRtpVideoBucket::SetRedline(unsigned long redlineBytes,   /* = 0 */
 }
 
 void
-CRtpVideoBucket::GetRedline(unsigned long* redlineBytes,         /* = NULL */
-                            unsigned long* redlineFrames,        /* = NULL */
-                            unsigned long* redlineDelayMs) const /* = NULL */
+CRtpVideoBucket::GetRedline(size_t* redlineBytes,         /* = NULL */
+                            size_t* redlineFrames,        /* = NULL */
+                            size_t* redlineDelayMs) const /* = NULL */
 {
     if (redlineBytes != NULL)
     {
@@ -622,17 +613,17 @@ CRtpVideoBucket::GetRedline(unsigned long* redlineBytes,         /* = NULL */
     }
     if (redlineDelayMs != NULL)
     {
-        *redlineDelayMs = (unsigned long)m_redlineDelayMs;
+        *redlineDelayMs = (size_t)m_redlineDelayMs;
     }
 }
 
 void
-CRtpVideoBucket::GetFlowctrlInfo(float*         srcFrameRate,       /* = NULL */
-                                 float*         srcBitRate,         /* = NULL */
-                                 float*         outFrameRate,       /* = NULL */
-                                 float*         outBitRate,         /* = NULL */
-                                 unsigned long* cachedBytes,        /* = NULL */
-                                 unsigned long* cachedFrames) const /* = NULL */
+CRtpVideoBucket::GetFlowctrlInfo(float*  srcFrameRate,       /* = NULL */
+                                 float*  srcBitRate,         /* = NULL */
+                                 float*  outFrameRate,       /* = NULL */
+                                 float*  outBitRate,         /* = NULL */
+                                 size_t* cachedBytes,        /* = NULL */
+                                 size_t* cachedFrames) const /* = NULL */
 {
     m_flowStat.CalcInfo(srcFrameRate, srcBitRate, outFrameRate, outBitRate);
 
@@ -662,7 +653,7 @@ CreateRtpBucket(RTP_MM_TYPE      mmType,
     assert(mmType != 0);
     if (mmType == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     IRtpBucket* bucket = NULL;
@@ -679,15 +670,11 @@ CreateRtpBucket(RTP_MM_TYPE      mmType,
         case RTP_ST_TCPSERVER_EX:
         case RTP_ST_SSLCLIENT_EX:
         case RTP_ST_SSLSERVER_EX:
-            {
-                bucket = new CRtpVideoBucket;
-                break;
-            }
+            bucket = new CRtpVideoBucket;
+            break;
         default:
-            {
-                bucket = new CRtpBucket;
-                break;
-            }
+            bucket = new CRtpBucket;
+            break;
         }
     }
     else
@@ -695,5 +682,5 @@ CreateRtpBucket(RTP_MM_TYPE      mmType,
         bucket = new CRtpBucket;
     }
 
-    return (bucket);
+    return bucket;
 }

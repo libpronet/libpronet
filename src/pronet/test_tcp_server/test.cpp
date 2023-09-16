@@ -26,7 +26,6 @@
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -48,7 +47,7 @@ CTest::CTest()
 
     m_heartbeatData[0] = 0;
     m_heartbeatData[1] = 0;
-    m_heartbeatSize    = sizeof(PRO_UINT16);
+    m_heartbeatSize    = sizeof(uint16_t);
 }
 
 CTest::~CTest()
@@ -279,9 +278,9 @@ CTest::Release()
 void
 CTest::SetHeartbeatDataSize(unsigned long size) /* 0 ~ 1024 */
 {
-    if (size < sizeof(PRO_UINT16))
+    if (size < sizeof(uint16_t))
     {
-        size = sizeof(PRO_UINT16);
+        size = sizeof(uint16_t);
     }
     if (size > sizeof(m_heartbeatData))
     {
@@ -291,7 +290,7 @@ CTest::SetHeartbeatDataSize(unsigned long size) /* 0 ~ 1024 */
     {
         CProThreadMutexGuard mon(m_lock2); /* lock2 */
 
-        m_heartbeatData[0] = pbsd_hton16((PRO_UINT16)(size - sizeof(PRO_UINT16)));
+        m_heartbeatData[0] = pbsd_hton16((uint16_t)(size - sizeof(uint16_t)));
         m_heartbeatSize    = size;
     }
 }
@@ -326,7 +325,7 @@ CTest::GetTransportCount() const
 
 void
 CTest::OnAccept(IProAcceptor*    acceptor,
-                PRO_INT64        sockId,
+                int64_t          sockId,
                 bool             unixSocket,
                 const char*      localIp,
                 const char*      remoteIp,
@@ -427,7 +426,7 @@ CTest::OnAccept(IProAcceptor*    acceptor,
 
 void
 CTest::OnServiceAccept(IProServiceHost* serviceHost,
-                       PRO_INT64        sockId,
+                       int64_t          sockId,
                        bool             unixSocket,
                        const char*      localIp,
                        const char*      remoteIp,
@@ -528,7 +527,7 @@ CTest::OnServiceAccept(IProServiceHost* serviceHost,
 
 void
 CTest::OnHandshakeOk(IProTcpHandshaker* handshaker,
-                     PRO_INT64          sockId,
+                     int64_t            sockId,
                      bool               unixSocket,
                      const void*        buf,
                      unsigned long      size)
@@ -619,7 +618,7 @@ CTest::OnHandshakeError(IProTcpHandshaker* handshaker,
 void
 CTest::OnHandshakeOk(IProSslHandshaker* handshaker,
                      PRO_SSL_CTX*       ctx,
-                     PRO_INT64          sockId,
+                     int64_t            sockId,
                      bool               unixSocket,
                      const void*        buf,
                      unsigned long      size)
@@ -746,20 +745,20 @@ CTest::OnRecv(IProTransport*          trans,
             IProRecvPool&       recvPool = *trans->GetRecvPool();
             const unsigned long dataSize = recvPool.PeekDataSize();
 
-            if (dataSize < sizeof(PRO_UINT16))
+            if (dataSize < sizeof(uint16_t))
             {
                 break;
             }
 
-            PRO_UINT16 length = 0;
-            recvPool.PeekData(&length, sizeof(PRO_UINT16));
+            uint16_t length = 0;
+            recvPool.PeekData(&length, sizeof(uint16_t));
             length = pbsd_ntoh16(length);
-            if (dataSize < sizeof(PRO_UINT16) + length) /* 2 + ... */
+            if (dataSize < sizeof(uint16_t) + length) /* 2 + ... */
             {
                 break;
             }
 
-            recvPool.Flush(sizeof(PRO_UINT16));
+            recvPool.Flush(sizeof(uint16_t));
 
             /*
              * a haeartbeat packet
@@ -769,7 +768,7 @@ CTest::OnRecv(IProTransport*          trans,
                 continue;
             }
 
-            size = sizeof(PRO_UINT16) + length;
+            size = sizeof(uint16_t) + length;
             buf  = (char*)ProMalloc(size + 1);
             if (buf == NULL)
             {
@@ -778,15 +777,15 @@ CTest::OnRecv(IProTransport*          trans,
 
             buf[size] = '\0';
 
-            recvPool.PeekData(buf + sizeof(PRO_UINT16), length);
+            recvPool.PeekData(buf + sizeof(uint16_t), length);
             recvPool.Flush(length);
             length = pbsd_hton16(length);
-            memcpy(buf, &length, sizeof(PRO_UINT16));
+            memcpy(buf, &length, sizeof(uint16_t));
 
             /*
              * a packet for testing purposes
              */
-            if (buf[sizeof(PRO_UINT16)] == '\0')
+            if (buf[sizeof(uint16_t)] == '\0')
             {
                 ProFree(buf);
                 continue;
@@ -798,7 +797,7 @@ CTest::OnRecv(IProTransport*          trans,
             char remoteIp[64] = "";
             trans->GetRemoteIp(remoteIp);
 
-            CProStlString timeString = "";
+            CProStlString timeString;
             ProGetLocalTimeString(timeString);
 
             printf(
@@ -810,14 +809,14 @@ CTest::OnRecv(IProTransport*          trans,
                 timeString.c_str(),
                 remoteIp,
                 (unsigned int)trans->GetRemotePort(),
-                buf + sizeof(PRO_UINT16)
+                buf + sizeof(uint16_t)
                 );
         }}}
 
         trans->SendData(buf, size); /* response */
 
         ProFree(buf);
-    } /* end of while (...) */
+    } /* end of while () */
 }
 
 void
@@ -852,7 +851,7 @@ CTest::OnClose(IProTransport* trans,
         char remoteIp[64] = "";
         trans->GetRemoteIp(remoteIp);
 
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         printf(

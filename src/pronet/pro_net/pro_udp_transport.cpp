@@ -25,7 +25,6 @@
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -39,15 +38,12 @@ CProUdpTransport*
 CProUdpTransport::CreateInstance(bool   bindToLocal,  /* = false */
                                  size_t recvPoolSize) /* = 0 */
 {
-    CProUdpTransport* const trans =
-        new CProUdpTransport(bindToLocal, recvPoolSize);
-
-    return (trans);
+    return new CProUdpTransport(bindToLocal, recvPoolSize);
 }
 
 CProUdpTransport::CProUdpTransport(bool   bindToLocal,  /* = false */
                                    size_t recvPoolSize) /* = 0 */
-                                   :
+:
 m_bindToLocal(bindToLocal),
 m_recvPoolSize(recvPoolSize > 0 ? recvPoolSize : DEFAULT_RECV_POOL_SIZE)
 {
@@ -55,8 +51,8 @@ m_recvPoolSize(recvPoolSize > 0 ? recvPoolSize : DEFAULT_RECV_POOL_SIZE)
     m_reactorTask      = NULL;
     m_sockId           = -1;
     m_timerId          = 0;
-    m_connResetAsError = false;
 
+    m_connResetAsError = false;
     m_canUpcall        = true;
 
     memset(&m_localAddr        , 0, sizeof(pbsd_sockaddr_in));
@@ -88,16 +84,6 @@ CProUdpTransport::Init(IProTransportObserver* observer,
         return (false);
     }
 
-    const char* const anyIp = "0.0.0.0";
-    if (localIp == NULL || localIp[0] == '\0')
-    {
-        localIp         = anyIp;
-    }
-    if (defaultRemoteIp == NULL || defaultRemoteIp[0] == '\0')
-    {
-        defaultRemoteIp = anyIp;
-    }
-
     pbsd_sockaddr_in localAddr;
     memset(&localAddr, 0, sizeof(pbsd_sockaddr_in));
     localAddr.sin_family      = AF_INET;
@@ -110,8 +96,8 @@ CProUdpTransport::Init(IProTransportObserver* observer,
     remoteAddr.sin_port        = pbsd_hton16(defaultRemotePort);
     remoteAddr.sin_addr.s_addr = pbsd_inet_aton(defaultRemoteIp); /* DNS */
 
-    if (localAddr.sin_addr.s_addr  == (PRO_UINT32)-1 ||
-        remoteAddr.sin_addr.s_addr == (PRO_UINT32)-1)
+    if (localAddr.sin_addr.s_addr  == (uint32_t)-1 ||
+        remoteAddr.sin_addr.s_addr == (uint32_t)-1)
     {
         return (false);
     }
@@ -131,7 +117,7 @@ CProUdpTransport::Init(IProTransportObserver* observer,
             return (false);
         }
 
-        const PRO_INT64 sockId = pbsd_socket(AF_INET, SOCK_DGRAM, 0);
+        const int64_t sockId = pbsd_socket(AF_INET, SOCK_DGRAM, 0);
         if (sockId == -1)
         {
             return (false);
@@ -227,10 +213,10 @@ CProUdpTransport::GetSslSuite(char suiteName[64]) const
     return (PRO_SSL_SUITE_NONE);
 }
 
-PRO_INT64
+int64_t
 CProUdpTransport::GetSockId() const
 {
-    PRO_INT64 sockId = -1;
+    int64_t sockId = -1;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -296,7 +282,7 @@ CProUdpTransport::GetRemotePort() const
 bool
 CProUdpTransport::SendData(const void*             buf,
                            size_t                  size,
-                           PRO_UINT64              actionId,   /* ignored */
+                           uint64_t                actionId,   /* ignored */
                            const pbsd_sockaddr_in* remoteAddr) /* = NULL */
 {
     assert(buf != NULL);
@@ -428,7 +414,7 @@ CProUdpTransport::UdpConnResetAsError(const pbsd_sockaddr_in* remoteAddr) /* = N
 }
 
 void
-CProUdpTransport::OnInput(PRO_INT64 sockId)
+CProUdpTransport::OnInput(int64_t sockId)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -529,8 +515,8 @@ EXIT:
 }
 
 void
-CProUdpTransport::OnError(PRO_INT64 sockId,
-                          long      errorCode)
+CProUdpTransport::OnError(int64_t sockId,
+                          long    errorCode)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -569,9 +555,9 @@ CProUdpTransport::OnError(PRO_INT64 sockId,
 }
 
 void
-CProUdpTransport::OnTimer(void*      factory,
-                          PRO_UINT64 timerId,
-                          PRO_INT64  userData)
+CProUdpTransport::OnTimer(void*    factory,
+                          uint64_t timerId,
+                          int64_t  userData)
 {
     assert(factory != NULL);
     assert(timerId > 0);

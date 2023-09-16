@@ -26,14 +26,6 @@
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
-
-/////////////////////////////////////////////////////////////////////////////
-////
-
-#if !defined(PRO_SERVICER_LENGTH)
-#define PRO_SERVICER_LENGTH 10000
-#endif
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -48,14 +40,12 @@ CRtpService::CreateInstance(const PRO_SSL_SERVER_CONFIG* sslConfig, /* = NULL */
         return (NULL);
     }
 
-    CRtpService* const service = new CRtpService(sslConfig, mmType);
-
-    return (service);
+    return new CRtpService(sslConfig, mmType);
 }
 
 CRtpService::CRtpService(const PRO_SSL_SERVER_CONFIG* sslConfig, /* = NULL */
                          RTP_MM_TYPE                  mmType)
-                         :
+:
 m_sslConfig(sslConfig),
 m_mmType(mmType)
 {
@@ -180,7 +170,7 @@ CRtpService::Release()
 
 void
 CRtpService::OnServiceAccept(IProServiceHost* serviceHost,
-                             PRO_INT64        sockId,
+                             int64_t          sockId,
                              bool             unixSocket,
                              const char*      localIp,
                              const char*      remoteIp,
@@ -296,7 +286,7 @@ CRtpService::OnServiceAccept(IProServiceHost* serviceHost,
 
 void
 CRtpService::OnHandshakeOk(IProTcpHandshaker* handshaker,
-                           PRO_INT64          sockId,
+                           int64_t            sockId,
                            bool               unixSocket,
                            const void*        buf,
                            unsigned long      size)
@@ -372,7 +362,7 @@ CRtpService::OnHandshakeOk(IProTcpHandshaker* handshaker,
         remotePort = pbsd_ntoh16(remoteAddr.sin_port);
     }
 
-    if (!CRtpPacket::ParseExtBuffer((char*)buf, (PRO_UINT16)size))
+    if (!CRtpPacket::ParseExtBuffer((char*)buf, (uint16_t)size))
     {
         ProCloseSockId(sockId);
     }
@@ -382,7 +372,7 @@ CRtpService::OnHandshakeOk(IProTcpHandshaker* handshaker,
         memcpy(
             &remoteInfo,
             (char*)buf + sizeof(RTP_EXT) + sizeof(RTP_HEADER),
-            (PRO_UINT16)size - sizeof(RTP_EXT) - sizeof(RTP_HEADER)
+            (uint16_t)size - sizeof(RTP_EXT) - sizeof(RTP_HEADER)
             );
         remoteInfo.localVersion  = pbsd_ntoh16(remoteInfo.localVersion);
         remoteInfo.remoteVersion = pbsd_ntoh16(remoteInfo.remoteVersion);
@@ -453,7 +443,7 @@ CRtpService::OnHandshakeError(IProTcpHandshaker* handshaker,
 void
 CRtpService::OnHandshakeOk(IProSslHandshaker* handshaker,
                            PRO_SSL_CTX*       ctx,
-                           PRO_INT64          sockId,
+                           int64_t            sockId,
                            bool               unixSocket,
                            const void*        buf,
                            unsigned long      size)
@@ -536,7 +526,7 @@ CRtpService::OnHandshakeOk(IProSslHandshaker* handshaker,
         remotePort = pbsd_ntoh16(remoteAddr.sin_port);
     }
 
-    if (!CRtpPacket::ParseExtBuffer((char*)buf, (PRO_UINT16)size))
+    if (!CRtpPacket::ParseExtBuffer((char*)buf, (uint16_t)size))
     {
         ProSslCtx_Delete(ctx);
         ProCloseSockId(sockId);
@@ -547,7 +537,7 @@ CRtpService::OnHandshakeOk(IProSslHandshaker* handshaker,
         memcpy(
             &remoteInfo,
             (char*)buf + sizeof(RTP_EXT) + sizeof(RTP_HEADER),
-            (PRO_UINT16)size - sizeof(RTP_EXT) - sizeof(RTP_HEADER)
+            (uint16_t)size - sizeof(RTP_EXT) - sizeof(RTP_HEADER)
             );
         remoteInfo.localVersion  = pbsd_ntoh16(remoteInfo.localVersion);
         remoteInfo.remoteVersion = pbsd_ntoh16(remoteInfo.remoteVersion);

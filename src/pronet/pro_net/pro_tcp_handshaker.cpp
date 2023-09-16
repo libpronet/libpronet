@@ -26,7 +26,6 @@
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -39,9 +38,7 @@
 CProTcpHandshaker*
 CProTcpHandshaker::CreateInstance()
 {
-    CProTcpHandshaker* const handshaker = new CProTcpHandshaker;
-
-    return (handshaker);
+    return new CProTcpHandshaker;
 }
 
 CProTcpHandshaker::CProTcpHandshaker()
@@ -64,7 +61,7 @@ CProTcpHandshaker::~CProTcpHandshaker()
 bool
 CProTcpHandshaker::Init(IProTcpHandshakerObserver* observer,
                         CProTpReactorTask*         reactorTask,
-                        PRO_INT64                  sockId,
+                        int64_t                    sockId,
                         bool                       unixSocket,
                         const void*                sendData,         /* = NULL */
                         size_t                     sendDataSize,     /* = 0 */
@@ -132,7 +129,7 @@ CProTcpHandshaker::Init(IProTcpHandshakerObserver* observer,
         m_reactorTask = reactorTask;
         m_sockId      = sockId;
         m_unixSocket  = unixSocket;
-        m_timerId     = reactorTask->ScheduleTimer(this, (PRO_UINT64)timeoutInSeconds * 1000, false, 0);
+        m_timerId     = reactorTask->ScheduleTimer(this, (uint64_t)timeoutInSeconds * 1000, false, 0);
     }
 
     return (true);
@@ -154,8 +151,7 @@ CProTcpHandshaker::Fini()
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(
-            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
 
         m_reactorTask = NULL;
         observer = m_observer;
@@ -166,7 +162,7 @@ CProTcpHandshaker::Fini()
 }
 
 void
-CProTcpHandshaker::OnInput(PRO_INT64 sockId)
+CProTcpHandshaker::OnInput(int64_t sockId)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -198,8 +194,7 @@ CProTcpHandshaker::OnInput(PRO_INT64 sockId)
             return;
         }
 
-        const int recvSize = pbsd_recv(
-            m_sockId, m_recvPool.ContinuousIdleBuf(), (int)idleSize, 0);
+        const int recvSize = pbsd_recv(m_sockId, m_recvPool.ContinuousIdleBuf(), (int)idleSize, 0);
         assert(recvSize <= (int)idleSize);
 
         if (recvSize > (int)idleSize)
@@ -237,8 +232,7 @@ CProTcpHandshaker::OnInput(PRO_INT64 sockId)
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(
-            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
 
         m_reactorTask = NULL;
         observer = m_observer;
@@ -250,7 +244,7 @@ CProTcpHandshaker::OnInput(PRO_INT64 sockId)
 }
 
 void
-CProTcpHandshaker::OnOutput(PRO_INT64 sockId)
+CProTcpHandshaker::OnOutput(int64_t sockId)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -356,8 +350,7 @@ EXIT:
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(
-            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
         if (!error)
         {
             m_sockId = -1; /* cut */
@@ -374,8 +367,7 @@ EXIT:
     }
     else
     {
-        observer->OnHandshakeOk(
-            (IProTcpHandshaker*)this, sockId, m_unixSocket, buf, size);
+        observer->OnHandshakeOk((IProTcpHandshaker*)this, sockId, m_unixSocket, buf, size);
     }
 
     ProFree(buf);
@@ -383,8 +375,8 @@ EXIT:
 }
 
 void
-CProTcpHandshaker::OnError(PRO_INT64 sockId,
-                           long      errorCode)
+CProTcpHandshaker::OnError(int64_t sockId,
+                           long    errorCode)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -410,8 +402,7 @@ CProTcpHandshaker::OnError(PRO_INT64 sockId,
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(
-            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
 
         m_reactorTask = NULL;
         observer = m_observer;
@@ -423,9 +414,9 @@ CProTcpHandshaker::OnError(PRO_INT64 sockId,
 }
 
 void
-CProTcpHandshaker::OnTimer(void*      factory,
-                           PRO_UINT64 timerId,
-                           PRO_INT64  userData)
+CProTcpHandshaker::OnTimer(void*    factory,
+                           uint64_t timerId,
+                           int64_t  userData)
 {
     assert(factory != NULL);
     assert(timerId > 0);
@@ -453,8 +444,7 @@ CProTcpHandshaker::OnTimer(void*      factory,
         m_reactorTask->CancelTimer(m_timerId);
         m_timerId = 0;
 
-        m_reactorTask->RemoveHandler(
-            m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
+        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_WRITE | PRO_MASK_READ);
 
         m_reactorTask = NULL;
         observer = m_observer;

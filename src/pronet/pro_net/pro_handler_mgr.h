@@ -56,33 +56,33 @@ public:
     ~CProHandlerMgr();
 
     bool AddHandler(
-        PRO_INT64         sockId,
+        int64_t           sockId,
         CProEventHandler* handler,
         unsigned long     mask
         );
 
     void RemoveHandler(
-        PRO_INT64     sockId,
+        int64_t       sockId,
         unsigned long mask
         );
 
-    PRO_INT64 GetMaxSockId() const;
+    int64_t GetMaxSockId() const;
 
-    unsigned long GetHandlerCount() const
+    size_t GetHandlerCount() const
     {
-        return ((unsigned long)m_sockId2HandlerInfo.size());
+        return m_sockId2HandlerInfo.size();
     }
 
-    PRO_HANDLER_INFO FindHandler(PRO_INT64 sockId) const;
+    PRO_HANDLER_INFO FindHandler(int64_t sockId) const;
 
-    const CProStlMap<PRO_INT64, PRO_HANDLER_INFO>& GetAllHandlers() const
+    const CProStlMap<int64_t, PRO_HANDLER_INFO>& GetAllHandlers() const
     {
-        return (m_sockId2HandlerInfo);
+        return m_sockId2HandlerInfo;
     }
 
 private:
 
-    CProStlMap<PRO_INT64, PRO_HANDLER_INFO> m_sockId2HandlerInfo;
+    CProStlMap<int64_t, PRO_HANDLER_INFO> m_sockId2HandlerInfo;
 
     DECLARE_SGI_POOL(0)
 };

@@ -26,22 +26,14 @@
 #include "rtp_base.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if defined(PRO_TCP2_PAYLOAD_SIZE)
-#undef  PRO_TCP2_PAYLOAD_SIZE
-#endif
-#define PRO_TCP2_PAYLOAD_SIZE (1024 * 63)
-
-#if !defined(PRO_TCP4_PAYLOAD_SIZE)
-#define PRO_TCP4_PAYLOAD_SIZE (1024 * 1024 * 96)
-#endif
-
 struct RTP_EXT
 {
-    PRO_UINT32    mmId;
+    uint32_t      mmId;
     RTP_MM_TYPE   mmType;
 
 #if defined(PRO_WORDS_BIGENDIAN)
@@ -56,7 +48,7 @@ struct RTP_EXT
     unsigned char keyFrame           : 1;
 #endif
 
-    PRO_UINT16    hdrAndPayloadSize; /* tcp message boundary */
+    uint16_t      hdrAndPayloadSize; /* tcp message boundary */
 
     DECLARE_SGI_POOL(0)
 };
@@ -64,34 +56,34 @@ struct RTP_EXT
 struct RTP_HEADER
 {
 #if defined(PRO_WORDS_BIGENDIAN)
-    unsigned char      v  : 2;
-    unsigned char      p  : 1;
-    unsigned char      x  : 1;
-    unsigned char      cc : 4;
+    unsigned char    v  : 2;
+    unsigned char    p  : 1;
+    unsigned char    x  : 1;
+    unsigned char    cc : 4;
 
-    unsigned char      m  : 1;
-    unsigned char      pt : 7;
+    unsigned char    m  : 1;
+    unsigned char    pt : 7;
 #else
-    unsigned char      cc : 4;
-    unsigned char      x  : 1;
-    unsigned char      p  : 1;
-    unsigned char      v  : 2;
+    unsigned char    cc : 4;
+    unsigned char    x  : 1;
+    unsigned char    p  : 1;
+    unsigned char    v  : 2;
 
-    unsigned char      pt : 7;
-    unsigned char      m  : 1;
+    unsigned char    pt : 7;
+    unsigned char    m  : 1;
 #endif
 
-    PRO_UINT16         seq;
-    PRO_UINT32         ts;
+    uint16_t         seq;
+    uint32_t         ts;
     union
     {
-        PRO_UINT32     ssrc;
+        uint32_t     ssrc;
         struct
         {
-            PRO_UINT16 dummy;
-            PRO_UINT16 len2;
+            uint16_t dummy;
+            uint16_t len2;
         };
-        PRO_UINT32     len4;
+        uint32_t     len4;
     };
 
     DECLARE_SGI_POOL(0)
@@ -115,12 +107,12 @@ public:
 
     static CRtpPacket* CreateInstance(
         const void*       payloadBuffer,
-        unsigned long     payloadSize,
+        size_t            payloadSize,
         RTP_EXT_PACK_MODE packMode
         );
 
     static CRtpPacket* CreateInstance(
-        unsigned long     payloadSize,
+        size_t            payloadSize,
         RTP_EXT_PACK_MODE packMode
         );
 
@@ -128,15 +120,15 @@ public:
 
     static bool ParseRtpBuffer(
         const char*  buffer,
-        PRO_UINT16   size,
+        uint16_t     size,
         RTP_HEADER&  hdr, /* network byte order */
         const char*& payloadBuffer,
-        PRO_UINT16&  payloadSize
+        uint16_t&    payloadSize
         );
 
     static bool ParseExtBuffer(
         const char* buffer,
-        PRO_UINT16  size
+        uint16_t    size
         );
 
     virtual unsigned long AddRef();
@@ -151,21 +143,21 @@ public:
 
     virtual char GetPayloadType() const;
 
-    virtual void SetSequence(PRO_UINT16 seq);
+    virtual void SetSequence(uint16_t seq);
 
-    virtual PRO_UINT16 GetSequence() const;
+    virtual uint16_t GetSequence() const;
 
-    virtual void SetTimeStamp(PRO_UINT32 ts);
+    virtual void SetTimeStamp(uint32_t ts);
 
-    virtual PRO_UINT32 GetTimeStamp() const;
+    virtual uint32_t GetTimeStamp() const;
 
-    virtual void SetSsrc(PRO_UINT32 ssrc);
+    virtual void SetSsrc(uint32_t ssrc);
 
-    virtual PRO_UINT32 GetSsrc() const;
+    virtual uint32_t GetSsrc() const;
 
-    virtual void SetMmId(PRO_UINT32 mmId);
+    virtual void SetMmId(uint32_t mmId);
 
-    virtual PRO_UINT32 GetMmId() const;
+    virtual uint32_t GetMmId() const;
 
     virtual void SetMmType(RTP_MM_TYPE mmType);
 
@@ -183,33 +175,33 @@ public:
 
     virtual void* GetPayloadBuffer();
 
-    virtual unsigned long GetPayloadSize() const;
+    virtual size_t GetPayloadSize() const;
 
-    virtual PRO_UINT16 GetPayloadSize16() const;
+    virtual uint16_t GetPayloadSize16() const;
 
     virtual RTP_EXT_PACK_MODE GetPackMode() const
     {
-        return (m_packMode);
+        return m_packMode;
     }
 
-    virtual void SetMagic(PRO_INT64 magic)
+    virtual void SetMagic(int64_t magic)
     {
         m_magic = magic;
     }
 
-    virtual PRO_INT64 GetMagic() const
+    virtual int64_t GetMagic() const
     {
-        return (m_magic);
+        return m_magic;
     }
 
-    void SetMagic2(PRO_INT64 magic2)
+    void SetMagic2(int64_t magic2)
     {
         m_magic2 = magic2;
     }
 
-    PRO_INT64 GetMagic2() const
+    int64_t GetMagic2() const
     {
-        return (m_magic2);
+        return m_magic2;
     }
 
     void SetUdpxSync(bool sync);
@@ -221,7 +213,7 @@ public:
      */
     const RTP_PACKET& GetPacket() const
     {
-        return (*m_packet);
+        return *m_packet;
     }
 
     /*
@@ -229,7 +221,7 @@ public:
      */
     RTP_PACKET& GetPacket()
     {
-        return (*m_packet);
+        return *m_packet;
     }
 
 private:
@@ -239,16 +231,16 @@ private:
     virtual ~CRtpPacket();
 
     void Init(
-        const void*   payloadBuffer,
-        unsigned long payloadSize
+        const void* payloadBuffer,
+        size_t      payloadSize
         );
 
 private:
 
     const RTP_EXT_PACK_MODE m_packMode;
-    PRO_UINT32              m_ssrc; /* for RTP_EPM_TCP2, RTP_EPM_TCP4 */
-    PRO_INT64               m_magic;
-    PRO_INT64               m_magic2;
+    uint32_t                m_ssrc; /* for RTP_EPM_TCP2, RTP_EPM_TCP4 */
+    int64_t                 m_magic;
+    int64_t                 m_magic2;
     RTP_PACKET*             m_packet;
 
     DECLARE_SGI_POOL(0)

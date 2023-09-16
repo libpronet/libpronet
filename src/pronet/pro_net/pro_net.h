@@ -85,7 +85,7 @@
 #define ____PRO_NET_H____
 
 #include "pro_a.h"
-#include <cstddef>
+#include "pro_z.h"
 
 #if defined(__cplusplus)
 extern "C" {
@@ -160,9 +160,9 @@ public:
     virtual unsigned long Release() = 0;
 
     virtual void OnTimer(
-        void*      factory,
-        PRO_UINT64 timerId,
-        PRO_INT64  userData
+        void*    factory,
+        uint64_t timerId,
+        int64_t  userData
         ) = 0;
 };
 #endif /* ____IProOnTimer____ */
@@ -184,24 +184,24 @@ public:
      *
      * 返回值为定时器id. 0无效
      */
-    virtual PRO_UINT64 ScheduleTimer(
+    virtual uint64_t ScheduleTimer(
         IProOnTimer* onTimer,
-        PRO_UINT64   timeSpan,  /* 定时周期(ms) */
+        uint64_t     timeSpan,  /* 定时周期(ms) */
         bool         recurring, /* 是否重复. 如果timeSpan为0, recurring必须为false */
-        PRO_INT64    userData = 0
+        int64_t      userData = 0
         ) = 0;
 
     /*
      * 创建一个用于链路心跳的普通定时器(心跳定时器)
      *
      * 各个心跳定时器的心跳时间点由内部算法决定, 内部会进行均匀化处理.
-     * 心跳事件发生时, 上层可以在OnTimer(...)回调里发送心跳数据包
+     * 心跳事件发生时, 上层可以在OnTimer()回调里发送心跳数据包
      *
      * 返回值为定时器id. 0无效
      */
-    virtual PRO_UINT64 ScheduleHeartbeatTimer(
+    virtual uint64_t ScheduleHeartbeatTimer(
         IProOnTimer* onTimer,
-        PRO_INT64    userData = 0
+        int64_t      userData = 0
         ) = 0;
 
     /*
@@ -214,24 +214,24 @@ public:
     /*
      * 删除一个普通定时器
      */
-    virtual void CancelTimer(PRO_UINT64 timerId) = 0;
+    virtual void CancelTimer(uint64_t timerId) = 0;
 
     /*
      * 创建一个多媒体定时器(高精度定时器)
      *
      * 返回值为定时器id. 0无效
      */
-    virtual PRO_UINT64 ScheduleMmTimer(
+    virtual uint64_t ScheduleMmTimer(
         IProOnTimer* onTimer,
-        PRO_UINT64   timeSpan,  /* 定时周期(ms) */
+        uint64_t     timeSpan,  /* 定时周期(ms) */
         bool         recurring, /* 是否重复. 如果timeSpan为0, recurring必须为false */
-        PRO_INT64    userData = 0
+        int64_t      userData = 0
         ) = 0;
 
     /*
      * 删除一个多媒体定时器(高精度定时器)
      */
-    virtual void CancelMmTimer(PRO_UINT64 timerId) = 0;
+    virtual void CancelMmTimer(uint64_t timerId) = 0;
 
     /*
      * 获取状态信息字符串
@@ -263,12 +263,12 @@ public:
     /*
      * 有原始连接进入时, 该函数将被回调
      *
-     * 该回调适用于ProCreateAcceptor(...)创建的接受器.
+     * 该回调适用于ProCreateAcceptor()创建的接受器.
      * 使用者负责sockId的资源维护
      */
     virtual void OnAccept(
         IProAcceptor*  acceptor,
-        PRO_INT64      sockId,     /* 套接字id */
+        int64_t        sockId,     /* 套接字id */
         bool           unixSocket, /* 是否unix套接字 */
         const char*    localIp,    /* 本地的ip地址. != NULL */
         const char*    remoteIp,   /* 远端的ip地址. != NULL */
@@ -278,12 +278,12 @@ public:
     /*
      * 有扩展协议连接进入时, 该函数将被回调
      *
-     * 该回调适用于ProCreateAcceptorEx(...)创建的接受器.
+     * 该回调适用于ProCreateAcceptorEx()创建的接受器.
      * 使用者负责sockId的资源维护
      */
     virtual void OnAccept(
         IProAcceptor*    acceptor,
-        PRO_INT64        sockId,     /* 套接字id */
+        int64_t          sockId,     /* 套接字id */
         bool             unixSocket, /* 是否unix套接字 */
         const char*      localIp,    /* 本地的ip地址. != NULL */
         const char*      remoteIp,   /* 远端的ip地址. != NULL */
@@ -312,12 +312,12 @@ public:
     /*
      * 有原始连接进入时, 该函数将被回调
      *
-     * 该回调适用于ProCreateServiceHost(...)创建的服务host.
+     * 该回调适用于ProCreateServiceHost()创建的服务host.
      * 使用者负责sockId的资源维护
      */
     virtual void OnServiceAccept(
         IProServiceHost* serviceHost,
-        PRO_INT64        sockId,     /* 套接字id */
+        int64_t          sockId,     /* 套接字id */
         bool             unixSocket, /* 是否unix套接字 */
         const char*      localIp,    /* 本地的ip地址. != NULL */
         const char*      remoteIp,   /* 远端的ip地址. != NULL */
@@ -327,12 +327,12 @@ public:
     /*
      * 有扩展协议连接进入时, 该函数将被回调
      *
-     * 该回调适用于ProCreateServiceHostEx(...)创建的服务host.
+     * 该回调适用于ProCreateServiceHostEx()创建的服务host.
      * 使用者负责sockId的资源维护
      */
     virtual void OnServiceAccept(
         IProServiceHost* serviceHost,
-        PRO_INT64        sockId,     /* 套接字id */
+        int64_t          sockId,     /* 套接字id */
         bool             unixSocket, /* 是否unix套接字 */
         const char*      localIp,    /* 本地的ip地址.     != NULL */
         const char*      remoteIp,   /* 远端的ip地址.     != NULL */
@@ -364,12 +364,12 @@ public:
     /*
      * 原始连接成功时, 该函数将被回调
      *
-     * 该回调适用于ProCreateConnector(...)创建的连接器.
+     * 该回调适用于ProCreateConnector()创建的连接器.
      * 使用者负责sockId的资源维护
      */
     virtual void OnConnectOk(
         IProConnector* connector,
-        PRO_INT64      sockId,     /* 套接字id */
+        int64_t        sockId,     /* 套接字id */
         bool           unixSocket, /* 是否unix套接字 */
         const char*    remoteIp,   /* 远端的ip地址. != NULL */
         unsigned short remotePort  /* 远端的端口号. > 0 */
@@ -378,7 +378,7 @@ public:
     /*
      * 原始连接出错或超时时, 该函数将被回调
      *
-     * 该回调适用于ProCreateConnector(...)创建的连接器
+     * 该回调适用于ProCreateConnector()创建的连接器
      */
     virtual void OnConnectError(
         IProConnector* connector,
@@ -390,12 +390,12 @@ public:
     /*
      * 扩展协议连接成功时, 该函数将被回调
      *
-     * 该回调适用于ProCreateConnectorEx(...)创建的连接器
+     * 该回调适用于ProCreateConnectorEx()创建的连接器
      * 使用者负责sockId的资源维护
      */
     virtual void OnConnectOk(
         IProConnector*   connector,
-        PRO_INT64        sockId,     /* 套接字id */
+        int64_t          sockId,     /* 套接字id */
         bool             unixSocket, /* 是否unix套接字 */
         const char*      remoteIp,   /* 远端的ip地址. != NULL */
         unsigned short   remotePort, /* 远端的端口号. > 0 */
@@ -407,7 +407,7 @@ public:
     /*
      * 扩展协议连接出错或超时时, 该函数将被回调
      *
-     * 该回调适用于ProCreateConnectorEx(...)创建的连接器
+     * 该回调适用于ProCreateConnectorEx()创建的连接器
      */
     virtual void OnConnectError(
         IProConnector* connector,
@@ -446,7 +446,7 @@ public:
      */
     virtual void OnHandshakeOk(
         IProTcpHandshaker* handshaker,
-        PRO_INT64          sockId,     /* 套接字id */
+        int64_t            sockId,     /* 套接字id */
         bool               unixSocket, /* 是否unix套接字 */
         const void*        buf,        /* 握手数据. 可以是NULL */
         unsigned long      size        /* 数据长度. 可以是0 */
@@ -483,12 +483,12 @@ public:
      * 握手完成后, 上层应该把(ctx, sockId)包装成IProTransport,
      * 或释放(ctx, sockId)对应的资源
      *
-     * 调用ProSslCtx_GetSuite(...)可以获知当前使用的加密套件
+     * 调用ProSslCtx_GetSuite()可以获知当前使用的加密套件
      */
     virtual void OnHandshakeOk(
         IProSslHandshaker* handshaker,
         PRO_SSL_CTX*       ctx,        /* ssl上下文 */
-        PRO_INT64          sockId,     /* 套接字id */
+        int64_t            sockId,     /* 套接字id */
         bool               unixSocket, /* 是否unix套接字 */
         const void*        buf,        /* 握手数据. 可以是NULL */
         unsigned long      size        /* 数据长度. 可以是0 */
@@ -510,15 +510,15 @@ public:
 /*
  * 接收池
  *
- * 必须在IProTransportObserver::OnRecv(...)的线程上下文里使用, 否则不安全
+ * 必须在IProTransportObserver::OnRecv()的线程上下文里使用, 否则不安全
  *
  * 对于tcp/ssl传输器, 使用环型接收池.
- * 由于tcp是流式工作的, 收端动力数与发端动力数不一定相同, 所以, 在OnRecv(...)
+ * 由于tcp是流式工作的, 收端动力数与发端动力数不一定相同, 所以, 在OnRecv()
  * 里应该尽量取走接收池内的数据. 如果没有新的数据到来, 反应器不会再次报告接收
  * 池内还有剩余数据这件事
  *
  * 对于udp/mcast传输器, 使用线性接收池.
- * 为防止接收池空间不足导致EMSGSIZE错误, 在OnRecv(...)里应该收完全部数据
+ * 为防止接收池空间不足导致EMSGSIZE错误, 在OnRecv()里应该收完全部数据
  *
  * 另外, 当反应器报告套接字内有数据可读时, 如果接收池已经<<满了>>, 那么该套接
  * 字将被关闭!!! 这说明收端和发端的配合逻辑有问题!!!
@@ -585,7 +585,7 @@ public:
      *
      * 如非必需, 最好不要直接操作底层的套接字
      */
-    virtual PRO_INT64 GetSockId() const = 0;
+    virtual int64_t GetSockId() const = 0;
 
     /*
      * 获取套接字的本地ip地址
@@ -624,22 +624,22 @@ public:
      * 发送数据
      *
      * 对于tcp, 数据将放到发送池里, 忽略remoteAddr参数. actionId是上层分配的
-     * 一个值, 用于标识这次发送动作, OnSend(...)回调时会带回该值;
+     * 一个值, 用于标识这次发送动作, OnSend()回调时会带回该值;
      * 对于udp, 数据将直接发送, 如果remoteAddr参数无效, 则使用默认的远端地址
      *
-     * 如果返回false, 表示发送忙, 上层应该缓冲数据以待OnSend(...)回调拉取
+     * 如果返回false, 表示发送忙, 上层应该缓冲数据以待OnSend()回调拉取
      */
     virtual bool SendData(
         const void*             buf,
         size_t                  size,
-        PRO_UINT64              actionId   = 0,   /* for tcp */
+        uint64_t                actionId   = 0,   /* for tcp */
         const pbsd_sockaddr_in* remoteAddr = NULL /* for udp */
         ) = 0;
 
     /*
      * 请求回调一个OnSend事件(for CProTcpTransport & CProSslTransport)
      *
-     * 网络发送能力缓解时, OnSend(...)回调才会过来
+     * 网络发送能力缓解时, OnSend()回调才会过来
      */
     virtual void RequestOnSend() = 0;
 
@@ -666,7 +666,7 @@ public:
     /*
      * 启动心跳定时器
      *
-     * 心跳事件发生时, OnHeartbeat(...)将被回调
+     * 心跳事件发生时, OnHeartbeat()将被回调
      */
     virtual void StartHeartbeat() = 0;
 
@@ -702,12 +702,12 @@ public:
      * 数据抵达套接字的接收缓冲区时, 该函数将被回调
      *
      * 对于tcp/ssl传输器, 使用环型接收池.
-     * 由于tcp是流式工作的, 收端动力数与发端动力数不一定相同, 所以, 在OnRecv(...)
+     * 由于tcp是流式工作的, 收端动力数与发端动力数不一定相同, 所以, 在OnRecv()
      * 里应该尽量取走接收池内的数据. 如果没有新的数据到来, 反应器不会再次报告接收
      * 池内还有剩余数据这件事
      *
      * 对于udp/mcast传输器, 使用线性接收池.
-     * 为防止接收池空间不足导致EMSGSIZE错误, 在OnRecv(...)里应该收完全部数据
+     * 为防止接收池空间不足导致EMSGSIZE错误, 在OnRecv()里应该收完全部数据
      *
      * 另外, 当反应器报告套接字内有数据可读时, 如果接收池已经<<满了>>, 那么该套接
      * 字将被关闭!!! 这说明收端和发端的配合逻辑有问题!!!
@@ -718,14 +718,14 @@ public:
         ) = 0;
 
     /*
-     * 数据被成功送入套接字的发送缓冲区时, 或上层调用过RequestOnSend(...),
+     * 数据被成功送入套接字的发送缓冲区时, 或上层调用过RequestOnSend(),
      * 该函数将被回调
      *
-     * 如果回调由RequestOnSend(...)触发, 则actionId为0
+     * 如果回调由RequestOnSend()触发, 则actionId为0
      */
     virtual void OnSend(
         IProTransport* trans,
-        PRO_UINT64     actionId
+        uint64_t       actionId
         ) = 0;
 
     /*
@@ -822,7 +822,7 @@ ProDeleteReactor(IProReactor* reactor);
  *
  * 返回值: 接受器对象或NULL
  *
- * 说明: 可以使用ProGetAcceptorPort(...)获取实际的端口号
+ * 说明: 可以使用ProGetAcceptorPort()获取实际的端口号
  */
 PRO_NET_API
 IProAcceptor*
@@ -843,7 +843,7 @@ ProCreateAcceptor(IProAcceptorObserver* observer,
  *
  * 返回值: 接受器对象或NULL
  *
- * 说明: 可以使用ProGetAcceptorPort(...)获取实际的端口号
+ * 说明: 可以使用ProGetAcceptorPort()获取实际的端口号
  *
  *       扩展协议握手期间, 服务id用于服务端在握手初期识别客户端.
  *       服务端发送nonce给客户端, 客户端发送(serviceId, serviceOpt)给服务端,
@@ -963,7 +963,7 @@ ProDeleteConnector(IProConnector* connector);
  * 参数:
  * observer         : 回调目标
  * reactor          : 反应器
- * sockId           : 套接字id. 来源于OnAccept(...)或OnConnectOk(...)
+ * sockId           : 套接字id. 来源于OnAccept()或OnConnectOk()
  * unixSocket       : 是否unix套接字
  * sendData         : 希望发送的数据
  * sendDataSize     : 希望发送的数据长度
@@ -979,7 +979,7 @@ PRO_NET_API
 IProTcpHandshaker*
 ProCreateTcpHandshaker(IProTcpHandshakerObserver* observer,
                        IProReactor*               reactor,
-                       PRO_INT64                  sockId,
+                       int64_t                    sockId,
                        bool                       unixSocket,
                        const void*                sendData         = NULL,
                        size_t                     sendDataSize     = 0,
@@ -1007,8 +1007,8 @@ ProDeleteTcpHandshaker(IProTcpHandshaker* handshaker);
  * 参数:
  * observer         : 回调目标
  * reactor          : 反应器
- * ctx              : ssl上下文. 通过ProSslCtx_Creates(...)或ProSslCtx_Createc(...)创建
- * sockId           : 套接字id. 来源于OnAccept(...)或OnConnectOk(...)
+ * ctx              : ssl上下文. 通过ProSslCtx_Creates()或ProSslCtx_Createc()创建
+ * sockId           : 套接字id. 来源于OnAccept()或OnConnectOk()
  * unixSocket       : 是否unix套接字
  * sendData         : 希望发送的数据
  * sendDataSize     : 希望发送的数据长度
@@ -1027,7 +1027,7 @@ IProSslHandshaker*
 ProCreateSslHandshaker(IProSslHandshakerObserver* observer,
                        IProReactor*               reactor,
                        PRO_SSL_CTX*               ctx,
-                       PRO_INT64                  sockId,
+                       int64_t                    sockId,
                        bool                       unixSocket,
                        const void*                sendData         = NULL,
                        size_t                     sendDataSize     = 0,
@@ -1055,7 +1055,7 @@ ProDeleteSslHandshaker(IProSslHandshaker* handshaker);
  * 参数:
  * observer        : 回调目标
  * reactor         : 反应器
- * sockId          : 套接字id. 来源于OnAccept(...)或OnConnectOk(...)
+ * sockId          : 套接字id. 来源于OnAccept()或OnConnectOk()
  * unixSocket      : 是否unix套接字
  * sockBufSizeRecv : 套接字的系统接收缓冲区字节数. 默认auto
  * sockBufSizeSend : 套接字的系统发送缓冲区字节数. 默认auto
@@ -1070,7 +1070,7 @@ PRO_NET_API
 IProTransport*
 ProCreateTcpTransport(IProTransportObserver* observer,
                       IProReactor*           reactor,
-                      PRO_INT64              sockId,
+                      int64_t                sockId,
                       bool                   unixSocket,
                       size_t                 sockBufSizeRecv = 0,
                       size_t                 sockBufSizeSend = 0,
@@ -1094,7 +1094,7 @@ ProCreateTcpTransport(IProTransportObserver* observer,
  *
  * 返回值: 传输器对象或NULL
  *
- * 说明: 可以使用IProTransport::GetLocalPort(...)获取实际的端口号
+ * 说明: 可以使用IProTransport::GetLocalPort()获取实际的端口号
  */
 PRO_NET_API
 IProTransport*
@@ -1128,7 +1128,7 @@ ProCreateUdpTransport(IProTransportObserver* observer,
  *       推荐的多播地址为[224.0.1.0 ~ 238.255.255.255],
  *       RFC-1112(IGMPv1), RFC-2236(IGMPv2), RFC-3376(IGMPv3)
  *
- *       可以使用IProTransport::GetLocalPort(...)获取实际的端口号
+ *       可以使用IProTransport::GetLocalPort()获取实际的端口号
  */
 PRO_NET_API
 IProTransport*
@@ -1148,7 +1148,7 @@ ProCreateMcastTransport(IProTransportObserver* observer,
  * observer        : 回调目标
  * reactor         : 反应器
  * ctx             : ssl上下文. 来自于IProSslHandshaker的握手结果回调
- * sockId          : 套接字id. 来源于OnAccept(...)或OnConnectOk(...)
+ * sockId          : 套接字id. 来源于OnAccept()或OnConnectOk()
  * unixSocket      : 是否unix套接字
  * sockBufSizeRecv : 套接字的系统接收缓冲区字节数. 默认auto
  * sockBufSizeSend : 套接字的系统发送缓冲区字节数. 默认auto
@@ -1166,7 +1166,7 @@ IProTransport*
 ProCreateSslTransport(IProTransportObserver* observer,
                       IProReactor*           reactor,
                       PRO_SSL_CTX*           ctx,
-                      PRO_INT64              sockId,
+                      int64_t                sockId,
                       bool                   unixSocket,
                       size_t                 sockBufSizeRecv = 0,
                       size_t                 sockBufSizeSend = 0,
@@ -1313,7 +1313,7 @@ ProDeleteServiceHost(IProServiceHost* host);
  * 说明: 主要用于保留rtcp端口
  */
 PRO_NET_API
-PRO_INT64
+int64_t
 ProOpenTcpSockId(const char*    localIp, /* = NULL */
                  unsigned short localPort);
 
@@ -1329,7 +1329,7 @@ ProOpenTcpSockId(const char*    localIp, /* = NULL */
  * 说明: 主要用于保留rtcp端口
  */
 PRO_NET_API
-PRO_INT64
+int64_t
 ProOpenUdpSockId(const char*    localIp, /* = NULL */
                  unsigned short localPort);
 
@@ -1342,13 +1342,13 @@ ProOpenUdpSockId(const char*    localIp, /* = NULL */
  *
  * 返回值: 无
  *
- * 说明: OnAccept(...)或OnConnectOk(...)会产生套接字, 当产生的套接字没有成功
+ * 说明: OnAccept()或OnConnectOk()会产生套接字, 当产生的套接字没有成功
  *       包装成IProTransport时, 应该使用该函数释放sockId对应的套接字资源
  */
 PRO_NET_API
 void
-ProCloseSockId(PRO_INT64 sockId,
-               bool      linger = false);
+ProCloseSockId(int64_t sockId,
+               bool    linger = false);
 
 /////////////////////////////////////////////////////////////////////////////
 ////

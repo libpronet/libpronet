@@ -26,6 +26,7 @@
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -48,16 +49,16 @@ struct MSG_SERVER_CONFIG_INFO
         msgs_enable_ssl          = true;
         msgs_ssl_forced          = false;
         msgs_ssl_enable_sha1cert = true;
-        msgs_ssl_keyfile         = "./server.key";
+        msgs_ssl_keyfile         = "server.key";
 
         msgs_log_loop_bytes      = 50 * 1000 * 1000;
         msgs_log_level_green     = 0;
 
-        msgs_ssl_cafiles.push_back("./ca.crt");
+        msgs_ssl_cafiles.push_back("ca.crt");
         msgs_ssl_cafiles.push_back("");
         msgs_ssl_crlfiles.push_back("");
         msgs_ssl_crlfiles.push_back("");
-        msgs_ssl_certfiles.push_back("./server.crt");
+        msgs_ssl_certfiles.push_back("server.crt");
         msgs_ssl_certfiles.push_back("");
     }
 
@@ -111,7 +112,7 @@ struct MSG_SERVER_CONFIG_INFO
 
 struct MSG_USER_CTX
 {
-    CProStlSet<PRO_UINT16> iids;
+    CProStlSet<uint16_t> iids;
 
     DECLARE_SGI_POOL(0)
 };
@@ -159,9 +160,9 @@ private:
         const RTP_MSG_USER* c2sUser, /* = NULL */
         const char          hash[32],
         const char          nonce[32],
-        PRO_UINT64*         userId,
-        PRO_UINT16*         instId,
-        PRO_INT64*          appData,
+        uint64_t*           userId,
+        uint16_t*           instId,
+        int64_t*            appData,
         bool*               isC2s
         );
 
@@ -170,7 +171,7 @@ private:
         const RTP_MSG_USER* user,
         const char*         userPublicIp,
         const RTP_MSG_USER* c2sUser, /* = NULL */
-        PRO_INT64           appData
+        int64_t             appData
         );
 
     virtual void OnCloseUser(
@@ -183,7 +184,7 @@ private:
     virtual void OnHeartbeatUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
-        PRO_INT64           peerAliveTick
+        int64_t             peerAliveTick
         )
     {
     }
@@ -192,7 +193,7 @@ private:
         IRtpMsgServer*      msgServer,
         const void*         buf,
         unsigned long       size,
-        PRO_UINT16          charset,
+        uint16_t            charset,
         const RTP_MSG_USER* srcUser
         )
     {
@@ -200,16 +201,16 @@ private:
 
 private:
 
-    CProLogFile&                         m_logFile;
-    CDbConnection&                       m_db;
-    IProReactor*                         m_reactor;
-    MSG_SERVER_CONFIG_INFO               m_configInfo;
-    PRO_SSL_SERVER_CONFIG*               m_sslConfig;
-    IRtpMsgServer*                       m_msgServer;
+    CProLogFile&                       m_logFile;
+    CDbConnection&                     m_db;
+    IProReactor*                       m_reactor;
+    MSG_SERVER_CONFIG_INFO             m_configInfo;
+    PRO_SSL_SERVER_CONFIG*             m_sslConfig;
+    IRtpMsgServer*                     m_msgServer;
 
-    CProStlMap<PRO_UINT64, MSG_USER_CTX> m_uid2Ctx[256]; /* cid0 ~ cid255 */
+    CProStlMap<uint64_t, MSG_USER_CTX> m_uid2Ctx[256]; /* cid0 ~ cid255 */
 
-    CProThreadMutex                      m_lock;
+    CProThreadMutex                    m_lock;
 
     DECLARE_SGI_POOL(0)
 };

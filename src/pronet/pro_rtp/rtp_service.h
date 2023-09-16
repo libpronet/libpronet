@@ -25,6 +25,7 @@
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -67,7 +68,7 @@ private:
 
     virtual void OnServiceAccept(
         IProServiceHost* serviceHost,
-        PRO_INT64        sockId,
+        int64_t          sockId,
         bool             unixSocket,
         const char*      localIp,
         const char*      remoteIp,
@@ -78,7 +79,7 @@ private:
 
     virtual void OnServiceAccept(
         IProServiceHost* serviceHost,
-        PRO_INT64        sockId,
+        int64_t          sockId,
         bool             unixSocket,
         const char*      localIp,
         const char*      remoteIp,
@@ -90,7 +91,7 @@ private:
 
     virtual void OnHandshakeOk(
         IProTcpHandshaker* handshaker,
-        PRO_INT64          sockId,
+        int64_t            sockId,
         bool               unixSocket,
         const void*        buf,
         unsigned long      size
@@ -104,7 +105,7 @@ private:
     virtual void OnHandshakeOk(
         IProSslHandshaker* handshaker,
         PRO_SSL_CTX*       ctx,
-        PRO_INT64          sockId,
+        int64_t            sockId,
         bool               unixSocket,
         const void*        buf,
         unsigned long      size

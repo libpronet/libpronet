@@ -30,7 +30,6 @@
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_unicode.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -76,9 +75,8 @@ CTest::Init(IProReactor*                  reactor,
      * DNS, for reconnecting
      */
     {
-        const PRO_UINT32 serverIp =
-            pbsd_inet_aton(configInfo.msgc_server_ip.c_str());
-        if (serverIp == (PRO_UINT32)-1 || serverIp == 0)
+        const uint32_t serverIp = pbsd_inet_aton(configInfo.msgc_server_ip.c_str());
+        if (serverIp == (uint32_t)-1 || serverIp == 0)
         {
             return (false);
         }
@@ -149,8 +147,7 @@ CTest::Init(IProReactor*                  reactor,
                     goto EXIT;
                 }
 
-                ProSslClientConfig_EnableSha1Cert(
-                    sslConfig, configInfo.msgc_ssl_enable_sha1cert);
+                ProSslClientConfig_EnableSha1Cert(sslConfig, configInfo.msgc_ssl_enable_sha1cert);
 
                 if (!ProSslClientConfig_SetCaList(
                     sslConfig,
@@ -263,7 +260,7 @@ CTest::SendMsg(const char* msg)
     }
 
 #if defined(_WIN32)
-    CProStlString tmp = "";
+    CProStlString tmp;
     ProAnsiToUtf8(msg, tmp);
     msg = tmp.c_str();
 #endif
@@ -312,7 +309,7 @@ CTest::SendMsg(const char* msg)
             RTP_MSG_USER dstUser;
             dstUser.classId = myUser.classId;
 
-            const PRO_INT64 myUid = myUser.UserId();
+            const int64_t myUid = myUser.UserId();
 
             for (int i = 1; i <= 100; ++i)
             {
@@ -342,8 +339,7 @@ CTest::SendMsg(const char* msg)
             dstUsers.push_back(*itr);
         }
 
-        m_msgClient->SendMsg(msg, (unsigned long)strlen(msg), 0,
-            &dstUsers[0], (unsigned char)dstUsers.size());
+        m_msgClient->SendMsg(msg, strlen(msg), 0, &dstUsers[0], (unsigned char)dstUsers.size());
     }
 }
 
@@ -366,7 +362,7 @@ CTest::SendMsg(const char*         msg,
     }
 
 #if defined(_WIN32)
-    CProStlString tmp = "";
+    CProStlString tmp;
     ProAnsiToUtf8(msg, tmp);
     msg = tmp.c_str();
 #endif
@@ -386,7 +382,7 @@ CTest::SendMsg(const char*         msg,
             return;
         }
 
-        m_msgClient->SendMsg(msg, (unsigned long)strlen(msg), 0, dstUser, 1);
+        m_msgClient->SendMsg(msg, strlen(msg), 0, dstUser, 1);
     }
 }
 
@@ -463,18 +459,18 @@ CTest::OnOkMsg(IRtpMsgClient*      msgClient,
         char suiteName[64] = "";
         msgClient->GetSslSuite(suiteName);
 
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         printf(
             "\n"
             "%s \n"
-            " CTest::OnOkMsg(id : %u-" PRO_PRT64U "-%u, publicIp : %s,"
+            " CTest::OnOkMsg(id : %u-%llu-%u, publicIp : %s,"
             " sslSuite : %s, server : %s:%u) \n"
             ,
             timeString.c_str(),
             (unsigned int)myUser->classId,
-            myUser->UserId(),
+            (unsigned long long)myUser->UserId(),
             (unsigned int)myUser->instId,
             myPublicIp,
             suiteName,
@@ -488,7 +484,7 @@ void
 CTest::OnRecvMsg(IRtpMsgClient*      msgClient,
                  const void*         buf,
                  unsigned long       size,
-                 PRO_UINT16          charset,
+                 uint16_t            charset,
                  const RTP_MSG_USER* srcUser)
 {
     assert(msgClient != NULL);
@@ -516,7 +512,7 @@ CTest::OnRecvMsg(IRtpMsgClient*      msgClient,
 
     CProStlString msg((char*)buf, size);
 #if defined(_WIN32)
-    CProStlString tmp = "";
+    CProStlString tmp;
     ProUtf8ToAnsi(msg, tmp);
     msg = tmp;
 #endif
@@ -525,22 +521,21 @@ CTest::OnRecvMsg(IRtpMsgClient*      msgClient,
         RTP_MSG_USER myUser;
         msgClient->GetUser(&myUser);
 
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         printf(
             "\n"
             "%s \n"
-            " CTest::OnRecvMsg(from : %u-" PRO_PRT64U "-%u,"
-            " me : %u-" PRO_PRT64U "-%u) \n"
+            " CTest::OnRecvMsg(from : %u-%llu-%u, me : %u-%llu-%u) \n"
             "\t %s \n"
             ,
             timeString.c_str(),
             (unsigned int)srcUser->classId,
-            srcUser->UserId(),
+            (unsigned long long)srcUser->UserId(),
             (unsigned int)srcUser->instId,
             (unsigned int)myUser.classId,
-            myUser.UserId(),
+            (unsigned long long)myUser.UserId(),
             (unsigned int)myUser.instId,
             msg.c_str()
             );
@@ -577,18 +572,18 @@ CTest::OnCloseMsg(IRtpMsgClient* msgClient,
         RTP_MSG_USER myUser;
         msgClient->GetUser(&myUser);
 
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         printf(
             "\n"
             "%s \n"
-            " CTest::OnCloseMsg(id : %u-" PRO_PRT64U "-%u,"
+            " CTest::OnCloseMsg(id : %u-%llu-%u,"
             " errorCode : [%d, %d], tcpConnected : %d, server : %s:%u) \n"
             ,
             timeString.c_str(),
             (unsigned int)myUser.classId,
-            myUser.UserId(),
+            (unsigned long long)myUser.UserId(),
             (unsigned int)myUser.instId,
             (int)errorCode,
             (int)sslCode,

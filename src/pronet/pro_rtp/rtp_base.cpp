@@ -34,8 +34,6 @@
 #include <windows.h>
 #endif
 
-#include <cassert>
-
 #if defined(__cplusplus)
 extern "C" {
 #endif
@@ -52,12 +50,12 @@ static CRtpPortAllocator*     g_s_tcpPortAllocator   = NULL;
 static volatile unsigned long g_s_keepaliveInSeconds = 60;
 static volatile unsigned long g_s_flowctrlInSeconds  = 1;
 static volatile unsigned long g_s_statInSeconds      = 5;
-static unsigned long          g_s_udpSockBufSizeRecv[256]; /* mmType0 ~ mmType255 */
-static unsigned long          g_s_udpSockBufSizeSend[256]; /* mmType0 ~ mmType255 */
-static unsigned long          g_s_udpRecvPoolSize[256];    /* mmType0 ~ mmType255 */
-static unsigned long          g_s_tcpSockBufSizeRecv[256]; /* mmType0 ~ mmType255 */
-static unsigned long          g_s_tcpSockBufSizeSend[256]; /* mmType0 ~ mmType255 */
-static unsigned long          g_s_tcpRecvPoolSize[256];    /* mmType0 ~ mmType255 */
+static size_t                 g_s_udpSockBufSizeRecv[256]; /* mmType0 ~ mmType255 */
+static size_t                 g_s_udpSockBufSizeSend[256]; /* mmType0 ~ mmType255 */
+static size_t                 g_s_udpRecvPoolSize[256];    /* mmType0 ~ mmType255 */
+static size_t                 g_s_tcpSockBufSizeRecv[256]; /* mmType0 ~ mmType255 */
+static size_t                 g_s_tcpSockBufSizeSend[256]; /* mmType0 ~ mmType255 */
+static size_t                 g_s_tcpRecvPoolSize[256];    /* mmType0 ~ mmType255 */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -119,43 +117,35 @@ ProRtpVersion(unsigned char* major, /* = NULL */
 PRO_RTP_API
 IRtpPacket*
 CreateRtpPacket(const void*       payloadBuffer,
-                unsigned long     payloadSize,
+                size_t            payloadSize,
                 RTP_EXT_PACK_MODE packMode) /* = RTP_EPM_DEFAULT */
 {
-    CRtpPacket* const packet =
-        CRtpPacket::CreateInstance(payloadBuffer, payloadSize, packMode);
-
-    return (packet);
+    return CRtpPacket::CreateInstance(payloadBuffer, payloadSize, packMode);
 }
 
 PRO_RTP_API
 IRtpPacket*
-CreateRtpPacketSpace(unsigned long     payloadSize,
+CreateRtpPacketSpace(size_t            payloadSize,
                      RTP_EXT_PACK_MODE packMode) /* = RTP_EPM_DEFAULT */
 {
-    CRtpPacket* const packet =
-        CRtpPacket::CreateInstance(payloadSize, packMode);
-
-    return (packet);
+    return CRtpPacket::CreateInstance(payloadSize, packMode);
 }
 
 PRO_RTP_API
 IRtpPacket*
 CloneRtpPacket(const IRtpPacket* packet)
 {
-    CRtpPacket* const newPacket = CRtpPacket::Clone(packet);
-
-    return (newPacket);
+    return CRtpPacket::Clone(packet);
 }
 
 PRO_RTP_API
 IRtpPacket*
 ParseRtpStreamToPacket(const void* streamBuffer,
-                       PRO_UINT16  streamSize)
+                       uint16_t    streamSize)
 {
     RTP_HEADER  hdr;
     const char* payloadBuffer = NULL;
-    PRO_UINT16  payloadSize   = 0;
+    uint16_t    payloadSize   = 0;
 
     const bool ret = CRtpPacket::ParseRtpBuffer(
         (char*)streamBuffer,
@@ -191,7 +181,7 @@ ParseRtpStreamToPacket(const void* streamBuffer,
 PRO_RTP_API
 const void*
 FindRtpStreamFromPacket(const IRtpPacket* packet,
-                        PRO_UINT16*       streamSize)
+                        uint16_t*         streamSize)
 {
     assert(packet != NULL);
     assert(streamSize != NULL);
@@ -206,7 +196,7 @@ FindRtpStreamFromPacket(const IRtpPacket* packet,
     }
 
     const char* const payloadBuffer = (char*)packet->GetPayloadBuffer();
-    const PRO_UINT16  payloadSize   = packet->GetPayloadSize16();
+    const uint16_t    payloadSize   = packet->GetPayloadSize16();
 
     *streamSize = payloadSize + sizeof(RTP_HEADER);
 
@@ -342,10 +332,10 @@ GetRtpStatTimeSpan()
 
 PRO_RTP_API
 void
-SetRtpUdpSocketParams(RTP_MM_TYPE   mmType,
-                      unsigned long sockBufSizeRecv, /* = 0 */
-                      unsigned long sockBufSizeSend, /* = 0 */
-                      unsigned long recvPoolSize)    /* = 0 */
+SetRtpUdpSocketParams(RTP_MM_TYPE mmType,
+                      size_t      sockBufSizeRecv, /* = 0 */
+                      size_t      sockBufSizeSend, /* = 0 */
+                      size_t      recvPoolSize)    /* = 0 */
 {
     if (sockBufSizeRecv > 0)
     {
@@ -363,10 +353,10 @@ SetRtpUdpSocketParams(RTP_MM_TYPE   mmType,
 
 PRO_RTP_API
 void
-GetRtpUdpSocketParams(RTP_MM_TYPE    mmType,
-                      unsigned long* sockBufSizeRecv, /* = NULL */
-                      unsigned long* sockBufSizeSend, /* = NULL */
-                      unsigned long* recvPoolSize)    /* = NULL */
+GetRtpUdpSocketParams(RTP_MM_TYPE mmType,
+                      size_t*     sockBufSizeRecv, /* = NULL */
+                      size_t*     sockBufSizeSend, /* = NULL */
+                      size_t*     recvPoolSize)    /* = NULL */
 {
     if (sockBufSizeRecv != NULL)
     {
@@ -384,10 +374,10 @@ GetRtpUdpSocketParams(RTP_MM_TYPE    mmType,
 
 PRO_RTP_API
 void
-SetRtpTcpSocketParams(RTP_MM_TYPE   mmType,
-                      unsigned long sockBufSizeRecv, /* = 0 */
-                      unsigned long sockBufSizeSend, /* = 0 */
-                      unsigned long recvPoolSize)    /* = 0 */
+SetRtpTcpSocketParams(RTP_MM_TYPE mmType,
+                      size_t      sockBufSizeRecv, /* = 0 */
+                      size_t      sockBufSizeSend, /* = 0 */
+                      size_t      recvPoolSize)    /* = 0 */
 {
     if (sockBufSizeRecv > 0)
     {
@@ -405,10 +395,10 @@ SetRtpTcpSocketParams(RTP_MM_TYPE   mmType,
 
 PRO_RTP_API
 void
-GetRtpTcpSocketParams(RTP_MM_TYPE    mmType,
-                      unsigned long* sockBufSizeRecv, /* = NULL */
-                      unsigned long* sockBufSizeSend, /* = NULL */
-                      unsigned long* recvPoolSize)    /* = NULL */
+GetRtpTcpSocketParams(RTP_MM_TYPE mmType,
+                      size_t*     sockBufSizeRecv, /* = NULL */
+                      size_t*     sockBufSizeSend, /* = NULL */
+                      size_t*     recvPoolSize)    /* = NULL */
 {
     if (sockBufSizeRecv != NULL)
     {

@@ -68,7 +68,7 @@ protected:
 
     virtual void OnConnectOk(
         IProConnector* connector,
-        PRO_INT64      sockId,
+        int64_t        sockId,
         bool           unixSocket,
         const char*    remoteIp,
         unsigned short remotePort
@@ -87,7 +87,7 @@ protected:
 
     virtual void OnConnectOk(
         IProConnector*   connector,
-        PRO_INT64        sockId,
+        int64_t          sockId,
         bool             unixSocket,
         const char*      remoteIp,
         unsigned short   remotePort,
@@ -107,7 +107,7 @@ protected:
 
     virtual void OnHandshakeOk(
         IProTcpHandshaker* handshaker,
-        PRO_INT64          sockId,
+        int64_t            sockId,
         bool               unixSocket,
         const void*        buf,
         unsigned long      size
@@ -121,7 +121,7 @@ protected:
     virtual void OnHandshakeOk(
         IProSslHandshaker* handshaker,
         PRO_SSL_CTX*       ctx,
-        PRO_INT64          sockId,
+        int64_t            sockId,
         bool               unixSocket,
         const void*        buf,
         unsigned long      size
@@ -154,7 +154,7 @@ protected:
         );
 
     bool DoHandshake(
-        PRO_INT64        sockId,
+        int64_t          sockId,
         bool             unixSocket,
         const PRO_NONCE& nonce
         );

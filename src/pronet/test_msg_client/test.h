@@ -27,6 +27,7 @@
 #include "../pro_util/pro_ssl_util.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -45,12 +46,11 @@ struct MSG_CLIENT_CONFIG_INFO
 
         msgc_enable_ssl          = false;
         msgc_ssl_enable_sha1cert = true;
-        msgc_ssl_sni             = "server.libpro.org";
         msgc_ssl_aes256          = false;
 
         RtpMsgString2User("2-0-0", &msgc_id);
 
-        msgc_ssl_cafiles.push_back("./ca.crt");
+        msgc_ssl_cafiles.push_back("ca.crt");
         msgc_ssl_cafiles.push_back("");
         msgc_ssl_crlfiles.push_back("");
         msgc_ssl_crlfiles.push_back("");
@@ -155,7 +155,7 @@ private:
         IRtpMsgClient*      msgClient,
         const void*         buf,
         unsigned long       size,
-        PRO_UINT16          charset,
+        uint16_t            charset,
         const RTP_MSG_USER* srcUser
         );
 
@@ -168,7 +168,7 @@ private:
 
     virtual void OnHeartbeatMsg(
         IRtpMsgClient* msgClient,
-        PRO_INT64      peerAliveTick
+        int64_t        peerAliveTick
         )
     {
     }

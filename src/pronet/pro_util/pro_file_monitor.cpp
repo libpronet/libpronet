@@ -23,7 +23,6 @@
 #include "pro_thread_mutex.h"
 #include "pro_time_util.h"
 #include "pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -35,7 +34,6 @@
 
 CProFileMonitor::CProFileMonitor()
 {
-    m_fileName   = "";
     m_updateTick = 0;
     m_exist      = false;
 }
@@ -74,7 +72,7 @@ CProFileMonitor::UpdateFileExist()
             return;
         }
 
-        const PRO_INT64 tick = ProGetTickCount64();
+        const int64_t tick = ProGetTickCount64();
         if (tick - m_updateTick < MONITOR_INTERVAL * 1000)
         {
             return;
@@ -92,14 +90,7 @@ CProFileMonitor::UpdateFileExist()
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (file == NULL)
-        {
-            m_exist = false;
-        }
-        else
-        {
-            m_exist = true;
-        }
+        m_exist = file != NULL;
     }
 }
 
@@ -114,5 +105,5 @@ CProFileMonitor::QueryFileExist() const
         exist = m_exist;
     }
 
-    return (exist);
+    return exist;
 }

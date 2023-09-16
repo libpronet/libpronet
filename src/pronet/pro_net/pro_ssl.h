@@ -486,12 +486,12 @@ ProSslClientConfig_SetAuthLevel(PRO_SSL_CLIENT_CONFIG* config,
  *       操纵该对象
  *
  *       nonce用于为初期握手流量添加扰动, 主要用于防止握手初期的明文证书被
- *       过滤拦截. c/s两端必须一致, 一般来源于OnAccept(...)或OnConnectOk(...)
+ *       过滤拦截. c/s两端必须一致, 一般来源于OnAccept()或OnConnectOk()
  */
 PRO_NET_API
 PRO_SSL_CTX*
 ProSslCtx_CreateS(const PRO_SSL_SERVER_CONFIG* config,
-                  PRO_INT64                    sockId,
+                  int64_t                      sockId,
                   const PRO_NONCE*             nonce); /* = NULL */
 
 /*
@@ -509,13 +509,13 @@ ProSslCtx_CreateS(const PRO_SSL_SERVER_CONFIG* config,
  *       操纵该对象
  *
  *       nonce用于为初期握手流量添加扰动, 主要用于防止握手初期的明文证书被
- *       过滤拦截. c/s两端必须一致, 一般来源于OnAccept(...)或OnConnectOk(...)
+ *       过滤拦截. c/s两端必须一致, 一般来源于OnAccept()或OnConnectOk()
  */
 PRO_NET_API
 PRO_SSL_CTX*
 ProSslCtx_CreateC(const PRO_SSL_CLIENT_CONFIG* config,
                   const char*                  serverHostName, /* = NULL */
-                  PRO_INT64                    sockId,
+                  int64_t                      sockId,
                   const PRO_NONCE*             nonce);         /* = NULL */
 
 /*

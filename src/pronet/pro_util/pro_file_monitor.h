@@ -23,6 +23,7 @@
 #include "pro_memory_pool.h"
 #include "pro_stl.h"
 #include "pro_thread_mutex.h"
+#include "pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -42,7 +43,7 @@ public:
 private:
 
     CProStlString           m_fileName;
-    PRO_INT64               m_updateTick;
+    int64_t                 m_updateTick;
     bool                    m_exist;
     mutable CProThreadMutex m_lock;
 

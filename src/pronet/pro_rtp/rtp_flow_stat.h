@@ -20,6 +20,7 @@
 #define RTP_FLOW_STAT_H
 
 #include "../pro_util/pro_memory_pool.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -30,16 +31,16 @@ public:
 
     CRtpFlowStat();
 
-    void SetTimeSpan(unsigned long timeSpanInSeconds); /* = 1 */
+    void SetTimeSpan(size_t timeSpanInSeconds); /* = 1 */
 
     void PushData(
-        unsigned long frames,
-        unsigned long bytes
+        size_t frames,
+        size_t bytes
         );
 
     void PopData(
-        unsigned long frames,
-        unsigned long bytes
+        size_t frames,
+        size_t bytes
         );
 
     void CalcInfo(
@@ -57,16 +58,16 @@ private:
 
 private:
 
-    PRO_INT64 m_timeSpan;
-    PRO_INT64 m_startTick;
-    double    m_srcFrames;
-    double    m_srcFrameRate;
-    double    m_srcBits;
-    double    m_srcBitRate;
-    double    m_outFrames;
-    double    m_outFrameRate;
-    double    m_outBits;
-    double    m_outBitRate;
+    int64_t m_timeSpan;
+    int64_t m_startTick;
+    double  m_srcFrames;
+    double  m_srcFrameRate;
+    double  m_srcBits;
+    double  m_srcBitRate;
+    double  m_outFrames;
+    double  m_outFrameRate;
+    double  m_outBits;
+    double  m_outBitRate;
 
     DECLARE_SGI_POOL(0)
 };

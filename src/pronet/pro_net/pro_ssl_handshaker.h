@@ -46,7 +46,7 @@ public:
         IProSslHandshakerObserver* observer,
         CProTpReactorTask*         reactorTask,
         PRO_SSL_CTX*               ctx,
-        PRO_INT64                  sockId,
+        int64_t                    sockId,
         bool                       unixSocket,
         const void*                sendData,        /* = NULL */
         size_t                     sendDataSize,    /* = 0 */
@@ -63,24 +63,24 @@ private:
 
     virtual ~CProSslHandshaker();
 
-    virtual void OnInput(PRO_INT64 sockId);
+    virtual void OnInput(int64_t sockId);
 
-    virtual void OnOutput(PRO_INT64 sockId);
+    virtual void OnOutput(int64_t sockId);
 
     virtual void OnError(
-        PRO_INT64 sockId,
-        long      errorCode
+        int64_t sockId,
+        long    errorCode
         );
 
     virtual void OnTimer(
-        void*      factory,
-        PRO_UINT64 timerId,
-        PRO_INT64  userData
+        void*    factory,
+        uint64_t timerId,
+        int64_t  userData
         );
 
-    void DoRecv(PRO_INT64 sockId);
+    void DoRecv(int64_t sockId);
 
-    void DoSend(PRO_INT64 sockId);
+    void DoSend(int64_t sockId);
 
 private:
 
@@ -88,13 +88,13 @@ private:
     CProTpReactorTask*         m_reactorTask;
     PRO_SSL_CTX*               m_ctx;
     bool                       m_sslOk;
-    PRO_INT64                  m_sockId;
+    int64_t                    m_sockId;
     bool                       m_unixSocket;
     bool                       m_onWr;
     bool                       m_recvFirst;
     CProRecvPool               m_recvPool;
     CProSendPool               m_sendPool;
-    PRO_UINT64                 m_timerId;
+    uint64_t                   m_timerId;
     CProThreadMutex            m_lock;
 
     DECLARE_SGI_POOL(0)

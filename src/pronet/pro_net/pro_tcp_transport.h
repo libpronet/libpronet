@@ -42,7 +42,7 @@ public:
 
     virtual void OnRecvFd(
         IProTransport*            trans,
-        PRO_INT64                 fd,
+        int64_t                   fd,
         bool                      unixSocket,
         const PRO_SERVICE_PACKET& s2cPacket
         ) = 0;
@@ -63,7 +63,7 @@ public:
     bool Init(
         IProTransportObserver* observer,
         CProTpReactorTask*     reactorTask,
-        PRO_INT64              sockId,
+        int64_t                sockId,
         bool                   unixSocket,
         size_t                 sockBufSizeRecv, /* = 0 */
         size_t                 sockBufSizeSend, /* = 0 */
@@ -78,12 +78,12 @@ public:
 
     virtual PRO_TRANS_TYPE GetType() const
     {
-        return (PRO_TRANS_TCP);
+        return PRO_TRANS_TCP;
     }
 
     virtual PRO_SSL_SUITE_ID GetSslSuite(char suiteName[64]) const;
 
-    virtual PRO_INT64 GetSockId() const;
+    virtual int64_t GetSockId() const;
 
     virtual const char* GetLocalIp(char localIp[64]) const;
 
@@ -95,13 +95,13 @@ public:
 
     virtual IProRecvPool* GetRecvPool()
     {
-        return (&m_recvPool);
+        return &m_recvPool;
     }
 
     virtual bool SendData(
         const void*             buf,
         size_t                  size,
-        PRO_UINT64              actionId,  /* = 0 */
+        uint64_t                actionId,  /* = 0 */
         const pbsd_sockaddr_in* remoteAddr /* = NULL */
         );
 
@@ -113,7 +113,7 @@ public:
 
     virtual bool AddMcastReceiver(const char* mcastIp)
     {
-        return (false);
+        return false;
     }
 
     virtual void RemoveMcastReceiver(const char* mcastIp)
@@ -139,28 +139,28 @@ protected:
 
     virtual ~CProTcpTransport();
 
-    virtual void OnInput(PRO_INT64 sockId);
+    virtual void OnInput(int64_t sockId);
 
-    virtual void OnOutput(PRO_INT64 sockId);
+    virtual void OnOutput(int64_t sockId);
 
     virtual void OnError(
-        PRO_INT64 sockId,
-        long      errorCode
+        int64_t sockId,
+        long    errorCode
         );
 
     virtual void OnTimer(
-        void*      factory,
-        PRO_UINT64 timerId,
-        PRO_INT64  userData
+        void*    factory,
+        uint64_t timerId,
+        int64_t  userData
         );
 
-    void OnInputData(PRO_INT64 sockId);
+    void OnInputData(int64_t sockId);
 
-    void OnInputFd(PRO_INT64 sockId);
+    void OnInputFd(int64_t sockId);
 
     void OnOutput(
-        PRO_INT64 sockId,
-        bool&     tryAgain
+        int64_t sockId,
+        bool&   tryAgain
         );
 
 protected:
@@ -169,7 +169,7 @@ protected:
     const size_t            m_recvPoolSize;
     IProTransportObserver*  m_observer;
     CProTpReactorTask*      m_reactorTask;
-    PRO_INT64               m_sockId;
+    int64_t                 m_sockId;
     pbsd_sockaddr_in        m_localAddr;
     pbsd_sockaddr_in        m_remoteAddr;
     bool                    m_onWr;
@@ -177,8 +177,8 @@ protected:
     bool                    m_requestOnSend;
     CProRecvPool            m_recvPool;
     CProSendPool            m_sendPool;
-    PRO_INT64               m_sendingFd;
-    PRO_UINT64              m_timerId;
+    int64_t                 m_sendingFd;
+    uint64_t                m_timerId;
     mutable CProThreadMutex m_lock;
 
     volatile bool           m_canUpcall;

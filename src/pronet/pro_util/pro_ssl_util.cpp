@@ -28,8 +28,6 @@
 #include "mbedtls/platform_util.h"
 #include "mbedtls/rsa.h"
 
-#include <cassert>
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -47,7 +45,7 @@ Rand_i(void*          act,
         }
     }
 
-    return (0);
+    return 0;
 }
 
 static
@@ -57,14 +55,14 @@ MdNew_i(mbedtls_md_type_t type)
     const mbedtls_md_info_t* const info = mbedtls_md_info_from_type(type);
     if (info == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     mbedtls_md_context_t* const ctx =
         (mbedtls_md_context_t*)ProCalloc(1, sizeof(mbedtls_md_context_t));
     if (ctx == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     mbedtls_md_init(ctx);
@@ -74,10 +72,10 @@ MdNew_i(mbedtls_md_type_t type)
         mbedtls_md_free(ctx);
         ProFree(ctx);
 
-        return (NULL);
+        return NULL;
     }
 
-    return (ctx);
+    return ctx;
 }
 
 static
@@ -118,8 +116,7 @@ MdUpdate_i(void*       ctx,
         return;
     }
 
-    mbedtls_md_update(
-        (mbedtls_md_context_t*)ctx, (unsigned char*)buf, size);
+    mbedtls_md_update((mbedtls_md_context_t*)ctx, (unsigned char*)buf, size);
 }
 
 static
@@ -134,8 +131,7 @@ MdFinish_i(void* ctx,
         return;
     }
 
-    mbedtls_md_finish(
-        (mbedtls_md_context_t*)ctx, (unsigned char*)hashValue);
+    mbedtls_md_finish((mbedtls_md_context_t*)ctx, (unsigned char*)hashValue);
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -144,7 +140,7 @@ MdFinish_i(void* ctx,
 void*
 ProMd5New()
 {
-    return (MdNew_i(MBEDTLS_MD_MD5));
+    return MdNew_i(MBEDTLS_MD_MD5);
 }
 
 void
@@ -204,7 +200,7 @@ ProMd5All(const void* buf,
 void*
 ProSha1New()
 {
-    return (MdNew_i(MBEDTLS_MD_SHA1));
+    return MdNew_i(MBEDTLS_MD_SHA1);
 }
 
 void
@@ -264,7 +260,7 @@ ProSha1All(const void* buf,
 void*
 ProSha256New()
 {
-    return (MdNew_i(MBEDTLS_MD_SHA256));
+    return MdNew_i(MBEDTLS_MD_SHA256);
 }
 
 void
@@ -324,7 +320,7 @@ ProSha256All(const void* buf,
 void*
 ProRipemd160New()
 {
-    return (MdNew_i(MBEDTLS_MD_RIPEMD160));
+    return MdNew_i(MBEDTLS_MD_RIPEMD160);
 }
 
 void
@@ -388,12 +384,12 @@ ProRsaNew()
         (mbedtls_rsa_context*)ProCalloc(1, sizeof(mbedtls_rsa_context));
     if (ctx == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     mbedtls_rsa_init(ctx, MBEDTLS_RSA_PKCS_V15, 0);
 
-    return (ctx);
+    return ctx;
 }
 
 void
@@ -418,7 +414,7 @@ ProRsaInitPub(void*       ctx,
     assert(eString != NULL);
     if (ctx == NULL || nString == NULL || eString == NULL)
     {
-        return (false);
+        return false;
     }
 
     mbedtls_rsa_context* const ctx2 = (mbedtls_rsa_context*)ctx;
@@ -426,7 +422,7 @@ ProRsaInitPub(void*       ctx,
     if (mbedtls_mpi_read_string(&ctx2->N, 16, nString) != 0 ||
         mbedtls_mpi_read_string(&ctx2->E, 16, eString) != 0)
     {
-        return (false);
+        return false;
     }
 
     ctx2->len = mbedtls_mpi_size(&ctx2->N);
@@ -435,10 +431,10 @@ ProRsaInitPub(void*       ctx,
     {
         ctx2->len = 0;
 
-        return (false);
+        return false;
     }
 
-    return (true);
+    return true;
 }
 
 bool
@@ -453,7 +449,7 @@ ProRsaInitPrivNED(void*       ctx,
     assert(dString != NULL);
     if (ctx == NULL || nString == NULL || eString == NULL || dString == NULL)
     {
-        return (false);
+        return false;
     }
 
     mbedtls_rsa_context* const ctx2 = (mbedtls_rsa_context*)ctx;
@@ -462,21 +458,20 @@ ProRsaInitPrivNED(void*       ctx,
         mbedtls_mpi_read_string(&ctx2->E, 16, eString) != 0 ||
         mbedtls_mpi_read_string(&ctx2->D, 16, dString) != 0)
     {
-        return (false);
+        return false;
     }
 
     ctx2->len = mbedtls_mpi_size(&ctx2->N);
 
-    if (mbedtls_rsa_complete(ctx2)      != 0 ||
-        mbedtls_rsa_check_privkey(ctx2) != 0 ||
+    if (mbedtls_rsa_complete(ctx2) != 0 || mbedtls_rsa_check_privkey(ctx2) != 0 ||
         ctx2->len <= 11)
     {
         ctx2->len = 0;
 
-        return (false);
+        return false;
     }
 
-    return (true);
+    return true;
 }
 
 bool
@@ -491,7 +486,7 @@ ProRsaInitPrivPQE(void*       ctx,
     assert(eString != NULL);
     if (ctx == NULL || pString == NULL || qString == NULL || eString == NULL)
     {
-        return (false);
+        return false;
     }
 
     mbedtls_rsa_context* const ctx2 = (mbedtls_rsa_context*)ctx;
@@ -500,19 +495,18 @@ ProRsaInitPrivPQE(void*       ctx,
         mbedtls_mpi_read_string(&ctx2->Q, 16, qString) != 0 ||
         mbedtls_mpi_read_string(&ctx2->E, 16, eString) != 0)
     {
-        return (false);
+        return false;
     }
 
-    if (mbedtls_rsa_complete(ctx2)      != 0 ||
-        mbedtls_rsa_check_privkey(ctx2) != 0 ||
+    if (mbedtls_rsa_complete(ctx2) != 0 || mbedtls_rsa_check_privkey(ctx2) != 0 ||
         ctx2->len <= 11)
     {
         ctx2->len = 0;
 
-        return (false);
+        return false;
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -555,8 +549,7 @@ ProRsaEncrypt(void*                ctx,
             ilen = inputSize - blockSize * (blockCount - 1);
         }
 
-        if (mbedtls_rsa_pkcs1_encrypt(
-            ctx2, &Rand_i, NULL, MBEDTLS_RSA_PUBLIC, ilen, p, q) != 0)
+        if (mbedtls_rsa_pkcs1_encrypt(ctx2, &Rand_i, NULL, MBEDTLS_RSA_PUBLIC, ilen, p, q) != 0)
         {
             outputBuffer.clear();
             break;
@@ -599,8 +592,8 @@ ProRsaDecrypt(void*                ctx,
     {
         size_t olen = 0;
 
-        if (mbedtls_rsa_pkcs1_decrypt(ctx2, &Rand_i, NULL,
-            MBEDTLS_RSA_PRIVATE, &olen, p, q, ctx2->len - 11) != 0 ||
+        if (mbedtls_rsa_pkcs1_decrypt(
+            ctx2, &Rand_i, NULL, MBEDTLS_RSA_PRIVATE, &olen, p, q, ctx2->len - 11) != 0 ||
             olen == 0 || olen > ctx2->len - 11)
         {
             outputBuffer.clear();
@@ -628,7 +621,7 @@ ProRsaDecrypt(void*                ctx,
 }
 
 bool
-ProRsaKeyGen(unsigned long  keyBytes, /* 128, 256, 512 */
+ProRsaKeyGen(unsigned int   keyBytes, /* 128, 256, 512 */
              CProStlString& pString,
              CProStlString& qString,
              CProStlString& nString,
@@ -638,7 +631,7 @@ ProRsaKeyGen(unsigned long  keyBytes, /* 128, 256, 512 */
     assert(keyBytes == 128 || keyBytes == 256 || keyBytes == 512);
     if (keyBytes != 128 && keyBytes != 256 && keyBytes != 512)
     {
-        return (false);
+        return false;
     }
 
     mbedtls_rsa_context ctx;
@@ -646,7 +639,7 @@ ProRsaKeyGen(unsigned long  keyBytes, /* 128, 256, 512 */
 
     if (mbedtls_rsa_gen_key(&ctx, &Rand_i, NULL, keyBytes * 8, 65537) != 0)
     {
-        return (false);
+        return false;
     }
 
     size_t theSize         = 0;
@@ -657,10 +650,9 @@ ProRsaKeyGen(unsigned long  keyBytes, /* 128, 256, 512 */
      * P
      */
     {
-        if (mbedtls_mpi_write_string(
-            &ctx.P, 16, theString, sizeof(theString) - 1, &theSize) != 0)
+        if (mbedtls_mpi_write_string(&ctx.P, 16, theString, sizeof(theString) - 1, &theSize) != 0)
         {
-            return (false);
+            return false;
         }
 
         pString = theString;
@@ -670,10 +662,9 @@ ProRsaKeyGen(unsigned long  keyBytes, /* 128, 256, 512 */
      * Q
      */
     {
-        if (mbedtls_mpi_write_string(
-            &ctx.Q, 16, theString, sizeof(theString) - 1, &theSize) != 0)
+        if (mbedtls_mpi_write_string(&ctx.Q, 16, theString, sizeof(theString) - 1, &theSize) != 0)
         {
-            return (false);
+            return false;
         }
 
         qString = theString;
@@ -683,10 +674,9 @@ ProRsaKeyGen(unsigned long  keyBytes, /* 128, 256, 512 */
      * N
      */
     {
-        if (mbedtls_mpi_write_string(
-            &ctx.N, 16, theString, sizeof(theString) - 1, &theSize) != 0)
+        if (mbedtls_mpi_write_string(&ctx.N, 16, theString, sizeof(theString) - 1, &theSize) != 0)
         {
-            return (false);
+            return false;
         }
 
         nString = theString;
@@ -696,10 +686,9 @@ ProRsaKeyGen(unsigned long  keyBytes, /* 128, 256, 512 */
      * E
      */
     {
-        if (mbedtls_mpi_write_string(
-            &ctx.E, 16, theString, sizeof(theString) - 1, &theSize) != 0)
+        if (mbedtls_mpi_write_string(&ctx.E, 16, theString, sizeof(theString) - 1, &theSize) != 0)
         {
-            return (false);
+            return false;
         }
 
         eString = theString;
@@ -709,16 +698,15 @@ ProRsaKeyGen(unsigned long  keyBytes, /* 128, 256, 512 */
      * D
      */
     {
-        if (mbedtls_mpi_write_string(
-            &ctx.D, 16, theString, sizeof(theString) - 1, &theSize) != 0)
+        if (mbedtls_mpi_write_string(&ctx.D, 16, theString, sizeof(theString) - 1, &theSize) != 0)
         {
-            return (false);
+            return false;
         }
 
         dString = theString;
     }
 
-    return (true);
+    return true;
 }
 
 /*-------------------------------------------------------------------------*/
@@ -744,8 +732,8 @@ ProBase64Encode(const void*    inputBuffer,
 
     size_t olen = 0;
 
-    if (mbedtls_base64_encode((unsigned char*)buf, size, &olen,
-        (unsigned char*)inputBuffer, inputSize) == 0 && olen > 0)
+    if (mbedtls_base64_encode(
+        (unsigned char*)buf, size, &olen, (unsigned char*)inputBuffer, inputSize) == 0 && olen > 0)
     {
         outputString.assign(buf, olen);
     }
@@ -774,8 +762,8 @@ ProBase64Decode(const void*          inputBuffer,
 
     size_t olen = 0;
 
-    if (mbedtls_base64_decode((unsigned char*)buf, size, &olen,
-        (unsigned char*)inputBuffer, inputSize) == 0 && olen > 0)
+    if (mbedtls_base64_decode(
+        (unsigned char*)buf, size, &olen, (unsigned char*)inputBuffer, inputSize) == 0 && olen > 0)
     {
         outputBuffer.resize(olen);
         memcpy(&outputBuffer[0], buf, olen);
@@ -806,8 +794,8 @@ ProBase64DecodeStr(const char*          inputString,
 
     size_t olen = 0;
 
-    if (mbedtls_base64_decode((unsigned char*)buf, size, &olen,
-        (unsigned char*)inputString, inputSize) == 0 && olen > 0)
+    if (mbedtls_base64_decode(
+        (unsigned char*)buf, size, &olen, (unsigned char*)inputString, inputSize) == 0 && olen > 0)
     {
         outputBuffer.resize(olen);
         memcpy(&outputBuffer[0], buf, olen);
@@ -843,8 +831,7 @@ ProCalcPasswordHash(const char  nonce[32],
     CProStlString passwordString = nonceString;
     passwordString += password != NULL ? password : "";
 
-    ProSha256All(
-        passwordString.c_str(), passwordString.length(), passwordHash);
+    ProSha256All(passwordString.c_str(), passwordString.length(), passwordHash);
 
     ProZeroMemory(&passwordString[0], passwordString.length());
 }

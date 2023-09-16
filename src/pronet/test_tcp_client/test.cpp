@@ -28,7 +28,6 @@
 #include "../pro_util/pro_timer_factory.h"
 #include "../pro_util/pro_unicode.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -49,7 +48,7 @@ CTest::CTest()
 
     m_heartbeatData[0] = 0;
     m_heartbeatData[1] = 0;
-    m_heartbeatSize    = sizeof(PRO_UINT16);
+    m_heartbeatSize    = sizeof(uint16_t);
 }
 
 CTest::~CTest()
@@ -265,9 +264,9 @@ CTest::Release()
 void
 CTest::SetHeartbeatDataSize(unsigned long size) /* 0 ~ 1024 */
 {
-    if (size < sizeof(PRO_UINT16))
+    if (size < sizeof(uint16_t))
     {
-        size = sizeof(PRO_UINT16);
+        size = sizeof(uint16_t);
     }
     if (size > sizeof(m_heartbeatData))
     {
@@ -277,7 +276,7 @@ CTest::SetHeartbeatDataSize(unsigned long size) /* 0 ~ 1024 */
     {
         CProThreadMutexGuard mon(m_lock2); /* lock2 */
 
-        m_heartbeatData[0] = pbsd_hton16((PRO_UINT16)(size - sizeof(PRO_UINT16)));
+        m_heartbeatData[0] = pbsd_hton16((uint16_t)(size - sizeof(uint16_t)));
         m_heartbeatSize    = size;
     }
 }
@@ -307,7 +306,7 @@ CTest::SendMsg(const char* msg)
     }
 
 #if defined(_WIN32)
-    CProStlString tmp = "";
+    CProStlString tmp;
     ProAnsiToUtf8(msg, tmp);
     msg = tmp.c_str();
 #endif
@@ -320,9 +319,9 @@ CTest::SendMsg(const char* msg)
             return;
         }
 
-        PRO_UINT16 length = (PRO_UINT16)strlen(msg);
+        uint16_t length = (uint16_t)strlen(msg);
 
-        const unsigned long size = sizeof(PRO_UINT16) + length;
+        const unsigned long size = sizeof(uint16_t) + length;
         char* const         buf  = (char*)ProMalloc(size);
         if (buf == NULL)
         {
@@ -331,8 +330,8 @@ CTest::SendMsg(const char* msg)
 
         length = pbsd_hton16(length);
 
-        memcpy(buf, &length, sizeof(PRO_UINT16));
-        memcpy(buf + sizeof(PRO_UINT16), msg, size - sizeof(PRO_UINT16));
+        memcpy(buf, &length, sizeof(uint16_t));
+        memcpy(buf + sizeof(uint16_t), msg, size - sizeof(uint16_t));
 
         IProTransport* const trans = *m_transports.begin();
         trans->SendData(buf, size);
@@ -343,7 +342,7 @@ CTest::SendMsg(const char* msg)
 
 void
 CTest::OnConnectOk(IProConnector*   connector,
-                   PRO_INT64        sockId,
+                   int64_t          sockId,
                    bool             unixSocket,
                    const char*      remoteIp,
                    unsigned short   remotePort,
@@ -389,7 +388,7 @@ CTest::OnConnectOk(IProConnector*   connector,
 
     if (0)
     {{{
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         printf(
@@ -407,7 +406,7 @@ CTest::OnConnectOk(IProConnector*   connector,
 }
 
 bool
-CTest::DoHandshake(PRO_INT64        sockId,
+CTest::DoHandshake(int64_t          sockId,
                    bool             unixSocket,
                    const PRO_NONCE& nonce)
 {
@@ -503,7 +502,7 @@ CTest::OnConnectError(IProConnector* connector,
 
     if (1)
     {{{
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         printf(
@@ -522,7 +521,7 @@ CTest::OnConnectError(IProConnector* connector,
 
 void
 CTest::OnHandshakeOk(IProTcpHandshaker* handshaker,
-                     PRO_INT64          sockId,
+                     int64_t            sockId,
                      bool               unixSocket,
                      const void*        buf,
                      unsigned long      size)
@@ -578,7 +577,7 @@ CTest::OnHandshakeOk(IProTcpHandshaker* handshaker,
 
     if (0)
     {{{
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         printf(
@@ -621,7 +620,7 @@ CTest::OnHandshakeError(IProTcpHandshaker* handshaker,
 
     if (1)
     {{{
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         printf(
@@ -640,7 +639,7 @@ CTest::OnHandshakeError(IProTcpHandshaker* handshaker,
 void
 CTest::OnHandshakeOk(IProSslHandshaker* handshaker,
                      PRO_SSL_CTX*       ctx,
-                     PRO_INT64          sockId,
+                     int64_t            sockId,
                      bool               unixSocket,
                      const void*        buf,
                      unsigned long      size)
@@ -702,7 +701,7 @@ CTest::OnHandshakeOk(IProSslHandshaker* handshaker,
 
     if (0)
     {{{
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         printf(
@@ -746,7 +745,7 @@ CTest::OnHandshakeError(IProSslHandshaker* handshaker,
 
     if (1)
     {{{
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         printf(
@@ -794,20 +793,20 @@ CTest::OnRecv(IProTransport*          trans,
             IProRecvPool&       recvPool = *trans->GetRecvPool();
             const unsigned long dataSize = recvPool.PeekDataSize();
 
-            if (dataSize < sizeof(PRO_UINT16))
+            if (dataSize < sizeof(uint16_t))
             {
                 break;
             }
 
-            PRO_UINT16 length = 0;
-            recvPool.PeekData(&length, sizeof(PRO_UINT16));
+            uint16_t length = 0;
+            recvPool.PeekData(&length, sizeof(uint16_t));
             length = pbsd_ntoh16(length);
-            if (dataSize < sizeof(PRO_UINT16) + length) /* 2 + ... */
+            if (dataSize < sizeof(uint16_t) + length) /* 2 + ... */
             {
                 break;
             }
 
-            recvPool.Flush(sizeof(PRO_UINT16));
+            recvPool.Flush(sizeof(uint16_t));
 
             /*
              * a haeartbeat packet
@@ -831,7 +830,7 @@ CTest::OnRecv(IProTransport*          trans,
             /*
              * a packet for testing purposes
              */
-            if (buf[sizeof(PRO_UINT16)] == '\0')
+            if (buf[sizeof(uint16_t)] == '\0')
             {
                 ProFree(buf);
                 continue;
@@ -845,7 +844,7 @@ CTest::OnRecv(IProTransport*          trans,
             trans->GetLocalIp(localIp);
             trans->GetRemoteIp(remoteIp);
 
-            CProStlString timeString = "";
+            CProStlString timeString;
             ProGetLocalTimeString(timeString);
 
             printf(
@@ -864,7 +863,7 @@ CTest::OnRecv(IProTransport*          trans,
         }}}
 
         ProFree(buf);
-    } /* end of while (...) */
+    } /* end of while () */
 }
 
 void
@@ -901,7 +900,7 @@ CTest::OnClose(IProTransport* trans,
         trans->GetLocalIp(localIp);
         trans->GetRemoteIp(remoteIp);
 
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
         printf(
@@ -940,9 +939,9 @@ CTest::OnHeartbeat(IProTransport* trans)
 }
 
 void
-CTest::OnTimer(void*      factory,
-               PRO_UINT64 timerId,
-               PRO_INT64  userData)
+CTest::OnTimer(void*    factory,
+               uint64_t timerId,
+               int64_t  userData)
 {
     assert(factory != NULL);
     assert(timerId > 0);
@@ -996,6 +995,6 @@ CTest::OnTimer(void*      factory,
             }
 
             m_connectors.insert(connector);
-        } /* end of while (...) */
+        } /* end of while () */
     }
 }

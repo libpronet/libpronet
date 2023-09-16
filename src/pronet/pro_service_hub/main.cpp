@@ -102,6 +102,7 @@ struct SERVICE_HUB_CONFIG_INFO
 };
 
 static CProThreadMutexCondition g_s_cond;
+static CProThreadMutex          g_s_lock;
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -175,7 +176,7 @@ ReadConfig_i(const CProStlVector<PRO_CONFIG_ITEM>& configs,
         else
         {
         }
-    } /* end of for (...) */
+    } /* end of for () */
 }
 
 #if !defined(_WIN32)
@@ -184,7 +185,7 @@ static
 void
 SignalHandler_i(int sig)
 {
-    CProStlString timeString = "";
+    CProStlString timeString;
     ProGetLocalTimeString(timeString);
 
     switch (sig)
@@ -200,7 +201,9 @@ SignalHandler_i(int sig)
                 );
             fflush(stdout);
 
+            g_s_lock.Lock();
             g_s_cond.Signal();
+            g_s_lock.Unlock();
             break;
         }
     case SIGINT:
@@ -214,7 +217,9 @@ SignalHandler_i(int sig)
                 );
             fflush(stdout);
 
+            g_s_lock.Lock();
             g_s_cond.Signal();
+            g_s_lock.Unlock();
             break;
         }
     case SIGQUIT:
@@ -228,7 +233,9 @@ SignalHandler_i(int sig)
                 );
             fflush(stdout);
 
+            g_s_lock.Lock();
             g_s_cond.Signal();
+            g_s_lock.Unlock();
             break;
         }
     case SIGTERM:
@@ -242,10 +249,12 @@ SignalHandler_i(int sig)
                 );
             fflush(stdout);
 
+            g_s_lock.Lock();
             g_s_cond.Signal();
+            g_s_lock.Unlock();
             break;
         }
-    } /* end of switch (...) */
+    } /* end of switch () */
 }
 
 static
@@ -272,12 +281,12 @@ int main(int argc, char* argv[])
 {
     ProNetInit();
 
-    IProReactor*                   reactor    = NULL;
-    CProStlString                  portString = "";
+    IProReactor*                   reactor = NULL;
+    CProStlString                  portString;
     SERVICE_HUB_CONFIG_INFO        configInfo;
     CProStlVector<IProServiceHub*> hubs;
 
-    CProStlString timeString = "";
+    CProStlString timeString;
     ProGetLocalTimeString(timeString);
 
     char exeRoot[1024] = "";
@@ -411,7 +420,7 @@ int main(int argc, char* argv[])
                 portString += ", ";
                 portString += info;
             }
-        } /* end of for (...) */
+        } /* end of for () */
     }
 
     printf(
@@ -427,7 +436,9 @@ int main(int argc, char* argv[])
         );
     fflush(stdout);
 
-    g_s_cond.Wait(NULL);
+    g_s_lock.Lock();
+    g_s_cond.Wait(&g_s_lock);
+    g_s_lock.Unlock();
 
 EXIT:
 

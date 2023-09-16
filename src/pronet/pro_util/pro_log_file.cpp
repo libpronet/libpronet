@@ -24,8 +24,6 @@
 #include "pro_thread_mutex.h"
 #include "pro_time_util.h"
 #include "pro_z.h"
-#include <cassert>
-#include <cstdio>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -37,7 +35,6 @@
 
 CProLogFile::CProLogFile()
 {
-    m_fileName   = "";
     m_file       = NULL;
     m_reopenTick = 0;
     m_greenLevel = 0;
@@ -73,7 +70,7 @@ CProLogFile::Reinit(const char* fileName,
 }
 
 void
-CProLogFile::SetGreenLevel(long level)
+CProLogFile::SetGreenLevel(int level)
 {
     level = level < PRO_LL_MIN ? PRO_LL_MIN : level;
     level = level > PRO_LL_MAX ? PRO_LL_MAX : level;
@@ -85,10 +82,10 @@ CProLogFile::SetGreenLevel(long level)
     }
 }
 
-long
+int
 CProLogFile::GetGreenLevel() const
 {
-    long level = 0;
+    int level = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -96,23 +93,21 @@ CProLogFile::GetGreenLevel() const
         level = m_greenLevel;
     }
 
-    return (level);
+    return level;
 }
 
 void
-CProLogFile::SetMaxSize(PRO_INT32 size)
+CProLogFile::SetMaxSize(int32_t size)
 {
-    {
-        CProThreadMutexGuard mon(m_lock);
+    CProThreadMutexGuard mon(m_lock);
 
-        m_maxSize = size;
-    }
+    m_maxSize = size;
 }
 
-PRO_INT32
+int32_t
 CProLogFile::GetMaxSize() const
 {
-    PRO_INT32 size = 0;
+    int32_t size = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -120,49 +115,58 @@ CProLogFile::GetMaxSize() const
         size = m_maxSize;
     }
 
-    return (size);
+    return size;
 }
 
-PRO_INT32
+int32_t
 CProLogFile::GetSize() const
 {
-    PRO_INT32 size = 0;
+    int32_t size = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
 
         if (m_file != NULL)
         {
-            size = (PRO_INT32)ftell(m_file);
+            size = (int32_t)ftell(m_file);
         }
     }
 
-    return (size);
+    return size;
 }
 
 void
 CProLogFile::Log(const char* text,
-                 long        level,
-                 bool        showTime)
+                 int         level,
+                 bool        showTime) /* = false */
 {
     if (text == NULL || text[0] == '\0')
     {
         return;
     }
 
-    CProStlString totalString = "";
+    const char* str = NULL;
+    size_t      len = 0;
 
+    CProStlString totalString;
     if (showTime)
     {
-        CProStlString timeString = "";
+        CProStlString timeString;
         ProGetLocalTimeString(timeString);
 
-        totalString += "\n";
+        totalString =  "\n";
         totalString += timeString;
         totalString += " ";
-    }
+        totalString += text;
 
-    totalString += text;
+        str = totalString.c_str();
+        len = totalString.length();
+    }
+    else
+    {
+        str = text;
+        len = strlen(text);
+    }
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -172,8 +176,7 @@ CProLogFile::Log(const char* text,
             return;
         }
 
-        if (m_file == NULL &&
-            ProGetTickCount64() - m_reopenTick >= REOPEN_INTERVAL_MS)
+        if (m_file == NULL && ProGetTickCount64() - m_reopenTick >= REOPEN_INTERVAL_MS)
         {
             Reopen(true); /* reopen the file at this moment */
         }
@@ -182,7 +185,7 @@ CProLogFile::Log(const char* text,
             return;
         }
 
-        const PRO_INT32 pos = (PRO_INT32)ftell(m_file);
+        const int32_t pos = (int32_t)ftell(m_file);
         if (
             pos < 0
             ||
@@ -200,9 +203,8 @@ CProLogFile::Log(const char* text,
             return;
         }
 
-        const size_t ret = fwrite(
-            totalString.c_str(), 1, totalString.length(), m_file);
-        if (ret != totalString.length())
+        const size_t ret = fwrite(str, 1, len, m_file);
+        if (ret != len)
         {
             fclose(m_file);
             m_file = NULL;
@@ -247,8 +249,7 @@ CProLogFile::Reopen(bool append)
         /*
          * Allow other users to access the file. "Write" permissions are required.
          */
-        chmod(m_fileName.c_str(),
-            S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
+        chmod(m_fileName.c_str(), S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 
         const int fd = fileno(m_file);
         if (fd >= 0)

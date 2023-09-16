@@ -25,6 +25,7 @@
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_timer_factory.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -52,7 +53,7 @@ public:
 
     virtual unsigned long Release();
 
-    void DecServiceLoad(PRO_INT64 sockId);
+    void DecServiceLoad(int64_t sockId);
 
 private:
 
@@ -62,7 +63,7 @@ private:
 
     virtual void OnConnectOk(
         IProConnector* connector,
-        PRO_INT64      sockId,
+        int64_t        sockId,
         bool           unixSocket,
         const char*    remoteIp,
         unsigned short remotePort
@@ -81,7 +82,7 @@ private:
 
     virtual void OnConnectOk(
         IProConnector*   connector,
-        PRO_INT64        sockId,
+        int64_t          sockId,
         bool             unixSocket,
         const char*      remoteIp,
         unsigned short   remotePort,
@@ -106,7 +107,7 @@ private:
 
     virtual void OnRecvFd(
         CProServicePipe*          pipe,
-        PRO_INT64                 fd,
+        int64_t                   fd,
         bool                      unixSocket,
         const PRO_SERVICE_PACKET& s2cPacket
         );
@@ -114,9 +115,9 @@ private:
     virtual void OnClose(CProServicePipe* pipe);
 
     virtual void OnTimer(
-        void*      factory,
-        PRO_UINT64 timerId,
-        PRO_INT64  userData
+        void*    factory,
+        uint64_t timerId,
+        int64_t  userData
         );
 
 private:
@@ -126,12 +127,12 @@ private:
     IProReactor*             m_reactor;
     IProConnector*           m_connector;
     CProServicePipe*         m_pipe;
-    PRO_UINT64               m_timerId;
+    uint64_t                 m_timerId;
     unsigned short           m_servicePort;
-    PRO_INT64                m_connectTick;
+    int64_t                  m_connectTick;
     CProThreadMutex          m_lock;
 
-    CProStlSet<PRO_INT64>    m_onlineSockIds;
+    CProStlSet<int64_t>      m_onlineSockIds;
     CProThreadMutex          m_onlineLock;
 
     DECLARE_SGI_POOL(0)
@@ -141,7 +142,7 @@ private:
 ////
 
 void
-ProDecServiceLoad(PRO_INT64 sockId);
+ProDecServiceLoad(int64_t sockId);
 
 /////////////////////////////////////////////////////////////////////////////
 ////

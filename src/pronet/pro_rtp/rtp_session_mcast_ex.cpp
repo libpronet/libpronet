@@ -23,7 +23,6 @@
 #include "../pro_util/pro_bsd_wrapper.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -43,9 +42,7 @@ CRtpSessionMcastEx::CreateInstance(const RTP_SESSION_INFO* localInfo)
         return (NULL);
     }
 
-    CRtpSessionMcastEx* const session = new CRtpSessionMcastEx(*localInfo);
-
-    return (session);
+    return new CRtpSessionMcastEx(*localInfo);
 }
 
 CRtpSessionMcastEx::CRtpSessionMcastEx(const RTP_SESSION_INFO& localInfo)
@@ -81,11 +78,10 @@ CRtpSessionMcastEx::Init(IRtpSessionObserver* observer,
         return (false);
     }
 
-    unsigned long sockBufSizeRecv = 0; /* zero by default */
-    unsigned long sockBufSizeSend = 0; /* zero by default */
-    unsigned long recvPoolSize    = 0;
-    GetRtpUdpSocketParams(
-        m_info.mmType, &sockBufSizeRecv, &sockBufSizeSend, &recvPoolSize);
+    size_t sockBufSizeRecv = 0; /* zero by default */
+    size_t sockBufSizeSend = 0; /* zero by default */
+    size_t recvPoolSize    = 0;
+    GetRtpUdpSocketParams(m_info.mmType, &sockBufSizeRecv, &sockBufSizeSend, &recvPoolSize);
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -345,5 +341,5 @@ CRtpSessionMcastEx::OnRecv(IProTransport*          trans,
             Fini();
         }
         break;
-    } /* end of while (...) */
+    } /* end of while () */
 }

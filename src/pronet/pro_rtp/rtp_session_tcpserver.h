@@ -28,10 +28,7 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-class CRtpSessionTcpserver
-:
-public IProAcceptorObserver,
-public CRtpSessionBase
+class CRtpSessionTcpserver : public IProAcceptorObserver, public CRtpSessionBase
 {
 public:
 
@@ -65,7 +62,7 @@ private:
 
     virtual void OnAccept(
         IProAcceptor*  acceptor,
-        PRO_INT64      sockId,
+        int64_t        sockId,
         bool           unixSocket,
         const char*    localIp,
         const char*    remoteIp,
@@ -74,7 +71,7 @@ private:
 
     virtual void OnAccept(
         IProAcceptor*    acceptor,
-        PRO_INT64        sockId,
+        int64_t          sockId,
         bool             unixSocket,
         const char*      localIp,
         const char*      remoteIp,

@@ -32,8 +32,6 @@
 #include "../pro_util/pro_bsd_wrapper.h"
 #include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
-#include <cassert>
-#include <cstddef>
 
 #if defined(__cplusplus)
 extern "C" {
@@ -112,7 +110,6 @@ ProDeleteReactor(IProReactor* reactor)
     }
 
     CProTpReactorTask* const p = (CProTpReactorTask*)reactor;
-    p->Stop();
     delete p;
 }
 
@@ -131,8 +128,7 @@ ProCreateAcceptor(IProAcceptorObserver* observer,
         return (NULL);
     }
 
-    if (!acceptor->Init(
-        observer, (CProTpReactorTask*)reactor, localIp, localPort, 0))
+    if (!acceptor->Init(observer, (CProTpReactorTask*)reactor, localIp, localPort, 0))
     {
         acceptor->Release();
 
@@ -158,8 +154,8 @@ ProCreateAcceptorEx(IProAcceptorObserver* observer,
         return (NULL);
     }
 
-    if (!acceptor->Init(observer, (CProTpReactorTask*)reactor,
-        localIp, localPort, timeoutInSeconds))
+    if (!acceptor->Init(
+        observer, (CProTpReactorTask*)reactor, localIp, localPort, timeoutInSeconds))
     {
         acceptor->Release();
 
@@ -210,8 +206,7 @@ ProCreateConnector(bool                   enableUnixSocket,
 {
     ProNetInit();
 
-    CProConnector* const connector =
-        CProConnector::CreateInstance(enableUnixSocket, false, 0, 0);
+    CProConnector* const connector = CProConnector::CreateInstance(enableUnixSocket, false, 0, 0);
     if (connector == NULL)
     {
         return (NULL);
@@ -278,7 +273,7 @@ PRO_NET_API
 IProTcpHandshaker*
 ProCreateTcpHandshaker(IProTcpHandshakerObserver* observer,
                        IProReactor*               reactor,
-                       PRO_INT64                  sockId,
+                       int64_t                    sockId,
                        bool                       unixSocket,
                        const void*                sendData,         /* = NULL */
                        size_t                     sendDataSize,     /* = 0 */
@@ -325,7 +320,7 @@ IProSslHandshaker*
 ProCreateSslHandshaker(IProSslHandshakerObserver* observer,
                        IProReactor*               reactor,
                        PRO_SSL_CTX*               ctx,
-                       PRO_INT64                  sockId,
+                       int64_t                    sockId,
                        bool                       unixSocket,
                        const void*                sendData,         /* = NULL */
                        size_t                     sendDataSize,     /* = 0 */
@@ -371,7 +366,7 @@ PRO_NET_API
 IProTransport*
 ProCreateTcpTransport(IProTransportObserver* observer,
                       IProReactor*           reactor,
-                      PRO_INT64              sockId,
+                      int64_t                sockId,
                       bool                   unixSocket,
                       size_t                 sockBufSizeRecv, /* = 0 */
                       size_t                 sockBufSizeSend, /* = 0 */
@@ -380,8 +375,7 @@ ProCreateTcpTransport(IProTransportObserver* observer,
 {
     ProNetInit();
 
-    CProTcpTransport* const trans =
-        CProTcpTransport::CreateInstance(false, recvPoolSize);
+    CProTcpTransport* const trans = CProTcpTransport::CreateInstance(false, recvPoolSize);
     if (trans == NULL)
     {
         return (NULL);
@@ -413,8 +407,7 @@ ProCreateUdpTransport(IProTransportObserver* observer,
 {
     ProNetInit();
 
-    CProUdpTransport* const trans =
-        CProUdpTransport::CreateInstance(bindToLocal, recvPoolSize);
+    CProUdpTransport* const trans = CProUdpTransport::CreateInstance(bindToLocal, recvPoolSize);
     if (trans == NULL)
     {
         return (NULL);
@@ -445,8 +438,7 @@ ProCreateMcastTransport(IProTransportObserver* observer,
 {
     ProNetInit();
 
-    CProMcastTransport* const trans =
-        CProMcastTransport::CreateInstance(recvPoolSize);
+    CProMcastTransport* const trans = CProMcastTransport::CreateInstance(recvPoolSize);
     if (trans == NULL)
     {
         return (NULL);
@@ -468,7 +460,7 @@ IProTransport*
 ProCreateSslTransport(IProTransportObserver* observer,
                       IProReactor*           reactor,
                       PRO_SSL_CTX*           ctx,
-                      PRO_INT64              sockId,
+                      int64_t                sockId,
                       bool                   unixSocket,
                       size_t                 sockBufSizeRecv, /* = 0 */
                       size_t                 sockBufSizeSend, /* = 0 */
@@ -477,8 +469,7 @@ ProCreateSslTransport(IProTransportObserver* observer,
 {
     ProNetInit();
 
-    CProSslTransport* const trans =
-        CProSslTransport::CreateInstance(recvPoolSize);
+    CProSslTransport* const trans = CProSslTransport::CreateInstance(recvPoolSize);
     if (trans == NULL)
     {
         return (NULL);
@@ -674,7 +665,7 @@ ProDeleteServiceHost(IProServiceHost* host)
 }
 
 PRO_NET_API
-PRO_INT64
+int64_t
 ProOpenTcpSockId(const char*    localIp, /* = NULL */
                  unsigned short localPort)
 {
@@ -686,24 +677,18 @@ ProOpenTcpSockId(const char*    localIp, /* = NULL */
         return (-1);
     }
 
-    const char* const anyIp = "0.0.0.0";
-    if (localIp == NULL || localIp[0] == '\0')
-    {
-        localIp = anyIp;
-    }
-
     pbsd_sockaddr_in localAddr;
     memset(&localAddr, 0, sizeof(pbsd_sockaddr_in));
     localAddr.sin_family      = AF_INET;
     localAddr.sin_port        = pbsd_hton16(localPort);
     localAddr.sin_addr.s_addr = pbsd_inet_aton(localIp);
 
-    if (localAddr.sin_addr.s_addr == (PRO_UINT32)-1)
+    if (localAddr.sin_addr.s_addr == (uint32_t)-1)
     {
         return (-1);
     }
 
-    PRO_INT64 sockId = pbsd_socket(AF_INET, SOCK_STREAM, 0);
+    int64_t sockId = pbsd_socket(AF_INET, SOCK_STREAM, 0);
     if (sockId == -1)
     {
         return (-1);
@@ -719,7 +704,7 @@ ProOpenTcpSockId(const char*    localIp, /* = NULL */
 }
 
 PRO_NET_API
-PRO_INT64
+int64_t
 ProOpenUdpSockId(const char*    localIp, /* = NULL */
                  unsigned short localPort)
 {
@@ -731,24 +716,18 @@ ProOpenUdpSockId(const char*    localIp, /* = NULL */
         return (-1);
     }
 
-    const char* const anyIp = "0.0.0.0";
-    if (localIp == NULL || localIp[0] == '\0')
-    {
-        localIp = anyIp;
-    }
-
     pbsd_sockaddr_in localAddr;
     memset(&localAddr, 0, sizeof(pbsd_sockaddr_in));
     localAddr.sin_family      = AF_INET;
     localAddr.sin_port        = pbsd_hton16(localPort);
     localAddr.sin_addr.s_addr = pbsd_inet_aton(localIp);
 
-    if (localAddr.sin_addr.s_addr == (PRO_UINT32)-1)
+    if (localAddr.sin_addr.s_addr == (uint32_t)-1)
     {
         return (-1);
     }
 
-    PRO_INT64 sockId = pbsd_socket(AF_INET, SOCK_DGRAM, 0);
+    int64_t sockId = pbsd_socket(AF_INET, SOCK_DGRAM, 0);
     if (sockId == -1)
     {
         return (-1);
@@ -765,8 +744,8 @@ ProOpenUdpSockId(const char*    localIp, /* = NULL */
 
 PRO_NET_API
 void
-ProCloseSockId(PRO_INT64 sockId,
-               bool      linger) /* = false */
+ProCloseSockId(int64_t sockId,
+               bool    linger) /* = false */
 {
     if (sockId == -1)
     {

@@ -36,7 +36,7 @@
  *
  * 返回值: 会话对象或NULL
  *
- * 说明: 可以使用IRtpSession::GetLocalPort(...)获取本地端口号
+ * 说明: 可以使用IRtpSession::GetLocalPort()获取本地端口号
  */
 IRtpSession*
 CreateRtpSessionUdpclient(IRtpSessionObserver*    observer,
@@ -57,7 +57,7 @@ CreateRtpSessionUdpclient(IRtpSessionObserver*    observer,
  *
  * 返回值: 会话对象或NULL
  *
- * 说明: 可以使用IRtpSession::GetLocalPort(...)获取本地端口号
+ * 说明: 可以使用IRtpSession::GetLocalPort()获取本地端口号
  */
 IRtpSession*
 CreateRtpSessionUdpserver(IRtpSessionObserver*    observer,
@@ -107,7 +107,7 @@ CreateRtpSessionTcpclient(IRtpSessionObserver*    observer,
  *
  * 返回值: 会话对象或NULL
  *
- * 说明: 可以使用IRtpSession::GetLocalPort(...)获取本地端口号
+ * 说明: 可以使用IRtpSession::GetLocalPort()获取本地端口号
  *
  *       suspendRecv用于一些需要精确控制时序的场景
  */
@@ -158,7 +158,7 @@ CreateRtpSessionUdpclientEx(IRtpSessionObserver*    observer,
  *
  * 返回值: 会话对象或NULL
  *
- * 说明: 可以使用IRtpSession::GetLocalPort(...)获取本地端口号
+ * 说明: 可以使用IRtpSession::GetLocalPort()获取本地端口号
  */
 IRtpSession*
 CreateRtpSessionUdpserverEx(IRtpSessionObserver*    observer,
@@ -203,8 +203,8 @@ CreateRtpSessionTcpclientEx(IRtpSessionObserver*    observer,
  * 参数:
  * observer    : 回调目标
  * reactor     : 反应器
- * localInfo   : 会话信息. 根据IRtpServiceObserver::OnAcceptSession(...)的remoteInfo构造
- * sockId      : 套接字id. 来源于IRtpServiceObserver::OnAcceptSession(...)
+ * localInfo   : 会话信息. 根据IRtpServiceObserver::OnAcceptSession()的remoteInfo构造
+ * sockId      : 套接字id. 来源于IRtpServiceObserver::OnAcceptSession()
  * unixSocket  : 是否unix套接字
  * useAckData  : 是否使用自定义的会话应答数据
  * ackData     : 自定义的会话应答数据
@@ -218,7 +218,7 @@ IRtpSession*
 CreateRtpSessionTcpserverEx(IRtpSessionObserver*    observer,
                             IProReactor*            reactor,
                             const RTP_SESSION_INFO* localInfo,
-                            PRO_INT64               sockId,
+                            int64_t                 sockId,
                             bool                    unixSocket,
                             bool                    useAckData,
                             char                    ackData[64],
@@ -265,9 +265,9 @@ CreateRtpSessionSslclientEx(IRtpSessionObserver*         observer,
  * 参数:
  * observer    : 回调目标
  * reactor     : 反应器
- * localInfo   : 会话信息. 根据IRtpServiceObserver::OnAcceptSession(...)的remoteInfo构造
+ * localInfo   : 会话信息. 根据IRtpServiceObserver::OnAcceptSession()的remoteInfo构造
  * sslCtx      : ssl上下文
- * sockId      : 套接字id. 来源于IRtpServiceObserver::OnAcceptSession(...)
+ * sockId      : 套接字id. 来源于IRtpServiceObserver::OnAcceptSession()
  * unixSocket  : 是否unix套接字
  * useAckData  : 是否使用自定义的会话应答数据
  * ackData     : 自定义的会话应答数据
@@ -285,7 +285,7 @@ CreateRtpSessionSslserverEx(IRtpSessionObserver*    observer,
                             IProReactor*            reactor,
                             const RTP_SESSION_INFO* localInfo,
                             PRO_SSL_CTX*            sslCtx,
-                            PRO_INT64               sockId,
+                            int64_t                 sockId,
                             bool                    unixSocket,
                             bool                    useAckData,
                             char                    ackData[64],
@@ -308,7 +308,7 @@ CreateRtpSessionSslserverEx(IRtpSessionObserver*    observer,
  *       推荐的多播地址为[224.0.1.0 ~ 238.255.255.255],
  *       RFC-1112(IGMPv1), RFC-2236(IGMPv2), RFC-3376(IGMPv3)
  *
- *       可以使用IRtpSession::GetLocalPort(...)获取多播端口号
+ *       可以使用IRtpSession::GetLocalPort()获取多播端口号
  */
 IRtpSession*
 CreateRtpSessionMcast(IRtpSessionObserver*    observer,
@@ -335,7 +335,7 @@ CreateRtpSessionMcast(IRtpSessionObserver*    observer,
  *       推荐的多播地址为[224.0.1.0 ~ 238.255.255.255],
  *       RFC-1112(IGMPv1), RFC-2236(IGMPv2), RFC-3376(IGMPv3)
  *
- *       可以使用IRtpSession::GetLocalPort(...)获取多播端口号
+ *       可以使用IRtpSession::GetLocalPort()获取多播端口号
  */
 IRtpSession*
 CreateRtpSessionMcastEx(IRtpSessionObserver*    observer,

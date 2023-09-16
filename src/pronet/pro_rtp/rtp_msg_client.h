@@ -26,6 +26,7 @@
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_timer_factory.h"
+#include "../pro_util/pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -40,7 +41,7 @@ public:
         IRtpMsgClient*      msgClient,
         const void*         buf,
         unsigned long       size,
-        PRO_UINT16          charset,
+        uint16_t            charset,
         const RTP_MSG_USER& srcUser,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount
@@ -85,7 +86,7 @@ public:
 
     virtual RTP_MM_TYPE GetMmType() const
     {
-        return (m_mmType);
+        return m_mmType;
     }
 
     virtual void GetUser(RTP_MSG_USER* myUser) const;
@@ -102,32 +103,32 @@ public:
 
     virtual bool SendMsg(
         const void*         buf,
-        unsigned long       size,
-        PRO_UINT16          charset,
+        size_t              size,
+        uint16_t            charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount
         );
 
     virtual bool SendMsg2(
         const void*         buf1,
-        unsigned long       size1,
+        size_t              size1,
         const void*         buf2,  /* = NULL */
-        unsigned long       size2, /* = 0 */
-        PRO_UINT16          charset,
+        size_t              size2, /* = 0 */
+        uint16_t            charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount
         );
 
-    virtual void SetOutputRedline(unsigned long redlineBytes);
+    virtual void SetOutputRedline(size_t redlineBytes);
 
-    virtual unsigned long GetOutputRedline() const;
+    virtual size_t GetOutputRedline() const;
 
-    virtual unsigned long GetSendingBytes() const;
+    virtual size_t GetSendingBytes() const;
 
     bool TransferMsg(
         const void*         buf,
         unsigned long       size,
-        PRO_UINT16          charset,
+        uint16_t            charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount,
         const RTP_MSG_USER& srcUser
@@ -167,21 +168,21 @@ private:
 
     virtual void OnHeartbeatSession(
         IRtpSession* session,
-        PRO_INT64    peerAliveTick
+        int64_t      peerAliveTick
         );
 
     virtual void OnTimer(
-        void*      factory,
-        PRO_UINT64 timerId,
-        PRO_INT64  userData
+        void*    factory,
+        uint64_t timerId,
+        int64_t  userData
         );
 
     bool PushData(
         const void*         buf1,
-        unsigned long       size1,
+        size_t              size1,
         const void*         buf2,   /* = NULL */
-        unsigned long       size2,  /* = 0 */
-        PRO_UINT16          charset,
+        size_t              size2,  /* = 0 */
+        uint16_t            charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount,
         const RTP_MSG_USER* srcUser /* = NULL */
@@ -198,7 +199,7 @@ private:
     IProReactor*                       m_reactor;
     IRtpSession*                       m_session;
     RTP_MSG_USER                       m_userBak;
-    PRO_UINT64                         m_timerId;
+    uint64_t                           m_timerId;
     mutable CProThreadMutex            m_lock;
 
     volatile bool                      m_canUpcall;

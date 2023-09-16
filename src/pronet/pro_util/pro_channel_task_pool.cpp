@@ -23,7 +23,6 @@
 #include "pro_stl.h"
 #include "pro_thread_mutex.h"
 #include "pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -34,15 +33,15 @@ CProChannelTaskPool::~CProChannelTaskPool()
 }
 
 bool
-CProChannelTaskPool::Start(unsigned long threadCount)
+CProChannelTaskPool::Start(size_t threadCount)
 {
     assert(threadCount > 0);
     if (threadCount == 0)
     {
-        return (false);
+        return false;
     }
 
-    CProStlMap<CProFunctorCommandTask*, unsigned long> task2Channels;
+    CProStlMap<CProFunctorCommandTask*, size_t> task2Channels;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -50,7 +49,7 @@ CProChannelTaskPool::Start(unsigned long threadCount)
         assert(m_task2Channels.size() == 0);
         if (m_task2Channels.size() != 0)
         {
-            return (false);
+            return false;
         }
 
         for (int i = 0; i < (int)threadCount; ++i)
@@ -66,27 +65,25 @@ CProChannelTaskPool::Start(unsigned long threadCount)
         m_task2Channels = task2Channels;
     }
 
-    return (true);
+    return true;
 
 EXIT:
 
-    CProStlMap<CProFunctorCommandTask*, unsigned long>::iterator       itr = task2Channels.begin();
-    CProStlMap<CProFunctorCommandTask*, unsigned long>::iterator const end = task2Channels.end();
+    auto itr = task2Channels.begin();
+    auto end = task2Channels.end();
 
     for (; itr != end; ++itr)
     {
-        CProFunctorCommandTask* const task = itr->first;
-        task->Stop();
-        delete task;
+        delete itr->first;
     }
 
-    return (false);
+    return false;
 }
 
 void
 CProChannelTaskPool::Stop()
 {
-    CProStlMap<CProFunctorCommandTask*, unsigned long> task2Channels;
+    CProStlMap<CProFunctorCommandTask*, size_t> task2Channels;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -101,86 +98,79 @@ CProChannelTaskPool::Stop()
         m_task2Channels.clear();
     }
 
-    CProStlMap<CProFunctorCommandTask*, unsigned long>::iterator       itr = task2Channels.begin();
-    CProStlMap<CProFunctorCommandTask*, unsigned long>::iterator const end = task2Channels.end();
+    auto itr = task2Channels.begin();
+    auto end = task2Channels.end();
 
     for (; itr != end; ++itr)
     {
-        CProFunctorCommandTask* const task = itr->first;
-        task->Stop();
-        delete task;
+        delete itr->first;
     }
 }
 
 bool
-CProChannelTaskPool::AddChannel(PRO_UINT64 channelId)
+CProChannelTaskPool::AddChannel(uint64_t channelId)
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_task2Channels.size() == 0)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_task2Channels.size() == 0)
-        {
-            return (false);
-        }
-
-        if (m_channelId2Task.find(channelId) != m_channelId2Task.end())
-        {
-            return (true);
-        }
-
-        CProFunctorCommandTask* task     = NULL;
-        unsigned long           channels = 0;
-
-        CProStlMap<CProFunctorCommandTask*, unsigned long>::iterator       itr = m_task2Channels.begin();
-        CProStlMap<CProFunctorCommandTask*, unsigned long>::iterator const end = m_task2Channels.end();
-
-        for (; itr != end; ++itr)
-        {
-            if (task == NULL || itr->second < channels)
-            {
-                task     = itr->first;
-                channels = itr->second;
-            }
-        }
-
-        ++m_task2Channels[task];
-        m_channelId2Task[channelId] = task;
+        return false;
     }
 
-    return (true);
+    if (m_channelId2Task.find(channelId) != m_channelId2Task.end())
+    {
+        return true;
+    }
+
+    CProFunctorCommandTask* task     = NULL;
+    size_t                  channels = 0;
+
+    auto itr = m_task2Channels.begin();
+    auto end = m_task2Channels.end();
+
+    for (; itr != end; ++itr)
+    {
+        if (task == NULL || itr->second < channels)
+        {
+            task     = itr->first;
+            channels = itr->second;
+        }
+    }
+
+    ++m_task2Channels[task];
+    m_channelId2Task[channelId] = task;
+
+    return true;
 }
 
 void
-CProChannelTaskPool::RemoveChannel(PRO_UINT64 channelId)
+CProChannelTaskPool::RemoveChannel(uint64_t channelId)
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_task2Channels.size() == 0)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_task2Channels.size() == 0)
-        {
-            return;
-        }
-
-        CProStlMap<PRO_UINT64, CProFunctorCommandTask*>::iterator const itr =
-            m_channelId2Task.find(channelId);
-        if (itr == m_channelId2Task.end())
-        {
-            return;
-        }
-
-        --m_task2Channels[itr->second];
-        m_channelId2Task.erase(itr);
+        return;
     }
+
+    auto itr = m_channelId2Task.find(channelId);
+    if (itr == m_channelId2Task.end())
+    {
+        return;
+    }
+
+    --m_task2Channels[itr->second];
+    m_channelId2Task.erase(itr);
 }
 
 bool
-CProChannelTaskPool::Put(PRO_UINT64          channelId,
+CProChannelTaskPool::Put(uint64_t            channelId,
                          IProFunctorCommand* command)
 {
     assert(command != NULL);
     if (command == NULL)
     {
-        return (false);
+        return false;
     }
 
     {
@@ -188,33 +178,32 @@ CProChannelTaskPool::Put(PRO_UINT64          channelId,
 
         if (m_task2Channels.size() == 0)
         {
-            return (false);
+            return false;
         }
 
-        CProStlMap<PRO_UINT64, CProFunctorCommandTask*>::iterator const itr =
-            m_channelId2Task.find(channelId);
+        auto itr = m_channelId2Task.find(channelId);
         if (itr == m_channelId2Task.end())
         {
-            return (false);
+            return false;
         }
 
         CProFunctorCommandTask* const task = itr->second;
         task->Put(command);
     }
 
-    return (true);
+    return true;
 }
 
-unsigned long
+size_t
 CProChannelTaskPool::GetSize() const
 {
-    unsigned long size = 0;
+    size_t size = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
 
-        CProStlMap<CProFunctorCommandTask*, unsigned long>::const_iterator       itr = m_task2Channels.begin();
-        CProStlMap<CProFunctorCommandTask*, unsigned long>::const_iterator const end = m_task2Channels.end();
+        auto itr = m_task2Channels.begin();
+        auto end = m_task2Channels.end();
 
         for (; itr != end; ++itr)
         {
@@ -223,5 +212,5 @@ CProChannelTaskPool::GetSize() const
         }
     }
 
-    return (size);
+    return size;
 }

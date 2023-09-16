@@ -23,6 +23,7 @@
 #include "pro_memory_pool.h"
 #include "pro_stl.h"
 #include "pro_thread_mutex.h"
+#include "pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -43,29 +44,29 @@ public:
 
     ~CProChannelTaskPool();
 
-    bool Start(unsigned long threadCount);
+    bool Start(size_t threadCount);
 
     void Stop();
 
     /*
-     * the "channelId" can be 0
+     * the 'channelId' can be 0
      */
-    bool AddChannel(PRO_UINT64 channelId);
+    bool AddChannel(uint64_t channelId);
 
-    void RemoveChannel(PRO_UINT64 channelId);
+    void RemoveChannel(uint64_t channelId);
 
     bool Put(
-        PRO_UINT64          channelId,
+        uint64_t            channelId,
         IProFunctorCommand* command
         );
 
-    unsigned long GetSize() const;
+    size_t GetSize() const;
 
 private:
 
-    CProStlMap<CProFunctorCommandTask*, unsigned long> m_task2Channels;
-    CProStlMap<PRO_UINT64, CProFunctorCommandTask*>    m_channelId2Task;
-    mutable CProThreadMutex                            m_lock;
+    CProStlMap<CProFunctorCommandTask*, size_t>   m_task2Channels;
+    CProStlMap<uint64_t, CProFunctorCommandTask*> m_channelId2Task;
+    mutable CProThreadMutex                       m_lock;
 
     DECLARE_SGI_POOL(0)
 };
