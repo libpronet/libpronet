@@ -28,6 +28,7 @@
 #include "pro_stl.h"
 #include "pro_thread.h"
 #include "pro_thread_mutex.h"
+#include "pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -46,8 +47,8 @@ public:
     virtual ~CProFunctorCommandTask();
 
     bool Start(
-        bool          realtime    = false,
-        unsigned long threadCount = 1
+        bool   realtime    = false,
+        size_t threadCount = 1
         );
 
     void Stop();
@@ -57,7 +58,7 @@ public:
         bool                blocking = false
         );
 
-    unsigned long GetSize() const;
+    size_t GetSize() const;
 
     void SetUserData(const void* userData);
 
@@ -72,10 +73,10 @@ private:
 private:
 
     const void*                       m_userData;
-    unsigned long                     m_threadCount;
-    unsigned long                     m_curThreadCount;
+    size_t                            m_threadCount;
+    size_t                            m_curThreadCount;
     bool                              m_wantExit;
-    CProStlSet<PRO_UINT64>            m_threadIds;
+    CProStlSet<uint64_t>              m_threadIds;
     CProStlDeque<IProFunctorCommand*> m_commands;
     CProThreadMutexCondition          m_commandCond;
     CProThreadMutexCondition          m_initCond;

@@ -24,12 +24,12 @@
 #include "pro_thread.h"
 #include "pro_thread_mutex.h"
 #include "pro_z.h"
-#include <cassert>
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
 CProFunctorCommandTask::CProFunctorCommandTask()
+: m_commandCond(true) /* isSocketMode is true */
 {
     m_userData       = NULL;
     m_threadCount    = 0;
@@ -43,15 +43,15 @@ CProFunctorCommandTask::~CProFunctorCommandTask()
 }
 
 bool
-CProFunctorCommandTask::Start(bool          realtime,    /* = false */
-                              unsigned long threadCount) /* = 1 */
+CProFunctorCommandTask::Start(bool   realtime,    /* = false */
+                              size_t threadCount) /* = 1 */
 {{
     CProThreadMutexGuard mon(m_lockAtom);
 
     assert(threadCount > 0);
     if (threadCount == 0)
     {
-        return (false);
+        return false;
     }
 
     {
@@ -60,10 +60,10 @@ CProFunctorCommandTask::Start(bool          realtime,    /* = false */
         assert(m_threadCount == 0);
         if (m_threadCount != 0)
         {
-            return (false);
+            return false;
         }
 
-        m_threadCount = threadCount; /* for StopMe(...) */
+        m_threadCount = threadCount; /* for StopMe() */
 
         /*
          * threads
@@ -92,13 +92,13 @@ CProFunctorCommandTask::Start(bool          realtime,    /* = false */
         }
     }
 
-    return (true);
+    return true;
 
 EXIT:
 
     StopMe();
 
-    return (false);
+    return false;
 }}
 
 void
@@ -112,32 +112,30 @@ CProFunctorCommandTask::Stop()
 void
 CProFunctorCommandTask::StopMe()
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_threadCount == 0)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_threadCount == 0)
-        {
-            return;
-        }
-
-        assert(m_threadIds.find(ProGetThreadId()) == m_threadIds.end()); /* deadlock */
-
-        m_wantExit = true;
-
-        while (GetThreadCount() > 0)
-        {
-            m_commandCond.Signal();
-
-            m_lock.Unlock();
-            Wait1();
-            m_lock.Lock();
-        }
-
-        m_userData       = NULL;
-        m_threadCount    = 0;
-        m_curThreadCount = 0;
-        m_wantExit       = false;
+        return;
     }
+
+    assert(m_threadIds.find(ProGetThreadId()) == m_threadIds.end()); /* deadlock */
+
+    m_wantExit = true;
+
+    while (GetThreadCount() > 0)
+    {
+        m_commandCond.Signal();
+
+        m_lock.Unlock();
+        Wait1();
+        m_lock.Lock();
+    }
+
+    m_userData       = NULL;
+    m_threadCount    = 0;
+    m_curThreadCount = 0;
+    m_wantExit       = false;
 }
 
 bool
@@ -147,27 +145,28 @@ CProFunctorCommandTask::Put(IProFunctorCommand* command,
     assert(command != NULL);
     if (command == NULL)
     {
-        return (false);
+        return false;
     }
 
-    CProThreadMutexCondition cond;
+    CProThreadMutexCondition* cond = NULL;
+    CProThreadMutex*          lock = NULL;
 
     {
         CProThreadMutexGuard mon(m_lock);
 
         if (m_threadCount == 0 || m_curThreadCount == 0 || m_wantExit)
         {
-            return (false);
+            return false;
         }
 
         if (blocking)
         {
-            command->SetUserData(&cond);
+            cond = new CProThreadMutexCondition;
+            lock = new CProThreadMutex;
         }
-        else
-        {
-            command->SetUserData(NULL);
-        }
+
+        command->SetUserData1(cond);
+        command->SetUserData2(lock);
 
         m_commands.push_back(command);
         m_commandCond.Signal();
@@ -175,34 +174,34 @@ CProFunctorCommandTask::Put(IProFunctorCommand* command,
 
     if (blocking)
     {
-        cond.Wait(NULL);
+        lock->Lock();
+        cond->Wait(lock);
+        lock->Unlock();
     }
 
-    return (true);
+    return true;
 }
 
-unsigned long
+size_t
 CProFunctorCommandTask::GetSize() const
 {
-    unsigned long size = 0;
+    size_t size = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
 
-        size = (unsigned long)m_commands.size();
+        size = m_commands.size();
     }
 
-    return (size);
+    return size;
 }
 
 void
 CProFunctorCommandTask::SetUserData(const void* userData)
 {
-    {
-        CProThreadMutexGuard mon(m_lock);
+    CProThreadMutexGuard mon(m_lock);
 
-        m_userData = userData;
-    }
+    m_userData = userData;
 }
 
 const void*
@@ -216,13 +215,13 @@ CProFunctorCommandTask::GetUserData() const
         userData = m_userData;
     }
 
-    return (userData);
+    return userData;
 }
 
 void
 CProFunctorCommandTask::Svc()
 {
-    const PRO_UINT64 threadId = ProGetThreadId();
+    const uint64_t threadId = ProGetThreadId();
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -264,15 +263,17 @@ CProFunctorCommandTask::Svc()
 
         command->Execute();
 
-        CProThreadMutexCondition* const cond =
-            (CProThreadMutexCondition*)command->GetUserData();
-        if (cond != NULL)
+        CProThreadMutexCondition* const cond = (CProThreadMutexCondition*)command->GetUserData1();
+        CProThreadMutex*          const lock = (CProThreadMutex*)         command->GetUserData2();
+        if (cond != NULL && lock != NULL)
         {
+            lock->Lock();
             cond->Signal();
+            lock->Unlock();
         }
 
         command->Destroy();
-    } /* end of while (...) */
+    } /* end of while () */
 
     int       i = 0;
     const int c = (int)commands.size();
@@ -282,11 +283,13 @@ CProFunctorCommandTask::Svc()
         IProFunctorCommand* const command = commands[i];
         command->Execute();
 
-        CProThreadMutexCondition* const cond =
-            (CProThreadMutexCondition*)command->GetUserData();
-        if (cond != NULL)
+        CProThreadMutexCondition* const cond = (CProThreadMutexCondition*)command->GetUserData1();
+        CProThreadMutex*          const lock = (CProThreadMutex*)         command->GetUserData2();
+        if (cond != NULL && lock != NULL)
         {
+            lock->Lock();
             cond->Signal();
+            lock->Unlock();
         }
 
         command->Destroy();
