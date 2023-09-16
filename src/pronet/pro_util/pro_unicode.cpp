@@ -42,13 +42,17 @@ ProAnsiToUnicode(const CProStlString& src,
     }
 
     const size_t len = src.length() + 1;
-    dst.resize(len);
 
-    wchar_t* const p = &dst[0];
+    CProStlWstring dst2;
+    dst2.resize(len);
+
+    wchar_t* const p = &dst2[0];
     p[0]       = L'\0';
     p[len - 1] = L'\0';
 
     ::MultiByteToWideChar(CP_ACP, 0, src.c_str(), -1, p, (int)len);
+
+    dst = dst2.c_str();
 }
 
 void
@@ -63,14 +67,17 @@ ProUnicodeToAnsi(const CProStlWstring& src,
     }
 
     const size_t len = src.length() * 4 + 1;
-    dst.resize(len);
 
-    char* const p = &dst[0];
+    CProStlString dst2;
+    dst2.resize(len);
+
+    char* const p = &dst2[0];
     p[0]       = '\0';
     p[len - 1] = '\0';
 
-    ::WideCharToMultiByte(
-        CP_ACP, 0, src.c_str(), -1, p, (int)len, NULL, NULL);
+    ::WideCharToMultiByte(CP_ACP, 0, src.c_str(), -1, p, (int)len, NULL, NULL);
+
+    dst = dst2.c_str();
 }
 
 void
@@ -85,13 +92,17 @@ ProUtf8ToUnicode(const CProStlString& src,
     }
 
     const size_t len = src.length() + 1;
-    dst.resize(len);
 
-    wchar_t* const p = &dst[0];
+    CProStlWstring dst2;
+    dst2.resize(len);
+
+    wchar_t* const p = &dst2[0];
     p[0]       = L'\0';
     p[len - 1] = L'\0';
 
     ::MultiByteToWideChar(CP_UTF8, 0, src.c_str(), -1, p, (int)len);
+
+    dst = dst2.c_str();
 }
 
 void
@@ -106,21 +117,24 @@ ProUnicodeToUtf8(const CProStlWstring& src,
     }
 
     const size_t len = src.length() * 4 + 1;
-    dst.resize(len);
 
-    char* const p = &dst[0];
+    CProStlString dst2;
+    dst2.resize(len);
+
+    char* const p = &dst2[0];
     p[0]       = '\0';
     p[len - 1] = '\0';
 
-    ::WideCharToMultiByte(
-        CP_UTF8, 0, src.c_str(), -1, p, (int)len, NULL, NULL);
+    ::WideCharToMultiByte(CP_UTF8, 0, src.c_str(), -1, p, (int)len, NULL, NULL);
+
+    dst = dst2.c_str();
 }
 
 void
 ProAnsiToUtf8(const CProStlString& src,
               CProStlString&       dst)
 {
-    CProStlWstring uni = L"";
+    CProStlWstring uni;
     ProAnsiToUnicode(src, uni);
     ProUnicodeToUtf8(uni, dst);
 }
@@ -129,7 +143,7 @@ void
 ProUtf8ToAnsi(const CProStlString& src,
               CProStlString&       dst)
 {
-    CProStlWstring uni = L"";
+    CProStlWstring uni;
     ProUtf8ToUnicode(src, uni);
     ProUnicodeToAnsi(uni, dst);
 }
