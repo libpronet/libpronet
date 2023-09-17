@@ -1,0 +1,10 @@
+prefix=@prefix@
+libdir=${prefix}/libpronet/lib
+includedir=${prefix}/libpronet/include
+
+Name: pro_rtp
+Description: pro_rtp
+Version: @PACKAGE_VERSION@
+Cflags: -I${includedir}
+Libs: -L${libdir} -lpro_rtp
+Libs.private:

@@ -1,9 +1,12 @@
 prolibdir = ${prefix}/libpronet/lib
+propkgdir = ${prolibdir}/pkgconfig
 proincdir = ${prefix}/libpronet/include/mbedtls
 
 #############################################################################
 
 prolib_LIBRARIES = libmbedtls.a
+
+propkg_DATA = mbedtls.pc
 
 proinc_HEADERS = ../../../../src/mbedtls/include/mbedtls/aes.h                 \
                  ../../../../src/mbedtls/include/mbedtls/aesni.h               \

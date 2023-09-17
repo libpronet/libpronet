@@ -32,8 +32,6 @@
 #include <mmsystem.h>
 #endif
 
-#include <cassert>
-
 #if defined(_MSC_VER)
 #pragma comment(lib, "winmm.lib")
 #endif
@@ -41,18 +39,15 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if !defined(PRO_TIMER_UPCALL_COUNT)
-#define PRO_TIMER_UPCALL_COUNT     1000
-#endif
-
 #define DEFAULT_HEARTBEAT_INTERVAL 20
 
-typedef void (CProTimerFactory::* ACTION)(PRO_INT64*);
+typedef void (CProTimerFactory::* ACTION)(int64_t*);
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
 CProTimerFactory::CProTimerFactory()
+: m_cond(true) /* isSocketMode is true */
 {
     m_task         = NULL;
     m_wantExit     = false;
@@ -60,7 +55,7 @@ CProTimerFactory::CProTimerFactory()
     m_mmResolution = 0;
     m_htbtTimeSpan = DEFAULT_HEARTBEAT_INTERVAL * 1000;
 
-    m_htbtCounts.resize(1000); /* 1000 steps */
+    m_htbtTimerCounts.resize(1000); /* 1000 slots */
 }
 
 CProTimerFactory::~CProTimerFactory()
@@ -79,7 +74,7 @@ CProTimerFactory::Start(bool mmTimer)
         assert(m_task == NULL);
         if (m_task != NULL)
         {
-            return (false);
+            return false;
         }
 
         m_task = new CProFunctorCommandTask;
@@ -88,7 +83,7 @@ CProTimerFactory::Start(bool mmTimer)
             delete m_task;
             m_task = NULL;
 
-            return (false);
+            return false;
         }
 
 #if defined(_WIN32)
@@ -110,22 +105,22 @@ CProTimerFactory::Start(bool mmTimer)
         m_mmTimer = mmTimer;
 
         int       i = 0;
-        const int c = (int)m_htbtCounts.size();
+        const int c = (int)m_htbtTimerCounts.size();
 
         for (; i < c; ++i)
         {
-            m_htbtCounts[i] = 0; /* clean all steps */
+            m_htbtTimerCounts[i] = 0; /* clean all slots */
         }
 
         IProFunctorCommand* const command =
             CProFunctorCommand_cpp<CProTimerFactory, ACTION>::CreateInstance(
-            *this,
-            &CProTimerFactory::WorkerRun
-            );
+                *this,
+                &CProTimerFactory::WorkerRun
+                );
         m_task->Put(command);
     }
 
-    return (true);
+    return true;
 }}
 
 void
@@ -153,8 +148,8 @@ CProTimerFactory::Stop()
 
     m_task->Stop();
 
-    CProStlSet<PRO_TIMER_NODE>::iterator       itr = timers.begin();
-    CProStlSet<PRO_TIMER_NODE>::iterator const end = timers.end();
+    auto itr = timers.begin();
+    auto end = timers.end();
 
     for (; itr != end; ++itr)
     {
@@ -182,23 +177,26 @@ CProTimerFactory::Stop()
     }
 }}
 
-PRO_UINT64
+uint64_t
 CProTimerFactory::ScheduleTimer(IProOnTimer* onTimer,
-                                PRO_UINT64   timeSpan,
+                                uint64_t     timeSpan, /* [0, 0xFFFFFFFFFFFF] */
                                 bool         recurring,
-                                PRO_INT64    userData) /* = 0 */
+                                int64_t      userData) /* = 0 */
 {
-    const unsigned long timeSpan2 = (unsigned long)timeSpan;
+    if (timeSpan > 0xFFFFFFFFFFFFULL)
+    {
+        timeSpan = 0xFFFFFFFFFFFFULL;
+    }
 
     assert(onTimer != NULL);
-    assert(timeSpan2 > 0 || !recurring);
+    assert(timeSpan > 0 || !recurring);
     if (
         onTimer == NULL
         ||
-        (timeSpan2 == 0 && recurring)
+        (timeSpan == 0 && recurring)
        )
     {
-        return (0);
+        return 0;
     }
 
     PRO_TIMER_NODE node;
@@ -208,13 +206,13 @@ CProTimerFactory::ScheduleTimer(IProOnTimer* onTimer,
 
         if (m_task == NULL || m_wantExit)
         {
-            return (0);
+            return 0;
         }
 
-        node.expireTick = ProGetTickCount64() + timeSpan2;
+        node.expireTick = ProGetTickCount64() + timeSpan;
         node.timerId    = m_mmTimer ? ProMakeMmTimerId() : ProMakeTimerId();
         node.onTimer    = onTimer;
-        node.timeSpan   = timeSpan2;
+        node.timeSpan   = timeSpan;
         node.recurring  = recurring;
         node.userData   = userData;
 
@@ -222,20 +220,21 @@ CProTimerFactory::ScheduleTimer(IProOnTimer* onTimer,
         m_timers.insert(node);
         m_timerId2ExpireTick[node.timerId] = node.expireTick;
         assert(m_timers.size() == m_timerId2ExpireTick.size());
+
         m_cond.Signal();
     }
 
-    return (node.timerId);
+    return node.timerId;
 }
 
-PRO_UINT64
+uint64_t
 CProTimerFactory::ScheduleHeartbeatTimer(IProOnTimer* onTimer,
-                                         PRO_INT64    userData) /* = 0 */
+                                         int64_t      userData) /* = 0 */
 {
     assert(onTimer != NULL);
     if (onTimer == NULL)
     {
-        return (0);
+        return 0;
     }
 
     PRO_TIMER_NODE node;
@@ -245,61 +244,62 @@ CProTimerFactory::ScheduleHeartbeatTimer(IProOnTimer* onTimer,
 
         if (m_task == NULL || m_wantExit)
         {
-            return (0);
+            return 0;
         }
 
         assert(!m_mmTimer);
         if (m_mmTimer)
         {
-            return (0);
+            return 0;
         }
 
-        int           index = 0;
-        unsigned long count = m_htbtCounts[0];
+        int    index = 0;
+        size_t count = m_htbtTimerCounts[0];
 
         int       i = 1;
-        const int c = (int)m_htbtCounts.size();
+        const int c = (int)m_htbtTimerCounts.size();
 
         for (; i < c; ++i)
         {
-            if (m_htbtCounts[i] < count)
+            if (m_htbtTimerCounts[i] < count)
             {
                 index = i;
-                count = m_htbtCounts[i];
+                count = m_htbtTimerCounts[i];
             }
         }
 
         /*
          * put it into the step
          */
-        ++m_htbtCounts[index];
+        ++m_htbtTimerCounts[index];
 
-        const PRO_INT64 step = m_htbtTimeSpan / c;
-        const PRO_INT64 tick = ProGetTickCount64();
+        const int64_t step = m_htbtTimeSpan / c;
+        const int64_t tick = ProGetTickCount64();
 
-        node.expireTick =  (tick + m_htbtTimeSpan - 1) / m_htbtTimeSpan * m_htbtTimeSpan;
-        node.expireTick += step * index;
-        node.expireTick += ProRand_0_32767() % step;
-        node.timerId    =  ProMakeTimerId();
-        node.onTimer    =  onTimer;
-        node.timeSpan   =  m_htbtTimeSpan;
-        node.recurring  =  true;
-        node.heartbeat  =  true;
-        node.htbtIndex  =  index;
-        node.userData   =  userData;
+        node.expireTick    =  (tick + m_htbtTimeSpan - 1) / m_htbtTimeSpan * m_htbtTimeSpan;
+        node.expireTick    += step * index;
+        node.expireTick    += ProRand_0_32767() % step;
+        node.timerId       =  ProMakeTimerId();
+        node.onTimer       =  onTimer;
+        node.timeSpan      =  m_htbtTimeSpan;
+        node.recurring     =  true;
+        node.heartbeat     =  true;
+        node.htbtSlotIndex =  index;
+        node.userData      =  userData;
 
         node.onTimer->AddRef();
         m_timers.insert(node);
         m_timerId2ExpireTick[node.timerId] = node.expireTick;
         assert(m_timers.size() == m_timerId2ExpireTick.size());
+
         m_cond.Signal();
     }
 
-    return (node.timerId);
+    return node.timerId;
 }
 
 void
-CProTimerFactory::CancelTimer(PRO_UINT64 timerId)
+CProTimerFactory::CancelTimer(uint64_t timerId)
 {
     if (timerId == 0)
     {
@@ -316,8 +316,7 @@ CProTimerFactory::CancelTimer(PRO_UINT64 timerId)
             return;
         }
 
-        CProStlMap<PRO_UINT64, PRO_INT64>::iterator const itr =
-            m_timerId2ExpireTick.find(timerId);
+        auto itr = m_timerId2ExpireTick.find(timerId);
         if (itr == m_timerId2ExpireTick.end())
         {
             return;
@@ -326,7 +325,7 @@ CProTimerFactory::CancelTimer(PRO_UINT64 timerId)
         node.expireTick = itr->second;
         node.timerId    = timerId;
 
-        CProStlSet<PRO_TIMER_NODE>::iterator const itr2 = m_timers.find(node);
+        auto itr2 = m_timers.find(node);
         if (itr2 == m_timers.end())
         {
             return;
@@ -340,50 +339,49 @@ CProTimerFactory::CancelTimer(PRO_UINT64 timerId)
 
         if (node.heartbeat)
         {
-            --m_htbtCounts[node.htbtIndex];
+            --m_htbtTimerCounts[node.htbtSlotIndex];
         }
     }
 
     node.onTimer->Release();
 }
 
-unsigned long
+size_t
 CProTimerFactory::GetTimerCount() const
 {
-    unsigned long count = 0;
+    size_t count = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
 
-        count = (unsigned long)m_timers.size();
+        count = m_timers.size();
     }
 
-    return (count);
+    return count;
 }
 
 bool
-CProTimerFactory::UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds)
+CProTimerFactory::UpdateHeartbeatTimers(unsigned int htbtIntervalInSeconds)
 {
     assert(htbtIntervalInSeconds > 0);
     if (htbtIntervalInSeconds == 0)
     {
-        return (false);
+        return false;
     }
 
-    PRO_INT64 timeSpan = htbtIntervalInSeconds;
-    timeSpan *= 1000;
+    const int64_t timeSpan = (int64_t)htbtIntervalInSeconds * 1000;
 
     {
         CProThreadMutexGuard mon(m_lock);
 
         if (m_task == NULL || m_wantExit)
         {
-            return (false);
+            return false;
         }
 
         if (timeSpan == m_htbtTimeSpan)
         {
-            return (true);
+            return true;
         }
 
         /*
@@ -396,8 +394,8 @@ CProTimerFactory::UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds)
          */
         CProStlVector<PRO_TIMER_NODE> timers;
 
-        CProStlSet<PRO_TIMER_NODE>::iterator       itr = m_timers.begin();
-        CProStlSet<PRO_TIMER_NODE>::iterator const end = m_timers.end();
+        auto itr = m_timers.begin();
+        auto end = m_timers.end();
 
         while (itr != end)
         {
@@ -413,9 +411,9 @@ CProTimerFactory::UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds)
             }
         }
 
-        const int       steps = (int)m_htbtCounts.size();
-        const PRO_INT64 step  = m_htbtTimeSpan / steps;
-        const PRO_INT64 tick  = ProGetTickCount64();
+        const int     slots = (int)m_htbtTimerCounts.size();
+        const int64_t step  = m_htbtTimeSpan / slots;
+        const int64_t tick  = ProGetTickCount64();
 
         int       i = 0;
         const int c = (int)timers.size();
@@ -423,37 +421,39 @@ CProTimerFactory::UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds)
         for (; i < c; ++i)
         {
             /*
-             * put it into the step
+             * put it into the slot
              */
-            if (i < steps)
+            if (i < slots)
             {
-                m_htbtCounts[i] = 1;
+                m_htbtTimerCounts[i] = 1;
             }
             else
             {
-                ++m_htbtCounts[i % steps];
+                ++m_htbtTimerCounts[i % slots];
             }
 
             PRO_TIMER_NODE& node = timers[i];
-            node.expireTick =  (tick + m_htbtTimeSpan - 1) / m_htbtTimeSpan * m_htbtTimeSpan;
-            node.expireTick += step * (i % steps);
-            node.expireTick += ProRand_0_32767() % step;
-            node.timeSpan   =  m_htbtTimeSpan;
-            node.htbtIndex  =  i % steps;
+            node.expireTick    =  (tick + m_htbtTimeSpan - 1) / m_htbtTimeSpan * m_htbtTimeSpan;
+            node.expireTick    += step * (i % slots);
+            node.expireTick    += ProRand_0_32767() % step;
+            node.timeSpan      =  m_htbtTimeSpan;
+            node.htbtSlotIndex =  i % slots;
 
             m_timers.insert(node);
             m_timerId2ExpireTick[node.timerId] = node.expireTick;
             assert(m_timers.size() == m_timerId2ExpireTick.size());
         }
+
+        m_cond.Signal();
     }
 
-    return (true);
+    return true;
 }
 
-unsigned long
+unsigned int
 CProTimerFactory::GetHeartbeatInterval() const
 {
-    PRO_INT64 timeSpan = 0;
+    int64_t timeSpan = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -461,111 +461,125 @@ CProTimerFactory::GetHeartbeatInterval() const
         timeSpan = m_htbtTimeSpan;
     }
 
-    return ((unsigned long)(timeSpan / 1000));
+    return (unsigned int)(timeSpan / 1000);
 }
 
 void
-CProTimerFactory::WorkerRun(PRO_INT64* args)
+CProTimerFactory::WorkerRun(int64_t* args)
 {
-    while (1)
+    while (Process())
     {
-        CProStlVector<PRO_TIMER_NODE> timers;
+    }
+}
 
+bool
+CProTimerFactory::Process()
+{
+    CProStlVector<PRO_TIMER_NODE> timers;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        while (1)
         {
-            CProThreadMutexGuard mon(m_lock);
-
-            while (1)
-            {
-                if (m_wantExit || m_timers.size() > 0)
-                {
-                    break;
-                }
-
-                m_cond.Wait(&m_lock);
-            }
-
-            if (m_wantExit)
+            if (m_wantExit || m_timers.size() > 0)
             {
                 break;
             }
 
-            const PRO_INT64 tick = ProGetTickCount64();
-
-            CProStlSet<PRO_TIMER_NODE>::iterator       itr = m_timers.begin();
-            CProStlSet<PRO_TIMER_NODE>::iterator const end = m_timers.end();
-
-            for (; itr != end; ++itr)
-            {
-                const PRO_TIMER_NODE& node = *itr;
-                if (node.expireTick > tick)
-                {
-                    break;
-                }
-
-                timers.push_back(node);
-            }
-
-            int       i = 0;
-            const int c = (int)timers.size();
-
-            for (; i < c; ++i)
-            {
-                PRO_TIMER_NODE& node = timers[i];
-                if (node.recurring || node.heartbeat)
-                {
-                    m_timers.erase(node);
-
-                    if (node.heartbeat)
-                    {
-                        const PRO_INT64 offset =
-                            node.expireTick % node.timeSpan;
-                        node.expireTick = (tick + node.timeSpan - 1) /
-                            node.timeSpan * node.timeSpan + offset;
-                        if (node.expireTick == tick)
-                        {
-                            node.expireTick += node.timeSpan; /* !!! */
-                        }
-                    }
-                    else
-                    {
-                        node.expireTick = tick + node.timeSpan;
-                    }
-
-                    node.onTimer->AddRef(); /* !!! */
-                    m_timers.insert(node);
-                    m_timerId2ExpireTick[node.timerId] = node.expireTick;
-                }
-                else
-                {
-                    m_timers.erase(node);
-                    m_timerId2ExpireTick.erase(node.timerId);
-                }
-
-                assert(m_timers.size() == m_timerId2ExpireTick.size());
-            } /* end of for (...) */
+            m_cond.Wait(&m_lock);
         }
 
-        if (timers.size() == 0)
+        if (m_wantExit)
         {
-            ProSleep(1); /* 1ms */
-            continue;
+            return false;
+        }
+
+        const int64_t tick    = ProGetTickCount64();
+        unsigned int  timeout = 0xFFFFFFFF;
+
+        auto itr = m_timers.begin();
+        auto end = m_timers.end();
+
+        for (; itr != end; ++itr)
+        {
+            const PRO_TIMER_NODE& node = *itr;
+            if (node.expireTick > tick)
+            {
+                uint64_t delta = node.expireTick - tick;
+                if (delta > 0xFFFFFFFF)
+                {
+                    delta = 0xFFFFFFFF;
+                }
+
+                timeout = (unsigned int)delta;
+                break;
+            }
+
+            timers.push_back(node);
         }
 
         int       i = 0;
         const int c = (int)timers.size();
 
-        for (int j = 0; i < c; ++i)
+        for (; i < c; ++i)
         {
-            const PRO_TIMER_NODE& node = timers[i];
-            node.onTimer->OnTimer(this, node.timerId, node.userData);
-            node.onTimer->Release();
-
-            ++j;
-            if (j == PRO_TIMER_UPCALL_COUNT)
+            PRO_TIMER_NODE& node = timers[i];
+            if (node.recurring || node.heartbeat)
             {
-                j = 0;
-                ProSleep(1); /* 1ms */
+                m_timers.erase(node);
+
+                if (node.heartbeat)
+                {
+                    const int64_t offset = node.expireTick % node.timeSpan;
+                    node.expireTick = (tick + node.timeSpan - 1) /
+                        node.timeSpan * node.timeSpan + offset;
+                    if (node.expireTick == tick)
+                    {
+                        node.expireTick += node.timeSpan; /* !!! */
+                    }
+                }
+                else
+                {
+                    node.expireTick = tick + node.timeSpan;
+                }
+
+                node.onTimer->AddRef(); /* !!! */
+                m_timers.insert(node);
+                m_timerId2ExpireTick[node.timerId] = node.expireTick;
             }
+            else
+            {
+                m_timers.erase(node);
+                m_timerId2ExpireTick.erase(node.timerId);
+            }
+
+            assert(m_timers.size() == m_timerId2ExpireTick.size());
+        } /* end of for () */
+
+        if (c == 0)
+        {
+            m_cond.Wait(&m_lock, timeout);
         }
-    } /* end of while (...) */
+    }
+
+    int       i = 0;
+    int       j = 0;
+    const int c = (int)timers.size();
+
+    for (; i < c; ++i)
+    {
+        const PRO_TIMER_NODE& node = timers[i];
+        node.onTimer->OnTimer(this, node.timerId, node.userData);
+        node.onTimer->Release();
+
+        ++j;
+        if (j == PRO_TIMER_UPCALL_COUNT)
+        {
+            j = 0;
+            ProSleep(1); /* 1ms */
+        }
+    }
+
+    return true;
 }

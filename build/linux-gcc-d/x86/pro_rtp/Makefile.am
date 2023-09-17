@@ -1,9 +1,12 @@
 prolibdir = ${prefix}/libpronet/lib
+propkgdir = ${prolibdir}/pkgconfig
 proincdir = ${prefix}/libpronet/include/pronet
 
 #############################################################################
 
 prolib_PROGRAMS = libpro_rtp.so
+
+propkg_DATA = pro_rtp.pc
 
 proinc_HEADERS = ../../../../src/pronet/pro_rtp/rtp_base.h \
                  ../../../../src/pronet/pro_rtp/rtp_msg.h

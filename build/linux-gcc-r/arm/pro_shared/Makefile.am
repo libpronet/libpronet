@@ -1,9 +1,12 @@
 prolibdir = ${prefix}/libpronet/lib
+propkgdir = ${prolibdir}/pkgconfig
 proincdir = ${prefix}/libpronet/include/pronet
 
 #############################################################################
 
 prolib_PROGRAMS = libpro_shared.so
+
+propkg_DATA = pro_shared.pc
 
 proinc_HEADERS = ../../../../src/pronet/pro_shared/pro_shared.h
 

@@ -1,9 +1,12 @@
 prolibdir = ${prefix}/libpronet/lib
+propkgdir = ${prolibdir}/pkgconfig
 proincdir = ${prefix}/libpronet/include/pronet
 
 #############################################################################
 
 prolib_LIBRARIES = libpro_util.a
+
+propkg_DATA = pro_util.pc
 
 proinc_HEADERS = ../../../../src/pronet/pro_util/pro_a.h                    \
                  ../../../../src/pronet/pro_util/pro_bsd_wrapper.h          \
