@@ -130,7 +130,7 @@ CRtpPacket::Clone(const IRtpPacket* packet)
         return NULL;
     }
 
-    CRtpPacket* const packet2 = (CRtpPacket*)packet;
+    CRtpPacket* packet2 = (CRtpPacket*)packet;
 
     CRtpPacket* newPacket = new CRtpPacket(packet2->m_packMode);
     newPacket->Init(packet2->GetPayloadBuffer(), packet2->GetPayloadSize());
@@ -330,8 +330,8 @@ CRtpPacket::Init(const void* payloadBuffer,
     m_packet->ext = (RTP_EXT*)m_packet->dummyBuffer;
     m_packet->hdr = (RTP_HEADER*)(m_packet->ext + 1);
 
-    const uint16_t payloadSize16 = (uint16_t)payloadSize;
-    const uint32_t payloadSize32 = (uint32_t)payloadSize;
+    uint16_t payloadSize16 = (uint16_t)payloadSize;
+    uint32_t payloadSize32 = (uint32_t)payloadSize;
 
     m_packet->hdr->v                     = 2;
     if (m_packMode == RTP_EPM_DEFAULT)

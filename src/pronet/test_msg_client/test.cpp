@@ -42,9 +42,7 @@ static const RTP_MSG_USER ROOT_ID(1, 1, 0); /* 1-1 */
 CTest*
 CTest::CreateInstance()
 {
-    CTest* const tester = new CTest;
-
-    return (tester);
+    return new CTest;
 }
 
 CTest::CTest()
@@ -66,7 +64,7 @@ CTest::Init(IProReactor*                  reactor,
     assert(reactor != NULL);
     if (reactor == NULL)
     {
-        return (false);
+        return false;
     }
 
     char serverIpByDNS[64] = "";
@@ -75,10 +73,10 @@ CTest::Init(IProReactor*                  reactor,
      * DNS, for reconnecting
      */
     {
-        const uint32_t serverIp = pbsd_inet_aton(configInfo.msgc_server_ip.c_str());
+        uint32_t serverIp = pbsd_inet_aton(configInfo.msgc_server_ip.c_str());
         if (serverIp == (uint32_t)-1 || serverIp == 0)
         {
-            return (false);
+            return false;
         }
 
         pbsd_inet_ntoa(serverIp, serverIpByDNS);
@@ -95,7 +93,7 @@ CTest::Init(IProReactor*                  reactor,
         assert(m_msgClient == NULL);
         if (m_reactor != NULL || m_sslConfig != NULL || m_msgClient != NULL)
         {
-            return (false);
+            return false;
         }
 
         if (configInfo.msgc_enable_ssl)
@@ -111,7 +109,7 @@ CTest::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.msgc_ssl_cafiles[i].empty())
                 {
-                    caFiles.push_back(&configInfo.msgc_ssl_cafiles[i][0]);
+                    caFiles.push_back(configInfo.msgc_ssl_cafiles[i].c_str());
                 }
             }
 
@@ -122,7 +120,7 @@ CTest::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.msgc_ssl_crlfiles[i].empty())
                 {
-                    crlFiles.push_back(&configInfo.msgc_ssl_crlfiles[i][0]);
+                    crlFiles.push_back(configInfo.msgc_ssl_crlfiles[i].c_str());
                 }
             }
 
@@ -160,11 +158,7 @@ CTest::Init(IProReactor*                  reactor,
                     goto EXIT;
                 }
 
-                if (!ProSslClientConfig_SetSuiteList(
-                    sslConfig,
-                    &suites[0],
-                    suites.size()
-                    ))
+                if (!ProSslClientConfig_SetSuiteList(sslConfig, &suites[0], suites.size()))
                 {
                     goto EXIT;
                 }
@@ -198,14 +192,14 @@ CTest::Init(IProReactor*                  reactor,
         m_msgClient                 = msgClient;
     }
 
-    return (true);
+    return true;
 
 EXIT:
 
     DeleteRtpMsgClient(msgClient);
     ProSslClientConfig_Delete(sslConfig);
 
-    return (false);
+    return false;
 }
 
 void
@@ -236,17 +230,13 @@ CTest::Fini()
 unsigned long
 CTest::AddRef()
 {
-    const unsigned long refCount = CProRefCount::AddRef();
-
-    return (refCount);
+    return CProRefCount::AddRef();
 }
 
 unsigned long
 CTest::Release()
 {
-    const unsigned long refCount = CProRefCount::Release();
-
-    return (refCount);
+    return CProRefCount::Release();
 }
 
 void
@@ -309,7 +299,7 @@ CTest::SendMsg(const char* msg)
             RTP_MSG_USER dstUser;
             dstUser.classId = myUser.classId;
 
-            const int64_t myUid = myUser.UserId();
+            int64_t myUid = myUser.UserId();
 
             for (int i = 1; i <= 100; ++i)
             {
@@ -331,8 +321,8 @@ CTest::SendMsg(const char* msg)
          */
         users.erase(myUser);
 
-        CProStlSet<RTP_MSG_USER>::iterator       itr = users.begin();
-        CProStlSet<RTP_MSG_USER>::iterator const end = users.end();
+        auto itr = users.begin();
+        auto end = users.end();
 
         for (; itr != end; ++itr)
         {
@@ -399,7 +389,7 @@ CTest::Reconnect()
             return;
         }
 
-        IRtpMsgClient* const msgClient = CreateRtpMsgClient(
+        IRtpMsgClient* msgClient = CreateRtpMsgClient(
             this,
             m_reactor,
             m_configInfo.msgc_mm_type,
@@ -435,8 +425,7 @@ CTest::OnOkMsg(IRtpMsgClient*      msgClient,
     assert(myUser != NULL);
     assert(myPublicIp != NULL);
     assert(myPublicIp[0] != '\0');
-    if (msgClient == NULL || myUser == NULL || myPublicIp == NULL ||
-        myPublicIp[0] == '\0')
+    if (msgClient == NULL || myUser == NULL || myPublicIp == NULL || myPublicIp[0] == '\0')
     {
         return;
     }
@@ -483,7 +472,7 @@ CTest::OnOkMsg(IRtpMsgClient*      msgClient,
 void
 CTest::OnRecvMsg(IRtpMsgClient*      msgClient,
                  const void*         buf,
-                 unsigned long       size,
+                 size_t              size,
                  uint16_t            charset,
                  const RTP_MSG_USER* srcUser)
 {
@@ -544,8 +533,8 @@ CTest::OnRecvMsg(IRtpMsgClient*      msgClient,
 
 void
 CTest::OnCloseMsg(IRtpMsgClient* msgClient,
-                  long           errorCode,
-                  long           sslCode,
+                  int            errorCode,
+                  int            sslCode,
                   bool           tcpConnected)
 {
     assert(msgClient != NULL);
@@ -585,8 +574,8 @@ CTest::OnCloseMsg(IRtpMsgClient* msgClient,
             (unsigned int)myUser.classId,
             (unsigned long long)myUser.UserId(),
             (unsigned int)myUser.instId,
-            (int)errorCode,
-            (int)sslCode,
+            errorCode,
+            sslCode,
             (int)tcpConnected,
             m_configInfo.msgc_server_ip.c_str(),
             (unsigned int)m_configInfo.msgc_server_port

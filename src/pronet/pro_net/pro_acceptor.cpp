@@ -40,9 +40,9 @@ static
 void
 MakeNonce_i(PRO_NONCE& nonce)
 {
-    for (int i = 0; i < (int)sizeof(nonce.nonce); ++i)
+    for (int i = 0; i < 32; ++i)
     {
-        nonce.nonce[i] = (char)(ProRand_0_32767() % 256);
+        nonce.nonce[i] = (unsigned char)(ProRand_0_32767() % 256);
     }
 }
 
@@ -98,13 +98,13 @@ CProAcceptor::Init(IProAcceptorObserver* observer,
                    CProTpReactorTask*    reactorTask,
                    const char*           localIp,          /* = NULL */
                    unsigned short        localPort,        /* = 0 */
-                   unsigned long         timeoutInSeconds) /* = 0 */
+                   unsigned int          timeoutInSeconds) /* = 0 */
 {
     assert(observer != NULL);
     assert(reactorTask != NULL);
     if (observer == NULL || reactorTask == NULL)
     {
-        return (false);
+        return false;
     }
 
     if (timeoutInSeconds == 0)
@@ -120,7 +120,7 @@ CProAcceptor::Init(IProAcceptorObserver* observer,
 
     if (localAddr.sin_addr.s_addr == (uint32_t)-1)
     {
-        return (false);
+        return false;
     }
 
     int64_t          sockId   = -1;
@@ -135,7 +135,7 @@ CProAcceptor::Init(IProAcceptorObserver* observer,
         assert(m_reactorTask == NULL);
         if (m_observer != NULL || m_reactorTask != NULL)
         {
-            return (false);
+            return false;
         }
 
         sockId = pbsd_socket(AF_INET, SOCK_STREAM, 0);
@@ -144,7 +144,7 @@ CProAcceptor::Init(IProAcceptorObserver* observer,
             goto EXIT;
         }
 
-        const int option = 1;
+        int option = 1;
         pbsd_setsockopt(sockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
 
 #if defined(_WIN32)
@@ -223,7 +223,7 @@ CProAcceptor::Init(IProAcceptorObserver* observer,
         m_timeoutInSeconds = timeoutInSeconds;
     }
 
-    return (true);
+    return true;
 
 EXIT:
 
@@ -238,7 +238,7 @@ EXIT:
     }
 #endif
 
-    return (false);
+    return false;
 }
 
 void
@@ -265,8 +265,8 @@ CProAcceptor::Fini()
         m_observer = NULL;
     }
 
-    CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator       itr = handshaker2Nonce.begin();
-    CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator const end = handshaker2Nonce.end();
+    auto itr = handshaker2Nonce.begin();
+    auto end = handshaker2Nonce.end();
 
     for (; itr != end; ++itr)
     {
@@ -279,17 +279,13 @@ CProAcceptor::Fini()
 unsigned long
 CProAcceptor::AddRef()
 {
-    const unsigned long refCount = CProEventHandler::AddRef();
-
-    return (refCount);
+    return CProEventHandler::AddRef();
 }
 
 unsigned long
 CProAcceptor::Release()
 {
-    const unsigned long refCount = CProEventHandler::Release();
-
-    return (refCount);
+    return CProEventHandler::Release();
 }
 
 unsigned short
@@ -303,7 +299,7 @@ CProAcceptor::GetLocalPort() const
         localPort = pbsd_ntoh16(m_localAddr.sin_port);
     }
 
-    return (localPort);
+    return localPort;
 }
 
 void
@@ -337,7 +333,7 @@ CProAcceptor::OnInput(int64_t sockId)
 
             if (newSockId != -1)
             {
-                const int option = 1;
+                int option = 1;
                 pbsd_setsockopt(newSockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
 
                 if (pbsd_getsockname(newSockId, &localAddr) != 0)
@@ -441,7 +437,7 @@ CProAcceptor::OnHandshakeOk(IProTcpHandshaker* handshaker,
                             int64_t            sockId,
                             bool               unixSocket,
                             const void*        buf,
-                            unsigned long      size)
+                            size_t             size)
 {
     assert(handshaker != NULL);
     assert(sockId != -1);
@@ -450,7 +446,7 @@ CProAcceptor::OnHandshakeOk(IProTcpHandshaker* handshaker,
         return;
     }
 
-    const unsigned char* const serviceData = (unsigned char*)buf;
+    const unsigned char* serviceData = (unsigned char*)buf;
 
     IProAcceptorObserver* observer = NULL;
     PRO_NONCE             nonce;
@@ -467,8 +463,7 @@ CProAcceptor::OnHandshakeOk(IProTcpHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator const itr =
-            m_handshaker2Nonce.find(handshaker);
+        auto itr = m_handshaker2Nonce.find(handshaker);
         if (itr == m_handshaker2Nonce.end())
         {
             ProCloseSockId(sockId);
@@ -512,11 +507,11 @@ CProAcceptor::OnHandshakeOk(IProTcpHandshaker* handshaker,
         return;
     }
 
-    char                localIp[64]  = "127.0.0.1"; /* a dummy for unix socket */
-    char                remoteIp[64] = "127.0.0.1"; /* a dummy for unix socket */
-    unsigned short      remotePort   = 65535;       /* a dummy for unix socket */
-    const unsigned char serviceId    = serviceData[0];
-    const unsigned char serviceOpt   = serviceData[1];
+    char           localIp[64]  = "127.0.0.1"; /* a dummy for unix socket */
+    char           remoteIp[64] = "127.0.0.1"; /* a dummy for unix socket */
+    unsigned short remotePort   = 65535;       /* a dummy for unix socket */
+    unsigned char  serviceId    = serviceData[0];
+    unsigned char  serviceOpt   = serviceData[1];
     if (!unixSocket)
     {
         pbsd_inet_ntoa(localAddr.sin_addr.s_addr , localIp);
@@ -540,7 +535,7 @@ CProAcceptor::OnHandshakeOk(IProTcpHandshaker* handshaker,
 
 void
 CProAcceptor::OnHandshakeError(IProTcpHandshaker* handshaker,
-                               long               errorCode)
+                               int                errorCode)
 {
     assert(handshaker != NULL);
     if (handshaker == NULL)
@@ -556,8 +551,7 @@ CProAcceptor::OnHandshakeError(IProTcpHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator const itr =
-            m_handshaker2Nonce.find(handshaker);
+        auto itr = m_handshaker2Nonce.find(handshaker);
         if (itr == m_handshaker2Nonce.end())
         {
             return;

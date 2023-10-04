@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(RTP_SESSION_UDPSERVER_H)
+#ifndef RTP_SESSION_UDPSERVER_H
 #define RTP_SESSION_UDPSERVER_H
 
 #include "rtp_session_udpclient.h"

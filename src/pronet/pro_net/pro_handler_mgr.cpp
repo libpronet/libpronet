@@ -27,8 +27,8 @@
 
 CProHandlerMgr::~CProHandlerMgr()
 {
-    CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator       itr = m_sockId2HandlerInfo.begin();
-    CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator const end = m_sockId2HandlerInfo.end();
+    auto itr = m_sockId2HandlerInfo.begin();
+    auto end = m_sockId2HandlerInfo.end();
 
     for (; itr != end; ++itr)
     {
@@ -49,10 +49,10 @@ CProHandlerMgr::AddHandler(int64_t           sockId,
     assert(mask != 0);
     if (sockId == -1 || handler == NULL || mask == 0)
     {
-        return (false);
+        return false;
     }
 
-    CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator const itr = m_sockId2HandlerInfo.find(sockId);
+    auto itr = m_sockId2HandlerInfo.find(sockId);
     if (itr == m_sockId2HandlerInfo.end())
     {
         PRO_HANDLER_INFO info;
@@ -62,7 +62,7 @@ CProHandlerMgr::AddHandler(int64_t           sockId,
         info.handler->AddRef();
         m_sockId2HandlerInfo[sockId] = info;
 
-        return (true);
+        return true;
     }
 
     PRO_HANDLER_INFO& info = itr->second;
@@ -71,11 +71,11 @@ CProHandlerMgr::AddHandler(int64_t           sockId,
     {
         PRO_SET_BITS(info.mask, mask);
 
-        return (true);
+        return true;
     }
     else
     {
-        return (false);
+        return false;
     }
 }
 
@@ -88,7 +88,7 @@ CProHandlerMgr::RemoveHandler(int64_t       sockId,
         return;
     }
 
-    CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator const itr = m_sockId2HandlerInfo.find(sockId);
+    auto itr = m_sockId2HandlerInfo.find(sockId);
     if (itr == m_sockId2HandlerInfo.end())
     {
         return;
@@ -109,14 +109,13 @@ CProHandlerMgr::GetMaxSockId() const
 {
     int64_t sockId = -1;
 
-    CProStlMap<int64_t, PRO_HANDLER_INFO>::const_reverse_iterator const itr =
-        m_sockId2HandlerInfo.rbegin();
+    auto itr = m_sockId2HandlerInfo.rbegin();
     if (itr != m_sockId2HandlerInfo.rend())
     {
         sockId = itr->first;
     }
 
-    return (sockId);
+    return sockId;
 }
 
 PRO_HANDLER_INFO
@@ -127,15 +126,14 @@ CProHandlerMgr::FindHandler(int64_t sockId) const
     assert(sockId != -1);
     if (sockId == -1)
     {
-        return (info);
+        return info;
     }
 
-    CProStlMap<int64_t, PRO_HANDLER_INFO>::const_iterator const itr =
-        m_sockId2HandlerInfo.find(sockId);
+    auto itr = m_sockId2HandlerInfo.find(sockId);
     if (itr != m_sockId2HandlerInfo.end())
     {
         info = itr->second;
     }
 
-    return (info);
+    return info;
 }

@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(RTP_MSG_C2S_H)
+#ifndef RTP_MSG_C2S_H
 #define RTP_MSG_C2S_H
 
 #include "rtp_base.h"
@@ -66,9 +66,9 @@ public:
         const RTP_MSG_USER* uplinkUser,
         const char*         uplinkPassword,
         const char*         uplinkLocalIp,          /* = NULL */
-        unsigned long       uplinkTimeoutInSeconds, /* = 0 */
+        unsigned int        uplinkTimeoutInSeconds, /* = 0 */
         unsigned short      localServiceHubPort,
-        unsigned long       localTimeoutInSeconds   /* = 0 */
+        unsigned int        localTimeoutInSeconds   /* = 0 */
         );
 
     void Fini();
@@ -171,8 +171,8 @@ private:
 
     virtual void OnCloseSession(
         IRtpSession* session,
-        long         errorCode,
-        long         sslCode,
+        int          errorCode,
+        int          sslCode,
         bool         tcpConnected
         );
 
@@ -190,7 +190,7 @@ private:
     virtual void OnRecvMsg(
         IRtpMsgClient*      msgClient,
         const void*         buf,
-        unsigned long       size,
+        size_t              size,
         uint16_t            charset,
         const RTP_MSG_USER* srcUser
         );
@@ -198,7 +198,7 @@ private:
     virtual void OnTransferMsg(
         IRtpMsgClient*      msgClient,
         const void*         buf,
-        unsigned long       size,
+        size_t              size,
         uint16_t            charset,
         const RTP_MSG_USER& srcUser,
         const RTP_MSG_USER* dstUsers,
@@ -207,8 +207,8 @@ private:
 
     virtual void OnCloseMsg(
         IRtpMsgClient* msgClient,
-        long           errorCode,
-        long           sslCode,
+        int            errorCode,
+        int            sslCode,
         bool           tcpConnected
         );
 
@@ -287,9 +287,9 @@ private:
     RTP_MSG_USER                                       m_uplinkUser;
     CProStlString                                      m_uplinkPassword;
     CProStlString                                      m_uplinkLocalIp;
-    unsigned long                                      m_uplinkTimeoutInSeconds;
+    unsigned int                                       m_uplinkTimeoutInSeconds;
     size_t                                             m_uplinkRedlineBytes;
-    unsigned long                                      m_localTimeoutInSeconds;
+    unsigned int                                       m_localTimeoutInSeconds;
     size_t                                             m_localRedlineBytes;
     RTP_MSG_USER                                       m_myUserNow;
     RTP_MSG_USER                                       m_myUserBak;

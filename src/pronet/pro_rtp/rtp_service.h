@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(RTP_SERVICE_H)
+#ifndef RTP_SERVICE_H
 #define RTP_SERVICE_H
 
 #include "rtp_base.h"
@@ -48,7 +48,7 @@ public:
         IRtpServiceObserver* observer,
         IProReactor*         reactor,
         unsigned short       serviceHubPort,
-        unsigned long        timeoutInSeconds /* = 0 */
+        unsigned int         timeoutInSeconds /* = 0 */
         );
 
     void Fini();
@@ -94,12 +94,12 @@ private:
         int64_t            sockId,
         bool               unixSocket,
         const void*        buf,
-        unsigned long      size
+        size_t             size
         );
 
     virtual void OnHandshakeError(
         IProTcpHandshaker* handshaker,
-        long               errorCode
+        int                errorCode
         );
 
     virtual void OnHandshakeOk(
@@ -108,13 +108,13 @@ private:
         int64_t            sockId,
         bool               unixSocket,
         const void*        buf,
-        unsigned long      size
+        size_t             size
         );
 
     virtual void OnHandshakeError(
         IProSslHandshaker* handshaker,
-        long               errorCode,
-        long               sslCode
+        int                errorCode,
+        int                sslCode
         );
 
 private:
@@ -124,7 +124,7 @@ private:
     IRtpServiceObserver*                      m_observer;
     IProReactor*                              m_reactor;
     IProServiceHost*                          m_serviceHost;
-    unsigned long                             m_timeoutInSeconds;
+    unsigned int                              m_timeoutInSeconds;
 
     CProStlMap<IProTcpHandshaker*, PRO_NONCE> m_tcpHandshaker2Nonce;
     CProStlMap<IProSslHandshaker*, PRO_NONCE> m_sslHandshaker2Nonce;

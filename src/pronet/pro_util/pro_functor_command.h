@@ -64,7 +64,7 @@
  *         );
  */
 
-#if !defined(____PRO_FUNCTOR_COMMAND_H____)
+#ifndef ____PRO_FUNCTOR_COMMAND_H____
 #define ____PRO_FUNCTOR_COMMAND_H____
 
 #include "pro_a.h"
@@ -147,7 +147,7 @@ private:
         m_userData2 = NULL;
         m_action    = action;
 
-        const int64_t args[10] = { arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 };
+        int64_t args[10] = { arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 };
 
         for (int i = 0; i < 10; ++i)
         {
@@ -252,7 +252,7 @@ private:
         m_userData2 = NULL;
         m_action    = action;
 
-        const int64_t args[10] = { arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 };
+        int64_t args[10] = { arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 };
 
         for (int i = 0; i < 10; ++i)
         {

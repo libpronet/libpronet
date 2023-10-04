@@ -20,7 +20,7 @@
  * This is a token-bucket based rate control implementation.
  */
 
-#if !defined(____PRO_SHAPER_H____)
+#ifndef ____PRO_SHAPER_H____
 #define ____PRO_SHAPER_H____
 
 #include "pro_a.h"

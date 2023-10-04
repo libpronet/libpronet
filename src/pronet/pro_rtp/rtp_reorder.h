@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(RTP_REORDER_H)
+#ifndef RTP_REORDER_H
 #define RTP_REORDER_H
 
 #include "rtp_base.h"

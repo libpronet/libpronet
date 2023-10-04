@@ -43,7 +43,7 @@ CRtpSessionUdpclientEx::CreateInstance(const RTP_SESSION_INFO* localInfo)
     assert(localInfo->mmType != 0);
     if (localInfo == NULL || localInfo->mmType == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     return new CRtpSessionUdpclientEx(*localInfo);
@@ -61,14 +61,12 @@ CRtpSessionUdpclientEx::CRtpSessionUdpclientEx(const RTP_SESSION_INFO& localInfo
     m_syncToPeer.version = pbsd_hton16(RTP_SESSION_PROTOCOL_VERSION);
     m_syncTimerId        = 0;
 
+    for (int i = 0; i < (int)sizeof(m_syncToPeer.nonce); ++i)
     {
-        for (int i = 0; i < (int)sizeof(m_syncToPeer.nonce); ++i)
-        {
-            m_syncToPeer.nonce[i] = (unsigned char)(ProRand_0_32767() % 256);
-        }
-
-        m_syncToPeer.checksum = pbsd_hton16(m_syncToPeer.CalcChecksum());
+        m_syncToPeer.nonce[i] = (unsigned char)(ProRand_0_32767() % 256);
     }
+
+    m_syncToPeer.checksum = pbsd_hton16(m_syncToPeer.CalcChecksum());
 }
 
 CRtpSessionUdpclientEx::~CRtpSessionUdpclientEx()
@@ -82,7 +80,7 @@ CRtpSessionUdpclientEx::Init(IRtpSessionObserver* observer,
                              const char*          remoteIp,
                              unsigned short       remotePort,
                              const char*          localIp,          /* = NULL */
-                             unsigned long        timeoutInSeconds) /* = 0 */
+                             unsigned int         timeoutInSeconds) /* = 0 */
 {
     assert(observer != NULL);
     assert(reactor != NULL);
@@ -92,7 +90,7 @@ CRtpSessionUdpclientEx::Init(IRtpSessionObserver* observer,
     if (observer == NULL || reactor == NULL ||
         remoteIp == NULL || remoteIp[0] == '\0' || remotePort == 0)
     {
-        return (false);
+        return false;
     }
 
     if (timeoutInSeconds == 0)
@@ -105,8 +103,8 @@ CRtpSessionUdpclientEx::Init(IRtpSessionObserver* observer,
     size_t recvPoolSize    = 0;
     GetRtpUdpSocketParams(m_info.mmType, &sockBufSizeRecv, &sockBufSizeSend, &recvPoolSize);
 
-    const uint32_t localIp4    = pbsd_inet_aton(localIp);
-    const bool     bindToLocal = localIp4 != (uint32_t)-1 && localIp4 != 0;
+    uint32_t localIp4    = pbsd_inet_aton(localIp);
+    bool     bindToLocal = localIp4 != (uint32_t)-1 && localIp4 != 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -116,16 +114,14 @@ CRtpSessionUdpclientEx::Init(IRtpSessionObserver* observer,
         assert(m_trans == NULL);
         if (m_observer != NULL || m_reactor != NULL || m_trans != NULL)
         {
-            return (false);
+            return false;
         }
 
-        m_trans = ProCreateUdpTransport(
-            this, reactor, bindToLocal, localIp, 0, /* localPort is 0 */
-            sockBufSizeRecv, sockBufSizeSend, recvPoolSize,
-            remoteIp, remotePort);
+        m_trans = ProCreateUdpTransport(this, reactor, bindToLocal, localIp, 0, /* localPort is 0 */
+            sockBufSizeRecv, sockBufSizeSend, recvPoolSize, remoteIp, remotePort);
         if (m_trans == NULL)
         {
-            return (false);
+            return false;
         }
 
         char theIp[64] = "";
@@ -155,13 +151,13 @@ CRtpSessionUdpclientEx::Init(IRtpSessionObserver* observer,
         }
     }
 
-    return (true);
+    return true;
 
 EXIT:
 
     Fini();
 
-    return (false);
+    return false;
 }
 
 void
@@ -197,11 +193,9 @@ CRtpSessionUdpclientEx::Fini()
 void
 CRtpSessionUdpclientEx::GetSyncId(unsigned char syncId[14]) const
 {
-    {
-        CProThreadMutexGuard mon(m_lock);
+    CProThreadMutexGuard mon(m_lock);
 
-        memcpy(syncId, m_syncToPeer.nonce, 14);
-    }
+    memcpy(syncId, m_syncToPeer.nonce, 14);
 }
 
 void
@@ -234,8 +228,8 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
                 return;
             }
 
-            IProRecvPool&       recvPool = *m_trans->GetRecvPool();
-            const unsigned long dataSize = recvPool.PeekDataSize();
+            IProRecvPool& recvPool = *m_trans->GetRecvPool();
+            size_t        dataSize = recvPool.PeekDataSize();
 
             if (remoteAddr->sin_addr.s_addr != m_remoteAddr.sin_addr.s_addr ||
                 remoteAddr->sin_port        != m_remoteAddr.sin_port)
@@ -272,8 +266,7 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
                 /*
                  * The packet must be a sync packet.
                  */
-                if (ext.hdrAndPayloadSize !=
-                    sizeof(RTP_HEADER) + sizeof(RTP_UDPX_SYNC) ||
+                if (ext.hdrAndPayloadSize != sizeof(RTP_HEADER) + sizeof(RTP_UDPX_SYNC) ||
                     !ext.udpxSync)
                 {
                     recvPool.Flush(dataSize);
@@ -304,8 +297,7 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
                     break;
                 }
 
-                if (memcmp(sync.nonce, m_syncToPeer.nonce,
-                    sizeof(sync.nonce)) != 0)
+                if (memcmp(sync.nonce, m_syncToPeer.nonce, sizeof(sync.nonce)) != 0)
                 {
                     break;
                 }
@@ -366,14 +358,10 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
                     magicPacket.ext = (RTP_EXT*)packet->GetPayloadBuffer();
                     magicPacket.hdr = (RTP_HEADER*)(magicPacket.ext + 1);
 
-                    assert(
-                        m_info.inSrcMmId  == 0 ||
-                        packet->GetMmId() == m_info.inSrcMmId
-                        );
+                    assert(m_info.inSrcMmId == 0 || packet->GetMmId() == m_info.inSrcMmId);
                     assert(packet->GetMmType() == m_info.mmType);
                     if (
-                        (m_info.inSrcMmId  != 0 &&
-                         packet->GetMmId() != m_info.inSrcMmId)
+                        (m_info.inSrcMmId != 0 && packet->GetMmId() != m_info.inSrcMmId)
                         ||
                         packet->GetMmType() != m_info.mmType /* drop this packet */
                        )
@@ -469,27 +457,27 @@ CRtpSessionUdpclientEx::DoHandshake1()
     assert(m_trans != NULL);
     if (m_trans == NULL)
     {
-        return (false);
+        return false;
     }
 
-    CRtpPacket* const packet = CRtpPacket::CreateInstance(
+    CRtpPacket* packet = CRtpPacket::CreateInstance(
         &m_syncToPeer, sizeof(RTP_UDPX_SYNC), RTP_EPM_DEFAULT);
     if (packet == NULL)
     {
-        return (false);
+        return false;
     }
 
     packet->SetMmId(m_info.mmId);
     packet->SetMmType(m_info.mmType);
     packet->SetUdpxSync(true); /* sync flag */
 
-    const bool ret = m_trans->SendData(
+    bool ret = m_trans->SendData(
         (char*)packet->GetPayloadBuffer() - sizeof(RTP_HEADER) - sizeof(RTP_EXT),
         packet->GetPayloadSize() + sizeof(RTP_HEADER) + sizeof(RTP_EXT)
         );
     packet->Release();
 
-    return (ret);
+    return ret;
 }
 
 void

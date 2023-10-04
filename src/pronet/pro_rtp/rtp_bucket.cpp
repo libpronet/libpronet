@@ -97,13 +97,13 @@ CRtpBucket::PushBackAddRef(IRtpPacket* packet)
         return false;
     }
 
-    const size_t size = packet->GetPayloadSize();
+    size_t size = packet->GetPayloadSize();
     m_flowStat.PushData(1, size);
 
     /*
      * arrival time
      */
-    const int64_t tick = ProGetTickCount64();
+    int64_t tick = ProGetTickCount64();
     ((CRtpPacket*)packet)->SetMagic2(tick);
 
     /*
@@ -111,7 +111,7 @@ CRtpBucket::PushBackAddRef(IRtpPacket* packet)
      */
     while (m_packets.size() > 0)
     {
-        CRtpPacket* const packet2 = (CRtpPacket*)m_packets.front();
+        CRtpPacket* packet2 = (CRtpPacket*)m_packets.front();
         if (tick - packet2->GetMagic2() > m_redlineDelayMs && m_redlineDelayMs > 0)
         {
             m_packets.pop_front();
@@ -151,7 +151,7 @@ CRtpBucket::PopFrontRelease(IRtpPacket* packet)
 
     m_packets.pop_front();
 
-    const size_t size = packet->GetPayloadSize();
+    size_t size = packet->GetPayloadSize();
     m_flowStat.PopData(1, size);
 
     m_totalBytes -= size;
@@ -161,8 +161,8 @@ CRtpBucket::PopFrontRelease(IRtpPacket* packet)
 void
 CRtpBucket::Reset()
 {
-    int       i = 0;
-    const int c = (int)m_packets.size();
+    int i = 0;
+    int c = (int)m_packets.size();
 
     for (; i < c; ++i)
     {
@@ -257,13 +257,13 @@ CRtpAudioBucket::PushBackAddRef(IRtpPacket* packet)
         return false;
     }
 
-    const size_t size = packet->GetPayloadSize();
+    size_t size = packet->GetPayloadSize();
     m_flowStat.PushData(1, size);
 
     /*
      * arrival time
      */
-    const int64_t tick = ProGetTickCount64();
+    int64_t tick = ProGetTickCount64();
     ((CRtpPacket*)packet)->SetMagic2(tick);
 
     /*
@@ -271,7 +271,7 @@ CRtpAudioBucket::PushBackAddRef(IRtpPacket* packet)
      */
     while (m_packets.size() > 0)
     {
-        CRtpPacket* const packet2 = (CRtpPacket*)m_packets.front();
+        CRtpPacket* packet2 = (CRtpPacket*)m_packets.front();
         if (tick - packet2->GetMagic2() > m_redlineDelayMs || m_totalBytes + size > m_redlineBytes)
         {
             m_packets.pop_front();
@@ -322,10 +322,10 @@ CRtpVideoBucket::GetFront()
 {
     if (m_sendingFrame != NULL)
     {
-        IRtpPacket* const packet = m_sendingFrame->bucket.GetFront();
+        IRtpPacket* packet = m_sendingFrame->bucket.GetFront();
         if (packet != NULL)
         {
-            return (packet);
+            return packet;
         }
 
         delete m_sendingFrame;
@@ -353,11 +353,11 @@ CRtpVideoBucket::PushBackAddRef(IRtpPacket* packet)
         return false;
     }
 
-    const bool marker             = packet->GetMarker();
-    const bool keyFrame           = packet->GetKeyFrame();
-    const bool firstPacketOfFrame = packet->GetFirstPacketOfFrame();
+    bool marker             = packet->GetMarker();
+    bool keyFrame           = packet->GetKeyFrame();
+    bool firstPacketOfFrame = packet->GetFirstPacketOfFrame();
 
-    const size_t size = packet->GetPayloadSize();
+    size_t size = packet->GetPayloadSize();
     m_flowStat.PushData(marker ? 1 : 0, size);
 
     /*
@@ -471,7 +471,7 @@ CRtpVideoBucket::PushBackAddRef(IRtpPacket* packet)
          */
         while (m_frames.size() > 0)
         {
-            RTP_VIDEO_FRAME* const frame = m_frames.front();
+            RTP_VIDEO_FRAME* frame = m_frames.front();
             m_frames.pop_front();
             m_totalBytes -= frame->bucket.GetTotalBytes();
             delete frame;
@@ -496,7 +496,7 @@ CRtpVideoBucket::RemoveOldFrames()
         return;
     }
 
-    const int64_t tick = ProGetTickCount64();
+    int64_t tick = ProGetTickCount64();
 
     /*
      * first frame
@@ -540,7 +540,7 @@ CRtpVideoBucket::PopFrontRelease(IRtpPacket* packet)
         return;
     }
 
-    const size_t size = packet->GetPayloadSize();
+    size_t size = packet->GetPayloadSize();
     m_flowStat.PopData(packet->GetMarker() ? 1 : 0, size);
 
     m_totalBytes -= size;
@@ -559,8 +559,8 @@ CRtpVideoBucket::Reset()
 {
     delete m_waitingFrame;
 
-    int       i = 0;
-    const int c = (int)m_frames.size();
+    int i = 0;
+    int c = (int)m_frames.size();
 
     for (; i < c; ++i)
     {

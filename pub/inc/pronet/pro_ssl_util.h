@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(____PRO_SSL_UTIL_H____)
+#ifndef ____PRO_SSL_UTIL_H____
 #define ____PRO_SSL_UTIL_H____
 
 #include "pro_a.h"
@@ -41,13 +41,13 @@ ProMd5Update(void*       ctx,
              size_t      size);
 
 void
-ProMd5Finish(void* ctx,
-             char  hashValue[16]);
+ProMd5Finish(void*         ctx,
+             unsigned char hashValue[16]);
 
 void
-ProMd5All(const void* buf,
-          size_t      size,
-          char        hashValue[16]);
+ProMd5All(const void*   buf,
+          size_t        size,
+          unsigned char hashValue[16]);
 
 /*-------------------------------------------------------------------------*/
 
@@ -66,13 +66,13 @@ ProSha1Update(void*       ctx,
               size_t      size);
 
 void
-ProSha1Finish(void* ctx,
-              char  hashValue[20]);
+ProSha1Finish(void*         ctx,
+              unsigned char hashValue[20]);
 
 void
-ProSha1All(const void* buf,
-           size_t      size,
-           char        hashValue[20]);
+ProSha1All(const void*   buf,
+           size_t        size,
+           unsigned char hashValue[20]);
 
 /*-------------------------------------------------------------------------*/
 
@@ -91,13 +91,13 @@ ProSha256Update(void*       ctx,
                 size_t      size);
 
 void
-ProSha256Finish(void* ctx,
-                char  hashValue[32]);
+ProSha256Finish(void*         ctx,
+                unsigned char hashValue[32]);
 
 void
-ProSha256All(const void* buf,
-             size_t      size,
-             char        hashValue[32]);
+ProSha256All(const void*   buf,
+             size_t        size,
+             unsigned char hashValue[32]);
 
 /*-------------------------------------------------------------------------*/
 
@@ -116,13 +116,13 @@ ProRipemd160Update(void*       ctx,
                    size_t      size);
 
 void
-ProRipemd160Finish(void* ctx,
-                   char  hashValue[20]);
+ProRipemd160Finish(void*         ctx,
+                   unsigned char hashValue[20]);
 
 void
-ProRipemd160All(const void* buf,
-                size_t      size,
-                char        hashValue[20]);
+ProRipemd160All(const void*   buf,
+                size_t        size,
+                unsigned char hashValue[20]);
 
 /*-------------------------------------------------------------------------*/
 
@@ -200,9 +200,9 @@ ProBase64DecodeStr(const char*          inputString,
  * 说明: 无
  */
 void
-ProCalcPasswordHash(const char  nonce[32],
-                    const char* password,
-                    char        passwordHash[32]);
+ProCalcPasswordHash(const unsigned char nonce[32],
+                    const char*         password,
+                    unsigned char       passwordHash[32]);
 
 /*
  * 功能: 安全清零
@@ -216,7 +216,7 @@ ProCalcPasswordHash(const char  nonce[32],
  * 说明: 该函数速度较慢, 只用于口令等敏感数据的擦除
  */
 void
-ProZeroMemory(char*  buf,
+ProZeroMemory(void*  buf,
               size_t size);
 
 /////////////////////////////////////////////////////////////////////////////

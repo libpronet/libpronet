@@ -39,7 +39,7 @@ CRtpSessionMcastEx::CreateInstance(const RTP_SESSION_INFO* localInfo)
     assert(localInfo->mmType != 0);
     if (localInfo == NULL || localInfo->mmType == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     return new CRtpSessionMcastEx(*localInfo);
@@ -72,10 +72,9 @@ CRtpSessionMcastEx::Init(IRtpSessionObserver* observer,
     assert(reactor != NULL);
     assert(mcastIp != NULL);
     assert(mcastIp[0] != '\0');
-    if (observer == NULL || reactor == NULL || mcastIp == NULL ||
-        mcastIp[0] == '\0')
+    if (observer == NULL || reactor == NULL || mcastIp == NULL || mcastIp[0] == '\0')
     {
-        return (false);
+        return false;
     }
 
     size_t sockBufSizeRecv = 0; /* zero by default */
@@ -91,7 +90,7 @@ CRtpSessionMcastEx::Init(IRtpSessionObserver* observer,
         assert(m_trans == NULL);
         if (m_observer != NULL || m_reactor != NULL || m_trans != NULL)
         {
-            return (false);
+            return false;
         }
 
         int count = MAX_TRY_TIMES;
@@ -108,9 +107,8 @@ CRtpSessionMcastEx::Init(IRtpSessionObserver* observer,
                 mcastPort2 = AllocRtpUdpPort(false); /* rfc is false */
             }
 
-            m_trans = ProCreateMcastTransport(
-                this, reactor, mcastIp, mcastPort2, localIp,
-                sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
+            m_trans = ProCreateMcastTransport(this, reactor, mcastIp, mcastPort2,
+                localIp, sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
             if (m_trans != NULL)
             {
                 break;
@@ -119,7 +117,7 @@ CRtpSessionMcastEx::Init(IRtpSessionObserver* observer,
 
         if (m_trans == NULL)
         {
-            return (false);
+            return false;
         }
 
         char theIp[64] = "";
@@ -138,7 +136,7 @@ CRtpSessionMcastEx::Init(IRtpSessionObserver* observer,
         m_onOkTimerId = reactor->ScheduleTimer(this, 0, false);
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -179,28 +177,26 @@ CRtpSessionMcastEx::AddMcastReceiver(const char* mcastIp)
 
         if (m_observer == NULL || m_reactor == NULL || m_trans == NULL)
         {
-            return (false);
+            return false;
         }
 
         ret = m_trans->AddMcastReceiver(mcastIp);
     }
 
-    return (ret);
+    return ret;
 }
 
 void
 CRtpSessionMcastEx::RemoveMcastReceiver(const char* mcastIp)
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_observer == NULL || m_reactor == NULL || m_trans == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactor == NULL || m_trans == NULL)
-        {
-            return;
-        }
-
-        m_trans->RemoveMcastReceiver(mcastIp);
+        return;
     }
+
+    m_trans->RemoveMcastReceiver(mcastIp);
 }
 
 void
@@ -232,8 +228,8 @@ CRtpSessionMcastEx::OnRecv(IProTransport*          trans,
                 return;
             }
 
-            IProRecvPool&       recvPool = *m_trans->GetRecvPool();
-            const unsigned long dataSize = recvPool.PeekDataSize();
+            IProRecvPool& recvPool = *m_trans->GetRecvPool();
+            size_t        dataSize = recvPool.PeekDataSize();
 
             if (dataSize < sizeof(RTP_EXT))
             {
@@ -290,14 +286,10 @@ CRtpSessionMcastEx::OnRecv(IProTransport*          trans,
                 magicPacket.ext = (RTP_EXT*)packet->GetPayloadBuffer();
                 magicPacket.hdr = (RTP_HEADER*)(magicPacket.ext + 1);
 
-                assert(
-                    m_info.inSrcMmId  == 0 ||
-                    packet->GetMmId() == m_info.inSrcMmId
-                    );
+                assert(m_info.inSrcMmId  == 0 || packet->GetMmId() == m_info.inSrcMmId);
                 assert(packet->GetMmType() == m_info.mmType);
                 if (
-                    (m_info.inSrcMmId  != 0 &&
-                     packet->GetMmId() != m_info.inSrcMmId)
+                    (m_info.inSrcMmId  != 0 && packet->GetMmId() != m_info.inSrcMmId)
                     ||
                     packet->GetMmType() != m_info.mmType /* drop this packet */
                    )

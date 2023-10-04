@@ -24,7 +24,7 @@
  * "name3"    "*#"
  */
 
-#if !defined(____PRO_CONFIG_FILE_H____)
+#ifndef ____PRO_CONFIG_FILE_H____
 #define ____PRO_CONFIG_FILE_H____
 
 #include "pro_a.h"

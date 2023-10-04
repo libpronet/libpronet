@@ -35,13 +35,13 @@ pbsd_fd_preset_i(int64_t      fd,
 {
     if (fd == -1)
     {
-        return (false);
+        return false;
     }
 
 #if defined(_WIN32)
-    return (fds.fd_count < FD_SETSIZE);
+    return fds.fd_count < FD_SETSIZE;
 #else
-    return (fd < FD_SETSIZE);
+    return fd < FD_SETSIZE;
 #endif
 }
 
@@ -117,42 +117,38 @@ CProSelectReactor::~CProSelectReactor()
 bool
 CProSelectReactor::Init()
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    m_notifyPipe->Init();
+
+    int64_t sockId = m_notifyPipe->GetReaderSockId();
+    if (sockId == -1)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        m_notifyPipe->Init();
-
-        const int64_t sockId = m_notifyPipe->GetReaderSockId();
-        if (sockId == -1)
-        {
-            return (false);
-        }
-
-        if (!pbsd_fd_preset_i(sockId, m_fdsRd[0]))
-        {
-            return (false);
-        }
-
-        if (!m_handlerMgr.AddHandler(sockId, this, PRO_MASK_READ))
-        {
-            return (false);
-        }
-
-        pbsd_fd_set_i(sockId, m_fdsRd[0]);
+        return false;
     }
 
-    return (true);
+    if (!pbsd_fd_preset_i(sockId, m_fdsRd[0]))
+    {
+        return false;
+    }
+
+    if (!m_handlerMgr.AddHandler(sockId, this, PRO_MASK_READ))
+    {
+        return false;
+    }
+
+    pbsd_fd_set_i(sockId, m_fdsRd[0]);
+
+    return true;
 }
 
 void
 CProSelectReactor::Fini()
 {
-    {
-        CProThreadMutexGuard mon(m_lock);
+    CProThreadMutexGuard mon(m_lock);
 
-        m_wantExit = true;
-        m_notifyPipe->Notify();
-    }
+    m_wantExit = true;
+    m_notifyPipe->Notify();
 }
 
 bool
@@ -168,7 +164,7 @@ CProSelectReactor::AddHandler(int64_t           sockId,
     assert(mask != 0);
     if (sockId == -1 || handler == NULL || mask == 0)
     {
-        return (false);
+        return false;
     }
 
     if (PRO_BIT_ENABLED(mask, PRO_MASK_ACCEPT))
@@ -187,19 +183,19 @@ CProSelectReactor::AddHandler(int64_t           sockId,
 
         if (m_wantExit)
         {
-            return (false);
+            return false;
         }
 
-        const PRO_HANDLER_INFO oldInfo = m_handlerMgr.FindHandler(sockId);
+        PRO_HANDLER_INFO oldInfo = m_handlerMgr.FindHandler(sockId);
         if (oldInfo.handler != NULL && handler != oldInfo.handler)
         {
-            return (false);
+            return false;
         }
 
         mask &= ~oldInfo.mask;
         if (mask == 0)
         {
-            return (true);
+            return true;
         }
 
         /*
@@ -209,27 +205,27 @@ CProSelectReactor::AddHandler(int64_t           sockId,
         {
             if (!pbsd_fd_preset_i(sockId, m_fdsWr[0]))
             {
-                return (false);
+                return false;
             }
         }
         if (PRO_BIT_ENABLED(mask, PRO_MASK_READ))
         {
             if (!pbsd_fd_preset_i(sockId, m_fdsRd[0]))
             {
-                return (false);
+                return false;
             }
         }
         if (PRO_BIT_ENABLED(mask, PRO_MASK_EXCEPTION))
         {
             if (!pbsd_fd_preset_i(sockId, m_fdsEx[0]))
             {
-                return (false);
+                return false;
             }
         }
 
         if (!m_handlerMgr.AddHandler(sockId, handler, mask))
         {
-            return (false);
+            return false;
         }
 
         /*
@@ -254,7 +250,7 @@ CProSelectReactor::AddHandler(int64_t           sockId,
         }
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -283,7 +279,7 @@ CProSelectReactor::RemoveHandler(int64_t       sockId,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        const PRO_HANDLER_INFO oldInfo = m_handlerMgr.FindHandler(sockId);
+        PRO_HANDLER_INFO oldInfo = m_handlerMgr.FindHandler(sockId);
         if (oldInfo.handler == NULL)
         {
             return;
@@ -365,7 +361,7 @@ CProSelectReactor::WorkerRun()
                 continue;
             }
 
-            CProStlMap<int64_t, PRO_HANDLER_INFO> allHandlers;
+            CProStlMap<int64_t, PRO_HANDLER_INFO> sockId2HandlerInfo;
 
             {
                 CProThreadMutexGuard mon(m_lock);
@@ -375,10 +371,10 @@ CProSelectReactor::WorkerRun()
                     break;
                 }
 
-                allHandlers = m_handlerMgr.GetAllHandlers();
+                sockId2HandlerInfo = m_handlerMgr.GetAllHandlers();
 
-                CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator       itr = allHandlers.begin();
-                CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator const end = allHandlers.end();
+                auto itr = sockId2HandlerInfo.begin();
+                auto end = sockId2HandlerInfo.end();
 
                 for (; itr != end; ++itr)
                 {
@@ -387,12 +383,12 @@ CProSelectReactor::WorkerRun()
                 }
             }
 
-            CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator       itr = allHandlers.begin();
-            CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator const end = allHandlers.end();
+            auto itr = sockId2HandlerInfo.begin();
+            auto end = sockId2HandlerInfo.end();
 
             for (; itr != end; ++itr)
             {
-                const int64_t           sockId = itr->first;
+                int64_t                 sockId = itr->first;
                 const PRO_HANDLER_INFO& info   = itr->second;
 
                 PBSD_FD_ZERO(&m_fdsRd[1]);
@@ -513,15 +509,15 @@ CProSelectReactor::WorkerRun()
 
 #else  /* _WIN32 */
 
-            const CProStlMap<int64_t, PRO_HANDLER_INFO>& allHandlers =
+            const CProStlMap<int64_t, PRO_HANDLER_INFO>& sockId2HandlerInfo =
                 m_handlerMgr.GetAllHandlers();
 
-            CProStlMap<int64_t, PRO_HANDLER_INFO>::const_iterator       itr = allHandlers.begin();
-            CProStlMap<int64_t, PRO_HANDLER_INFO>::const_iterator const end = allHandlers.end();
+            auto itr = sockId2HandlerInfo.begin();
+            auto end = sockId2HandlerInfo.end();
 
             for (; itr != end; ++itr)
             {
-                const int64_t           sockId = itr->first;
+                int64_t                 sockId = itr->first;
                 const PRO_HANDLER_INFO& info   = itr->second;
 
                 if (PBSD_FD_ISSET(sockId, &m_fdsWr[1]))
@@ -552,12 +548,12 @@ CProSelectReactor::WorkerRun()
 #endif /* _WIN32 */
         }
 
-        CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator       itr = handlers.begin();
-        CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator const end = handlers.end();
+        auto itr = handlers.begin();
+        auto end = handlers.end();
 
         for (; itr != end; ++itr)
         {
-            const int64_t           sockId = itr->first;
+            int64_t                 sockId = itr->first;
             const PRO_HANDLER_INFO& info   = itr->second;
 
             if (PRO_BIT_ENABLED(info.mask, PRO_MASK_WRITE))
@@ -600,7 +596,7 @@ CProSelectReactor::OnInput(int64_t sockId)
 
 void
 CProSelectReactor::OnError(int64_t sockId,
-                           long    errorCode)
+                           int     errorCode)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -616,10 +612,10 @@ CProSelectReactor::OnError(int64_t sockId,
             return;
         }
 
-        CProNotifyPipe* const newPipe = new CProNotifyPipe;
+        CProNotifyPipe* newPipe = new CProNotifyPipe;
         newPipe->Init();
 
-        const int64_t newSockId = newPipe->GetReaderSockId();
+        int64_t newSockId = newPipe->GetReaderSockId();
         if (newSockId == -1)
         {
             delete newPipe;

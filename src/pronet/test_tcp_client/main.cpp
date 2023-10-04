@@ -24,10 +24,6 @@
 #include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(_WIN32)
-#include <windows.h>
-#endif
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -45,8 +41,8 @@ ReadConfig_i(const CProStlString&            exeRoot,
     configInfo.tcpc_ssl_cafiles.clear();
     configInfo.tcpc_ssl_crlfiles.clear();
 
-    int       i = 0;
-    const int c = (int)configs.size();
+    int i = 0;
+    int c = (int)configs.size();
 
     for (; i < c; ++i)
     {
@@ -55,7 +51,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
 
         if (stricmp(configName.c_str(), "tcpc_thread_count") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0 && value <= 100)
             {
                 configInfo.tcpc_thread_count = value;
@@ -70,7 +66,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "tcpc_server_port") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
             {
                 configInfo.tcpc_server_port = (unsigned short)value;
@@ -85,7 +81,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "tcpc_connection_count") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0 && value <= 60000)
             {
                 configInfo.tcpc_connection_count = value;
@@ -93,7 +89,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "tcpc_max_pending_count") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0 && value <= 1000)
             {
                 configInfo.tcpc_max_pending_count = value;
@@ -101,7 +97,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "tcpc_handshake_timeout") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0)
             {
                 configInfo.tcpc_handshake_timeout = value;
@@ -109,7 +105,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "tcpc_heartbeat_interval") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0)
             {
                 configInfo.tcpc_heartbeat_interval = value;
@@ -117,7 +113,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "tcpc_heartbeat_bytes") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value >= 0 && value <= 1024)
             {
                 configInfo.tcpc_heartbeat_bytes = value;
@@ -125,7 +121,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "tcpc_sockbuf_size_recv") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value >= 1024)
             {
                 configInfo.tcpc_sockbuf_size_recv = value;
@@ -133,7 +129,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "tcpc_sockbuf_size_send") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value >= 1024)
             {
                 configInfo.tcpc_sockbuf_size_send = value;
@@ -141,7 +137,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "tcpc_recvpool_size") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value >= 1024)
             {
                 configInfo.tcpc_recvpool_size = value;
@@ -441,7 +437,7 @@ int main(int argc, char* argv[])
         {
             p += 9;
 
-            const int seconds = atoi(p);
+            int seconds = atoi(p);
             if (seconds <= 0)
             {
                 continue;
@@ -471,7 +467,7 @@ int main(int argc, char* argv[])
         {
             p += 9;
 
-            const int bytes = atoi(p);
+            int bytes = atoi(p);
             if (bytes < 0 || bytes > 1024)
             {
                 continue;
@@ -514,5 +510,5 @@ EXIT:
     ProDeleteReactor(reactor);
     ProSleep(3000);
 
-    return (0);
+    return 0;
 }

@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(RTP_SESSION_SSLCLIENT_EX_H)
+#ifndef RTP_SESSION_SSLCLIENT_EX_H
 #define RTP_SESSION_SSLCLIENT_EX_H
 
 #include "rtp_session_tcpclient_ex.h"

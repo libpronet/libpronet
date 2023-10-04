@@ -163,7 +163,7 @@ CDbConnection::Close()
     if (m_transacting)
     {
         sqlite3_stmt* stmt = NULL;
-        const int err = sqlite3_prepare_v2_i(m_db, "ROLLBACK", -1, &stmt, NULL);
+        int err = sqlite3_prepare_v2_i(m_db, "ROLLBACK", -1, &stmt, NULL);
         if (err == SQLITE_OK)
         {
             assert(stmt != NULL);
@@ -265,7 +265,7 @@ CDbConnection::RollbackTransaction()
     if (m_transacting)
     {
         sqlite3_stmt* stmt = NULL;
-        const int err = sqlite3_prepare_v2_i(m_db, "ROLLBACK", -1, &stmt, NULL);
+        int err = sqlite3_prepare_v2_i(m_db, "ROLLBACK", -1, &stmt, NULL);
         if (err == SQLITE_OK)
         {
             assert(stmt != NULL);
@@ -288,7 +288,7 @@ CDbConnection::DoSelect(const char* sql,
         return false;
     }
 
-    const int columns = (int)rows.types_in.size();
+    int columns = (int)rows.types_in.size();
 
     assert(columns > 0);
     if (columns <= 0)
@@ -301,7 +301,7 @@ CDbConnection::DoSelect(const char* sql,
      */
     for (int i = 0; i < columns; ++i)
     {
-        const DB_COLUMN_TYPE type = rows.types_in[i];
+        DB_COLUMN_TYPE type = rows.types_in[i];
 
         assert(type == DB_CT_I64 || type == DB_CT_DBL || type == DB_CT_TXT);
         if (type != DB_CT_I64 && type != DB_CT_DBL && type != DB_CT_TXT)
@@ -348,7 +348,7 @@ CDbConnection::DoSelect(const char* sql,
 
                 for (int j = 0; j < columns; ++j)
                 {
-                    const DB_COLUMN_TYPE type = rows.types_in[j];
+                    DB_COLUMN_TYPE type = rows.types_in[j];
                     if (type == DB_CT_I64)
                     {
                         row.cells[j].i64 = sqlite3_column_int64(stmt, j);
@@ -359,7 +359,7 @@ CDbConnection::DoSelect(const char* sql,
                     }
                     else
                     {
-                        const char* const txt = (char*)sqlite3_column_text(stmt, j);
+                        const char* txt = (char*)sqlite3_column_text(stmt, j);
                         row.cells[j].txt = txt != NULL ? txt : "";
                     }
                 }

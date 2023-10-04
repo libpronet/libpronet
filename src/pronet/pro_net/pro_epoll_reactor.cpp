@@ -65,10 +65,11 @@ CProEpollReactor::~CProEpollReactor()
         pbsd_epoll_event ev;
         memset(&ev, 0, sizeof(pbsd_epoll_event));
 
-        const CProStlMap<int64_t, PRO_HANDLER_INFO>& allHandlers = m_handlerMgr.GetAllHandlers();
+        const CProStlMap<int64_t, PRO_HANDLER_INFO>& sockId2HandlerInfo =
+            m_handlerMgr.GetAllHandlers();
 
-        CProStlMap<int64_t, PRO_HANDLER_INFO>::const_iterator       itr = allHandlers.begin();
-        CProStlMap<int64_t, PRO_HANDLER_INFO>::const_iterator const end = allHandlers.end();
+        auto itr = sockId2HandlerInfo.begin();
+        auto end = sockId2HandlerInfo.end();
 
         for (; itr != end; ++itr)
         {
@@ -84,72 +85,68 @@ CProEpollReactor::~CProEpollReactor()
 bool
 CProEpollReactor::Init()
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    assert(m_epfd == -1);
+    if (m_epfd != -1)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        assert(m_epfd == -1);
-        if (m_epfd != -1)
-        {
-            return (false);
-        }
-
-        m_epfd = pbsd_epoll_create();
-        if (m_epfd == -1)
-        {
-            return (false);
-        }
-
-        m_notifyPipe->Init();
-
-        const int64_t sockId = m_notifyPipe->GetReaderSockId();
-        if (sockId == -1)
-        {
-            close(m_epfd);
-            m_epfd = -1;
-
-            return (false);
-        }
-
-        pbsd_epoll_event ev;
-        memset(&ev, 0, sizeof(pbsd_epoll_event));
-        ev.events  = PRO_EPOLLIN_SET;
-        ev.data.fd = (int)sockId;
-
-        if (pbsd_epoll_ctl(m_epfd, EPOLL_CTL_ADD, ev.data.fd, &ev) != 0)
-        {
-            close(m_epfd);
-            m_epfd = -1;
-
-            return (false);
-        }
-
-        if (!m_handlerMgr.AddHandler(sockId, this, PRO_MASK_READ))
-        {
-            pbsd_epoll_ctl(m_epfd, EPOLL_CTL_DEL, ev.data.fd, &ev);
-            close(m_epfd);
-            m_epfd = -1;
-
-            return (false);
-        }
+        return false;
     }
 
-    return (true);
+    m_epfd = pbsd_epoll_create();
+    if (m_epfd == -1)
+    {
+        return false;
+    }
+
+    m_notifyPipe->Init();
+
+    int64_t sockId = m_notifyPipe->GetReaderSockId();
+    if (sockId == -1)
+    {
+        close(m_epfd);
+        m_epfd = -1;
+
+        return false;
+    }
+
+    pbsd_epoll_event ev;
+    memset(&ev, 0, sizeof(pbsd_epoll_event));
+    ev.events  = PRO_EPOLLIN_SET;
+    ev.data.fd = (int)sockId;
+
+    if (pbsd_epoll_ctl(m_epfd, EPOLL_CTL_ADD, ev.data.fd, &ev) != 0)
+    {
+        close(m_epfd);
+        m_epfd = -1;
+
+        return false;
+    }
+
+    if (!m_handlerMgr.AddHandler(sockId, this, PRO_MASK_READ))
+    {
+        pbsd_epoll_ctl(m_epfd, EPOLL_CTL_DEL, ev.data.fd, &ev);
+        close(m_epfd);
+        m_epfd = -1;
+
+        return false;
+    }
+
+    return true;
 }
 
 void
 CProEpollReactor::Fini()
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_epfd == -1)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_epfd == -1)
-        {
-            return;
-        }
-
-        m_wantExit = true;
-        m_notifyPipe->Notify();
+        return;
     }
+
+    m_wantExit = true;
+    m_notifyPipe->Notify();
 }
 
 bool
@@ -165,7 +162,7 @@ CProEpollReactor::AddHandler(int64_t           sockId,
     assert(mask != 0);
     if (sockId == -1 || handler == NULL || mask == 0)
     {
-        return (false);
+        return false;
     }
 
     if (PRO_BIT_ENABLED(mask, PRO_MASK_ACCEPT))
@@ -184,19 +181,19 @@ CProEpollReactor::AddHandler(int64_t           sockId,
 
         if (m_epfd == -1 || m_wantExit)
         {
-            return (false);
+            return false;
         }
 
-        const PRO_HANDLER_INFO oldInfo = m_handlerMgr.FindHandler(sockId);
+        PRO_HANDLER_INFO oldInfo = m_handlerMgr.FindHandler(sockId);
         if (oldInfo.handler != NULL && handler != oldInfo.handler)
         {
-            return (false);
+            return false;
         }
 
         mask &= ~oldInfo.mask;
         if (mask == 0)
         {
-            return (true);
+            return true;
         }
 
         short oldEvents = 0;
@@ -243,7 +240,7 @@ CProEpollReactor::AddHandler(int64_t           sockId,
         }
         if (retc != 0)
         {
-            return (false);
+            return false;
         }
 
         if (!m_handlerMgr.AddHandler(sockId, handler, mask))
@@ -261,7 +258,7 @@ CProEpollReactor::AddHandler(int64_t           sockId,
                 pbsd_epoll_ctl(m_epfd, EPOLL_CTL_MOD, ev.data.fd, &ev);
             }
 
-            return (false);
+            return false;
         }
 
         if (ProGetThreadId() != m_threadId)
@@ -270,7 +267,7 @@ CProEpollReactor::AddHandler(int64_t           sockId,
         }
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -304,7 +301,7 @@ CProEpollReactor::RemoveHandler(int64_t       sockId,
             return;
         }
 
-        const PRO_HANDLER_INFO oldInfo = m_handlerMgr.FindHandler(sockId);
+        PRO_HANDLER_INFO oldInfo = m_handlerMgr.FindHandler(sockId);
         if (oldInfo.handler == NULL)
         {
             return;
@@ -390,14 +387,14 @@ CProEpollReactor::WorkerRun()
         /*
          * epoll_wait()
          */
-        const int retc = pbsd_epoll_wait(m_epfd, m_events, PRO_EPOLLFD_GETSIZE, -1);
+        int retc = pbsd_epoll_wait(m_epfd, m_events, PRO_EPOLLFD_GETSIZE, -1);
         if (retc <= 0)
         {
             ProSleep(1);
             continue;
         }
 
-        CProStlMap<int64_t, PRO_HANDLER_INFO> handlers;
+        CProStlMap<int64_t, PRO_HANDLER_INFO> sockId2HandlerInfo;
 
         {
             CProThreadMutexGuard mon(m_lock);
@@ -415,7 +412,7 @@ CProEpollReactor::WorkerRun()
                     continue;
                 }
 
-                const PRO_HANDLER_INFO info = m_handlerMgr.FindHandler(ev.data.fd);
+                PRO_HANDLER_INFO info = m_handlerMgr.FindHandler(ev.data.fd);
                 if (info.handler == NULL)
                 {
                     continue;
@@ -424,7 +421,7 @@ CProEpollReactor::WorkerRun()
                 if ((ev.events & PRO_EPOLLERR) != 0)
                 {
                     info.handler->AddRef();
-                    PRO_HANDLER_INFO& info2 = handlers[ev.data.fd]; /* insert */
+                    PRO_HANDLER_INFO& info2 = sockId2HandlerInfo[ev.data.fd]; /* insert */
                     info2.handler = info.handler;
                     PRO_SET_BITS(info2.mask, PRO_MASK_ERROR);
                     continue;
@@ -433,7 +430,7 @@ CProEpollReactor::WorkerRun()
                 if ((ev.events & PRO_EPOLLOUT_SET) != 0)
                 {
                     info.handler->AddRef();
-                    PRO_HANDLER_INFO& info2 = handlers[ev.data.fd]; /* insert */
+                    PRO_HANDLER_INFO& info2 = sockId2HandlerInfo[ev.data.fd]; /* insert */
                     info2.handler = info.handler;
                     PRO_SET_BITS(info2.mask, PRO_MASK_WRITE);
                 }
@@ -441,7 +438,7 @@ CProEpollReactor::WorkerRun()
                 if ((ev.events & (PRO_EPOLLIN_SET | PRO_EPOLLHUP)) != 0)
                 {
                     info.handler->AddRef();
-                    PRO_HANDLER_INFO& info2 = handlers[ev.data.fd]; /* insert */
+                    PRO_HANDLER_INFO& info2 = sockId2HandlerInfo[ev.data.fd]; /* insert */
                     info2.handler = info.handler;
                     PRO_SET_BITS(info2.mask, PRO_MASK_READ);
                 }
@@ -449,19 +446,19 @@ CProEpollReactor::WorkerRun()
                 if ((ev.events & PRO_EPOLLEX_SET) != 0)
                 {
                     info.handler->AddRef();
-                    PRO_HANDLER_INFO& info2 = handlers[ev.data.fd]; /* insert */
+                    PRO_HANDLER_INFO& info2 = sockId2HandlerInfo[ev.data.fd]; /* insert */
                     info2.handler = info.handler;
                     PRO_SET_BITS(info2.mask, PRO_MASK_EXCEPTION);
                 }
             } /* end of for () */
         }
 
-        CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator       itr = handlers.begin();
-        CProStlMap<int64_t, PRO_HANDLER_INFO>::iterator const end = handlers.end();
+        auto itr = sockId2HandlerInfo.begin();
+        auto end = sockId2HandlerInfo.end();
 
         for (; itr != end; ++itr)
         {
-            const int64_t           sockId = itr->first;
+            int64_t                 sockId = itr->first;
             const PRO_HANDLER_INFO& info   = itr->second;
 
             if (PRO_BIT_ENABLED(info.mask, PRO_MASK_ERROR))
@@ -511,7 +508,7 @@ CProEpollReactor::OnInput(int64_t sockId)
 
 void
 CProEpollReactor::OnError(int64_t sockId,
-                          long    errorCode)
+                          int     errorCode)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -527,10 +524,10 @@ CProEpollReactor::OnError(int64_t sockId,
             return;
         }
 
-        CProNotifyPipe* const newPipe = new CProNotifyPipe;
+        CProNotifyPipe* newPipe = new CProNotifyPipe;
         newPipe->Init();
 
-        const int64_t newSockId = newPipe->GetReaderSockId();
+        int64_t newSockId = newPipe->GetReaderSockId();
         if (newSockId == -1)
         {
             delete newPipe;

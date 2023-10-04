@@ -151,14 +151,14 @@ snprintf_pro(char*       dest,
 void
 ProGetExeDir_(char buf[1024])
 {
-    const long size = 1024;
+    long size = 1024;
 
     buf[0]        = '\0';
     buf[size - 1] = '\0';
 
 #if defined(_WIN32)
     ::GetModuleFileNameA(NULL, buf, size - 1);
-    char* const slash = strrchr(buf, '\\');
+    char* slash = strrchr(buf, '\\');
     if (slash != NULL)
     {
         *slash = '\0';
@@ -169,7 +169,7 @@ ProGetExeDir_(char buf[1024])
     }
     strncat(buf, "\\", size - 1);
 #else
-    const long bytes = readlink("/proc/self/exe", buf, size - 1);
+    long bytes = readlink("/proc/self/exe", buf, size - 1);
     if (bytes > 0 && bytes < size)
     {
         buf[bytes] = '\0';
@@ -178,7 +178,7 @@ ProGetExeDir_(char buf[1024])
     {
         strcpy(buf, "./a.out");
     }
-    char* const slash = strrchr(buf, '/');
+    char* slash = strrchr(buf, '/');
     if (slash != NULL)
     {
         *slash = '\0';
@@ -194,7 +194,7 @@ ProGetExeDir_(char buf[1024])
 void
 ProGetExePath(char buf[1024])
 {
-    const long size = 1024;
+    long size = 1024;
 
     buf[0]        = '\0';
     buf[size - 1] = '\0';
@@ -202,7 +202,7 @@ ProGetExePath(char buf[1024])
 #if defined(_WIN32)
     ::GetModuleFileNameA(NULL, buf, size - 1);
 #else
-    const long bytes = readlink("/proc/self/exe", buf, size - 1);
+    long bytes = readlink("/proc/self/exe", buf, size - 1);
     if (bytes > 0 && bytes < size)
     {
         buf[bytes] = '\0';

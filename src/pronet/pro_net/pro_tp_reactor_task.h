@@ -20,7 +20,7 @@
  * This is an implementation of the "Reactor" pattern.
  */
 
-#if !defined(PRO_TP_REACTOR_TASK_H)
+#ifndef PRO_TP_REACTOR_TASK_H
 #define PRO_TP_REACTOR_TASK_H
 
 #include "pro_net.h"
@@ -79,7 +79,7 @@ public:
         int64_t      userData /* = 0 */
         );
 
-    virtual bool UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds);
+    virtual bool UpdateHeartbeatTimers(unsigned int htbtIntervalInSeconds);
 
     virtual void CancelTimer(uint64_t timerId);
 
@@ -109,10 +109,10 @@ private:
     CProStlVector<CProBaseReactor*> m_ioReactors;
     CProTimerFactory                m_timerFactory;
     CProTimerFactory                m_mmTimerFactory;
-    unsigned long                   m_acceptThreadCount;
-    unsigned long                   m_ioThreadCount;
+    unsigned int                    m_acceptThreadCount;
+    unsigned int                    m_ioThreadCount;
     long                            m_ioThreadPriority;
-    unsigned long                   m_curThreadCount;
+    unsigned int                    m_curThreadCount;
     bool                            m_wantExit;
     CProStlSet<uint64_t>            m_threadIds;
     CProThreadMutexCondition        m_initCond;

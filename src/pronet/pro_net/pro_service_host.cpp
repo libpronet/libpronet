@@ -81,7 +81,7 @@ CProServiceHost::Init(IProServiceHostObserver* observer,
     assert(servicePort > 0);
     if (observer == NULL || reactor == NULL || servicePort == 0)
     {
-        return (false);
+        return false;
     }
 
     {
@@ -91,10 +91,9 @@ CProServiceHost::Init(IProServiceHostObserver* observer,
         assert(m_reactor == NULL);
         assert(m_connector == NULL);
         assert(m_pipe == NULL);
-        if (m_observer != NULL || m_reactor != NULL || m_connector != NULL ||
-            m_pipe != NULL)
+        if (m_observer != NULL || m_reactor != NULL || m_connector != NULL || m_pipe != NULL)
         {
-            return (false);
+            return false;
         }
 
         m_connector = ProCreateConnectorEx(
@@ -110,7 +109,7 @@ CProServiceHost::Init(IProServiceHostObserver* observer,
             );
         if (m_connector == NULL)
         {
-            return (false);
+            return false;
         }
 
         observer->AddRef();
@@ -125,7 +124,7 @@ CProServiceHost::Init(IProServiceHostObserver* observer,
         g_s_lock.Unlock();
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -167,17 +166,13 @@ CProServiceHost::Fini()
 unsigned long
 CProServiceHost::AddRef()
 {
-    const unsigned long refCount = CProRefCount::AddRef();
-
-    return (refCount);
+    return CProRefCount::AddRef();
 }
 
 unsigned long
 CProServiceHost::Release()
 {
-    const unsigned long refCount = CProRefCount::Release();
-
-    return (refCount);
+    return CProRefCount::Release();
 }
 
 void
@@ -230,13 +225,12 @@ CProServiceHost::OnConnectOk(IProConnector*   connector,
         assert(m_pipe == NULL);
 
 #if defined(_WIN32)
-        const bool recvFdMode = false;
+        bool recvFdMode = false;
 #else
-        const bool recvFdMode = true;
+        bool recvFdMode = true;
 #endif
 
-        m_pipe = ProCreateServicePipe(
-            recvFdMode, this, m_reactor, sockId, unixSocket);
+        m_pipe = ProCreateServicePipe(recvFdMode, this, m_reactor, sockId, unixSocket);
         if (m_pipe == NULL)
         {
             ProCloseSockId(sockId);
@@ -245,7 +239,7 @@ CProServiceHost::OnConnectOk(IProConnector*   connector,
         else
         {
             m_onlineLock.Lock();
-            const uint32_t totalSocks = (uint32_t)m_onlineSockIds.size();
+            uint32_t totalSocks = (uint32_t)m_onlineSockIds.size();
             m_onlineLock.Unlock();
 
             /*
@@ -386,7 +380,7 @@ CProServiceHost::OnRecv(CProServicePipe*          pipe,
 
     m_onlineLock.Lock();
     m_onlineSockIds.insert(sockId);
-    const uint32_t totalSocks = (uint32_t)m_onlineSockIds.size();
+    uint32_t totalSocks = (uint32_t)m_onlineSockIds.size();
     m_onlineLock.Unlock();
 
     /*
@@ -504,7 +498,7 @@ CProServiceHost::OnRecvFd(CProServicePipe*          pipe,
 
     m_onlineLock.Lock();
     m_onlineSockIds.insert(fd);
-    const uint32_t totalSocks = (uint32_t)m_onlineSockIds.size();
+    uint32_t totalSocks = (uint32_t)m_onlineSockIds.size();
     m_onlineLock.Unlock();
 
     /*
@@ -634,7 +628,7 @@ CProServiceHost::OnTimer(void*    factory,
         else if (m_pipe != NULL)
         {
             m_onlineLock.Lock();
-            const uint32_t totalSocks = (uint32_t)m_onlineSockIds.size();
+            uint32_t totalSocks = (uint32_t)m_onlineSockIds.size();
             m_onlineLock.Unlock();
 
             PRO_SERVICE_PACKET c2sPacket;
@@ -665,7 +659,7 @@ ProDecServiceLoad(int64_t sockId)
     {
         CProThreadMutexGuard mon(g_s_lock);
 
-        CProStlMap<int64_t, CProServiceHost*>::iterator const itr = g_s_sockId2Host.find(sockId);
+        auto itr = g_s_sockId2Host.find(sockId);
         if (itr == g_s_sockId2Host.end())
         {
             return;

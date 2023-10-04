@@ -20,7 +20,7 @@
  * This is an implementation of the "Active Object" pattern.
  */
 
-#if !defined(____PRO_FUNCTOR_COMMAND_TASK_H____)
+#ifndef ____PRO_FUNCTOR_COMMAND_TASK_H____
 #define ____PRO_FUNCTOR_COMMAND_TASK_H____
 
 #include "pro_a.h"
@@ -47,8 +47,8 @@ public:
     virtual ~CProFunctorCommandTask();
 
     bool Start(
-        bool   realtime    = false,
-        size_t threadCount = 1
+        bool         realtime    = false,
+        unsigned int threadCount = 1
         );
 
     void Stop();
@@ -73,8 +73,8 @@ private:
 private:
 
     const void*                       m_userData;
-    size_t                            m_threadCount;
-    size_t                            m_curThreadCount;
+    unsigned int                      m_threadCount;
+    unsigned int                      m_curThreadCount;
     bool                              m_wantExit;
     CProStlSet<uint64_t>              m_threadIds;
     CProStlDeque<IProFunctorCommand*> m_commands;

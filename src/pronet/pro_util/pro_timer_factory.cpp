@@ -104,15 +104,15 @@ CProTimerFactory::Start(bool mmTimer)
 
         m_mmTimer = mmTimer;
 
-        int       i = 0;
-        const int c = (int)m_htbtTimerCounts.size();
+        int i = 0;
+        int c = (int)m_htbtTimerCounts.size();
 
         for (; i < c; ++i)
         {
             m_htbtTimerCounts[i] = 0; /* clean all slots */
         }
 
-        IProFunctorCommand* const command =
+        IProFunctorCommand* command =
             CProFunctorCommand_cpp<CProTimerFactory, ACTION>::CreateInstance(
                 *this,
                 &CProTimerFactory::WorkerRun
@@ -256,8 +256,8 @@ CProTimerFactory::ScheduleHeartbeatTimer(IProOnTimer* onTimer,
         int    index = 0;
         size_t count = m_htbtTimerCounts[0];
 
-        int       i = 1;
-        const int c = (int)m_htbtTimerCounts.size();
+        int i = 1;
+        int c = (int)m_htbtTimerCounts.size();
 
         for (; i < c; ++i)
         {
@@ -273,8 +273,8 @@ CProTimerFactory::ScheduleHeartbeatTimer(IProOnTimer* onTimer,
          */
         ++m_htbtTimerCounts[index];
 
-        const int64_t step = m_htbtTimeSpan / c;
-        const int64_t tick = ProGetTickCount64();
+        int64_t step = m_htbtTimeSpan / c;
+        int64_t tick = ProGetTickCount64();
 
         node.expireTick    =  (tick + m_htbtTimeSpan - 1) / m_htbtTimeSpan * m_htbtTimeSpan;
         node.expireTick    += step * index;
@@ -369,7 +369,7 @@ CProTimerFactory::UpdateHeartbeatTimers(unsigned int htbtIntervalInSeconds)
         return false;
     }
 
-    const int64_t timeSpan = (int64_t)htbtIntervalInSeconds * 1000;
+    int64_t timeSpan = (int64_t)htbtIntervalInSeconds * 1000;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -411,12 +411,12 @@ CProTimerFactory::UpdateHeartbeatTimers(unsigned int htbtIntervalInSeconds)
             }
         }
 
-        const int     slots = (int)m_htbtTimerCounts.size();
-        const int64_t step  = m_htbtTimeSpan / slots;
-        const int64_t tick  = ProGetTickCount64();
+        int     slots = (int)m_htbtTimerCounts.size();
+        int64_t step  = m_htbtTimeSpan / slots;
+        int64_t tick  = ProGetTickCount64();
 
-        int       i = 0;
-        const int c = (int)timers.size();
+        int i = 0;
+        int c = (int)timers.size();
 
         for (; i < c; ++i)
         {
@@ -519,8 +519,8 @@ CProTimerFactory::Process()
             timers.push_back(node);
         }
 
-        int       i = 0;
-        const int c = (int)timers.size();
+        int i = 0;
+        int c = (int)timers.size();
 
         for (; i < c; ++i)
         {
@@ -531,7 +531,7 @@ CProTimerFactory::Process()
 
                 if (node.heartbeat)
                 {
-                    const int64_t offset = node.expireTick % node.timeSpan;
+                    int64_t offset = node.expireTick % node.timeSpan;
                     node.expireTick = (tick + node.timeSpan - 1) /
                         node.timeSpan * node.timeSpan + offset;
                     if (node.expireTick == tick)
@@ -563,9 +563,9 @@ CProTimerFactory::Process()
         }
     }
 
-    int       i = 0;
-    int       j = 0;
-    const int c = (int)timers.size();
+    int i = 0;
+    int j = 0;
+    int c = (int)timers.size();
 
     for (; i < c; ++i)
     {

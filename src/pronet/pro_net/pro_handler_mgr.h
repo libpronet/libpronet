@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(PRO_HANDLER_MGR_H)
+#ifndef PRO_HANDLER_MGR_H
 #define PRO_HANDLER_MGR_H
 
 #include "../pro_util/pro_memory_pool.h"

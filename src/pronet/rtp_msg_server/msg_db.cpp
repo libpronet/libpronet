@@ -55,12 +55,12 @@ GetMsgUserRow(CDbConnection&      db,
 
     if (!db.DoSelect(sql, dbrows))
     {
-        return (-1);
+        return -1;
     }
 
     if (dbrows.rows_out.size() == 0)
     {
-        return (0);
+        return 0;
     }
 
     {
@@ -74,23 +74,22 @@ GetMsgUserRow(CDbConnection&      db,
         row._bindedip_ = dbrow.cells[5].txt;
     }
 
-    int       i = 0;
-    const int c = (int)dbrows.rows_out.size();
+    int i = 0;
+    int c = (int)dbrows.rows_out.size();
 
     for (; i < c; ++i)
     {
         DB_ROW_UNIT& dbrow = dbrows.rows_out[i];
         if (!dbrow.cells[4].txt.empty())
         {
-            ProZeroMemory(
-                &dbrow.cells[4].txt[0], dbrow.cells[4].txt.length());
+            ProZeroMemory(&dbrow.cells[4].txt[0], dbrow.cells[4].txt.length());
             dbrow.cells[4].txt = "";
         }
     }
 
     row.Adjust();
 
-    return (1);
+    return 1;
 }
 
 void
@@ -99,8 +98,7 @@ GetMsgKickoutRows(CDbConnection&                      db,
 {
     rows.clear();
 
-    const char* const sql =
-        " SELECT _cid_, _uid_, _iid_ FROM tbl_msg02_kickout ";
+    const char* sql = " SELECT _cid_, _uid_, _iid_ FROM tbl_msg02_kickout ";
 
     DB_ROW_SET dbrows;
     dbrows.types_in.push_back(DB_CT_I64); /* _cid_ */
@@ -112,8 +110,8 @@ GetMsgKickoutRows(CDbConnection&                      db,
         return;
     }
 
-    int       i = 0;
-    const int c = (int)dbrows.rows_out.size();
+    int i = 0;
+    int c = (int)dbrows.rows_out.size();
 
     for (; i < c; ++i)
     {
@@ -132,7 +130,7 @@ GetMsgKickoutRows(CDbConnection&                      db,
 void
 CleanMsgKickoutRows(CDbConnection& db)
 {
-    const char* const sql = " DELETE FROM tbl_msg02_kickout ";
+    const char* sql = " DELETE FROM tbl_msg02_kickout ";
 
     db.DoOther(sql);
 }
@@ -224,7 +222,7 @@ RemoveMsgOnlineRow(CDbConnection&      db,
 void
 CleanMsgOnlineRows(CDbConnection& db)
 {
-    const char* const sql = " DELETE FROM tbl_msg03_online ";
+    const char* sql = " DELETE FROM tbl_msg03_online ";
 
     db.DoOther(sql);
 }

@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(DB_CONNECTION_H)
+#ifndef DB_CONNECTION_H
 #define DB_CONNECTION_H
 
 #include "db_struct.h"

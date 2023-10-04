@@ -26,10 +26,6 @@
 #include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(_WIN32)
-#include <windows.h>
-#endif
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -55,8 +51,8 @@ struct SERVICE_HUB_CONFIG_INFO
         configStream.AddUint    ("hubs_thread_count"     , hubs_thread_count);
         configStream.AddUint    ("hubs_handshake_timeout", hubs_handshake_timeout);
 
-        CProStlSet<unsigned short>::const_iterator itr = hubs_tcpex_port_a.begin();
-        CProStlSet<unsigned short>::const_iterator end = hubs_tcpex_port_a.end();
+        auto itr = hubs_tcpex_port_a.begin();
+        auto end = hubs_tcpex_port_a.end();
 
         for (; itr != end; ++itr)
         {
@@ -117,8 +113,8 @@ ReadConfig_i(const CProStlVector<PRO_CONFIG_ITEM>& configs,
     configInfo.hubs_tcp_port_a.clear();
     configInfo.hubs_tcp_port_b.clear();
 
-    int       i = 0;
-    const int c = (int)configs.size();
+    int i = 0;
+    int c = (int)configs.size();
 
     for (; i < c; ++i)
     {
@@ -127,7 +123,7 @@ ReadConfig_i(const CProStlVector<PRO_CONFIG_ITEM>& configs,
 
         if (stricmp(configName.c_str(), "hubs_thread_count") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0 && value <= 100)
             {
                 configInfo.hubs_thread_count = value;
@@ -135,7 +131,7 @@ ReadConfig_i(const CProStlVector<PRO_CONFIG_ITEM>& configs,
         }
         else if (stricmp(configName.c_str(), "hubs_handshake_timeout") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0)
             {
                 configInfo.hubs_handshake_timeout = value;
@@ -143,7 +139,7 @@ ReadConfig_i(const CProStlVector<PRO_CONFIG_ITEM>& configs,
         }
         else if (stricmp(configName.c_str(), "hubs_tcpex_port_a") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
             {
                 configInfo.hubs_tcpex_port_a.insert((unsigned short)value);
@@ -151,7 +147,7 @@ ReadConfig_i(const CProStlVector<PRO_CONFIG_ITEM>& configs,
         }
         else if (stricmp(configName.c_str(), "hubs_tcpex_port_b") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
             {
                 configInfo.hubs_tcpex_port_b.insert((unsigned short)value);
@@ -159,7 +155,7 @@ ReadConfig_i(const CProStlVector<PRO_CONFIG_ITEM>& configs,
         }
         else if (stricmp(configName.c_str(), "hubs_tcp_port_a") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
             {
                 configInfo.hubs_tcp_port_a.insert((unsigned short)value);
@@ -167,7 +163,7 @@ ReadConfig_i(const CProStlVector<PRO_CONFIG_ITEM>& configs,
         }
         else if (stricmp(configName.c_str(), "hubs_tcp_port_b") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
             {
                 configInfo.hubs_tcp_port_b.insert((unsigned short)value);
@@ -366,7 +362,7 @@ int main(int argc, char* argv[])
 
         for (; itr != end; ++itr)
         {
-            const unsigned short port = *itr;
+            unsigned short port = *itr;
 
             IProServiceHub* hub = NULL;
 
@@ -443,8 +439,8 @@ int main(int argc, char* argv[])
 EXIT:
 
     {
-        int       i = 0;
-        const int c = (int)hubs.size();
+        int i = 0;
+        int c = (int)hubs.size();
 
         for (; i < c; ++i)
         {
@@ -454,5 +450,5 @@ EXIT:
 
     ProDeleteReactor(reactor);
 
-    return (0);
+    return 0;
 }

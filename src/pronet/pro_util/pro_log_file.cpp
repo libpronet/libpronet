@@ -185,7 +185,7 @@ CProLogFile::Log(const char* text,
             return;
         }
 
-        const int32_t pos = (int32_t)ftell(m_file);
+        int32_t pos = (int32_t)ftell(m_file);
         if (
             pos < 0
             ||
@@ -203,7 +203,7 @@ CProLogFile::Log(const char* text,
             return;
         }
 
-        const size_t ret = fwrite(str, 1, len, m_file);
+        size_t ret = fwrite(str, 1, len, m_file);
         if (ret != len)
         {
             fclose(m_file);
@@ -251,7 +251,7 @@ CProLogFile::Reopen(bool append)
          */
         chmod(m_fileName.c_str(), S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP | S_IROTH | S_IWOTH);
 
-        const int fd = fileno(m_file);
+        int fd = fileno(m_file);
         if (fd >= 0)
         {
             pbsd_ioctl_closexec(fd);

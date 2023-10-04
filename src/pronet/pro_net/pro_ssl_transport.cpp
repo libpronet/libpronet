@@ -69,13 +69,13 @@ CProSslTransport::Init(IProTransportObserver* observer,
     assert(sockId != -1);
     if (observer == NULL || reactorTask == NULL || ctx == NULL || sockId == -1)
     {
-        return (false);
+        return false;
     }
 
     assert(((mbedtls_ssl_context*)ctx)->state == MBEDTLS_SSL_HANDSHAKE_OVER);
     if (((mbedtls_ssl_context*)ctx)->state != MBEDTLS_SSL_HANDSHAKE_OVER)
     {
-        return (false);
+        return false;
     }
 
     if (!unixSocket)
@@ -95,7 +95,7 @@ CProSslTransport::Init(IProTransportObserver* observer,
         assert(m_ctx == NULL);
         if (m_observer != NULL || m_reactorTask != NULL || m_ctx != NULL)
         {
-            return (false);
+            return false;
         }
 
 #if !defined(_WIN32)
@@ -106,15 +106,15 @@ CProSslTransport::Init(IProTransportObserver* observer,
             if (pbsd_getsockname_un(sockId, &localAddrUn)  != 0 ||
                 pbsd_getpeername_un(sockId, &remoteAddrUn) != 0)
             {
-                return (false);
+                return false;
             }
 
-            const char* const prefix = "/tmp/libpronet_127001_";
-            const char* const local  = strstr(localAddrUn.sun_path , prefix);
-            const char* const remote = strstr(remoteAddrUn.sun_path, prefix);
+            const char* prefix = "/tmp/libpronet_127001_";
+            const char* local  = strstr(localAddrUn.sun_path , prefix);
+            const char* remote = strstr(remoteAddrUn.sun_path, prefix);
             if (local == NULL && remote == NULL)
             {
-                return (false);
+                return false;
             }
 
             if (local != NULL)
@@ -123,7 +123,7 @@ CProSslTransport::Init(IProTransportObserver* observer,
                 sscanf(local + strlen(prefix), "%d", &port);
                 if (port <= 0 || port > 65535)
                 {
-                    return (false);
+                    return false;
                 }
 
                 m_localAddr.sin_port         = pbsd_hton16((uint16_t)port);
@@ -137,7 +137,7 @@ CProSslTransport::Init(IProTransportObserver* observer,
                 sscanf(remote + strlen(prefix), "%d", &port);
                 if (port <= 0 || port > 65535)
                 {
-                    return (false);
+                    return false;
                 }
 
                 m_localAddr.sin_port         = pbsd_hton16((uint16_t)65535); /* a dummy for unix socket */
@@ -152,27 +152,27 @@ CProSslTransport::Init(IProTransportObserver* observer,
             if (pbsd_getsockname(sockId, &m_localAddr)  != 0 ||
                 pbsd_getpeername(sockId, &m_remoteAddr) != 0)
             {
-                return (false);
+                return false;
             }
         }
 
         if (!m_recvPool.Resize(m_recvPoolSize))
         {
-            return (false);
+            return false;
         }
 
         if (suspendRecv)
         {
             if (!reactorTask->AddHandler(sockId, this, PRO_MASK_WRITE))
             {
-                return (false);
+                return false;
             }
         }
         else
         {
             if (!reactorTask->AddHandler(sockId, this, PRO_MASK_WRITE | PRO_MASK_READ))
             {
-                return (false);
+                return false;
             }
         }
 
@@ -185,7 +185,7 @@ CProSslTransport::Init(IProTransportObserver* observer,
         m_onWr        = true;
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -231,7 +231,7 @@ CProSslTransport::GetSslSuite(char suiteName[64]) const
         strncpy_pro(suiteName, 64, m_suiteName);
     }
 
-    return (suiteId);
+    return suiteId;
 }
 
 void
@@ -280,8 +280,8 @@ CProSslTransport::DoRecv(int64_t sockId)
                 return;
             }
 
-            const size_t idleSize = m_recvPool.ContinuousIdleSize();
-            const size_t minSize  = (msgSize == 0 || msgSize > idleSize) ? idleSize : msgSize;
+            size_t idleSize = m_recvPool.ContinuousIdleSize();
+            size_t minSize  = (msgSize == 0 || msgSize > idleSize) ? idleSize : msgSize;
 
             assert(idleSize > 0);
             if (idleSize == 0)
@@ -405,8 +405,8 @@ CProSslTransport::DoSend(int64_t sockId)
             return;
         }
 
-        unsigned long     theSize = 0;
-        const void* const theBuf  = m_sendPool.PreSend(theSize);
+        size_t      theSize = 0;
+        const void* theBuf  = m_sendPool.PreSend(theSize);
 
         if (theBuf == NULL || theSize == 0)
         {

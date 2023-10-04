@@ -72,7 +72,7 @@ CProStatBitRate::PushDataBytes(size_t dataBytes)
 void
 CProStatBitRate::PushDataBits(size_t dataBits)
 {
-    const int64_t tick = ProGetTickCount64();
+    int64_t tick = ProGetTickCount64();
 
     if (m_startTick == 0)
     {
@@ -174,8 +174,8 @@ struct PRO_REORDER_BLOCK
             return 1;
         }
 
-        const int i = (int)(seq - baseSeq) / 8;
-        const int j = (int)(seq - baseSeq) % 8;
+        int i = (int)(seq - baseSeq) / 8;
+        int j = (int)(seq - baseSeq) % 8;
 
         bitmap[i] |= 1 << j;
 
@@ -192,12 +192,12 @@ struct PRO_REORDER_BLOCK
             return;
         }
 
-        const int64_t endSeq = baseSeq + REORDER_BITMAP_BYTES * 8;
+        int64_t endSeq = baseSeq + REORDER_BITMAP_BYTES * 8;
 
         for (; itrSeq < endSeq; ++itrSeq)
         {
-            const int i = (int)(itrSeq - baseSeq) / 8;
-            const int j = (int)(itrSeq - baseSeq) % 8;
+            int i = (int)(itrSeq - baseSeq) / 8;
+            int j = (int)(itrSeq - baseSeq) % 8;
 
             /*
              * there is a gap
@@ -210,8 +210,8 @@ struct PRO_REORDER_BLOCK
             seqs.push_back(itrSeq);
         }
 
-        int       i = 0;
-        const int c = (int)(itrSeq - baseSeq) / 8;
+        int i = 0;
+        int c = (int)(itrSeq - baseSeq) / 8;
 
         for (; i < c; ++i)
         {
@@ -234,12 +234,12 @@ struct PRO_REORDER_BLOCK
             return;
         }
 
-        const int64_t endSeq = baseSeq + 8;
+        int64_t endSeq = baseSeq + 8;
 
         for (; itrSeq < endSeq; ++itrSeq)
         {
-            const int i = (int)(itrSeq - baseSeq) / 8;
-            const int j = (int)(itrSeq - baseSeq) % 8;
+            int i = (int)(itrSeq - baseSeq) / 8;
+            int j = (int)(itrSeq - baseSeq) % 8;
 
             if ((bitmap[i] & (1 << j)) != 0)
             {
@@ -247,8 +247,8 @@ struct PRO_REORDER_BLOCK
             }
         }
 
-        int       i = 0;
-        const int c = (int)(itrSeq - baseSeq) / 8;
+        int i = 0;
+        int c = (int)(itrSeq - baseSeq) / 8;
 
         for (; i < c; ++i)
         {
@@ -364,7 +364,7 @@ CProStatLossRate::SetMaxBrokenDuration(unsigned int brokenDurationInSeconds) /* 
 void
 CProStatLossRate::PushData(uint16_t dataSeq)
 {
-    const int64_t tick = ProGetTickCount64();
+    int64_t tick = ProGetTickCount64();
 
     /*
      * first packet
@@ -385,7 +385,7 @@ CProStatLossRate::PushData(uint16_t dataSeq)
         m_reorder->Push(dataSeq, tick);
     }
 
-    const int64_t seq64 = ProSeq16ToSeq64(m_reorder->itrSeq, dataSeq);
+    int64_t seq64 = ProSeq16ToSeq64(m_reorder->itrSeq, dataSeq);
 
     /*
      * reset
@@ -439,8 +439,8 @@ CProStatLossRate::PushData(uint16_t dataSeq)
 
     m_reorder->Read(seqs, tick);
 
-    int       i = 0;
-    const int c = (int)seqs.size();
+    int i = 0;
+    int c = (int)seqs.size();
 
     for (; i < c; ++i)
     {
@@ -472,7 +472,7 @@ CProStatLossRate::Push(int64_t seq64)
     }
     else
     {
-        const int64_t dist = seq64 - m_nextSeq64;
+        int64_t dist = seq64 - m_nextSeq64;
 
         m_nextSeq64    =  seq64 + 1;
         m_count        += dist + 1;
@@ -486,7 +486,7 @@ CProStatLossRate::CalcLossRate()
 {
     if (m_startTick > 0 && !m_reorder->IsEmpty())
     {
-        const int64_t tick = ProGetTickCount64();
+        int64_t tick = ProGetTickCount64();
         if (tick - m_reorder->popTick > MAX_POP_INTERVAL_MS)
         {
             CProStlVector<int64_t> seqs;
@@ -500,8 +500,8 @@ CProStatLossRate::CalcLossRate()
                 }
             }
 
-            int       i = 0;
-            const int c = (int)seqs.size();
+            int i = 0;
+            int c = (int)seqs.size();
 
             for (; i < c; ++i)
             {
@@ -537,7 +537,7 @@ CProStatLossRate::Update(int64_t tick)
 
     if (tick - m_startTick >= m_timeSpan * 1000 + DELTA_SPAN_MS)
     {
-        const double countRate = m_count * 1000 / (tick - m_startTick);
+        double countRate = m_count * 1000 / (tick - m_startTick);
 
         m_startTick = tick - m_timeSpan * 1000;
         m_count     = countRate * m_timeSpan;
@@ -579,7 +579,7 @@ CProStatAvgValue::SetTimeSpan(unsigned int timeSpanInSeconds) /* = 5 */
 void
 CProStatAvgValue::PushData(double dataValue)
 {
-    const int64_t tick = ProGetTickCount64();
+    int64_t tick = ProGetTickCount64();
 
     if (m_startTick == 0)
     {
@@ -619,7 +619,7 @@ CProStatAvgValue::Update(int64_t tick)
 
     if (tick - m_startTick >= m_timeSpan * 1000 + DELTA_SPAN_MS)
     {
-        const double countRate = m_count * 1000 / (tick - m_startTick);
+        double countRate = m_count * 1000 / (tick - m_startTick);
 
         m_startTick = tick - m_timeSpan * 1000;
         m_count     = countRate * m_timeSpan;
@@ -646,8 +646,8 @@ ProSeq16ToSeq64(int64_t  referenceSeq64,
     }
     else if (inputSeq < (uint16_t)referenceSeq64)
     {
-        const uint16_t dist1 = (uint16_t)-1 - (uint16_t)referenceSeq64 + inputSeq + 1;
-        const uint16_t dist2 = (uint16_t)referenceSeq64 - inputSeq;
+        uint16_t dist1 = (uint16_t)-1 - (uint16_t)referenceSeq64 + inputSeq + 1;
+        uint16_t dist2 = (uint16_t)referenceSeq64 - inputSeq;
 
         if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* go forward */
         {
@@ -669,8 +669,8 @@ ProSeq16ToSeq64(int64_t  referenceSeq64,
     }
     else
     {
-        const uint16_t dist1 = inputSeq - (uint16_t)referenceSeq64;
-        const uint16_t dist2 = (uint16_t)-1 - inputSeq + (uint16_t)referenceSeq64 + 1;
+        uint16_t dist1 = inputSeq - (uint16_t)referenceSeq64;
+        uint16_t dist2 = (uint16_t)-1 - inputSeq + (uint16_t)referenceSeq64 + 1;
 
         if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* go forward */
         {

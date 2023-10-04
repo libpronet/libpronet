@@ -30,7 +30,7 @@ CRtpSessionUdpserver::CreateInstance(const RTP_SESSION_INFO* localInfo)
     assert(localInfo->mmType != 0);
     if (localInfo == NULL || localInfo->mmType == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     return new CRtpSessionUdpserver(*localInfo);

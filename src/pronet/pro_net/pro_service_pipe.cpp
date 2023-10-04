@@ -67,7 +67,7 @@ CProServicePipe::Init(bool                     recvFdMode,
     assert(sockId != -1);
     if (observer == NULL || reactor == NULL || sockId == -1)
     {
-        return (false);
+        return false;
     }
 
     {
@@ -78,13 +78,13 @@ CProServicePipe::Init(bool                     recvFdMode,
         assert(m_trans == NULL);
         if (m_observer != NULL || m_reactor != NULL || m_trans != NULL)
         {
-            return (false);
+            return false;
         }
 
         m_trans = CProTcpTransport::CreateInstance(recvFdMode, RECV_POOL_SIZE);
         if (m_trans == NULL)
         {
-            return (false);
+            return false;
         }
 
         if (!m_trans->Init(this, (CProTpReactorTask*)reactor, sockId,
@@ -93,7 +93,7 @@ CProServicePipe::Init(bool                     recvFdMode,
             m_trans->Release();
             m_trans = NULL;
 
-            return (false);
+            return false;
         }
 
         observer->AddRef();
@@ -101,7 +101,7 @@ CProServicePipe::Init(bool                     recvFdMode,
         m_reactor  = reactor;
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -133,17 +133,13 @@ CProServicePipe::Fini()
 unsigned long
 CProServicePipe::AddRef()
 {
-    const unsigned long refCount = CProRefCount::AddRef();
-
-    return (refCount);
+    return CProRefCount::AddRef();
 }
 
 unsigned long
 CProServicePipe::Release()
 {
-    const unsigned long refCount = CProRefCount::Release();
-
-    return (refCount);
+    return CProRefCount::Release();
 }
 
 void
@@ -231,8 +227,8 @@ CProServicePipe::OnRecv(IProTransport*          trans,
                 return;
             }
 
-            IProRecvPool&       recvPool = *m_trans->GetRecvPool();
-            const unsigned long dataSize = recvPool.PeekDataSize();
+            IProRecvPool& recvPool = *m_trans->GetRecvPool();
+            size_t        dataSize = recvPool.PeekDataSize();
 
             if (dataSize < sizeof(PRO_SERVICE_PACKET))
             {
@@ -357,8 +353,8 @@ CProServicePipe::OnSend(IProTransport* trans,
 
 void
 CProServicePipe::OnClose(IProTransport* trans,
-                         long           errorCode,
-                         long           sslCode)
+                         int            errorCode,
+                         int            sslCode)
 {
     assert(trans != NULL);
     if (trans == NULL)
@@ -399,20 +395,20 @@ ProCreateServicePipe(bool                     recvFdMode,
                      int64_t                  sockId,
                      bool                     unixSocket)
 {
-    CProServicePipe* const pipe = CProServicePipe::CreateInstance();
+    CProServicePipe* pipe = CProServicePipe::CreateInstance();
     if (pipe == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     if (!pipe->Init(recvFdMode, observer, reactor, sockId, unixSocket))
     {
         pipe->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return (pipe);
+    return pipe;
 }
 
 void

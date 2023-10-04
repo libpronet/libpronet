@@ -53,7 +53,7 @@
  * PMP-v2.0 (PRO Messaging Protocol version 2.0)
  */
 
-#if !defined(____RTP_MSG_H____)
+#ifndef ____RTP_MSG_H____
 #define ____RTP_MSG_H____
 
 #include "rtp_base.h"
@@ -68,17 +68,20 @@ extern "C" {
 /*
  * 消息用户号. 1-2-*, 1-3-*, ...; 2-1-*, 2-2-*, 2-3-*, ...; ...
  *
- * classId : 8bits. 该字段用于标识用户类别, 以便于应用程序分类管理.
- * (cid)     0无效, 1应用服务器节点, 2~255应用客户端节点
+ * classId : 8bits. 该字段用于标识用户类别, 以便于应用程序识别和管理.
+ * (cid)     0无效, 1应用服务器节点, 2~254应用客户端节点, 255消息c2s节点
  *
  * userId  : 40bits. 该字段用于标识用户id(如电话号码), 由消息服务器分配或许可.
- * (uid)     0动态分配, 有效范围为[0xF000000000 ~ 0xFFFFFFFFFF];
- *           否则静态分配, 有效范围为[1 ~ 0xEFFFFFFFFF]
+ * (uid)     0动态分配, 有效范围为[0xF000000000 ~ 0xFFFFFFFFFF]; 否则静态分配, 有效范围为
+ *           [1 ~ 0xEFFFFFFFFF]
  *
- * instId  : 16bits. 该字段用于标识用户实例id(如电话分机号), 由消息服务器分配
- * (iid)     或许可. 有效范围为[0 ~ 65535]
+ * instId  : 16bits. 该字段用于标识用户实例id(如电话分机号), 由消息服务器分配或许可. 有效范围为
+ * (iid)     [0 ~ 65535]
  *
- * 说明    : cid-uid-iid 之 1-1-* 保留, 用于标识消息服务器本身(root)
+ * 说明:
+ * 1) cid-uid-iid 之 1-1-* 保留, 用于标识消息服务器本身(root)
+ * 2) cid-uid-iid 之 255-*-* 保留, 用于标识消息c2s节点
+ * 3) cid-uid-* 之间共享同一个密码
  */
 struct RTP_MSG_USER
 {
@@ -388,7 +391,7 @@ public:
     virtual void OnRecvMsg(
         IRtpMsgClient*      msgClient,
         const void*         buf,
-        unsigned long       size,
+        size_t              size,
         uint16_t            charset,
         const RTP_MSG_USER* srcUser
         ) = 0;
@@ -398,8 +401,8 @@ public:
      */
     virtual void OnCloseMsg(
         IRtpMsgClient* msgClient,
-        long           errorCode,   /* 系统错误码 */
-        long           sslCode,     /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
+        int            errorCode,   /* 系统错误码 */
+        int            sslCode,     /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
         bool           tcpConnected /* tcp连接是否已经建立 */
         ) = 0;
 
@@ -538,8 +541,7 @@ public:
     /*
      * 用户请求登录时, 该函数将被回调
      *
-     * 上层应该根据用户号, 找到匹配的用户口令, 然后调用CheckRtpServiceData()
-     * 进行校验
+     * 上层应该根据用户号, 找到匹配的用户口令, 然后调用CheckRtpServiceData()进行校验
      *
      * 返回值表示是否允许该用户登录
      */
@@ -548,8 +550,8 @@ public:
         const RTP_MSG_USER* user,         /* 用户发来的登录用户号 */
         const char*         userPublicIp, /* 用户的ip地址 */
         const RTP_MSG_USER* c2sUser,      /* 经由哪个c2s而来. 可以是NULL */
-        const char          hash[32],     /* 用户发来的口令hash值 */
-        const char          nonce[32],    /* 会话随机数. 用于CheckRtpServiceData()校验口令hash值 */
+        const unsigned char hash[32],     /* 用户发来的口令hash值 */
+        const unsigned char nonce[32],    /* 会话随机数. 用于CheckRtpServiceData()校验口令hash值 */
         uint64_t*           userId,       /* 上层分配或许可的uid */
         uint16_t*           instId,       /* 上层分配或许可的iid */
         int64_t*            appData,      /* 上层设置的标识数据. 后续的OnOkUser()会带回来 */
@@ -573,8 +575,8 @@ public:
     virtual void OnCloseUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
-        long                errorCode, /* 系统错误码 */
-        long                sslCode    /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
+        int                 errorCode, /* 系统错误码 */
+        int                 sslCode    /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
         ) = 0;
 
     /*
@@ -594,7 +596,7 @@ public:
     virtual void OnRecvMsg(
         IRtpMsgServer*      msgServer,
         const void*         buf,
-        unsigned long       size,
+        size_t              size,
         uint16_t            charset,
         const RTP_MSG_USER* srcUser
         ) = 0;
@@ -608,6 +610,8 @@ public:
  *
  * c2s位于client与server之间, 它可以分散server的负载, 还可以隐藏server的位置.
  * 对于client而言, c2s是透明的, client无法区分它连接的是server还是c2s
+ *
+ * 目前, 尚不支持多层c2s级联部署
  */
 class IRtpMsgC2s
 {
@@ -744,8 +748,8 @@ public:
      */
     virtual void OnCloseC2s(
         IRtpMsgC2s* msgC2s,
-        long        errorCode,   /* 系统错误码 */
-        long        sslCode,     /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
+        int         errorCode,   /* 系统错误码 */
+        int         sslCode,     /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
         bool        tcpConnected /* tcp连接是否已经建立 */
         ) = 0;
 
@@ -774,8 +778,8 @@ public:
     virtual void OnCloseUser(
         IRtpMsgC2s*         msgC2s,
         const RTP_MSG_USER* user,
-        long                errorCode, /* 系统错误码 */
-        long                sslCode    /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
+        int                 errorCode, /* 系统错误码 */
+        int                 sslCode    /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
         ) = 0;
 
     /*
@@ -825,7 +829,7 @@ CreateRtpMsgClient(IRtpMsgClientObserver*       observer,
                    const RTP_MSG_USER*          user,
                    const char*                  password,          /* = NULL */
                    const char*                  localIp,           /* = NULL */
-                   unsigned long                timeoutInSeconds); /* = 0 */
+                   unsigned int                 timeoutInSeconds); /* = 0 */
 
 /*
  * 功能: 删除一个消息客户端
@@ -865,7 +869,7 @@ CreateRtpMsgServer(IRtpMsgServerObserver*       observer,
                    const PRO_SSL_SERVER_CONFIG* sslConfig,         /* = NULL */
                    bool                         sslForced,         /* = false */
                    unsigned short               serviceHubPort,
-                   unsigned long                timeoutInSeconds); /* = 0 */
+                   unsigned int                 timeoutInSeconds); /* = 0 */
 
 /*
  * 功能: 删除一个消息服务器
@@ -917,11 +921,11 @@ CreateRtpMsgC2s(IRtpMsgC2sObserver*          observer,
                 const RTP_MSG_USER*          uplinkUser,
                 const char*                  uplinkPassword,
                 const char*                  uplinkLocalIp,          /* = NULL */
-                unsigned long                uplinkTimeoutInSeconds, /* = 0 */
+                unsigned int                 uplinkTimeoutInSeconds, /* = 0 */
                 const PRO_SSL_SERVER_CONFIG* localSslConfig,         /* = NULL */
                 bool                         localSslForced,         /* = false */
                 unsigned short               localServiceHubPort,
-                unsigned long                localTimeoutInSeconds); /* = 0 */
+                unsigned int                 localTimeoutInSeconds); /* = 0 */
 
 /*
  * 功能: 删除一个消息c2s

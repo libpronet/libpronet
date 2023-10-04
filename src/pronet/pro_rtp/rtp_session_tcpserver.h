@@ -20,7 +20,7 @@
  * RFC-1889/1890, RFC-3550/3551, RFC-4571
  */
 
-#if !defined(RTP_SESSION_TCPSERVER_H)
+#ifndef RTP_SESSION_TCPSERVER_H
 #define RTP_SESSION_TCPSERVER_H
 
 #include "rtp_session_base.h"
@@ -42,7 +42,7 @@ public:
         IProReactor*         reactor,
         const char*          localIp,         /* = NULL */
         unsigned short       localPort,       /* = 0 */
-        unsigned long        timeoutInSeconds /* = 0 */
+        unsigned int         timeoutInSeconds /* = 0 */
         );
 
     virtual void Fini();

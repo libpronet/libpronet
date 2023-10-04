@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(PRO_ACCEPTOR_H)
+#ifndef PRO_ACCEPTOR_H
 #define PRO_ACCEPTOR_H
 
 #include "pro_event_handler.h"
@@ -48,7 +48,7 @@ public:
         CProTpReactorTask*    reactorTask,
         const char*           localIp,         /* = NULL */
         unsigned short        localPort,       /* = 0 */
-        unsigned long         timeoutInSeconds /* = 0 */
+        unsigned int          timeoutInSeconds /* = 0 */
         );
 
     void Fini();
@@ -72,7 +72,7 @@ private:
 
     virtual void OnError(
         int64_t sockId,
-        long    errorCode
+        int     errorCode
         )
     {
     }
@@ -82,12 +82,12 @@ private:
         int64_t            sockId,
         bool               unixSocket,
         const void*        buf,
-        unsigned long      size
+        size_t             size
         );
 
     virtual void OnHandshakeError(
         IProTcpHandshaker* handshaker,
-        long               errorCode
+        int                errorCode
         );
 
 private:
@@ -100,7 +100,7 @@ private:
     int64_t                                   m_sockIdUn;
     pbsd_sockaddr_in                          m_localAddr;
     pbsd_sockaddr_un                          m_localAddrUn;
-    unsigned long                             m_timeoutInSeconds;
+    unsigned int                              m_timeoutInSeconds;
 
     CProStlMap<IProTcpHandshaker*, PRO_NONCE> m_handshaker2Nonce;
 

@@ -39,7 +39,7 @@ CRtpSessionUdpclient::CreateInstance(const RTP_SESSION_INFO* localInfo)
     assert(localInfo->mmType != 0);
     if (localInfo == NULL || localInfo->mmType == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     return new CRtpSessionUdpclient(*localInfo);
@@ -69,7 +69,7 @@ CRtpSessionUdpclient::Init(IRtpSessionObserver* observer,
     assert(reactor != NULL);
     if (observer == NULL || reactor == NULL)
     {
-        return (false);
+        return false;
     }
 
     size_t sockBufSizeRecv = 0; /* zero by default */
@@ -85,7 +85,7 @@ CRtpSessionUdpclient::Init(IRtpSessionObserver* observer,
         assert(m_trans == NULL);
         if (m_observer != NULL || m_reactor != NULL || m_trans != NULL)
         {
-            return (false);
+            return false;
         }
 
         int count = MAX_TRY_TIMES;
@@ -111,9 +111,8 @@ CRtpSessionUdpclient::Init(IRtpSessionObserver* observer,
                 }
             }
 
-            m_trans = ProCreateUdpTransport(
-                this, reactor, true, localIp, localPort2, /* bindToLocal is true */
-                sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
+            m_trans = ProCreateUdpTransport(this, reactor, true, /* bindToLocal is true */
+                localIp, localPort2, sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
             if (m_trans != NULL)
             {
                 break;
@@ -125,7 +124,7 @@ CRtpSessionUdpclient::Init(IRtpSessionObserver* observer,
 
         if (m_trans == NULL)
         {
-            return (false);
+            return false;
         }
 
         char theIp[64] = "";
@@ -141,7 +140,7 @@ CRtpSessionUdpclient::Init(IRtpSessionObserver* observer,
         m_onOkTimerId = reactor->ScheduleTimer(this, 0, false);
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -233,8 +232,8 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
                 return;
             }
 
-            IProRecvPool&       recvPool = *m_trans->GetRecvPool();
-            const unsigned long dataSize = recvPool.PeekDataSize();
+            IProRecvPool& recvPool = *m_trans->GetRecvPool();
+            size_t        dataSize = recvPool.PeekDataSize();
 
             if (dataSize == 0)
             {
@@ -270,7 +269,7 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
                 const char* payloadBuffer = NULL;
                 uint16_t    payloadSize   = 0;
 
-                const bool ret = CRtpPacket::ParseRtpBuffer(
+                bool ret = CRtpPacket::ParseRtpBuffer(
                     (char*)packet->GetPayloadBuffer(),
                     packet->GetPayloadSize16(),
                     hdr,

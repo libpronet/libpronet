@@ -29,10 +29,6 @@
 #include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(_WIN32)
-#include <windows.h>
-#endif
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -54,8 +50,8 @@ ReadConfig_i(const CProStlString&            exeRoot,
     configInfo.msgs_ssl_crlfiles.clear();
     configInfo.msgs_ssl_certfiles.clear();
 
-    int       i = 0;
-    const int c = (int)configs.size();
+    int i = 0;
+    int c = (int)configs.size();
 
     for (; i < c; ++i)
     {
@@ -64,7 +60,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
 
         if (stricmp(configName.c_str(), "msgs_thread_count") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0 && value <= 100)
             {
                 configInfo.msgs_thread_count = value;
@@ -72,16 +68,15 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "msgs_mm_type") == 0)
         {
-            const int value = atoi(configValue.c_str());
-            if (value >= (int)RTP_MMT_MSG_MIN &&
-                value <= (int)RTP_MMT_MSG_MAX)
+            int value = atoi(configValue.c_str());
+            if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
             {
                 configInfo.msgs_mm_type = (RTP_MM_TYPE)value;
             }
         }
         else if (stricmp(configName.c_str(), "msgs_hub_port") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
             {
                 configInfo.msgs_hub_port = (unsigned short)value;
@@ -89,7 +84,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "msgs_handshake_timeout") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0)
             {
                 configInfo.msgs_handshake_timeout = value;
@@ -97,7 +92,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "msgs_redline_bytes_c2s") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0)
             {
                 configInfo.msgs_redline_bytes_c2s = value;
@@ -105,7 +100,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "msgs_redline_bytes_usr") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0)
             {
                 configInfo.msgs_redline_bytes_usr = value;
@@ -198,7 +193,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "msgs_log_loop_bytes") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0)
             {
                 configInfo.msgs_log_loop_bytes = value;
@@ -222,8 +217,8 @@ int main(int argc, char* argv[])
     ProNetInit();
     ProRtpInit();
 
-    CProLogFile*   const   logFile = new CProLogFile;
-    CDbConnection* const   db      = new CDbConnection;
+    CProLogFile*           logFile = new CProLogFile;
+    CDbConnection*         db      = new CDbConnection;
     IProReactor*           reactor = NULL;
     CMsgServer*            server  = NULL;
     CProStlString          logFileName;
@@ -445,14 +440,14 @@ int main(int argc, char* argv[])
 
             CProStlSet<RTP_MSG_USER> users;
 
-            int       i = 0;
-            const int c = (int)rows.size();
+            int i = 0;
+            int c = (int)rows.size();
 
             for (; i < c; ++i)
             {
                 const TBL_MSG_KICKOUT_ROW& row = rows[i];
 
-                const RTP_MSG_USER user((unsigned char)row._cid_, row._uid_, (uint16_t)row._iid_);
+                RTP_MSG_USER user((unsigned char)row._cid_, row._uid_, (uint16_t)row._iid_);
                 users.insert(user);
             }
 
@@ -555,8 +550,8 @@ int main(int argc, char* argv[])
                 continue;
             }
 
-            int       i = 0;
-            const int c = (int)configs.size();
+            int i = 0;
+            int c = (int)configs.size();
 
             for (; i < c; ++i)
             {
@@ -565,7 +560,7 @@ int main(int argc, char* argv[])
 
                 if (stricmp(configName.c_str(), "msgs_log_loop_bytes") == 0)
                 {
-                    const int value = atoi(configValue.c_str());
+                    int value = atoi(configValue.c_str());
                     if (value > 0)
                     {
                         configInfo.msgs_log_loop_bytes = value;
@@ -624,5 +619,5 @@ EXIT:
     delete db;
     delete logFile;
 
-    return (0);
+    return 0;
 }

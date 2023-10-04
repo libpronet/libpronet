@@ -61,13 +61,13 @@ CProConfigFile::Read(CProStlVector<PRO_CONFIG_ITEM>& configs,
         return false;
     }
 
-    FILE* const file = fopen(m_fileName.c_str(), "rb");
+    FILE* file = fopen(m_fileName.c_str(), "rb");
     if (file == NULL)
     {
         return false;
     }
 
-    char* const buf = (char*)ProMalloc(LINE_BUF_SIZE + 1);
+    char* buf = (char*)ProMalloc(LINE_BUF_SIZE + 1);
     if (buf == NULL)
     {
         fclose(file);
@@ -267,7 +267,7 @@ CProConfigFile::Write(const CProStlVector<PRO_CONFIG_ITEM>& configs,
         return false;
     }
 
-    FILE* const file = fopen(m_fileName.c_str(), "wb");
+    FILE* file = fopen(m_fileName.c_str(), "wb");
     if (file == NULL)
     {
         return false;
@@ -283,8 +283,8 @@ CProConfigFile::Write(const CProStlVector<PRO_CONFIG_ITEM>& configs,
 
     bool ret = true;
 
-    int       i = 0;
-    const int c = (int)configs.size();
+    int i = 0;
+    int c = (int)configs.size();
 
     for (; i < c; ++i)
     {

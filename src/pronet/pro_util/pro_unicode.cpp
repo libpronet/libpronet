@@ -41,12 +41,12 @@ ProAnsiToUnicode(const CProStlString& src,
         return;
     }
 
-    const size_t len = src.length() + 1;
+    size_t len = src.length() + 1;
 
     CProStlWstring dst2;
     dst2.resize(len);
 
-    wchar_t* const p = &dst2[0];
+    wchar_t* p = &dst2[0];
     p[0]       = L'\0';
     p[len - 1] = L'\0';
 
@@ -66,12 +66,12 @@ ProUnicodeToAnsi(const CProStlWstring& src,
         return;
     }
 
-    const size_t len = src.length() * 4 + 1;
+    size_t len = src.length() * 4 + 1;
 
     CProStlString dst2;
     dst2.resize(len);
 
-    char* const p = &dst2[0];
+    char* p = &dst2[0];
     p[0]       = '\0';
     p[len - 1] = '\0';
 
@@ -91,12 +91,12 @@ ProUtf8ToUnicode(const CProStlString& src,
         return;
     }
 
-    const size_t len = src.length() + 1;
+    size_t len = src.length() + 1;
 
     CProStlWstring dst2;
     dst2.resize(len);
 
-    wchar_t* const p = &dst2[0];
+    wchar_t* p = &dst2[0];
     p[0]       = L'\0';
     p[len - 1] = L'\0';
 
@@ -116,12 +116,12 @@ ProUnicodeToUtf8(const CProStlWstring& src,
         return;
     }
 
-    const size_t len = src.length() * 4 + 1;
+    size_t len = src.length() * 4 + 1;
 
     CProStlString dst2;
     dst2.resize(len);
 
-    char* const p = &dst2[0];
+    char* p = &dst2[0];
     p[0]       = '\0';
     p[len - 1] = '\0';
 

@@ -20,7 +20,7 @@
  * RFC-1889/1890, RFC-3550/3551, RFC-4571
  */
 
-#if !defined(RTP_SESSION_TCPCLIENT_H)
+#ifndef RTP_SESSION_TCPCLIENT_H
 #define RTP_SESSION_TCPCLIENT_H
 
 #include "rtp_session_base.h"
@@ -43,7 +43,7 @@ public:
         const char*          remoteIp,
         unsigned short       remotePort,
         const char*          localIp,         /* = NULL */
-        unsigned long        timeoutInSeconds /* = 0 */
+        unsigned int         timeoutInSeconds /* = 0 */
         );
 
     virtual void Fini();

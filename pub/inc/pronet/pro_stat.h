@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(____PRO_STAT_H____)
+#ifndef ____PRO_STAT_H____
 #define ____PRO_STAT_H____
 
 #include "pro_a.h"

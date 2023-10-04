@@ -27,10 +27,6 @@
 #include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(_WIN32)
-#include <windows.h>
-#endif
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -49,8 +45,8 @@ ReadConfig_i(const CProStlString&            exeRoot,
     configInfo.msgc_ssl_cafiles.clear();
     configInfo.msgc_ssl_crlfiles.clear();
 
-    int       i = 0;
-    const int c = (int)configs.size();
+    int i = 0;
+    int c = (int)configs.size();
 
     for (; i < c; ++i)
     {
@@ -59,9 +55,8 @@ ReadConfig_i(const CProStlString&            exeRoot,
 
         if (stricmp(configName.c_str(), "msgc_mm_type") == 0)
         {
-            const int value = atoi(configValue.c_str());
-            if (value >= (int)RTP_MMT_MSG_MIN &&
-                value <= (int)RTP_MMT_MSG_MAX)
+            int value = atoi(configValue.c_str());
+            if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
             {
                 configInfo.msgc_mm_type = (RTP_MM_TYPE)value;
             }
@@ -75,7 +70,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "msgc_server_port") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
             {
                 configInfo.msgc_server_port = (unsigned short)value;
@@ -107,7 +102,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "msgc_handshake_timeout") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0)
             {
                 configInfo.msgc_handshake_timeout = value;
@@ -115,7 +110,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "msgc_redline_bytes") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0)
             {
                 configInfo.msgc_redline_bytes = value;
@@ -453,5 +448,5 @@ EXIT:
     ProDeleteReactor(reactor);
     ProSleep(3000);
 
-    return (0);
+    return 0;
 }

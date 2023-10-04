@@ -72,7 +72,7 @@ CProFileMonitor::UpdateFileExist()
             return;
         }
 
-        const int64_t tick = ProGetTickCount64();
+        int64_t tick = ProGetTickCount64();
         if (tick - m_updateTick < MONITOR_INTERVAL * 1000)
         {
             return;
@@ -81,7 +81,7 @@ CProFileMonitor::UpdateFileExist()
         m_updateTick = tick;
     }
 
-    FILE* const file = fopen(m_fileName.c_str(), "rb");
+    FILE* file = fopen(m_fileName.c_str(), "rb");
     if (file != NULL)
     {
         fclose(file);

@@ -52,14 +52,13 @@ static
 void*
 MdNew_i(mbedtls_md_type_t type)
 {
-    const mbedtls_md_info_t* const info = mbedtls_md_info_from_type(type);
+    const mbedtls_md_info_t* info = mbedtls_md_info_from_type(type);
     if (info == NULL)
     {
         return NULL;
     }
 
-    mbedtls_md_context_t* const ctx =
-        (mbedtls_md_context_t*)ProCalloc(1, sizeof(mbedtls_md_context_t));
+    mbedtls_md_context_t* ctx = (mbedtls_md_context_t*)ProCalloc(1, sizeof(mbedtls_md_context_t));
     if (ctx == NULL)
     {
         return NULL;
@@ -164,8 +163,8 @@ ProMd5Update(void*       ctx,
 }
 
 void
-ProMd5Finish(void* ctx,
-             char  hashValue[16])
+ProMd5Finish(void*         ctx,
+             unsigned char hashValue[16])
 {
     memset(hashValue, 0, 16);
 
@@ -173,13 +172,13 @@ ProMd5Finish(void* ctx,
 }
 
 void
-ProMd5All(const void* buf,
-          size_t      size,
-          char        hashValue[16])
+ProMd5All(const void*   buf,
+          size_t        size,
+          unsigned char hashValue[16])
 {
     memset(hashValue, 0, 16);
 
-    void* const ctx = ProMd5New();
+    void* ctx = ProMd5New();
     if (ctx == NULL)
     {
         return;
@@ -224,8 +223,8 @@ ProSha1Update(void*       ctx,
 }
 
 void
-ProSha1Finish(void* ctx,
-              char  hashValue[20])
+ProSha1Finish(void*         ctx,
+              unsigned char hashValue[20])
 {
     memset(hashValue, 0, 20);
 
@@ -233,13 +232,13 @@ ProSha1Finish(void* ctx,
 }
 
 void
-ProSha1All(const void* buf,
-           size_t      size,
-           char        hashValue[20])
+ProSha1All(const void*   buf,
+           size_t        size,
+           unsigned char hashValue[20])
 {
     memset(hashValue, 0, 20);
 
-    void* const ctx = ProSha1New();
+    void* ctx = ProSha1New();
     if (ctx == NULL)
     {
         return;
@@ -284,8 +283,8 @@ ProSha256Update(void*       ctx,
 }
 
 void
-ProSha256Finish(void* ctx,
-                char  hashValue[32])
+ProSha256Finish(void*         ctx,
+                unsigned char hashValue[32])
 {
     memset(hashValue, 0, 32);
 
@@ -293,13 +292,13 @@ ProSha256Finish(void* ctx,
 }
 
 void
-ProSha256All(const void* buf,
-             size_t      size,
-             char        hashValue[32])
+ProSha256All(const void*   buf,
+             size_t        size,
+             unsigned char hashValue[32])
 {
     memset(hashValue, 0, 32);
 
-    void* const ctx = ProSha256New();
+    void* ctx = ProSha256New();
     if (ctx == NULL)
     {
         return;
@@ -344,8 +343,8 @@ ProRipemd160Update(void*       ctx,
 }
 
 void
-ProRipemd160Finish(void* ctx,
-                   char  hashValue[20])
+ProRipemd160Finish(void*         ctx,
+                   unsigned char hashValue[20])
 {
     memset(hashValue, 0, 20);
 
@@ -353,13 +352,13 @@ ProRipemd160Finish(void* ctx,
 }
 
 void
-ProRipemd160All(const void* buf,
-                size_t      size,
-                char        hashValue[20])
+ProRipemd160All(const void*   buf,
+                size_t        size,
+                unsigned char hashValue[20])
 {
     memset(hashValue, 0, 20);
 
-    void* const ctx = ProRipemd160New();
+    void* ctx = ProRipemd160New();
     if (ctx == NULL)
     {
         return;
@@ -380,8 +379,7 @@ ProRipemd160All(const void* buf,
 void*
 ProRsaNew()
 {
-    mbedtls_rsa_context* const ctx =
-        (mbedtls_rsa_context*)ProCalloc(1, sizeof(mbedtls_rsa_context));
+    mbedtls_rsa_context* ctx = (mbedtls_rsa_context*)ProCalloc(1, sizeof(mbedtls_rsa_context));
     if (ctx == NULL)
     {
         return NULL;
@@ -417,7 +415,7 @@ ProRsaInitPub(void*       ctx,
         return false;
     }
 
-    mbedtls_rsa_context* const ctx2 = (mbedtls_rsa_context*)ctx;
+    mbedtls_rsa_context* ctx2 = (mbedtls_rsa_context*)ctx;
 
     if (mbedtls_mpi_read_string(&ctx2->N, 16, nString) != 0 ||
         mbedtls_mpi_read_string(&ctx2->E, 16, eString) != 0)
@@ -452,7 +450,7 @@ ProRsaInitPrivNED(void*       ctx,
         return false;
     }
 
-    mbedtls_rsa_context* const ctx2 = (mbedtls_rsa_context*)ctx;
+    mbedtls_rsa_context* ctx2 = (mbedtls_rsa_context*)ctx;
 
     if (mbedtls_mpi_read_string(&ctx2->N, 16, nString) != 0 ||
         mbedtls_mpi_read_string(&ctx2->E, 16, eString) != 0 ||
@@ -489,7 +487,7 @@ ProRsaInitPrivPQE(void*       ctx,
         return false;
     }
 
-    mbedtls_rsa_context* const ctx2 = (mbedtls_rsa_context*)ctx;
+    mbedtls_rsa_context* ctx2 = (mbedtls_rsa_context*)ctx;
 
     if (mbedtls_mpi_read_string(&ctx2->P, 16, pString) != 0 ||
         mbedtls_mpi_read_string(&ctx2->Q, 16, qString) != 0 ||
@@ -523,14 +521,14 @@ ProRsaEncrypt(void*                ctx,
         return;
     }
 
-    mbedtls_rsa_context* const ctx2 = (mbedtls_rsa_context*)ctx;
+    mbedtls_rsa_context* ctx2 = (mbedtls_rsa_context*)ctx;
     if (ctx2->len == 0)
     {
         return;
     }
 
-    const size_t blockSize  = ctx2->len - 11;
-    const size_t blockCount = (inputSize + blockSize - 1) / blockSize;
+    size_t blockSize  = ctx2->len - 11;
+    size_t blockCount = (inputSize + blockSize - 1) / blockSize;
 
     outputBuffer.resize(ctx2->len * blockCount);
 
@@ -574,14 +572,14 @@ ProRsaDecrypt(void*                ctx,
         return;
     }
 
-    mbedtls_rsa_context* const ctx2 = (mbedtls_rsa_context*)ctx;
+    mbedtls_rsa_context* ctx2 = (mbedtls_rsa_context*)ctx;
     if (ctx2->len == 0 || inputSize % ctx2->len != 0)
     {
         return;
     }
 
-    const size_t blockSize  = ctx2->len;
-    const size_t blockCount = inputSize / blockSize;
+    size_t blockSize  = ctx2->len;
+    size_t blockCount = inputSize / blockSize;
 
     outputBuffer.resize((ctx2->len - 11) * blockCount);
 
@@ -723,8 +721,8 @@ ProBase64Encode(const void*    inputBuffer,
         return;
     }
 
-    const size_t size = inputSize * 2 + 8;
-    char* const  buf  = (char*)ProMalloc(size);
+    size_t size = inputSize * 2 + 8;
+    char*  buf  = (char*)ProMalloc(size);
     if (buf == NULL)
     {
         return;
@@ -753,8 +751,8 @@ ProBase64Decode(const void*          inputBuffer,
         return;
     }
 
-    const size_t size = inputSize + 8;
-    char* const  buf  = (char*)ProMalloc(size);
+    size_t size = inputSize + 8;
+    char*  buf  = (char*)ProMalloc(size);
     if (buf == NULL)
     {
         return;
@@ -783,10 +781,10 @@ ProBase64DecodeStr(const char*          inputString,
         return;
     }
 
-    const size_t inputSize = strlen(inputString);
+    size_t inputSize = strlen(inputString);
 
-    const size_t size = inputSize + 8;
-    char* const  buf  = (char*)ProMalloc(size);
+    size_t size = inputSize + 8;
+    char*  buf  = (char*)ProMalloc(size);
     if (buf == NULL)
     {
         return;
@@ -807,25 +805,16 @@ ProBase64DecodeStr(const char*          inputString,
 /*-------------------------------------------------------------------------*/
 
 void
-ProCalcPasswordHash(const char  nonce[32],
-                    const char* password,
-                    char        passwordHash[32])
+ProCalcPasswordHash(const unsigned char nonce[32],
+                    const char*         password,
+                    unsigned char       passwordHash[32])
 {
     char nonceString[64 + 1] = "";
     nonceString[64] = '\0';
 
+    for (int i = 0; i < 32; ++i)
     {
-        const char* const p = nonce;
-
-        for (int i = 0; i < 32; ++i)
-        {
-            snprintf_pro(
-                nonceString + i * 2,
-                2 + 1,
-                "%02x",
-                (unsigned int)(unsigned char)p[i] /* unsigned */
-                );
-        }
+        sprintf(nonceString + i * 2, "%02x", (unsigned int)nonce[i]);
     }
 
     CProStlString passwordString = nonceString;
@@ -834,10 +823,11 @@ ProCalcPasswordHash(const char  nonce[32],
     ProSha256All(passwordString.c_str(), passwordString.length(), passwordHash);
 
     ProZeroMemory(&passwordString[0], passwordString.length());
+    passwordString = "";
 }
 
 void
-ProZeroMemory(char*  buf,
+ProZeroMemory(void*  buf,
               size_t size)
 {
     if (buf == NULL || size == 0)

@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(PRO_SSL_HANDSHAKER_H)
+#ifndef PRO_SSL_HANDSHAKER_H
 #define PRO_SSL_HANDSHAKER_H
 
 #include "pro_event_handler.h"
@@ -52,7 +52,7 @@ public:
         size_t                     sendDataSize,    /* = 0 */
         size_t                     recvDataSize,    /* = 0 */
         bool                       recvFirst,       /* = false */
-        unsigned long              timeoutInSeconds /* = 0 */
+        unsigned int               timeoutInSeconds /* = 0 */
         );
 
     void Fini();
@@ -69,7 +69,7 @@ private:
 
     virtual void OnError(
         int64_t sockId,
-        long    errorCode
+        int     errorCode
         );
 
     virtual void OnTimer(

@@ -97,7 +97,7 @@ CProShaper::GetMaxTimeSpan() const
 double
 CProShaper::CalcGreenBits()
 {
-    const double tick = (double)ProGetTickCount64();
+    double tick = (double)ProGetTickCount64();
 
     if (m_startTick <= 0)
     {
@@ -108,7 +108,7 @@ CProShaper::CalcGreenBits()
         m_startTick = tick - m_maxTimeSpan;
     }
 
-    const double greenBits = m_avgBitRate * (tick - m_startTick) / 1000;
+    double greenBits = m_avgBitRate * (tick - m_startTick) / 1000;
 
     return greenBits > 0 ? greenBits : 0;
 }

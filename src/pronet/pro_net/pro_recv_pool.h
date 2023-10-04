@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(PRO_RECV_POOL_H)
+#ifndef PRO_RECV_POOL_H
 #define PRO_RECV_POOL_H
 
 #include "pro_net.h"
@@ -78,9 +78,9 @@ public:
         return true;
     }
 
-    virtual unsigned long PeekDataSize() const
+    virtual size_t PeekDataSize() const
     {
-        return (unsigned long)m_dataSize;
+        return m_dataSize;
     }
 
     virtual void PeekData(
@@ -93,7 +93,7 @@ public:
             return;
         }
 
-        const size_t continuousSize = ContinuousDataSize();
+        size_t continuousSize = ContinuousDataSize();
         if (size > continuousSize)
         {
             memcpy(buf, m_data, continuousSize);
@@ -131,7 +131,7 @@ public:
         }
         else
         {
-            const size_t continuousSize = ContinuousDataSize();
+            size_t continuousSize = ContinuousDataSize();
             if (size > continuousSize)
             {
                 m_data = m_begin + (size - continuousSize);
@@ -149,9 +149,9 @@ public:
         m_dataSize -= size;
     }
 
-    virtual unsigned long GetFreeSize() const
+    virtual size_t GetFreeSize() const
     {
-        return (unsigned long)m_idleSize;
+        return m_idleSize;
     }
 
     void* ContinuousIdleBuf()
@@ -159,14 +159,14 @@ public:
         return m_idle;
     }
 
-    unsigned long ContinuousIdleSize() const
+    size_t ContinuousIdleSize() const
     {
         if (m_idle + m_idleSize > m_end)
         {
-            return (unsigned long)(m_end - m_idle);
+            return (size_t)(m_end - m_idle);
         }
 
-        return (unsigned long)m_idleSize;
+        return (size_t)m_idleSize;
     }
 
     void Fill(size_t size)

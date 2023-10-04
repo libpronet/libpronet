@@ -114,7 +114,7 @@ CRtpFlowStat::Update()
         return;
     }
 
-    const int64_t tick = ProGetTickCount64();
+    int64_t tick = ProGetTickCount64();
 
     if (tick - m_startTick >= m_timeSpan * 1000)
     {

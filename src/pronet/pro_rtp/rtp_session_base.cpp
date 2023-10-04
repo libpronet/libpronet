@@ -372,7 +372,7 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
             }
         }
 
-        const bool udpSession = IsUdpSession(m_info.sessionType);
+        bool udpSession = IsUdpSession(m_info.sessionType);
 
         ret = m_trans->SendData(
             (char*)packet->GetPayloadBuffer() - otherSize,
@@ -410,73 +410,63 @@ void
 CRtpSessionBase::GetSendOnSendTick(int64_t* onSendTick1,       /* = NULL */
                                    int64_t* onSendTick2) const /* = NULL */
 {
-    {
-        CProThreadMutexGuard mon(m_lock);
+    CProThreadMutexGuard mon(m_lock);
 
-        if (onSendTick1 != NULL)
-        {
-            *onSendTick1 = m_onSendTick1;
-        }
-        if (onSendTick2 != NULL)
-        {
-            *onSendTick2 = m_onSendTick2;
-        }
+    if (onSendTick1 != NULL)
+    {
+        *onSendTick1 = m_onSendTick1;
+    }
+    if (onSendTick2 != NULL)
+    {
+        *onSendTick2 = m_onSendTick2;
     }
 }
 
 void
 CRtpSessionBase::RequestOnSend()
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_observer == NULL || m_reactor == NULL || m_trans == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactor == NULL || m_trans == NULL)
-        {
-            return;
-        }
-
-        m_trans->RequestOnSend();
+        return;
     }
+
+    m_trans->RequestOnSend();
 }
 
 void
 CRtpSessionBase::SuspendRecv()
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_observer == NULL || m_reactor == NULL || m_trans == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactor == NULL || m_trans == NULL)
-        {
-            return;
-        }
-
-        m_trans->SuspendRecv();
+        return;
     }
+
+    m_trans->SuspendRecv();
 }
 
 void
 CRtpSessionBase::ResumeRecv()
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_observer == NULL || m_reactor == NULL || m_trans == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactor == NULL || m_trans == NULL)
-        {
-            return;
-        }
-
-        m_trans->ResumeRecv();
+        return;
     }
+
+    m_trans->ResumeRecv();
 }
 
 void
 CRtpSessionBase::SetMagic(int64_t magic)
 {
-    {
-        CProThreadMutexGuard mon(m_lock);
+    CProThreadMutexGuard mon(m_lock);
 
-        m_magic = magic;
-    }
+    m_magic = magic;
 }
 
 int64_t
@@ -542,8 +532,8 @@ CRtpSessionBase::OnSend(IProTransport* trans,
 
 void
 CRtpSessionBase::OnClose(IProTransport* trans,
-                         long           errorCode,
-                         long           sslCode)
+                         int            errorCode,
+                         int            sslCode)
 {
     assert(trans != NULL);
     if (trans == NULL)
@@ -602,7 +592,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
 
     IRtpSessionObserver* observer      = NULL;
     int64_t              peerAliveTick = 0;
-    const int64_t        tick          = ProGetTickCount64();
+    int64_t              tick          = ProGetTickCount64();
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -634,8 +624,8 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
             pbsd_inet_ntoa(m_remoteAddr.sin_addr.s_addr      , remoteIp);
             pbsd_inet_ntoa(m_remoteAddrConfig.sin_addr.s_addr, remoteIpConfig);
 
-            const unsigned long size   = 1024 * 8;
-            char* const         buffer = (char*)ProMalloc(size);
+            unsigned long size   = 1024 * 8;
+            char*         buffer = (char*)ProMalloc(size);
             if (buffer == NULL)
             {
                 break;

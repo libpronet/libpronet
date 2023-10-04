@@ -74,7 +74,7 @@
  * PSP-v2.0 (PRO Session Protocol version 2.0)
  */
 
-#if !defined(____RTP_BASE_H____)
+#ifndef ____RTP_BASE_H____
 #define ____RTP_BASE_H____
 
 #include "pro_net.h"
@@ -180,7 +180,7 @@ struct RTP_SESSION_INFO
     RTP_MM_TYPE       mmType;           /* 媒体类型=====<      必须设置      > */
     RTP_EXT_PACK_MODE packMode;         /* 打包模式=====<      必须设置      >, for tcp_ex, ssl_ex */
     char              reserved1;
-    char              passwordHash[32]; /* 口令hash值===[c无需设置, s必须设置>, for tcp_ex, ssl_ex */
+    unsigned char     passwordHash[32]; /* 口令hash值===[c无需设置, s必须设置>, for tcp_ex, ssl_ex */
     char              reserved2[40];
 
     uint32_t          someId;           /* 某种id. 比如房间id, 目标节点id等, 由上层定义 */
@@ -259,7 +259,7 @@ struct RTP_INIT_TCPCLIENT
     char                         remoteIp[64];
     unsigned short               remotePort;
     char                         localIp[64];      /* = "" */
-    unsigned long                timeoutInSeconds; /* = 0 */
+    unsigned int                 timeoutInSeconds; /* = 0 */
     bool                         suspendRecv;      /* = false */
     IRtpBucket*                  bucket;           /* = NULL */
 };
@@ -283,7 +283,7 @@ struct RTP_INIT_TCPSERVER
     IProReactor*                 reactor;
     char                         localIp[64];      /* = "" */
     unsigned short               localPort;        /* = 0 */
-    unsigned long                timeoutInSeconds; /* = 0 */
+    unsigned int                 timeoutInSeconds; /* = 0 */
     bool                         suspendRecv;      /* = false */
     IRtpBucket*                  bucket;           /* = NULL */
 };
@@ -306,7 +306,7 @@ struct RTP_INIT_UDPCLIENT_EX
     char                         remoteIp[64];
     unsigned short               remotePort;
     char                         localIp[64];      /* = "" */
-    unsigned long                timeoutInSeconds; /* = 0 */
+    unsigned int                 timeoutInSeconds; /* = 0 */
     IRtpBucket*                  bucket;           /* = NULL */
 };
 
@@ -326,7 +326,7 @@ struct RTP_INIT_UDPSERVER_EX
     IProReactor*                 reactor;
     char                         localIp[64];      /* = "" */
     unsigned short               localPort;        /* = 0 */
-    unsigned long                timeoutInSeconds; /* = 0 */
+    unsigned int                 timeoutInSeconds; /* = 0 */
     IRtpBucket*                  bucket;           /* = NULL */
 };
 
@@ -353,7 +353,7 @@ struct RTP_INIT_TCPCLIENT_EX
     unsigned short               remotePort;
     char                         password[64];     /* = "" */
     char                         localIp[64];      /* = "" */
-    unsigned long                timeoutInSeconds; /* = 0 */
+    unsigned int                 timeoutInSeconds; /* = 0 */
     bool                         suspendRecv;      /* = false */
     IRtpBucket*                  bucket;           /* = NULL */
 };
@@ -401,7 +401,7 @@ struct RTP_INIT_TCPSERVER_EX
  *
  * 说明: sslConfig指定的对象必须在会话的生命周期内一直有效
  *
- *       suspendRecv用于一些需要精确控制时序的场景
+ *      suspendRecv用于一些需要精确控制时序的场景
  */
 struct RTP_INIT_SSLCLIENT_EX
 {
@@ -413,7 +413,7 @@ struct RTP_INIT_SSLCLIENT_EX
     unsigned short               remotePort;
     char                         password[64];     /* = "" */
     char                         localIp[64];      /* = "" */
-    unsigned long                timeoutInSeconds; /* = 0 */
+    unsigned int                 timeoutInSeconds; /* = 0 */
     bool                         suspendRecv;      /* = false */
     IRtpBucket*                  bucket;           /* = NULL */
 };
@@ -431,10 +431,10 @@ struct RTP_INIT_SSLCLIENT_EX
  * ackData     : 自定义的会话应答数据
  * bucket      : 流控桶. 如果为NULL, 系统将自动分配一个
  *
- * 说明: 如果创建成功, 会话将成为(sslCtx, sockId)的属主; 否则, 调用者应该
- *       释放(sslCtx, sockId)对应的资源
+ * 说明: 如果创建成功, 会话将成为(sslCtx, sockId)的属主; 否则, 调用者应该释放
+ *      (sslCtx, sockId)对应的资源
  *
- *       suspendRecv用于一些需要精确控制时序的场景
+ *      suspendRecv用于一些需要精确控制时序的场景
  */
 struct RTP_INIT_SSLSERVER_EX
 {
@@ -460,8 +460,8 @@ struct RTP_INIT_SSLSERVER_EX
  * bucket    : 流控桶. 如果为NULL, 系统将自动分配一个
  *
  * 说明: 合法的多播地址为[224.0.0.0 ~ 239.255.255.255],
- *       推荐的多播地址为[224.0.1.0 ~ 238.255.255.255],
- *       RFC-1112(IGMPv1), RFC-2236(IGMPv2), RFC-3376(IGMPv3)
+ *      推荐的多播地址为[224.0.1.0 ~ 238.255.255.255],
+ *      RFC-1112(IGMPv1), RFC-2236(IGMPv2), RFC-3376(IGMPv3)
  */
 struct RTP_INIT_MCAST
 {
@@ -484,8 +484,8 @@ struct RTP_INIT_MCAST
  * bucket    : 流控桶. 如果为NULL, 系统将自动分配一个
  *
  * 说明: 合法的多播地址为[224.0.0.0 ~ 239.255.255.255],
- *       推荐的多播地址为[224.0.1.0 ~ 238.255.255.255],
- *       RFC-1112(IGMPv1), RFC-2236(IGMPv2), RFC-3376(IGMPv3)
+ *      推荐的多播地址为[224.0.1.0 ~ 238.255.255.255],
+ *      RFC-1112(IGMPv1), RFC-2236(IGMPv2), RFC-3376(IGMPv3)
  */
 struct RTP_INIT_MCAST_EX
 {
@@ -688,9 +688,8 @@ public:
     /*
      * 有tcp会话进入时, 该函数将被回调
      *
-     * 上层应该调用CheckRtpServiceData()进行校验, 之后, 根据remoteInfo,
-     * 把sockId包装成RTP_ST_TCPSERVER_EX类型的IRtpSession对象,
-     * 或释放sockId对应的资源
+     * 上层应该调用CheckRtpServiceData()进行校验, 之后, 根据remoteInfo, 把sockId包装成
+     * RTP_ST_TCPSERVER_EX类型的IRtpSession对象, 或释放sockId对应的资源
      */
     virtual void OnAcceptSession(
         IRtpService*            service,
@@ -705,9 +704,8 @@ public:
     /*
      * 有ssl会话进入时, 该函数将被回调
      *
-     * 上层应该调用CheckRtpServiceData()进行校验, 之后, 根据remoteInfo,
-     * 把(sslCtx, sockId)包装成RTP_ST_SSLSERVER_EX类型的IRtpSession对象,
-     * 或释放(sslCtx, sockId)对应的资源
+     * 上层应该调用CheckRtpServiceData()进行校验, 之后, 根据remoteInfo, 把(sslCtx, sockId)
+     * 包装成RTP_ST_SSLSERVER_EX类型的IRtpSession对象, 或释放(sslCtx, sockId)对应的资源
      */
     virtual void OnAcceptSession(
         IRtpService*            service,
@@ -819,8 +817,8 @@ public:
     /*
      * 直接发送rtp包
      *
-     * 如果返回false, 并且(*tryAgain)返回true, 则表示底层暂时无法发送,
-     * 上层应该缓冲数据, 以待稍后发送或OnSendSession()回调拉取
+     * 如果返回false, 并且(*tryAgain)值为true, 则表示底层暂时无法发送, 上层应该缓冲数据,
+     * 以待稍后发送或OnSendSession()回调拉取
      */
     virtual bool SendPacket(
         IRtpPacket* packet,
@@ -833,8 +831,8 @@ public:
      * sendDurationMs为平滑周期. 默认1毫秒
      */
     virtual bool SendPacketByTimer(
-        IRtpPacket*   packet,
-        unsigned long sendDurationMs = 0
+        IRtpPacket*  packet,
+        unsigned int sendDurationMs = 0
         ) = 0;
 
     /*
@@ -983,8 +981,8 @@ public:
      */
     virtual void OnCloseSession(
         IRtpSession* session,
-        long         errorCode,   /* 系统错误码 */
-        long         sslCode,     /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
+        int          errorCode,   /* 系统错误码 */
+        int          sslCode,     /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
         bool         tcpConnected /* tcp连接是否已经建立 */
         ) = 0;
 
@@ -1050,10 +1048,8 @@ ProRtpVersion(unsigned char* major,  /* = NULL */
  *
  * 说明: 调用者应该继续初始化rtp包的头部字段
  *
- *       如果packMode为RTP_EPM_DEFAULT或RTP_EPM_TCP2, 那么payloadSize最多
- *       (1024 * 63)字节;
- *       如果packMode为RTP_EPM_TCP4, 那么payloadSize最多
- *       (1024 * 1024 * 96)字节
+ *      如果packMode为RTP_EPM_DEFAULT或RTP_EPM_TCP2, 则payloadSize最多(1024 * 63)字节;
+ *      如果packMode为RTP_EPM_TCP4, 则payloadSize最多(1024 * 1024 * 96)字节
  */
 PRO_RTP_API
 IRtpPacket*
@@ -1071,13 +1067,11 @@ CreateRtpPacket(const void*       payloadBuffer,
  * 返回值: rtp包对象或NULL
  *
  * 说明: 该版本主要用于减少内存拷贝次数.
- *       例如, 视频编码器可以通过IRtpPacket::GetPayloadBuffer()得到媒体
- *       数据指针, 然后直接进行媒体数据的初始化等操作
+ *      例如, 视频编码器可以通过IRtpPacket::GetPayloadBuffer()得到媒体数据指针, 然后直接
+ *      进行媒体数据的初始化等操作
  *
- *       如果packMode为RTP_EPM_DEFAULT或RTP_EPM_TCP2, 那么payloadSize最多
- *       (1024 * 63)字节;
- *       如果packMode为RTP_EPM_TCP4, 那么payloadSize最多
- *       (1024 * 1024 * 96)字节
+ *      如果packMode为RTP_EPM_DEFAULT或RTP_EPM_TCP2, 则payloadSize最多(1024 * 63)字节;
+ *      如果packMode为RTP_EPM_TCP4, 则payloadSize最多(1024 * 1024 * 96)字节
  */
 PRO_RTP_API
 IRtpPacket*
@@ -1210,7 +1204,7 @@ AllocRtpTcpPort(bool rfc);
  */
 PRO_RTP_API
 void
-SetRtpKeepaliveTimeout(unsigned long keepaliveInSeconds); /* = 60 */
+SetRtpKeepaliveTimeout(unsigned int keepaliveInSeconds); /* = 60 */
 
 /*
  * 功能: 获取会话的保活超时
@@ -1222,7 +1216,7 @@ SetRtpKeepaliveTimeout(unsigned long keepaliveInSeconds); /* = 60 */
  * 说明: 配合reactor的心跳定时器使用. 保活超时应该大于心跳周期的2倍
  */
 PRO_RTP_API
-unsigned long
+unsigned int
 GetRtpKeepaliveTimeout();
 
 /*
@@ -1237,7 +1231,7 @@ GetRtpKeepaliveTimeout();
  */
 PRO_RTP_API
 void
-SetRtpFlowctrlTimeSpan(unsigned long flowctrlInSeconds); /* = 1 */
+SetRtpFlowctrlTimeSpan(unsigned int flowctrlInSeconds); /* = 1 */
 
 /*
  * 功能: 获取会话的流控时间窗
@@ -1249,7 +1243,7 @@ SetRtpFlowctrlTimeSpan(unsigned long flowctrlInSeconds); /* = 1 */
  * 说明: 无
  */
 PRO_RTP_API
-unsigned long
+unsigned int
 GetRtpFlowctrlTimeSpan();
 
 /*
@@ -1264,7 +1258,7 @@ GetRtpFlowctrlTimeSpan();
  */
 PRO_RTP_API
 void
-SetRtpStatTimeSpan(unsigned long statInSeconds); /* = 5 */
+SetRtpStatTimeSpan(unsigned int statInSeconds); /* = 5 */
 
 /*
  * 功能: 获取会话的统计时间窗
@@ -1276,7 +1270,7 @@ SetRtpStatTimeSpan(unsigned long statInSeconds); /* = 5 */
  * 说明: 无
  */
 PRO_RTP_API
-unsigned long
+unsigned int
 GetRtpStatTimeSpan();
 
 /*
@@ -1381,7 +1375,7 @@ CreateRtpService(const PRO_SSL_SERVER_CONFIG* sslConfig, /* = NULL */
                  IProReactor*                 reactor,
                  RTP_MM_TYPE                  mmType,
                  unsigned short               serviceHubPort,
-                 unsigned long                timeoutInSeconds = 0);
+                 unsigned int                 timeoutInSeconds = 0);
 
 /*
  * 功能: 删除一个rtp服务
@@ -1411,9 +1405,9 @@ DeleteRtpService(IRtpService* service);
  */
 PRO_RTP_API
 bool
-CheckRtpServiceData(const char  serviceNonce[32],
-                    const char* servicePassword,
-                    const char  clientPasswordHash[32]);
+CheckRtpServiceData(const unsigned char serviceNonce[32],
+                    const char*         servicePassword,
+                    const unsigned char clientPasswordHash[32]);
 
 /*
  * 功能: 创建一个会话包装
@@ -1482,8 +1476,8 @@ CreateRtpAudioBucket();
  *
  * 说明: 流控桶的线程安全性由调用者负责
  *
- *       该类型的流控桶以视频帧为单位进行操作, 适合信源端使用. 如果是用于
- *       非信源端中转数据, 需要注意一点, 该流控桶会增加额外的网络延迟
+ *      该类型的流控桶以视频帧为单位进行操作, 适合信源端使用. 如果是用于非信源端中转数据,
+ *      需要注意一点, 该流控桶会增加额外的网络延迟
  */
 PRO_RTP_API
 IRtpBucket*

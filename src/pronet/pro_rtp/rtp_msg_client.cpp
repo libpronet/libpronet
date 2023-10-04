@@ -52,7 +52,7 @@ CRtpMsgClient::CreateInstance(bool                         enableTransfer,
     assert(mmType <= RTP_MMT_MSG_MAX);
     if (mmType < RTP_MMT_MSG_MIN || mmType > RTP_MMT_MSG_MAX)
     {
-        return (NULL);
+        return NULL;
     }
 
     return new CRtpMsgClient(enableTransfer, mmType, sslConfig, sslSni);
@@ -89,7 +89,7 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
                     const RTP_MSG_USER*    user,
                     const char*            password,         /* = NULL */
                     const char*            localIp,          /* = NULL */
-                    unsigned long          timeoutInSeconds) /* = 0 */
+                    unsigned int           timeoutInSeconds) /* = 0 */
 {
     assert(observer != NULL);
     assert(reactor != NULL);
@@ -98,24 +98,13 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
     assert(remotePort > 0);
     assert(user != NULL);
     assert(user->classId > 0);
-    assert(
-        user->UserId() == 0
-        ||
-        (user->UserId() >= NODE_UID_MIN && user->UserId() <= NODE_UID_MAXX)
-       );
+    assert(user->UserId() <= NODE_UID_MAXX);
     assert(!user->IsRoot());
-    if (
-        observer == NULL || reactor == NULL ||
-        remoteIp == NULL || remoteIp[0] == '\0' || remotePort == 0 ||
-        user == NULL || user->classId == 0
-        ||
-        (user->UserId() != 0 &&
-        (user->UserId() < NODE_UID_MIN || user->UserId() > NODE_UID_MAXX))
-        ||
-        user->IsRoot()
-       )
+    if (observer == NULL || reactor == NULL || remoteIp == NULL || remoteIp[0] == '\0' ||
+        remotePort == 0 || user == NULL || user->classId == 0 || user->UserId() > NODE_UID_MAXX ||
+        user->IsRoot())
     {
-        return (false);
+        return false;
     }
 
     if (timeoutInSeconds == 0)
@@ -131,7 +120,7 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
         assert(m_session == NULL);
         if (m_observer != NULL || m_reactor != NULL || m_session != NULL)
         {
-            return (false);
+            return false;
         }
 
         RTP_MSG_HEADER0 hdr0;
@@ -172,10 +161,7 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
             }
 
             m_session = CreateRtpSessionWrapper(RTP_ST_SSLCLIENT_EX, &initArgs, &localInfo);
-            ProZeroMemory(
-                initArgs.sslclientEx.password,
-                sizeof(initArgs.sslclientEx.password)
-                );
+            ProZeroMemory(initArgs.sslclientEx.password, sizeof(initArgs.sslclientEx.password));
         }
         else
         {
@@ -197,15 +183,12 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
             }
 
             m_session = CreateRtpSessionWrapper(RTP_ST_TCPCLIENT_EX, &initArgs, &localInfo);
-            ProZeroMemory(
-                initArgs.tcpclientEx.password,
-                sizeof(initArgs.tcpclientEx.password)
-                );
+            ProZeroMemory(initArgs.tcpclientEx.password, sizeof(initArgs.tcpclientEx.password));
         }
 
         if (m_session == NULL)
         {
-            return (false);
+            return false;
         }
         else
         {
@@ -219,7 +202,7 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
         m_timerId  = reactor->ScheduleTimer(this, (uint64_t)timeoutInSeconds * 1000, false);
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -253,17 +236,13 @@ CRtpMsgClient::Fini()
 unsigned long
 CRtpMsgClient::AddRef()
 {
-    const unsigned long refCount = CProRefCount::AddRef();
-
-    return (refCount);
+    return CProRefCount::AddRef();
 }
 
 unsigned long
 CRtpMsgClient::Release()
 {
-    const unsigned long refCount = CProRefCount::Release();
-
-    return (refCount);
+    return CProRefCount::Release();
 }
 
 void
@@ -298,7 +277,7 @@ CRtpMsgClient::GetSslSuite(char suiteName[64]) const
         }
     }
 
-    return (suiteId);
+    return suiteId;
 }
 
 const char*
@@ -315,7 +294,7 @@ CRtpMsgClient::GetLocalIp(char localIp[64]) const
         }
     }
 
-    return (localIp);
+    return localIp;
 }
 
 unsigned short
@@ -332,7 +311,7 @@ CRtpMsgClient::GetLocalPort() const
         }
     }
 
-    return (localPort);
+    return localPort;
 }
 
 const char*
@@ -349,7 +328,7 @@ CRtpMsgClient::GetRemoteIp(char remoteIp[64]) const
         }
     }
 
-    return (remoteIp);
+    return remoteIp;
 }
 
 unsigned short
@@ -366,7 +345,7 @@ CRtpMsgClient::GetRemotePort() const
         }
     }
 
-    return (remotePort);
+    return remotePort;
 }
 
 bool
@@ -402,7 +381,7 @@ CRtpMsgClient::SendMsg2(const void*         buf1,
 
 bool
 CRtpMsgClient::TransferMsg(const void*         buf,
-                           unsigned long       size,
+                           size_t              size,
                            uint16_t            charset,
                            const RTP_MSG_USER* dstUsers,
                            unsigned char       dstUserCount,
@@ -417,7 +396,7 @@ CRtpMsgClient::TransferMsg(const void*         buf,
     if (buf == NULL || size == 0 || dstUsers == NULL || dstUserCount == 0 ||
         srcUser.classId == 0 || srcUser.UserId() == 0)
     {
-        return (false);
+        return false;
     }
 
     return PushData(buf, size, NULL, 0, charset, dstUsers, dstUserCount, &srcUser);
@@ -456,20 +435,19 @@ CRtpMsgClient::PushData(const void*         buf1,
 
         if (m_observer == NULL || m_reactor == NULL || m_session == NULL)
         {
-            return (false);
+            return false;
         }
 
-        const size_t msgHeaderSize =
-            sizeof(RTP_MSG_HEADER) + sizeof(RTP_MSG_USER) * (dstUserCount - 1);
+        size_t msgHeaderSize = sizeof(RTP_MSG_HEADER) + sizeof(RTP_MSG_USER) * (dstUserCount - 1);
 
-        IRtpPacket* const packet =
+        IRtpPacket* packet =
             CreateRtpPacketSpace(msgHeaderSize + size1 + size2, RTP_MSG_PACK_MODE);
         if (packet == NULL)
         {
-            return (false);
+            return false;
         }
 
-        RTP_MSG_HEADER* const msgHeaderPtr = (RTP_MSG_HEADER*)packet->GetPayloadBuffer();
+        RTP_MSG_HEADER* msgHeaderPtr = (RTP_MSG_HEADER*)packet->GetPayloadBuffer();
         memset(msgHeaderPtr, 0, msgHeaderSize);
 
         msgHeaderPtr->charset        = pbsd_hton16(charset);
@@ -493,7 +471,7 @@ CRtpMsgClient::PushData(const void*         buf1,
         {
             packet->Release();
 
-            return (false);
+            return false;
         }
 
         memcpy((char*)msgHeaderPtr + msgHeaderSize, buf1, size1);
@@ -507,7 +485,7 @@ CRtpMsgClient::PushData(const void*         buf1,
         packet->Release();
     }
 
-    return (ret);
+    return ret;
 }
 
 void
@@ -632,24 +610,23 @@ CRtpMsgClient::OnRecvSession(IRtpSession* session,
     assert(session != NULL);
     assert(packet != NULL);
     assert(packet->GetPayloadSize() > sizeof(RTP_MSG_HEADER));
-    if (session == NULL || packet == NULL ||
-        packet->GetPayloadSize() <= sizeof(RTP_MSG_HEADER))
+    if (session == NULL || packet == NULL || packet->GetPayloadSize() <= sizeof(RTP_MSG_HEADER))
     {
         return;
     }
 
-    RTP_MSG_HEADER* const msgHeaderPtr = (RTP_MSG_HEADER*)packet->GetPayloadBuffer();
+    RTP_MSG_HEADER* msgHeaderPtr = (RTP_MSG_HEADER*)packet->GetPayloadBuffer();
     if (msgHeaderPtr->dstUserCount == 0)
     {
         msgHeaderPtr->dstUserCount = 1;
     }
 
-    const size_t msgHeaderSize = sizeof(RTP_MSG_HEADER) +
-        sizeof(RTP_MSG_USER) * (msgHeaderPtr->dstUserCount - 1);
+    size_t msgHeaderSize =
+        sizeof(RTP_MSG_HEADER) + sizeof(RTP_MSG_USER) * (msgHeaderPtr->dstUserCount - 1);
 
-    const void* const msgBodyPtr  = (char*)msgHeaderPtr + msgHeaderSize;
-    const size_t      msgBodySize = packet->GetPayloadSize() - msgHeaderSize;
-    const uint16_t    charset     = pbsd_ntoh16(msgHeaderPtr->charset);
+    const void* msgBodyPtr  = (char*)msgHeaderPtr + msgHeaderSize;
+    int         msgBodySize = (int)(packet->GetPayloadSize() - msgHeaderSize);
+    uint16_t    charset     = pbsd_ntoh16(msgHeaderPtr->charset);
 
     RTP_MSG_USER srcUser = msgHeaderPtr->srcUser;
     srcUser.instId       = pbsd_ntoh16(srcUser.instId);
@@ -719,14 +696,13 @@ CRtpMsgClient::OnRecvSession(IRtpSession* session,
     {
         if (!m_enableTransfer) /* for client */
         {
-            observer->OnRecvMsg(this, msgBodyPtr, (unsigned long)msgBodySize, charset, &srcUser);
+            observer->OnRecvMsg(this, msgBodyPtr, msgBodySize, charset, &srcUser);
         }
         else                   /* for c2s */
         {
             if (dstUserCount != msgHeaderPtr->dstUserCount)
             {
-                observer->OnRecvMsg(
-                    this, msgBodyPtr, (unsigned long)msgBodySize, charset, &srcUser);
+                observer->OnRecvMsg(this, msgBodyPtr, msgBodySize, charset, &srcUser);
             }
 
             if (dstUserCount > 0)
@@ -734,7 +710,7 @@ CRtpMsgClient::OnRecvSession(IRtpSession* session,
                 ((IRtpMsgClientObserverEx*)observer)->OnTransferMsg(
                     this,
                     msgBodyPtr,
-                    (unsigned long)msgBodySize,
+                    msgBodySize,
                     charset,
                     srcUser,
                     dstUsers,
@@ -749,8 +725,8 @@ CRtpMsgClient::OnRecvSession(IRtpSession* session,
 
 void
 CRtpMsgClient::OnCloseSession(IRtpSession* session,
-                              long         errorCode,
-                              long         sslCode,
+                              int          errorCode,
+                              int          sslCode,
                               bool         tcpConnected)
 {
     assert(session != NULL);

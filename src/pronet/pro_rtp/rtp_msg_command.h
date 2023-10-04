@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(RTP_MSG_COMMAND_H)
+#ifndef RTP_MSG_COMMAND_H
 #define RTP_MSG_COMMAND_H
 
 /////////////////////////////////////////////////////////////////////////////
@@ -24,7 +24,7 @@
 
 /*
  * server : 1-1-65535
- * c2s    : 1-2-*, 1-3-*, ...
+ * c2s    : 255-1-*, 255-2-*, ...
  * client : 2-1-*, 2-2-*, ...; 3-1-*, 3-2-*, ...; ...
  */
 

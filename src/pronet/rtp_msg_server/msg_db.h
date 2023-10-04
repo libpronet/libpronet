@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(MSG_DB_H)
+#ifndef MSG_DB_H
 #define MSG_DB_H
 
 #include "../pro_util/pro_memory_pool.h"

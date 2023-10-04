@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(PRO_SERVICE_HUB_H)
+#ifndef PRO_SERVICE_HUB_H
 #define PRO_SERVICE_HUB_H
 
 #include "pro_service_pipe.h"
@@ -48,7 +48,7 @@ public:
     bool Init(
         IProReactor*   reactor,
         unsigned short servicePort,
-        unsigned long  timeoutInSeconds /* = 0 */
+        unsigned int   timeoutInSeconds /* = 0 */
         );
 
     void Fini();

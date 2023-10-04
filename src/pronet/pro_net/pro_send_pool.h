@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(PRO_SEND_POOL_H)
+#ifndef PRO_SEND_POOL_H
 #define PRO_SEND_POOL_H
 
 #include "../pro_util/pro_buffer.h"
@@ -38,8 +38,8 @@ public:
 
     ~CProSendPool()
     {
-        int       i = 0;
-        const int c = (int)m_bufs.size();
+        int i = 0;
+        int c = (int)m_bufs.size();
 
         for (; i < c; ++i)
         {
@@ -61,7 +61,7 @@ public:
             return;
         }
 
-        CProBuffer* const buf2 = new CProBuffer;
+        CProBuffer* buf2 = new CProBuffer;
         if (!buf2->Resize(size))
         {
             delete buf2;
@@ -79,7 +79,7 @@ public:
         }
     }
 
-    const void* PreSend(unsigned long& size) const
+    const void* PreSend(size_t& size) const
     {
         size = 0;
 
@@ -88,8 +88,8 @@ public:
             return NULL;
         }
 
-        CProBuffer* const buf = m_bufs.front();
-        size = (unsigned long)((char*)buf->Data() + buf->Size() - m_pendingPos);
+        CProBuffer* buf = m_bufs.front();
+        size = (size_t)((char*)buf->Data() + buf->Size() - m_pendingPos);
         if (size == 0)
         {
             return NULL;
@@ -105,7 +105,7 @@ public:
             return;
         }
 
-        CProBuffer* const buf = m_bufs.front();
+        CProBuffer* buf = m_bufs.front();
         if (m_pendingPos + size > (char*)buf->Data() + buf->Size())
         {
             return;
@@ -121,7 +121,7 @@ public:
             return NULL;
         }
 
-        CProBuffer* const buf = m_bufs.front();
+        CProBuffer* buf = m_bufs.front();
         if (m_pendingPos != (char*)buf->Data() + buf->Size())
         {
             return NULL;

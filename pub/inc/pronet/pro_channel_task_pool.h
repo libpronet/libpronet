@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(____PRO_CHANNEL_TASK_POOL_H____)
+#ifndef ____PRO_CHANNEL_TASK_POOL_H____
 #define ____PRO_CHANNEL_TASK_POOL_H____
 
 #include "pro_a.h"
@@ -44,7 +44,7 @@ public:
 
     ~CProChannelTaskPool();
 
-    bool Start(size_t threadCount);
+    bool Start(unsigned int threadCount);
 
     void Stop();
 

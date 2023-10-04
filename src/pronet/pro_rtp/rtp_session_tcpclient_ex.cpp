@@ -42,7 +42,7 @@ CRtpSessionTcpclientEx::CreateInstance(const RTP_SESSION_INFO* localInfo,
     assert(localInfo->mmType != 0);
     if (localInfo == NULL || localInfo->mmType == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     assert(
@@ -54,7 +54,7 @@ CRtpSessionTcpclientEx::CreateInstance(const RTP_SESSION_INFO* localInfo,
         localInfo->packMode != RTP_EPM_TCP2    &&
         localInfo->packMode != RTP_EPM_TCP4)
     {
-        return (NULL);
+        return NULL;
     }
 
     return new CRtpSessionTcpclientEx(*localInfo, suspendRecv, NULL, NULL);
@@ -94,7 +94,7 @@ CRtpSessionTcpclientEx::Init(IRtpSessionObserver* observer,
                              unsigned short       remotePort,
                              const char*          password,         /* = NULL */
                              const char*          localIp,          /* = NULL */
-                             unsigned long        timeoutInSeconds) /* = 0 */
+                             unsigned int         timeoutInSeconds) /* = 0 */
 {
     assert(observer != NULL);
     assert(reactor != NULL);
@@ -104,7 +104,7 @@ CRtpSessionTcpclientEx::Init(IRtpSessionObserver* observer,
     if (observer == NULL || reactor == NULL ||
         remoteIp == NULL || remoteIp[0] == '\0' || remotePort == 0)
     {
-        return (false);
+        return false;
     }
 
     if (timeoutInSeconds == 0)
@@ -127,7 +127,7 @@ CRtpSessionTcpclientEx::Init(IRtpSessionObserver* observer,
         remoteAddr.sin_addr.s_addr == (uint32_t)-1 ||
         remoteAddr.sin_addr.s_addr == 0)
     {
-        return (false);
+        return false;
     }
 
     char localIp2[64]  = "";
@@ -145,10 +145,9 @@ CRtpSessionTcpclientEx::Init(IRtpSessionObserver* observer,
         assert(m_tcpHandshaker == NULL);
         assert(m_sslHandshaker == NULL);
         if (m_observer != NULL || m_reactor != NULL || m_trans != NULL ||
-            m_connector != NULL || m_tcpHandshaker != NULL ||
-            m_sslHandshaker != NULL)
+            m_connector != NULL || m_tcpHandshaker != NULL || m_sslHandshaker != NULL)
         {
-            return (false);
+            return false;
         }
 
         m_connector = ProCreateConnectorEx(
@@ -164,7 +163,7 @@ CRtpSessionTcpclientEx::Init(IRtpSessionObserver* observer,
             );
         if (m_connector == NULL)
         {
-            return (false);
+            return false;
         }
 
         observer->AddRef();
@@ -177,7 +176,7 @@ CRtpSessionTcpclientEx::Init(IRtpSessionObserver* observer,
         m_timeoutInSeconds = timeoutInSeconds;
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -229,17 +228,13 @@ CRtpSessionTcpclientEx::Fini()
 unsigned long
 CRtpSessionTcpclientEx::AddRef()
 {
-    const unsigned long refCount = CRtpSessionBase::AddRef();
-
-    return (refCount);
+    return CRtpSessionBase::AddRef();
 }
 
 unsigned long
 CRtpSessionTcpclientEx::Release()
 {
-    const unsigned long refCount = CRtpSessionBase::Release();
-
-    return (refCount);
+    return CRtpSessionBase::Release();
 }
 
 void
@@ -323,7 +318,7 @@ CRtpSessionTcpclientEx::OnConnectError(IProConnector* connector,
     }
 
     IRtpSessionObserver* observer  = NULL;
-    const long           errorCode = timeout ? PBSD_ETIMEDOUT : -1;
+    int                  errorCode = timeout ? PBSD_ETIMEDOUT : -1;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -359,7 +354,7 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProTcpHandshaker* handshaker,
                                       int64_t            sockId,
                                       bool               unixSocket,
                                       const void*        buf,
-                                      unsigned long      size)
+                                      size_t             size)
 {
     assert(handshaker != NULL);
     assert(sockId != -1);
@@ -424,9 +419,8 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProTcpHandshaker* handshaker,
 
                 m_info.remoteVersion = m_ack.version;
 
-                m_trans = ProCreateTcpTransport(
-                    this, m_reactor, sockId, unixSocket, sockBufSizeRecv,
-                    sockBufSizeSend, recvPoolSize, m_suspendRecv);
+                m_trans = ProCreateTcpTransport(this, m_reactor, sockId, unixSocket,
+                    sockBufSizeRecv, sockBufSizeSend, recvPoolSize, m_suspendRecv);
                 if (m_trans == NULL)
                 {
                     ProCloseSockId(sockId);
@@ -480,7 +474,7 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProTcpHandshaker* handshaker,
 
 void
 CRtpSessionTcpclientEx::OnHandshakeError(IProTcpHandshaker* handshaker,
-                                         long               errorCode)
+                                         int                errorCode)
 {
     assert(handshaker != NULL);
     if (handshaker == NULL)
@@ -525,7 +519,7 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProSslHandshaker* handshaker,
                                       int64_t            sockId,
                                       bool               unixSocket,
                                       const void*        buf,
-                                      unsigned long      size)
+                                      size_t             size)
 {
     assert(handshaker != NULL);
     assert(ctx != NULL);
@@ -598,9 +592,8 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProSslHandshaker* handshaker,
 
                 m_info.remoteVersion = m_ack.version;
 
-                m_trans = ProCreateSslTransport(
-                    this, m_reactor, ctx, sockId, unixSocket, sockBufSizeRecv,
-                    sockBufSizeSend, recvPoolSize, m_suspendRecv);
+                m_trans = ProCreateSslTransport(this, m_reactor, ctx, sockId, unixSocket,
+                    sockBufSizeRecv, sockBufSizeSend, recvPoolSize, m_suspendRecv);
                 if (m_trans == NULL)
                 {
                     ProSslCtx_Delete(ctx);
@@ -656,8 +649,8 @@ CRtpSessionTcpclientEx::OnHandshakeOk(IProSslHandshaker* handshaker,
 
 void
 CRtpSessionTcpclientEx::OnHandshakeError(IProSslHandshaker* handshaker,
-                                         long               errorCode,
-                                         long               sslCode)
+                                         int                errorCode,
+                                         int                sslCode)
 {
     assert(handshaker != NULL);
     if (handshaker == NULL)
@@ -797,8 +790,8 @@ CRtpSessionTcpclientEx::Recv0(CRtpPacket*& packet,
 
     while (1)
     {
-        IProRecvPool&       recvPool = *m_trans->GetRecvPool();
-        const unsigned long dataSize = recvPool.PeekDataSize();
+        IProRecvPool& recvPool = *m_trans->GetRecvPool();
+        size_t        dataSize = recvPool.PeekDataSize();
 
         if (dataSize < sizeof(RTP_EXT))
         {
@@ -865,7 +858,7 @@ CRtpSessionTcpclientEx::Recv0(CRtpPacket*& packet,
         break;
     } /* end of while () */
 
-    return (ret);
+    return ret;
 }
 
 bool
@@ -883,8 +876,8 @@ CRtpSessionTcpclientEx::Recv2(CRtpPacket*& packet,
 
     while (1)
     {
-        IProRecvPool&       recvPool = *m_trans->GetRecvPool();
-        const unsigned long dataSize = recvPool.PeekDataSize();
+        IProRecvPool& recvPool = *m_trans->GetRecvPool();
+        size_t        dataSize = recvPool.PeekDataSize();
 
         if (dataSize < sizeof(uint16_t))
         {
@@ -923,7 +916,7 @@ CRtpSessionTcpclientEx::Recv2(CRtpPacket*& packet,
         break;
     } /* end of while () */
 
-    return (ret);
+    return ret;
 }
 
 bool
@@ -941,9 +934,9 @@ CRtpSessionTcpclientEx::Recv4(CRtpPacket*& packet,
 
     while (1)
     {
-        IProRecvPool&       recvPool = *m_trans->GetRecvPool();
-        const unsigned long dataSize = recvPool.PeekDataSize();
-        const unsigned long freeSize = recvPool.GetFreeSize();
+        IProRecvPool& recvPool = *m_trans->GetRecvPool();
+        size_t        dataSize = recvPool.PeekDataSize();
+        size_t        freeSize = recvPool.GetFreeSize();
 
         if (m_bigPacket == NULL)
         {
@@ -1020,9 +1013,9 @@ CRtpSessionTcpclientEx::Recv4(CRtpPacket*& packet,
                 break;
             }
 
-            const size_t pos = (size_t)m_bigPacket->GetMagic2();
-            void* const  buf = (char*)m_bigPacket->GetPayloadBuffer() + pos;
-            size_t       len = m_bigPacket->GetPayloadSize() - pos;
+            size_t pos = (size_t)m_bigPacket->GetMagic2();
+            void*  buf = (char*)m_bigPacket->GetPayloadBuffer() + pos;
+            size_t len = m_bigPacket->GetPayloadSize() - pos;
             if (len > dataSize)
             {
                 len = dataSize;
@@ -1043,7 +1036,7 @@ CRtpSessionTcpclientEx::Recv4(CRtpPacket*& packet,
         }
     } /* end of while () */
 
-    return (ret);
+    return ret;
 }
 
 bool
@@ -1056,7 +1049,7 @@ CRtpSessionTcpclientEx::DoHandshake(int64_t          sockId,
     assert(m_sslHandshaker == NULL);
     if (sockId == -1 || m_tcpHandshaker != NULL || m_sslHandshaker != NULL)
     {
-        return (false);
+        return false;
     }
 
     RTP_SESSION_INFO localInfo = m_info;
@@ -1074,10 +1067,10 @@ CRtpSessionTcpclientEx::DoHandshake(int64_t          sockId,
         m_password = "";
     }
 
-    IRtpPacket* const packet = CreateRtpPacket(&localInfo, sizeof(RTP_SESSION_INFO));
+    IRtpPacket* packet = CreateRtpPacket(&localInfo, sizeof(RTP_SESSION_INFO));
     if (packet == NULL)
     {
-        return (false);
+        return false;
     }
 
     packet->SetMmId(m_info.mmId);
@@ -1085,8 +1078,7 @@ CRtpSessionTcpclientEx::DoHandshake(int64_t          sockId,
 
     if (m_sslConfig != NULL)
     {
-        PRO_SSL_CTX* const sslCtx = ProSslCtx_CreateC(
-            m_sslConfig, m_sslSni.c_str(), sockId, &nonce);
+        PRO_SSL_CTX* sslCtx = ProSslCtx_CreateC(m_sslConfig, m_sslSni.c_str(), sockId, &nonce);
         if (sslCtx != NULL)
         {
             m_sslHandshaker = ProCreateSslHandshaker(
@@ -1124,5 +1116,5 @@ CRtpSessionTcpclientEx::DoHandshake(int64_t          sockId,
 
     packet->Release();
 
-    return (m_tcpHandshaker != NULL || m_sslHandshaker != NULL);
+    return m_tcpHandshaker != NULL || m_sslHandshaker != NULL;
 }

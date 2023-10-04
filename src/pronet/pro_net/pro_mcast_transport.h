@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(PRO_MCAST_TRANSPORT_H)
+#ifndef PRO_MCAST_TRANSPORT_H
 #define PRO_MCAST_TRANSPORT_H
 
 #include "pro_udp_transport.h"

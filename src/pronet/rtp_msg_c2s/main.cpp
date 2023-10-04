@@ -28,10 +28,6 @@
 #include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(_WIN32)
-#include <windows.h>
-#endif
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -58,8 +54,8 @@ ReadConfig_i(const CProStlString&            exeRoot,
     configInfo.c2ss_ssl_local_crlfiles.clear();
     configInfo.c2ss_ssl_local_certfiles.clear();
 
-    int       i = 0;
-    const int c = (int)configs.size();
+    int i = 0;
+    int c = (int)configs.size();
 
     for (; i < c; ++i)
     {
@@ -68,7 +64,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
 
         if (stricmp(configName.c_str(), "c2ss_thread_count") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0 && value <= 100)
             {
                 configInfo.c2ss_thread_count = value;
@@ -76,9 +72,8 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "c2ss_mm_type") == 0)
         {
-            const int value = atoi(configValue.c_str());
-            if (value >= (int)RTP_MMT_MSG_MIN &&
-                value <= (int)RTP_MMT_MSG_MAX)
+            int value = atoi(configValue.c_str());
+            if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
             {
                 configInfo.c2ss_mm_type = (RTP_MM_TYPE)value;
             }
@@ -92,7 +87,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "c2ss_uplink_port") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
             {
                 configInfo.c2ss_uplink_port = (unsigned short)value;
@@ -105,9 +100,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 RTP_MSG_USER uplinkId;
                 RtpMsgString2User(configValue.c_str(), &uplinkId);
 
-                if (uplinkId.classId  == SERVER_CID   &&
-                    uplinkId.UserId() >= NODE_UID_MIN &&
-                    uplinkId.UserId() <= NODE_UID_MAXX)
+                if (uplinkId.classId > 0 && uplinkId.UserId() <= NODE_UID_MAXX)
                 {
                     configInfo.c2ss_uplink_id = uplinkId;
                 }
@@ -132,7 +125,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "c2ss_uplink_timeout") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0)
             {
                 configInfo.c2ss_uplink_timeout = value;
@@ -140,7 +133,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "c2ss_uplink_redline_bytes") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0)
             {
                 configInfo.c2ss_uplink_redline_bytes = value;
@@ -148,7 +141,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "c2ss_local_hub_port") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
             {
                 configInfo.c2ss_local_hub_port = (unsigned short)value;
@@ -156,7 +149,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "c2ss_local_timeout") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0)
             {
                 configInfo.c2ss_local_timeout = value;
@@ -164,7 +157,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "c2ss_local_redline_bytes") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0)
             {
                 configInfo.c2ss_local_redline_bytes = value;
@@ -305,7 +298,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         }
         else if (stricmp(configName.c_str(), "c2ss_log_loop_bytes") == 0)
         {
-            const int value = atoi(configValue.c_str());
+            int value = atoi(configValue.c_str());
             if (value > 0)
             {
                 configInfo.c2ss_log_loop_bytes = value;
@@ -329,7 +322,7 @@ int main(int argc, char* argv[])
     ProNetInit();
     ProRtpInit();
 
-    CProLogFile* const     logFile = new CProLogFile;
+    CProLogFile*           logFile = new CProLogFile;
     IProReactor*           reactor = NULL;
     CC2sServer*            server  = NULL;
     CProStlString          logFileName;
@@ -439,9 +432,7 @@ int main(int argc, char* argv[])
     if (!configInfo.c2ss_uplink_password.empty())
     {
         ProZeroMemory(
-            &configInfo.c2ss_uplink_password[0],
-            configInfo.c2ss_uplink_password.length()
-            );
+            &configInfo.c2ss_uplink_password[0], configInfo.c2ss_uplink_password.length());
         configInfo.c2ss_uplink_password = "";
     }
 
@@ -542,8 +533,8 @@ int main(int argc, char* argv[])
                 continue;
             }
 
-            int       i = 0;
-            const int c = (int)configs.size();
+            int i = 0;
+            int c = (int)configs.size();
 
             for (; i < c; ++i)
             {
@@ -552,7 +543,7 @@ int main(int argc, char* argv[])
 
                 if (stricmp(configName.c_str(), "c2ss_log_loop_bytes") == 0)
                 {
-                    const int value = atoi(configValue.c_str());
+                    int value = atoi(configValue.c_str());
                     if (value > 0)
                     {
                         configInfo.c2ss_log_loop_bytes = value;
@@ -610,5 +601,5 @@ EXIT:
     ProDeleteReactor(reactor);
     delete logFile;
 
-    return (0);
+    return 0;
 }

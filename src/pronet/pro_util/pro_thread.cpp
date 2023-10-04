@@ -54,7 +54,7 @@ CProThreadBase::Spawn(bool realtime)
 
 #if defined(_WIN32)
 
-    const HANDLE threadHandle = (HANDLE)::_beginthreadex(
+    HANDLE threadHandle = (HANDLE)::_beginthreadex(
         NULL, PRO_THREAD_STACK_SIZE, &CProThreadBase::SvcRun, this,
         CREATE_SUSPENDED | STACK_SIZE_PARAM_IS_A_RESERVATION, NULL);
     if (threadHandle == NULL)
@@ -125,10 +125,10 @@ CProThreadBase::Spawn(bool realtime)
     return true;
 }
 
-size_t
+unsigned int
 CProThreadBase::GetThreadCount() const
 {
-    size_t count = 0;
+    unsigned int count = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -170,7 +170,7 @@ void*
 CProThreadBase::SvcRun(void* arg)
 #endif
 {
-    CProThreadBase* const threadObj = (CProThreadBase*)arg;
+    CProThreadBase* threadObj = (CProThreadBase*)arg;
 
     {
         CProThreadMutexGuard mon(threadObj->m_lock);
@@ -195,7 +195,7 @@ CProThreadBase::SvcRun(void* arg)
     sigaddset(&mask, SIGUSR2);
     pthread_sigmask(SIG_BLOCK, &mask, NULL);
 
-    const uint64_t threadId = ProGetThreadId();
+    uint64_t threadId = ProGetThreadId();
 
     {
         CProThreadMutexGuard mon(threadObj->m_lock);

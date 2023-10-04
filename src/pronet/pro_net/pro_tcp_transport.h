@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(PRO_TCP_TRANSPORT_H)
+#ifndef PRO_TCP_TRANSPORT_H
 #define PRO_TCP_TRANSPORT_H
 
 #include "pro_event_handler.h"
@@ -145,7 +145,7 @@ protected:
 
     virtual void OnError(
         int64_t sockId,
-        long    errorCode
+        int     errorCode
         );
 
     virtual void OnTimer(

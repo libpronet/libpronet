@@ -162,7 +162,7 @@ pbsd_ioctl_closexec_i(int64_t fd)
 
     if (retc >= 0)
     {
-        const int flags = retc | FD_CLOEXEC;
+        int flags = retc | FD_CLOEXEC;
 
         do
         {
@@ -333,7 +333,7 @@ static
 void
 Delay1ms_i()
 {
-    const int64_t te = ProGetTickCount64() + 1;
+    int64_t te = ProGetTickCount64() + 1;
 
     while (1)
     {
@@ -429,12 +429,12 @@ PRO_SHARED_API
 void
 ProSrand()
 {
-    int64_t ticks = GetTickCount32_i(); /* Don't invoke ProGetTickCount64()!!! */
-    ticks %=  128;
-    ticks <<= 16;
+    int64_t tick = GetTickCount32_i(); /* Don't invoke ProGetTickCount64()!!! */
+    tick %=  128;
+    tick <<= 16;
 
     int64_t seed = time(NULL);
-    seed += ticks;
+    seed += tick;
 
     srand((unsigned int)seed);
 }
@@ -494,7 +494,7 @@ ProGetTickCount64()
         updateGlobalTick = true;
     }
 
-    const uint32_t tick = ::timeGetTime();
+    uint32_t tick = ::timeGetTime();
     if (tick > tick0)
     {
         tick0 = tick;
@@ -607,9 +607,9 @@ ProSleep(unsigned int milliseconds)
         g_s_lock->Unlock();
     }
 
-    const int64_t t0 = ProGetTickCount64();
-    const int64_t te = t0 + milliseconds;
-    int64_t       t  = 0;
+    int64_t t0 = ProGetTickCount64();
+    int64_t te = t0 + milliseconds;
+    int64_t t  = 0;
 
     while (1)
     {
@@ -641,7 +641,7 @@ ProSleep(unsigned int milliseconds)
         timeout.tv_sec  = (long)((te - t) / 1000);
         timeout.tv_usec = (long)((te - t) % 1000 * 1000);
 
-        const int retc = pbsd_select_i(NULL, NULL, &fds, &timeout);
+        int retc = pbsd_select_i(NULL, NULL, &fds, &timeout);
 
         assert(retc == 0);
         if (retc != 0)
@@ -668,7 +668,7 @@ ProSleep(unsigned int milliseconds)
     memset(&pfd, 0, sizeof(pbsd_pollfd));
     pfd.fd = (int)sockId;
 
-    const int retc = pbsd_poll_i(&pfd, 1, (int)(te - t));
+    int retc = pbsd_poll_i(&pfd, 1, (int)(te - t));
 
     assert(retc == 0);
     if (retc != 0)
@@ -693,7 +693,7 @@ ProMakeTimerId()
 
     g_s_lock->Lock();
 
-    const uint64_t timerId = g_s_nextTimerId;
+    uint64_t timerId = g_s_nextTimerId;
     g_s_nextTimerId += 2;
 
     g_s_lock->Unlock();
@@ -709,7 +709,7 @@ ProMakeMmTimerId()
 
     g_s_lock->Lock();
 
-    const uint64_t timerId = g_s_nextMmTimerId;
+    uint64_t timerId = g_s_nextMmTimerId;
     g_s_nextMmTimerId += 2;
     if (g_s_nextMmTimerId == 0)
     {
@@ -799,7 +799,7 @@ ProReallocateSgiPoolBuffer(void*        buf,
         return NULL;
     }
 
-    uint32_t* const p = (uint32_t*)buf - 2;
+    uint32_t* p = (uint32_t*)buf - 2;
     if (*p < sizeof(uint32_t) + sizeof(uint32_t) + 1)
     {
         return NULL;
@@ -850,7 +850,7 @@ ProDeallocateSgiPoolBuffer(void*        buf,
         return;
     }
 
-    uint32_t* const p = (uint32_t*)buf - 2;
+    uint32_t* p = (uint32_t*)buf - 2;
     if (*p < sizeof(uint32_t) + sizeof(uint32_t) + 1)
     {
         return;

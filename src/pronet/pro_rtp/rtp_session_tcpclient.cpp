@@ -39,7 +39,7 @@ CRtpSessionTcpclient::CreateInstance(const RTP_SESSION_INFO* localInfo,
     assert(localInfo->mmType != 0);
     if (localInfo == NULL || localInfo->mmType == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     return new CRtpSessionTcpclient(*localInfo, suspendRecv);
@@ -68,7 +68,7 @@ CRtpSessionTcpclient::Init(IRtpSessionObserver* observer,
                            const char*          remoteIp,
                            unsigned short       remotePort,
                            const char*          localIp,          /* = NULL */
-                           unsigned long        timeoutInSeconds) /* = 0 */
+                           unsigned int         timeoutInSeconds) /* = 0 */
 {
     assert(observer != NULL);
     assert(reactor != NULL);
@@ -78,7 +78,7 @@ CRtpSessionTcpclient::Init(IRtpSessionObserver* observer,
     if (observer == NULL || reactor == NULL ||
         remoteIp == NULL || remoteIp[0] == '\0' || remotePort == 0)
     {
-        return (false);
+        return false;
     }
 
     if (timeoutInSeconds == 0)
@@ -101,7 +101,7 @@ CRtpSessionTcpclient::Init(IRtpSessionObserver* observer,
         remoteAddr.sin_addr.s_addr == (uint32_t)-1 ||
         remoteAddr.sin_addr.s_addr == 0)
     {
-        return (false);
+        return false;
     }
 
     char localIp2[64]  = "";
@@ -116,10 +116,9 @@ CRtpSessionTcpclient::Init(IRtpSessionObserver* observer,
         assert(m_reactor == NULL);
         assert(m_trans == NULL);
         assert(m_connector == NULL);
-        if (m_observer != NULL || m_reactor != NULL || m_trans != NULL ||
-            m_connector != NULL)
+        if (m_observer != NULL || m_reactor != NULL || m_trans != NULL || m_connector != NULL)
         {
-            return (false);
+            return false;
         }
 
         m_connector = ProCreateConnector(
@@ -133,7 +132,7 @@ CRtpSessionTcpclient::Init(IRtpSessionObserver* observer,
             );
         if (m_connector == NULL)
         {
-            return (false);
+            return false;
         }
 
         observer->AddRef();
@@ -143,7 +142,7 @@ CRtpSessionTcpclient::Init(IRtpSessionObserver* observer,
         m_remoteAddr = remoteAddr;
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -178,17 +177,13 @@ CRtpSessionTcpclient::Fini()
 unsigned long
 CRtpSessionTcpclient::AddRef()
 {
-    const unsigned long refCount = CRtpSessionBase::AddRef();
-
-    return (refCount);
+    return CRtpSessionBase::AddRef();
 }
 
 unsigned long
 CRtpSessionTcpclient::Release()
 {
-    const unsigned long refCount = CRtpSessionBase::Release();
-
-    return (refCount);
+    return CRtpSessionBase::Release();
 }
 
 void
@@ -232,9 +227,8 @@ CRtpSessionTcpclient::OnConnectOk(IProConnector* connector,
         m_tcpConnected = true;
         assert(m_trans == NULL);
 
-        m_trans = ProCreateTcpTransport(
-            this, m_reactor, sockId, unixSocket, sockBufSizeRecv,
-            sockBufSizeSend, recvPoolSize, m_suspendRecv);
+        m_trans = ProCreateTcpTransport(this, m_reactor, sockId, unixSocket,
+            sockBufSizeRecv, sockBufSizeSend, recvPoolSize, m_suspendRecv);
         if (m_trans == NULL)
         {
             ProCloseSockId(sockId);
@@ -289,7 +283,7 @@ CRtpSessionTcpclient::OnConnectError(IProConnector* connector,
     }
 
     IRtpSessionObserver* observer  = NULL;
-    const long           errorCode = timeout ? PBSD_ETIMEDOUT : -1;
+    int                  errorCode = timeout ? PBSD_ETIMEDOUT : -1;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -408,8 +402,8 @@ CRtpSessionTcpclient::Recv(CRtpPacket*& packet,
 
     while (1)
     {
-        IProRecvPool&       recvPool = *m_trans->GetRecvPool();
-        const unsigned long dataSize = recvPool.PeekDataSize();
+        IProRecvPool& recvPool = *m_trans->GetRecvPool();
+        size_t        dataSize = recvPool.PeekDataSize();
 
         if (dataSize < sizeof(uint16_t))
         {
@@ -447,7 +441,7 @@ CRtpSessionTcpclient::Recv(CRtpPacket*& packet,
         const char* payloadBuffer = NULL;
         uint16_t    payloadSize   = 0;
 
-        const bool ret2 = CRtpPacket::ParseRtpBuffer(
+        bool ret2 = CRtpPacket::ParseRtpBuffer(
             (char*)packet->GetPayloadBuffer(),
             packet->GetPayloadSize16(),
             hdr,
@@ -479,5 +473,5 @@ CRtpSessionTcpclient::Recv(CRtpPacket*& packet,
         break;
     } /* end of while () */
 
-    return (ret);
+    return ret;
 }

@@ -20,7 +20,7 @@
  * This is an implementation of the "Template Method" pattern.
  */
 
-#if !defined(RTP_SESSION_BASE_H)
+#ifndef RTP_SESSION_BASE_H
 #define RTP_SESSION_BASE_H
 
 #include "rtp_base.h"
@@ -111,8 +111,8 @@ protected:
         );
 
     virtual bool SendPacketByTimer(
-        IRtpPacket*   packet,
-        unsigned long sendDurationMs /* = 0 */
+        IRtpPacket*  packet,
+        unsigned int sendDurationMs /* = 0 */
         )
     {
         return false;
@@ -214,8 +214,8 @@ protected:
 
     virtual void OnClose(
         IProTransport* trans,
-        long           errorCode,
-        long           sslCode
+        int            errorCode,
+        int            sslCode
         );
 
     virtual void OnHeartbeat(IProTransport* trans);

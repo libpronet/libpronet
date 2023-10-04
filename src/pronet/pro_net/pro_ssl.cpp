@@ -126,7 +126,7 @@ struct PRO_SSL_AUTH_ITEM
 
     bool Init()
     {
-        return (true);
+        return true;
     }
 
     void Fini()
@@ -136,7 +136,7 @@ struct PRO_SSL_AUTH_ITEM
 
         for (; i < c; ++i)
         {
-            mbedtls_pk_context* const key = keys[i];
+            mbedtls_pk_context* key = keys[i];
             pro_pk_free(key);
             ProFree(key);
         }
@@ -146,7 +146,7 @@ struct PRO_SSL_AUTH_ITEM
 
         for (; i < c; ++i)
         {
-            mbedtls_x509_crt* const cert = certs[i];
+            mbedtls_x509_crt* cert = certs[i];
             pro_x509_crt_free(cert);
             ProFree(cert);
         }
@@ -181,7 +181,7 @@ struct PRO_SSL_SUITE_LIST
     {
         suites = new CProStlVector<int>;
 
-        return (true);
+        return true;
     }
 
     void Fini()
@@ -206,7 +206,7 @@ struct PRO_SSL_ALPN_LIST
     {
         alpns = new CProStlVector<char*>;
 
-        return (true);
+        return true;
     }
 
     void Fini()
@@ -216,8 +216,8 @@ struct PRO_SSL_ALPN_LIST
             return;
         }
 
-        int       i = 0;
-        const int c = (int)alpns->size();
+        int i = 0;
+        int c = (int)alpns->size();
 
         for (; i < c; ++i)
         {
@@ -239,14 +239,14 @@ struct PRO_SSL_SERVER_CONFIG : public mbedtls_ssl_config
     {
         if (!auth.Init())
         {
-            return (false);
+            return false;
         }
 
         if (!suites.Init())
         {
             auth.Fini();
 
-            return (false);
+            return false;
         }
 
         if (!alpns.Init())
@@ -254,7 +254,7 @@ struct PRO_SSL_SERVER_CONFIG : public mbedtls_ssl_config
             suites.Fini();
             auth.Fini();
 
-            return (false);
+            return false;
         }
 
         mbedtls_entropy_init(&entropy);
@@ -265,15 +265,15 @@ struct PRO_SSL_SERVER_CONFIG : public mbedtls_ssl_config
         sha1Profile = mbedtls_x509_crt_profile_default;
         sha1Profile.allowed_mds |= MBEDTLS_X509_ID_FLAG(MBEDTLS_MD_SHA1);
 
-        return (true);
+        return true;
     }
 
     void Fini()
     {
         pro_ssl_config_free(this);
 
-        CProStlMap<CProStlString, PRO_SSL_AUTH_ITEM>::iterator       itr = sni2Auth.begin();
-        CProStlMap<CProStlString, PRO_SSL_AUTH_ITEM>::iterator const end = sni2Auth.end();
+        auto itr = sni2Auth.begin();
+        auto end = sni2Auth.end();
 
         for (; itr != end; ++itr)
         {
@@ -306,14 +306,14 @@ struct PRO_SSL_CLIENT_CONFIG : public mbedtls_ssl_config
     {
         if (!auth.Init())
         {
-            return (false);
+            return false;
         }
 
         if (!suites.Init())
         {
             auth.Fini();
 
-            return (false);
+            return false;
         }
 
         if (!alpns.Init())
@@ -321,7 +321,7 @@ struct PRO_SSL_CLIENT_CONFIG : public mbedtls_ssl_config
             suites.Fini();
             auth.Fini();
 
-            return (false);
+            return false;
         }
 
         mbedtls_entropy_init(&entropy);
@@ -332,7 +332,7 @@ struct PRO_SSL_CLIENT_CONFIG : public mbedtls_ssl_config
         sha1Profile = mbedtls_x509_crt_profile_default;
         sha1Profile.allowed_mds |= MBEDTLS_X509_ID_FLAG(MBEDTLS_MD_SHA1);
 
-        return (true);
+        return true;
     }
 
     void Fini()
@@ -422,12 +422,12 @@ ProThreadingMutexLock_i(mbedtls_threading_mutex_t* mutex)
 {
     if (mutex == NULL || mutex->mutex == NULL)
     {
-        return (MBEDTLS_ERR_THREADING_BAD_INPUT_DATA);
+        return MBEDTLS_ERR_THREADING_BAD_INPUT_DATA;
     }
 
     ((CProThreadMutex*)mutex->mutex)->Lock();
 
-    return (0);
+    return 0;
 }
 
 static
@@ -436,12 +436,12 @@ ProThreadingMutexUnlock_i(mbedtls_threading_mutex_t* mutex)
 {
     if (mutex == NULL || mutex->mutex == NULL)
     {
-        return (MBEDTLS_ERR_THREADING_BAD_INPUT_DATA);
+        return MBEDTLS_ERR_THREADING_BAD_INPUT_DATA;
     }
 
     ((CProThreadMutex*)mutex->mutex)->Unlock();
 
-    return (0);
+    return 0;
 }
 
 static
@@ -450,13 +450,13 @@ ProEntropyS_i(void*          ctx,
               unsigned char* buf,
               size_t         size)
 {
-    PRO_SSL_SERVER_CONFIG* const config = (PRO_SSL_SERVER_CONFIG*)ctx;
+    PRO_SSL_SERVER_CONFIG* config = (PRO_SSL_SERVER_CONFIG*)ctx;
     if (config == NULL)
     {
-        return (MBEDTLS_ERR_SSL_BAD_INPUT_DATA);
+        return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
     }
 
-    return (mbedtls_entropy_func(&config->entropy, buf, size));
+    return mbedtls_entropy_func(&config->entropy, buf, size);
 }
 
 static
@@ -465,13 +465,13 @@ ProEntropyC_i(void*          ctx,
               unsigned char* buf,
               size_t         size)
 {
-    PRO_SSL_CLIENT_CONFIG* const config = (PRO_SSL_CLIENT_CONFIG*)ctx;
+    PRO_SSL_CLIENT_CONFIG* config = (PRO_SSL_CLIENT_CONFIG*)ctx;
     if (config == NULL)
     {
-        return (MBEDTLS_ERR_SSL_BAD_INPUT_DATA);
+        return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
     }
 
-    return (mbedtls_entropy_func(&config->entropy, buf, size));
+    return mbedtls_entropy_func(&config->entropy, buf, size);
 }
 
 static
@@ -480,13 +480,13 @@ ProRngS_i(void*          ctx,
           unsigned char* buf,
           size_t         size)
 {
-    PRO_SSL_SERVER_CONFIG* const config = (PRO_SSL_SERVER_CONFIG*)ctx;
+    PRO_SSL_SERVER_CONFIG* config = (PRO_SSL_SERVER_CONFIG*)ctx;
     if (config == NULL)
     {
-        return (MBEDTLS_ERR_SSL_BAD_INPUT_DATA);
+        return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
     }
 
-    return (mbedtls_ctr_drbg_random(&config->rng, buf, size));
+    return mbedtls_ctr_drbg_random(&config->rng, buf, size);
 }
 
 static
@@ -495,13 +495,13 @@ ProRngC_i(void*          ctx,
           unsigned char* buf,
           size_t         size)
 {
-    PRO_SSL_CLIENT_CONFIG* const config = (PRO_SSL_CLIENT_CONFIG*)ctx;
+    PRO_SSL_CLIENT_CONFIG* config = (PRO_SSL_CLIENT_CONFIG*)ctx;
     if (config == NULL)
     {
-        return (MBEDTLS_ERR_SSL_BAD_INPUT_DATA);
+        return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
     }
 
-    return (mbedtls_ctr_drbg_random(&config->rng, buf, size));
+    return mbedtls_ctr_drbg_random(&config->rng, buf, size);
 }
 
 static
@@ -511,30 +511,29 @@ ProSni_i(void*                ctx,
          const unsigned char* name,
          size_t               nameLen)
 {
-    PRO_SSL_SERVER_CONFIG* const config = (PRO_SSL_SERVER_CONFIG*)ctx;
+    PRO_SSL_SERVER_CONFIG* config = (PRO_SSL_SERVER_CONFIG*)ctx;
     if (config == NULL)
     {
-        return (MBEDTLS_ERR_SSL_BAD_INPUT_DATA);
+        return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
     }
 
     if (ssl == NULL || name == NULL || name[0] == '\0' || nameLen == 0)
     {
-        return (MBEDTLS_ERR_SSL_BAD_INPUT_DATA);
+        return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
     }
 
-    const CProStlString sniName((char*)name, nameLen);
+    CProStlString sniName((char*)name, nameLen);
 
-    CProStlMap<CProStlString, PRO_SSL_AUTH_ITEM>::iterator const itr =
-        config->sni2Auth.find(sniName);
+    auto itr = config->sni2Auth.find(sniName);
     if (itr == config->sni2Auth.end())
     {
-        return (-1);
+        return -1;
     }
 
     const PRO_SSL_AUTH_ITEM& ai = itr->second;
     if (ai.certs.size() == 0 || ai.keys.size() == 0)
     {
-        return (-1);
+        return -1;
     }
 
     mbedtls_ssl_set_hs_authmode(ssl, ai.level);
@@ -545,8 +544,8 @@ ProSni_i(void*                ctx,
 
     int ret = -1;
 
-    int       i = 0;
-    const int c = (int)ai.certs.size();
+    int i = 0;
+    int c = (int)ai.certs.size();
 
     for (; i < c; ++i)
     {
@@ -557,7 +556,7 @@ ProSni_i(void*                ctx,
         }
     }
 
-    return (ret);
+    return ret;
 }
 
 static
@@ -566,15 +565,15 @@ ProSend_i(void*                ctx,
           const unsigned char* buf,
           size_t               size)
 {
-    PRO_SSL_CTX* const ctx2 = (PRO_SSL_CTX*)ctx;
+    PRO_SSL_CTX* ctx2 = (PRO_SSL_CTX*)ctx;
     if (ctx2 == NULL || ctx2->sockId == -1)
     {
-        return (MBEDTLS_ERR_SSL_BAD_INPUT_DATA);
+        return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
     }
 
     if (buf == NULL && size > 0)
     {
-        return (MBEDTLS_ERR_SSL_BAD_INPUT_DATA);
+        return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
     }
 
     int sentSize  = 0;
@@ -587,19 +586,19 @@ ProSend_i(void*                ctx,
             size = MAGIC_BYTES;
         }
 
-        unsigned char* const buf2 = (unsigned char*)ProMalloc(size);
+        unsigned char* buf2 = (unsigned char*)ProMalloc(size);
         if (buf2 == NULL)
         {
-            return (MBEDTLS_ERR_NET_SEND_FAILED);
+            return MBEDTLS_ERR_NET_SEND_FAILED;
         }
 
         memcpy(buf2, buf, size);
 
-        unsigned char*       const k0    = (unsigned char*)&ctx2->nonce;
-        const unsigned char* const kk    = k0 + sizeof(PRO_NONCE);
-        unsigned char*             k     = k0 + ctx2->sentBytes % sizeof(PRO_NONCE);
-        unsigned char*             p     = buf2;
-        const int                  msize = (int)(MAGIC_BYTES - ctx2->sentBytes);
+        unsigned char*       k0    = (unsigned char*)&ctx2->nonce;
+        const unsigned char* kk    = k0 + sizeof(PRO_NONCE);
+        unsigned char*       k     = k0 + ctx2->sentBytes % sizeof(PRO_NONCE);
+        unsigned char*       p     = buf2;
+        int                  msize = (int)(MAGIC_BYTES - ctx2->sentBytes);
 
         for (int i = 0; i < (int)size && i < msize; ++i)
         {
@@ -612,49 +611,49 @@ ProSend_i(void*                ctx,
             }
         }
 
-        sentSize  = pbsd_send(ctx2->sockId, buf2, (int)size, 0);
+        sentSize  = pbsd_send(ctx2->sockId, buf2, size, 0);
         errorCode = pbsd_errno((void*)&pbsd_send);
 
         ProFree(buf2);
     }
     else
     {
-        sentSize  = pbsd_send(ctx2->sockId, buf, (int)size, 0);
+        sentSize  = pbsd_send(ctx2->sockId, buf, size, 0);
         errorCode = pbsd_errno((void*)&pbsd_send);
     }
 
     assert(sentSize <= (int)size);
     if (sentSize > (int)size)
     {
-        return (MBEDTLS_ERR_NET_SEND_FAILED);
+        return MBEDTLS_ERR_NET_SEND_FAILED;
     }
 
     if (sentSize > 0)
     {
         ctx2->sentBytes += sentSize;
 
-        return (sentSize);
+        return sentSize;
     }
 
     if (sentSize == 0)
     {
         if (size == 0) /* !!! */
         {
-            return (0);
+            return 0;
         }
         else
         {
-            return (MBEDTLS_ERR_SSL_WANT_WRITE);
+            return MBEDTLS_ERR_SSL_WANT_WRITE;
         }
     }
 
     if (errorCode == PBSD_EWOULDBLOCK)
     {
-        return (MBEDTLS_ERR_SSL_WANT_WRITE);
+        return MBEDTLS_ERR_SSL_WANT_WRITE;
     }
     else
     {
-        return (MBEDTLS_ERR_NET_SEND_FAILED);
+        return MBEDTLS_ERR_NET_SEND_FAILED;
     }
 }
 
@@ -664,33 +663,33 @@ ProRecv_i(void*          ctx,
           unsigned char* buf,
           size_t         size)
 {
-    PRO_SSL_CTX* const ctx2 = (PRO_SSL_CTX*)ctx;
+    PRO_SSL_CTX* ctx2 = (PRO_SSL_CTX*)ctx;
     if (ctx2 == NULL || ctx2->sockId == -1)
     {
-        return (MBEDTLS_ERR_SSL_BAD_INPUT_DATA);
+        return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
     }
 
     if (buf == NULL || size == 0)
     {
-        return (MBEDTLS_ERR_SSL_BAD_INPUT_DATA);
+        return MBEDTLS_ERR_SSL_BAD_INPUT_DATA;
     }
 
-    const int recvSize  = pbsd_recv(ctx2->sockId, buf, (int)size, 0);
-    const int errorCode = pbsd_errno((void*)&pbsd_recv);
+    int recvSize  = pbsd_recv(ctx2->sockId, buf, size, 0);
+    int errorCode = pbsd_errno((void*)&pbsd_recv);
 
     assert(recvSize <= (int)size);
     if (recvSize > (int)size)
     {
-        return (MBEDTLS_ERR_NET_RECV_FAILED);
+        return MBEDTLS_ERR_NET_RECV_FAILED;
     }
 
     if (recvSize > 0 && ctx2->hasNonce && ctx2->recvBytes < MAGIC_BYTES)
     {
-        unsigned char*       const k0    = (unsigned char*)&ctx2->nonce;
-        const unsigned char* const kk    = k0 + sizeof(PRO_NONCE);
-        unsigned char*             k     = k0 + ctx2->recvBytes % sizeof(PRO_NONCE);
-        unsigned char*             p     = buf;
-        const int                  msize = (int)(MAGIC_BYTES - ctx2->recvBytes);
+        unsigned char*       k0    = (unsigned char*)&ctx2->nonce;
+        const unsigned char* kk    = k0 + sizeof(PRO_NONCE);
+        unsigned char*       k     = k0 + ctx2->recvBytes % sizeof(PRO_NONCE);
+        unsigned char*       p     = buf;
+        int                  msize = (int)(MAGIC_BYTES - ctx2->recvBytes);
 
         for (int i = 0; i < recvSize && i < msize; ++i)
         {
@@ -708,16 +707,16 @@ ProRecv_i(void*          ctx,
     {
         ctx2->recvBytes += recvSize;
 
-        return (recvSize);
+        return recvSize;
     }
 
     if (errorCode == PBSD_EWOULDBLOCK)
     {
-        return (MBEDTLS_ERR_SSL_WANT_READ);
+        return MBEDTLS_ERR_SSL_WANT_READ;
     }
     else
     {
-        return (MBEDTLS_ERR_NET_RECV_FAILED);
+        return MBEDTLS_ERR_NET_RECV_FAILED;
     }
 }
 
@@ -748,14 +747,14 @@ ProSslServerConfig_Create()
 {
     ProSslInit();
 
-    PRO_SSL_SERVER_CONFIG* const config = new PRO_SSL_SERVER_CONFIG;
-    const char*            const pers   = "s";
+    PRO_SSL_SERVER_CONFIG* config = new PRO_SSL_SERVER_CONFIG;
+    const char*            pers   = "s";
 
     if (!config->Init())
     {
         delete config;
 
-        return (NULL);
+        return NULL;
     }
 
     if (mbedtls_ctr_drbg_seed(&config->rng, &ProEntropyS_i, config,
@@ -795,14 +794,14 @@ ProSslServerConfig_Create()
 
     mbedtls_ssl_conf_ciphersuites(config, &(*config->suites.suites)[0]);
 
-    return (config);
+    return config;
 
 EXIT:
 
     config->Fini();
     delete config;
 
-    return (NULL);
+    return NULL;
 }
 
 PRO_NET_API
@@ -829,13 +828,13 @@ ProSslServerConfig_SetSuiteList(PRO_SSL_SERVER_CONFIG*  config,
     assert(suiteCount > 0);
     if (config == NULL || suites == NULL || suiteCount == 0)
     {
-        return (false);
+        return false;
     }
 
     PRO_SSL_SUITE_LIST suites2;
     if (!suites2.Init())
     {
-        return (false);
+        return false;
     }
 
     for (int i = 0; i < (int)suiteCount; ++i)
@@ -850,7 +849,7 @@ ProSslServerConfig_SetSuiteList(PRO_SSL_SERVER_CONFIG*  config,
     config->suites.Fini();
     config->suites = suites2;
 
-    return (true);
+    return true;
 }
 
 PRO_NET_API
@@ -862,7 +861,7 @@ ProSslServerConfig_SetAlpnList(PRO_SSL_SERVER_CONFIG* config,
     assert(config != NULL);
     if (config == NULL)
     {
-        return (false);
+        return false;
     }
 
     if (alpns == NULL || alpnCount == 0)
@@ -870,26 +869,26 @@ ProSslServerConfig_SetAlpnList(PRO_SSL_SERVER_CONFIG* config,
         config->alpn_list = NULL;
         config->alpns.Fini();
 
-        return (true);
+        return true;
     }
 
     for (int i = 0; i < (int)alpnCount; ++i)
     {
         if (alpns[i] == NULL || alpns[i][0] == '\0')
         {
-            return (false);
+            return false;
         }
     }
 
     PRO_SSL_ALPN_LIST alpns2;
     if (!alpns2.Init())
     {
-        return (false);
+        return false;
     }
 
     for (int j = 0; j < (int)alpnCount; ++j)
     {
-        char* const p = (char*)ProCalloc(1, strlen(alpns[j]) + 1);
+        char* p = (char*)ProCalloc(1, strlen(alpns[j]) + 1);
         if (p == NULL)
         {
             break;
@@ -905,21 +904,20 @@ ProSslServerConfig_SetAlpnList(PRO_SSL_SERVER_CONFIG* config,
     {
         alpns2.Fini();
 
-        return (false);
+        return false;
     }
 
-    if (mbedtls_ssl_conf_alpn_protocols(
-        config, (const char**)&(*alpns2.alpns)[0]) != 0)
+    if (mbedtls_ssl_conf_alpn_protocols(config, (const char**)&(*alpns2.alpns)[0]) != 0)
     {
         alpns2.Fini();
 
-        return (false);
+        return false;
     }
 
     config->alpns.Fini();
     config->alpns = alpns2;
 
-    return (true);
+    return true;
 }
 
 PRO_NET_API
@@ -956,17 +954,17 @@ ProSslServerConfig_SetCaList(PRO_SSL_SERVER_CONFIG* config,
     assert(caFileCount > 0);
     if (config == NULL || caFiles == NULL || caFileCount == 0)
     {
-        return (false);
+        return false;
     }
 
-    mbedtls_x509_crt* const ca  = (mbedtls_x509_crt*)ProCalloc(1, sizeof(mbedtls_x509_crt));
-    mbedtls_x509_crl*       crl = (mbedtls_x509_crl*)ProCalloc(1, sizeof(mbedtls_x509_crl));
+    mbedtls_x509_crt* ca  = (mbedtls_x509_crt*)ProCalloc(1, sizeof(mbedtls_x509_crt));
+    mbedtls_x509_crl* crl = (mbedtls_x509_crl*)ProCalloc(1, sizeof(mbedtls_x509_crl));
     if (ca == NULL || crl == NULL)
     {
         ProFree(crl);
         ProFree(ca);
 
-        return(false);
+        return false;
     }
 
     mbedtls_x509_crt_init(ca);
@@ -1016,7 +1014,7 @@ ProSslServerConfig_SetCaList(PRO_SSL_SERVER_CONFIG* config,
     config->auth.ca  = ca;
     config->auth.crl = crl;
 
-    return (true);
+    return true;
 
 EXIT:
 
@@ -1025,7 +1023,7 @@ EXIT:
     ProFree(crl);
     ProFree(ca);
 
-    return (false);
+    return false;
 }
 
 PRO_NET_API
@@ -1044,17 +1042,17 @@ ProSslServerConfig_AppendCertChain(PRO_SSL_SERVER_CONFIG* config,
     if (config == NULL || certFiles == NULL || certFileCount == 0 ||
         keyFile == NULL || keyFile[0] == '\0')
     {
-        return (false);
+        return false;
     }
 
-    mbedtls_x509_crt*   const cert = (mbedtls_x509_crt*)  ProCalloc(1, sizeof(mbedtls_x509_crt));
-    mbedtls_pk_context* const key  = (mbedtls_pk_context*)ProCalloc(1, sizeof(mbedtls_pk_context));
+    mbedtls_x509_crt*   cert = (mbedtls_x509_crt*)  ProCalloc(1, sizeof(mbedtls_x509_crt));
+    mbedtls_pk_context* key  = (mbedtls_pk_context*)ProCalloc(1, sizeof(mbedtls_pk_context));
     if (cert == NULL || key == NULL)
     {
         ProFree(key);
         ProFree(cert);
 
-        return(false);
+        return false;
     }
 
     mbedtls_x509_crt_init(cert);
@@ -1086,7 +1084,7 @@ ProSslServerConfig_AppendCertChain(PRO_SSL_SERVER_CONFIG* config,
     config->auth.certs.push_back(cert);
     config->auth.keys.push_back(key);
 
-    return (true);
+    return true;
 
 EXIT:
 
@@ -1095,7 +1093,7 @@ EXIT:
     ProFree(key);
     ProFree(cert);
 
-    return (false);
+    return false;
 }
 
 PRO_NET_API
@@ -1117,12 +1115,12 @@ ProSslServerConfig_SetAuthLevel(PRO_SSL_SERVER_CONFIG* config,
          level != PRO_SSL_AUTHLV_REQUIRED)
        )
     {
-        return (false);
+        return false;
     }
 
     mbedtls_ssl_conf_authmode(config, level);
 
-    return (true);
+    return true;
 }
 
 PRO_NET_API
@@ -1135,7 +1133,7 @@ ProSslServerConfig_AddSni(PRO_SSL_SERVER_CONFIG* config,
     assert(sniName[0] != '\0');
     if (config == NULL || sniName == NULL || sniName[0] == '\0')
     {
-        return (false);
+        return false;
     }
 
     if (config->sni2Auth.size() == 0) /* first time */
@@ -1148,7 +1146,7 @@ ProSslServerConfig_AddSni(PRO_SSL_SERVER_CONFIG* config,
         config->sni2Auth[sniName] = PRO_SSL_AUTH_ITEM();
     }
 
-    return (true);
+    return true;
 }
 
 PRO_NET_API
@@ -1162,8 +1160,7 @@ ProSslServerConfig_RemoveSni(PRO_SSL_SERVER_CONFIG* config,
         return;
     }
 
-    CProStlMap<CProStlString, PRO_SSL_AUTH_ITEM>::iterator const itr =
-        config->sni2Auth.find(sniName);
+    auto itr = config->sni2Auth.find(sniName);
     if (itr == config->sni2Auth.end())
     {
         return;
@@ -1195,26 +1192,25 @@ ProSslServerConfig_SetSniCaList(PRO_SSL_SERVER_CONFIG* config,
     if (config == NULL || sniName == NULL || sniName[0] == '\0' ||
         caFiles == NULL || caFileCount == 0)
     {
-        return (false);
+        return false;
     }
 
-    CProStlMap<CProStlString, PRO_SSL_AUTH_ITEM>::iterator const itr =
-        config->sni2Auth.find(sniName);
+    auto itr = config->sni2Auth.find(sniName);
     if (itr == config->sni2Auth.end())
     {
-        return (false);
+        return false;
     }
 
     PRO_SSL_AUTH_ITEM& ai = itr->second;
 
-    mbedtls_x509_crt* const ca  = (mbedtls_x509_crt*)ProCalloc(1, sizeof(mbedtls_x509_crt));
-    mbedtls_x509_crl*       crl = (mbedtls_x509_crl*)ProCalloc(1, sizeof(mbedtls_x509_crl));
+    mbedtls_x509_crt* ca  = (mbedtls_x509_crt*)ProCalloc(1, sizeof(mbedtls_x509_crt));
+    mbedtls_x509_crl* crl = (mbedtls_x509_crl*)ProCalloc(1, sizeof(mbedtls_x509_crl));
     if (ca == NULL || crl == NULL)
     {
         ProFree(crl);
         ProFree(ca);
 
-        return(false);
+        return false;
     }
 
     mbedtls_x509_crt_init(ca);
@@ -1262,7 +1258,7 @@ ProSslServerConfig_SetSniCaList(PRO_SSL_SERVER_CONFIG* config,
     ai.ca  = ca;
     ai.crl = crl;
 
-    return (true);
+    return true;
 
 EXIT:
 
@@ -1271,7 +1267,7 @@ EXIT:
     ProFree(crl);
     ProFree(ca);
 
-    return (false);
+    return false;
 }
 
 PRO_NET_API
@@ -1291,29 +1287,27 @@ ProSslServerConfig_AppendSniCertChain(PRO_SSL_SERVER_CONFIG* config,
     assert(keyFile != NULL);
     assert(keyFile[0] != '\0');
     if (config == NULL || sniName == NULL || sniName[0] == '\0' ||
-        certFiles == NULL || certFileCount == 0 || keyFile == NULL ||
-        keyFile[0] == '\0')
+        certFiles == NULL || certFileCount == 0 || keyFile == NULL || keyFile[0] == '\0')
     {
-        return (false);
+        return false;
     }
 
-    CProStlMap<CProStlString, PRO_SSL_AUTH_ITEM>::iterator const itr =
-        config->sni2Auth.find(sniName);
+    auto itr = config->sni2Auth.find(sniName);
     if (itr == config->sni2Auth.end())
     {
-        return (false);
+        return false;
     }
 
     PRO_SSL_AUTH_ITEM& ai = itr->second;
 
-    mbedtls_x509_crt*   const cert = (mbedtls_x509_crt*)  ProCalloc(1, sizeof(mbedtls_x509_crt));
-    mbedtls_pk_context* const key  = (mbedtls_pk_context*)ProCalloc(1, sizeof(mbedtls_pk_context));
+    mbedtls_x509_crt*   cert = (mbedtls_x509_crt*)  ProCalloc(1, sizeof(mbedtls_x509_crt));
+    mbedtls_pk_context* key  = (mbedtls_pk_context*)ProCalloc(1, sizeof(mbedtls_pk_context));
     if (cert == NULL || key == NULL)
     {
         ProFree(key);
         ProFree(cert);
 
-        return(false);
+        return false;
     }
 
     mbedtls_x509_crt_init(cert);
@@ -1340,7 +1334,7 @@ ProSslServerConfig_AppendSniCertChain(PRO_SSL_SERVER_CONFIG* config,
     ai.certs.push_back(cert);
     ai.keys.push_back(key);
 
-    return (true);
+    return true;
 
 EXIT:
 
@@ -1349,7 +1343,7 @@ EXIT:
     ProFree(key);
     ProFree(cert);
 
-    return (false);
+    return false;
 }
 
 PRO_NET_API
@@ -1374,19 +1368,18 @@ ProSslServerConfig_SetSniAuthLevel(PRO_SSL_SERVER_CONFIG* config,
          level != PRO_SSL_AUTHLV_REQUIRED)
        )
     {
-        return (false);
+        return false;
     }
 
-    CProStlMap<CProStlString, PRO_SSL_AUTH_ITEM>::iterator const itr =
-        config->sni2Auth.find(sniName);
+    auto itr = config->sni2Auth.find(sniName);
     if (itr == config->sni2Auth.end())
     {
-        return (false);
+        return false;
     }
 
     itr->second.level = level;
 
-    return (true);
+    return true;
 }
 
 /*-------------------------------------------------------------------------*/
@@ -1397,14 +1390,14 @@ ProSslClientConfig_Create()
 {
     ProSslInit();
 
-    PRO_SSL_CLIENT_CONFIG* const config = new PRO_SSL_CLIENT_CONFIG;
-    const char*            const pers   = "c";
+    PRO_SSL_CLIENT_CONFIG* config = new PRO_SSL_CLIENT_CONFIG;
+    const char*            pers   = "c";
 
     if (!config->Init())
     {
         delete config;
 
-        return (NULL);
+        return NULL;
     }
 
     if (mbedtls_ctr_drbg_seed(&config->rng, &ProEntropyC_i, config,
@@ -1444,14 +1437,14 @@ ProSslClientConfig_Create()
 
     mbedtls_ssl_conf_ciphersuites(config, &(*config->suites.suites)[0]);
 
-    return (config);
+    return config;
 
 EXIT:
 
     config->Fini();
     delete config;
 
-    return (NULL);
+    return NULL;
 }
 
 PRO_NET_API
@@ -1478,13 +1471,13 @@ ProSslClientConfig_SetSuiteList(PRO_SSL_CLIENT_CONFIG*  config,
     assert(suiteCount > 0);
     if (config == NULL || suites == NULL || suiteCount == 0)
     {
-        return (false);
+        return false;
     }
 
     PRO_SSL_SUITE_LIST suites2;
     if (!suites2.Init())
     {
-        return (false);
+        return false;
     }
 
     for (int i = 0; i < (int)suiteCount; ++i)
@@ -1499,7 +1492,7 @@ ProSslClientConfig_SetSuiteList(PRO_SSL_CLIENT_CONFIG*  config,
     config->suites.Fini();
     config->suites = suites2;
 
-    return (true);
+    return true;
 }
 
 PRO_NET_API
@@ -1511,7 +1504,7 @@ ProSslClientConfig_SetAlpnList(PRO_SSL_CLIENT_CONFIG* config,
     assert(config != NULL);
     if (config == NULL)
     {
-        return (false);
+        return false;
     }
 
     if (alpns == NULL || alpnCount == 0)
@@ -1519,26 +1512,26 @@ ProSslClientConfig_SetAlpnList(PRO_SSL_CLIENT_CONFIG* config,
         config->alpn_list = NULL;
         config->alpns.Fini();
 
-        return (true);
+        return true;
     }
 
     for (int i = 0; i < (int)alpnCount; ++i)
     {
         if (alpns[i] == NULL || alpns[i][0] == '\0')
         {
-            return (false);
+            return false;
         }
     }
 
     PRO_SSL_ALPN_LIST alpns2;
     if (!alpns2.Init())
     {
-        return (false);
+        return false;
     }
 
     for (int j = 0; j < (int)alpnCount; ++j)
     {
-        char* const p = (char*)ProCalloc(1, strlen(alpns[j]) + 1);
+        char* p = (char*)ProCalloc(1, strlen(alpns[j]) + 1);
         if (p == NULL)
         {
             break;
@@ -1554,21 +1547,20 @@ ProSslClientConfig_SetAlpnList(PRO_SSL_CLIENT_CONFIG* config,
     {
         alpns2.Fini();
 
-        return (false);
+        return false;
     }
 
-    if (mbedtls_ssl_conf_alpn_protocols(
-        config, (const char**)&(*alpns2.alpns)[0]) != 0)
+    if (mbedtls_ssl_conf_alpn_protocols(config, (const char**)&(*alpns2.alpns)[0]) != 0)
     {
         alpns2.Fini();
 
-        return (false);
+        return false;
     }
 
     config->alpns.Fini();
     config->alpns = alpns2;
 
-    return (true);
+    return true;
 }
 
 PRO_NET_API
@@ -1605,17 +1597,17 @@ ProSslClientConfig_SetCaList(PRO_SSL_CLIENT_CONFIG* config,
     assert(caFileCount > 0);
     if (config == NULL || caFiles == NULL || caFileCount == 0)
     {
-        return (false);
+        return false;
     }
 
-    mbedtls_x509_crt* const ca  = (mbedtls_x509_crt*)ProCalloc(1, sizeof(mbedtls_x509_crt));
-    mbedtls_x509_crl*       crl = (mbedtls_x509_crl*)ProCalloc(1, sizeof(mbedtls_x509_crl));
+    mbedtls_x509_crt* ca  = (mbedtls_x509_crt*)ProCalloc(1, sizeof(mbedtls_x509_crt));
+    mbedtls_x509_crl* crl = (mbedtls_x509_crl*)ProCalloc(1, sizeof(mbedtls_x509_crl));
     if (ca == NULL || crl == NULL)
     {
         ProFree(crl);
         ProFree(ca);
 
-        return(false);
+        return false;
     }
 
     mbedtls_x509_crt_init(ca);
@@ -1665,7 +1657,7 @@ ProSslClientConfig_SetCaList(PRO_SSL_CLIENT_CONFIG* config,
     config->auth.ca  = ca;
     config->auth.crl = crl;
 
-    return (true);
+    return true;
 
 EXIT:
 
@@ -1674,7 +1666,7 @@ EXIT:
     ProFree(crl);
     ProFree(ca);
 
-    return (false);
+    return false;
 }
 
 PRO_NET_API
@@ -1693,23 +1685,23 @@ ProSslClientConfig_SetCertChain(PRO_SSL_CLIENT_CONFIG* config,
     if (config == NULL || certFiles == NULL || certFileCount == 0 ||
         keyFile == NULL || keyFile[0] == '\0')
     {
-        return (false);
+        return false;
     }
 
     assert(config->auth.certs.size() == 0);
     if (config->auth.certs.size() != 0)
     {
-        return (false);
+        return false;
     }
 
-    mbedtls_x509_crt*   const cert = (mbedtls_x509_crt*)  ProCalloc(1, sizeof(mbedtls_x509_crt));
-    mbedtls_pk_context* const key  = (mbedtls_pk_context*)ProCalloc(1, sizeof(mbedtls_pk_context));
+    mbedtls_x509_crt*   cert = (mbedtls_x509_crt*)  ProCalloc(1, sizeof(mbedtls_x509_crt));
+    mbedtls_pk_context* key  = (mbedtls_pk_context*)ProCalloc(1, sizeof(mbedtls_pk_context));
     if (cert == NULL || key == NULL)
     {
         ProFree(key);
         ProFree(cert);
 
-        return(false);
+        return false;
     }
 
     mbedtls_x509_crt_init(cert);
@@ -1741,7 +1733,7 @@ ProSslClientConfig_SetCertChain(PRO_SSL_CLIENT_CONFIG* config,
     config->auth.certs.push_back(cert);
     config->auth.keys.push_back(key);
 
-    return (true);
+    return true;
 
 EXIT:
 
@@ -1750,7 +1742,7 @@ EXIT:
     ProFree(key);
     ProFree(cert);
 
-    return (false);
+    return false;
 }
 
 PRO_NET_API
@@ -1772,12 +1764,12 @@ ProSslClientConfig_SetAuthLevel(PRO_SSL_CLIENT_CONFIG* config,
          level != PRO_SSL_AUTHLV_REQUIRED)
        )
     {
-        return (false);
+        return false;
     }
 
     mbedtls_ssl_conf_authmode(config, level);
 
-    return (true);
+    return true;
 }
 
 /*-------------------------------------------------------------------------*/
@@ -1792,10 +1784,10 @@ ProSslCtx_CreateS(const PRO_SSL_SERVER_CONFIG* config,
     assert(sockId != -1);
     if (config == NULL || sockId == -1)
     {
-        return (NULL);
+        return NULL;
     }
 
-    PRO_SSL_CTX* const ctx = new PRO_SSL_CTX(sockId, nonce);
+    PRO_SSL_CTX* ctx = new PRO_SSL_CTX(sockId, nonce);
     mbedtls_ssl_init(ctx);
 
     if (mbedtls_ssl_setup(ctx, config) != 0)
@@ -1803,12 +1795,12 @@ ProSslCtx_CreateS(const PRO_SSL_SERVER_CONFIG* config,
         pro_ssl_free(ctx);
         delete ctx;
 
-        return (NULL);
+        return NULL;
     }
 
     mbedtls_ssl_set_bio(ctx, ctx, &ProSend_i, &ProRecv_i, NULL);
 
-    return (ctx);
+    return ctx;
 }
 
 PRO_NET_API
@@ -1822,7 +1814,7 @@ ProSslCtx_CreateC(const PRO_SSL_CLIENT_CONFIG* config,
     assert(sockId != -1);
     if (config == NULL || sockId == -1)
     {
-        return (NULL);
+        return NULL;
     }
 
     if (serverHostName != NULL && serverHostName[0] == '\0')
@@ -1830,7 +1822,7 @@ ProSslCtx_CreateC(const PRO_SSL_CLIENT_CONFIG* config,
         serverHostName = NULL;
     }
 
-    PRO_SSL_CTX* const ctx = new PRO_SSL_CTX(sockId, nonce);
+    PRO_SSL_CTX* ctx = new PRO_SSL_CTX(sockId, nonce);
     mbedtls_ssl_init(ctx);
 
     if (mbedtls_ssl_setup(ctx, config) != 0)
@@ -1838,7 +1830,7 @@ ProSslCtx_CreateC(const PRO_SSL_CLIENT_CONFIG* config,
         pro_ssl_free(ctx);
         delete ctx;
 
-        return (NULL);
+        return NULL;
     }
 
     if (mbedtls_ssl_set_hostname(ctx, serverHostName) != 0)
@@ -1846,12 +1838,12 @@ ProSslCtx_CreateC(const PRO_SSL_CLIENT_CONFIG* config,
         pro_ssl_free(ctx);
         delete ctx;
 
-        return (NULL);
+        return NULL;
     }
 
     mbedtls_ssl_set_bio(ctx, ctx, &ProSend_i, &ProRecv_i, NULL);
 
-    return (ctx);
+    return ctx;
 }
 
 PRO_NET_API
@@ -1877,18 +1869,18 @@ ProSslCtx_GetSuite(PRO_SSL_CTX* ctx,
     assert(ctx != NULL);
     if (ctx == NULL)
     {
-        return (PRO_SSL_SUITE_NONE);
+        return PRO_SSL_SUITE_NONE;
     }
 
-    const char* const name = mbedtls_ssl_get_ciphersuite(ctx);
+    const char* name = mbedtls_ssl_get_ciphersuite(ctx);
     if (name == NULL || name[0] == '\0')
     {
-        return (PRO_SSL_SUITE_NONE);
+        return PRO_SSL_SUITE_NONE;
     }
 
     strncpy_pro(suiteName, 64, name);
 
-    return ((PRO_SSL_SUITE_ID)mbedtls_ssl_get_ciphersuite_id(name));
+    return (PRO_SSL_SUITE_ID)mbedtls_ssl_get_ciphersuite_id(name);
 }
 
 PRO_NET_API
@@ -1898,10 +1890,10 @@ ProSslCtx_GetAlpn(PRO_SSL_CTX* ctx)
     assert(ctx != NULL);
     if (ctx == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
-    return (mbedtls_ssl_get_alpn_protocol(ctx));
+    return mbedtls_ssl_get_alpn_protocol(ctx);
 }
 
 /////////////////////////////////////////////////////////////////////////////

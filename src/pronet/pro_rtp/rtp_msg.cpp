@@ -43,26 +43,25 @@ CreateRtpMsgClient(IRtpMsgClientObserver*       observer,
                    const RTP_MSG_USER*          user,
                    const char*                  password,         /* = NULL */
                    const char*                  localIp,          /* = NULL */
-                   unsigned long                timeoutInSeconds) /* = 0 */
+                   unsigned int                 timeoutInSeconds) /* = 0 */
 {
     ProRtpInit();
 
-    CRtpMsgClient* const msgClient =
-        CRtpMsgClient::CreateInstance(false, mmType, sslConfig, sslSni);
+    CRtpMsgClient* msgClient = CRtpMsgClient::CreateInstance(false, mmType, sslConfig, sslSni);
     if (msgClient == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
-    if (!msgClient->Init(observer, reactor,
-        remoteIp, remotePort, user, password, localIp, timeoutInSeconds))
+    if (!msgClient->Init(observer, reactor, remoteIp, remotePort, user, password,
+        localIp, timeoutInSeconds))
     {
         msgClient->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return (msgClient);
+    return msgClient;
 }
 
 PRO_RTP_API
@@ -74,7 +73,7 @@ DeleteRtpMsgClient(IRtpMsgClient* msgClient)
         return;
     }
 
-    CRtpMsgClient* const p = (CRtpMsgClient*)msgClient;
+    CRtpMsgClient* p = (CRtpMsgClient*)msgClient;
     p->Fini();
     p->Release();
 }
@@ -87,25 +86,24 @@ CreateRtpMsgServer(IRtpMsgServerObserver*       observer,
                    const PRO_SSL_SERVER_CONFIG* sslConfig,        /* = NULL */
                    bool                         sslForced,        /* = false */
                    unsigned short               serviceHubPort,
-                   unsigned long                timeoutInSeconds) /* = 0 */
+                   unsigned int                 timeoutInSeconds) /* = 0 */
 {
     ProRtpInit();
 
-    CRtpMsgServer* const msgServer =
-        CRtpMsgServer::CreateInstance(mmType, sslConfig, sslForced);
+    CRtpMsgServer* msgServer = CRtpMsgServer::CreateInstance(mmType, sslConfig, sslForced);
     if (msgServer == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     if (!msgServer->Init(observer, reactor, serviceHubPort, timeoutInSeconds))
     {
         msgServer->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return (msgServer);
+    return msgServer;
 }
 
 PRO_RTP_API
@@ -117,7 +115,7 @@ DeleteRtpMsgServer(IRtpMsgServer* msgServer)
         return;
     }
 
-    CRtpMsgServer* const p = (CRtpMsgServer*)msgServer;
+    CRtpMsgServer* p = (CRtpMsgServer*)msgServer;
     p->Fini();
     p->Release();
 }
@@ -134,31 +132,30 @@ CreateRtpMsgC2s(IRtpMsgC2sObserver*          observer,
                 const RTP_MSG_USER*          uplinkUser,
                 const char*                  uplinkPassword,
                 const char*                  uplinkLocalIp,          /* = NULL */
-                unsigned long                uplinkTimeoutInSeconds, /* = 0 */
+                unsigned int                 uplinkTimeoutInSeconds, /* = 0 */
                 const PRO_SSL_SERVER_CONFIG* localSslConfig,         /* = NULL */
                 bool                         localSslForced,         /* = false */
                 unsigned short               localServiceHubPort,
-                unsigned long                localTimeoutInSeconds)  /* = 0 */
+                unsigned int                 localTimeoutInSeconds)  /* = 0 */
 {
     ProRtpInit();
 
-    CRtpMsgC2s* const msgC2s = CRtpMsgC2s::CreateInstance(mmType,
-        uplinkSslConfig, uplinkSslSni, localSslConfig, localSslForced);
+    CRtpMsgC2s* msgC2s = CRtpMsgC2s::CreateInstance(
+        mmType, uplinkSslConfig, uplinkSslSni, localSslConfig, localSslForced);
     if (msgC2s == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
-    if (!msgC2s->Init(observer, reactor, uplinkIp, uplinkPort,
-        uplinkUser, uplinkPassword, uplinkLocalIp, uplinkTimeoutInSeconds,
-        localServiceHubPort, localTimeoutInSeconds))
+    if (!msgC2s->Init(observer, reactor, uplinkIp, uplinkPort, uplinkUser, uplinkPassword,
+        uplinkLocalIp, uplinkTimeoutInSeconds, localServiceHubPort, localTimeoutInSeconds))
     {
         msgC2s->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return (msgC2s);
+    return msgC2s;
 }
 
 PRO_RTP_API
@@ -170,7 +167,7 @@ DeleteRtpMsgC2s(IRtpMsgC2s* msgC2s)
         return;
     }
 
-    CRtpMsgC2s* const p = (CRtpMsgC2s*)msgC2s;
+    CRtpMsgC2s* p = (CRtpMsgC2s*)msgC2s;
     p->Fini();
     p->Release();
 }
@@ -233,7 +230,7 @@ RtpMsgString2User(const char*   idString,
 
             cidString.assign(idString, i);
             uidString.assign(idString + i + 1);
-            iidString = '0';
+            iidString = "0";
 
             goto EXIT;
         }
@@ -261,9 +258,9 @@ EXIT:
     sscanf(uidString.c_str(), "%llu", (unsigned long long*)&uid);
     sscanf(iidString.c_str(), "%u"  , &iid);
 
-    const unsigned char maxCid = 0xFF;
-    const uint64_t      maxUid = 0xFFFFFFFFFFULL;
-    const uint16_t      maxIid = 0xFFFF;
+    unsigned char maxCid = 0xFF;
+    uint64_t      maxUid = 0xFFFFFFFFFFULL;
+    uint16_t      maxIid = 0xFFFF;
 
     if (cid <= maxCid && uid <= maxUid && iid <= maxIid)
     {

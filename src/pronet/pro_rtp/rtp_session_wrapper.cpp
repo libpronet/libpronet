@@ -64,7 +64,7 @@ CRtpSessionWrapper::CreateInstance(const RTP_SESSION_INFO* localInfo)
     assert(localInfo->mmType != 0);
     if (localInfo == NULL || localInfo->mmType == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     return new CRtpSessionWrapper(*localInfo);
@@ -107,7 +107,7 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
     assert(initArgs->comm.reactor != NULL);
     if (initArgs == NULL || initArgs->comm.observer == NULL || initArgs->comm.reactor == NULL)
     {
-        return (false);
+        return false;
     }
 
     RTP_INIT_ARGS initArgs2 = *initArgs;
@@ -185,7 +185,7 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
         {
             assert(0);
 
-            return (false);
+            return false;
         }
     } /* end of switch () */
 
@@ -198,13 +198,13 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
         assert(m_bucket == NULL);
         if (m_observer != NULL || m_reactor != NULL || m_session != NULL || m_bucket != NULL)
         {
-            return (false);
+            return false;
         }
 
         IRtpBucket* sysBucket = CreateRtpBucket(m_info.mmType, sessionType);
         if (sysBucket == NULL)
         {
-            return (false);
+            return false;
         }
 
         switch (sessionType)
@@ -381,9 +381,7 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                     initArgs2.tcpclientEx.suspendRecv
                     );
                 ProZeroMemory(
-                    initArgs2.tcpclientEx.password,
-                    sizeof(initArgs2.tcpclientEx.password)
-                    );
+                    initArgs2.tcpclientEx.password, sizeof(initArgs2.tcpclientEx.password));
                 if (m_session == NULL)
                 {
                     break;
@@ -444,9 +442,7 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
                     initArgs2.sslclientEx.suspendRecv
                     );
                 ProZeroMemory(
-                    initArgs2.sslclientEx.password,
-                    sizeof(initArgs2.sslclientEx.password)
-                    );
+                    initArgs2.sslclientEx.password, sizeof(initArgs2.sslclientEx.password));
                 if (m_session == NULL)
                 {
                     break;
@@ -553,10 +549,10 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
 
         if (m_session == NULL)
         {
-            return (false);
+            return false;
         }
 
-        unsigned long statInSeconds = GetRtpStatTimeSpan();
+        unsigned int statInSeconds = GetRtpStatTimeSpan();
 
         switch (sessionType)
         {
@@ -599,7 +595,7 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
         }
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -634,8 +630,8 @@ CRtpSessionWrapper::Fini()
         m_observer = NULL;
     }
 
-    int       i = 0;
-    const int c = (int)pushPackets.size();
+    int i = 0;
+    int c = (int)pushPackets.size();
 
     for (; i < c; ++i)
     {
@@ -727,7 +723,7 @@ CRtpSessionWrapper::GetSslSuite(char suiteName[64]) const
         }
     }
 
-    return (suiteId);
+    return suiteId;
 }
 
 int64_t
@@ -761,7 +757,7 @@ CRtpSessionWrapper::GetLocalIp(char localIp[64]) const
         }
     }
 
-    return (localIp);
+    return localIp;
 }
 
 unsigned short
@@ -778,7 +774,7 @@ CRtpSessionWrapper::GetLocalPort() const
         }
     }
 
-    return (localPort);
+    return localPort;
 }
 
 const char*
@@ -795,7 +791,7 @@ CRtpSessionWrapper::GetRemoteIp(char remoteIp[64]) const
         }
     }
 
-    return (remoteIp);
+    return remoteIp;
 }
 
 unsigned short
@@ -812,23 +808,21 @@ CRtpSessionWrapper::GetRemotePort() const
         }
     }
 
-    return (remotePort);
+    return remotePort;
 }
 
 void
 CRtpSessionWrapper::SetRemoteIpAndPort(const char*    remoteIp,   /* = NULL */
                                        unsigned short remotePort) /* = 0 */
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
-        {
-            return;
-        }
-
-        m_session->SetRemoteIpAndPort(remoteIp, remotePort);
+        return;
     }
+
+    m_session->SetRemoteIpAndPort(remoteIp, remotePort);
 }
 
 bool
@@ -845,7 +839,7 @@ CRtpSessionWrapper::IsTcpConnected() const
         }
     }
 
-    return (connected);
+    return connected;
 }
 
 bool
@@ -860,7 +854,7 @@ CRtpSessionWrapper::SendPacket(IRtpPacket* packet,
     assert(packet != NULL);
     if (packet == NULL)
     {
-        return (false);
+        return false;
     }
 
     bool ret = false;
@@ -870,28 +864,28 @@ CRtpSessionWrapper::SendPacket(IRtpPacket* packet,
 
         if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
         {
-            return (false);
+            return false;
         }
 
         if (!m_enableOutput)
         {
-            return (false);
+            return false;
         }
 
         ret = PushPacket(packet);
     }
 
-    return (ret);
+    return ret;
 }
 
 bool
-CRtpSessionWrapper::SendPacketByTimer(IRtpPacket*   packet,
-                                      unsigned long sendDurationMs) /* = 0 */
+CRtpSessionWrapper::SendPacketByTimer(IRtpPacket*  packet,
+                                      unsigned int sendDurationMs) /* = 0 */
 {
     assert(packet != NULL);
     if (packet == NULL)
     {
-        return (false);
+        return false;
     }
 
     {
@@ -899,12 +893,12 @@ CRtpSessionWrapper::SendPacketByTimer(IRtpPacket*   packet,
 
         if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
         {
-            return (false);
+            return false;
         }
 
         if (!m_enableOutput)
         {
-            return (false);
+            return false;
         }
 
         if (m_sendTimerId == 0)
@@ -918,7 +912,7 @@ CRtpSessionWrapper::SendPacketByTimer(IRtpPacket*   packet,
         m_pushTick       = ProGetTickCount64();
     }
 
-    return (true);
+    return true;
 }
 
 bool
@@ -955,7 +949,7 @@ CRtpSessionWrapper::PushPacket(IRtpPacket* packet)
     {
     }
 
-    return (m_pushToBucketRet2);
+    return m_pushToBucketRet2;
 }
 
 bool
@@ -964,14 +958,14 @@ CRtpSessionWrapper::DoSendPacket()
     assert(m_session != NULL);
     assert(m_bucket != NULL);
 
-    IRtpPacket* const packet = m_bucket->GetFront();
+    IRtpPacket* packet = m_bucket->GetFront();
     if (packet == NULL)
     {
-        return (false);
+        return false;
     }
 
-    bool       tryAgain = false;
-    const bool ret      = m_session->SendPacket(packet, &tryAgain);
+    bool tryAgain = false;
+    bool ret      = m_session->SendPacket(packet, &tryAgain);
 
     if (ret)
     {
@@ -996,7 +990,7 @@ CRtpSessionWrapper::DoSendPacket()
     {
     }
 
-    return (ret);
+    return ret;
 }
 
 void
@@ -1025,46 +1019,40 @@ CRtpSessionWrapper::GetSendOnSendTick(int64_t* onSendTick1,       /* = NULL */
 void
 CRtpSessionWrapper::RequestOnSend()
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
-        {
-            return;
-        }
-
-        m_session->RequestOnSend();
+        return;
     }
+
+    m_session->RequestOnSend();
 }
 
 void
 CRtpSessionWrapper::SuspendRecv()
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
-        {
-            return;
-        }
-
-        m_session->SuspendRecv();
+        return;
     }
+
+    m_session->SuspendRecv();
 }
 
 void
 CRtpSessionWrapper::ResumeRecv()
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
-        {
-            return;
-        }
-
-        m_session->ResumeRecv();
+        return;
     }
+
+    m_session->ResumeRecv();
 }
 
 bool
@@ -1077,28 +1065,26 @@ CRtpSessionWrapper::AddMcastReceiver(const char* mcastIp)
 
         if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
         {
-            return (false);
+            return false;
         }
 
         ret = m_session->AddMcastReceiver(mcastIp);
     }
 
-    return (ret);
+    return ret;
 }
 
 void
 CRtpSessionWrapper::RemoveMcastReceiver(const char* mcastIp)
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
-        {
-            return;
-        }
-
-        m_session->RemoveMcastReceiver(mcastIp);
+        return;
     }
+
+    m_session->RemoveMcastReceiver(mcastIp);
 }
 
 void
@@ -1165,8 +1151,8 @@ CRtpSessionWrapper::EnableOutput(bool enable)
         m_statLossRateOutput.Reset();
     }
 
-    int       i = 0;
-    const int c = (int)pushPackets.size();
+    int i = 0;
+    int c = (int)pushPackets.size();
 
     for (; i < c; ++i)
     {
@@ -1179,16 +1165,14 @@ CRtpSessionWrapper::SetOutputRedline(size_t redlineBytes,   /* = 0 */
                                      size_t redlineFrames,  /* = 0 */
                                      size_t redlineDelayMs) /* = 0 */
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
-        {
-            return;
-        }
-
-        m_bucket->SetRedline(redlineBytes, redlineFrames, redlineDelayMs);
+        return;
     }
+
+    m_bucket->SetRedline(redlineBytes, redlineFrames, redlineDelayMs);
 }
 
 void
@@ -1272,16 +1256,14 @@ CRtpSessionWrapper::GetFlowctrlInfo(float*  srcFrameRate,       /* = NULL */
 void
 CRtpSessionWrapper::ResetFlowctrlInfo()
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
-        {
-            return;
-        }
-
-        m_bucket->ResetFlowctrlInfo();
+        return;
     }
+
+    m_bucket->ResetFlowctrlInfo();
 }
 
 void
@@ -1290,25 +1272,23 @@ CRtpSessionWrapper::GetInputStat(float*    frameRate,       /* = NULL */
                                  float*    lossRate,        /* = NULL */
                                  uint64_t* lossCount) const /* = NULL */
 {
-    {
-        CProThreadMutexGuard mon(m_lock);
+    CProThreadMutexGuard mon(m_lock);
 
-        if (frameRate != NULL)
-        {
-            *frameRate = (float)m_statFrameRateInput.CalcBitRate();
-        }
-        if (bitRate != NULL)
-        {
-            *bitRate   = (float)m_statBitRateInput.CalcBitRate();
-        }
-        if (lossRate != NULL)
-        {
-            *lossRate  = (float)m_statLossRateInput.CalcLossRate();
-        }
-        if (lossCount != NULL)
-        {
-            *lossCount = (uint64_t)m_statLossRateInput.CalcLossCount();
-        }
+    if (frameRate != NULL)
+    {
+        *frameRate = (float)m_statFrameRateInput.CalcBitRate();
+    }
+    if (bitRate != NULL)
+    {
+        *bitRate   = (float)m_statBitRateInput.CalcBitRate();
+    }
+    if (lossRate != NULL)
+    {
+        *lossRate  = (float)m_statLossRateInput.CalcLossRate();
+    }
+    if (lossCount != NULL)
+    {
+        *lossCount = (uint64_t)m_statLossRateInput.CalcLossCount();
     }
 }
 
@@ -1318,70 +1298,62 @@ CRtpSessionWrapper::GetOutputStat(float*    frameRate,       /* = NULL */
                                   float*    lossRate,        /* = NULL */
                                   uint64_t* lossCount) const /* = NULL */
 {
-    {
-        CProThreadMutexGuard mon(m_lock);
+    CProThreadMutexGuard mon(m_lock);
 
-        if (frameRate != NULL)
-        {
-            *frameRate = (float)m_statFrameRateOutput.CalcBitRate();
-        }
-        if (bitRate != NULL)
-        {
-            *bitRate   = (float)m_statBitRateOutput.CalcBitRate();
-        }
-        if (lossRate != NULL)
-        {
-            *lossRate  = (float)m_statLossRateOutput.CalcLossRate();
-        }
-        if (lossCount != NULL)
-        {
-            *lossCount = (uint64_t)m_statLossRateOutput.CalcLossCount();
-        }
+    if (frameRate != NULL)
+    {
+        *frameRate = (float)m_statFrameRateOutput.CalcBitRate();
+    }
+    if (bitRate != NULL)
+    {
+        *bitRate   = (float)m_statBitRateOutput.CalcBitRate();
+    }
+    if (lossRate != NULL)
+    {
+        *lossRate  = (float)m_statLossRateOutput.CalcLossRate();
+    }
+    if (lossCount != NULL)
+    {
+        *lossCount = (uint64_t)m_statLossRateOutput.CalcLossCount();
     }
 }
 
 void
 CRtpSessionWrapper::ResetInputStat()
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
-        {
-            return;
-        }
-
-        m_statFrameRateInput.Reset();
-        m_statBitRateInput.Reset();
-        m_statLossRateInput.Reset();
+        return;
     }
+
+    m_statFrameRateInput.Reset();
+    m_statBitRateInput.Reset();
+    m_statLossRateInput.Reset();
 }
 
 void
 CRtpSessionWrapper::ResetOutputStat()
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactor == NULL || m_session == NULL || m_bucket == NULL)
-        {
-            return;
-        }
-
-        m_statFrameRateOutput.Reset();
-        m_statBitRateOutput.Reset();
-        m_statLossRateOutput.Reset();
+        return;
     }
+
+    m_statFrameRateOutput.Reset();
+    m_statBitRateOutput.Reset();
+    m_statLossRateOutput.Reset();
 }
 
 void
 CRtpSessionWrapper::SetMagic(int64_t magic)
 {
-    {
-        CProThreadMutexGuard mon(m_lock);
+    CProThreadMutexGuard mon(m_lock);
 
-        m_magic = magic;
-    }
+    m_magic = magic;
 }
 
 int64_t
@@ -1395,7 +1367,7 @@ CRtpSessionWrapper::GetMagic() const
         magic = m_magic;
     }
 
-    return (magic);
+    return magic;
 }
 
 void
@@ -1545,8 +1517,8 @@ CRtpSessionWrapper::OnSendSession(IRtpSession* session,
 
 void
 CRtpSessionWrapper::OnCloseSession(IRtpSession* session,
-                                   long         errorCode,
-                                   long         sslCode,
+                                   int          errorCode,
+                                   int          sslCode,
                                    bool         tcpConnected)
 {
     assert(session != NULL);
@@ -1819,7 +1791,7 @@ CRtpSessionWrapper::OnTimer(void*    factory,
                     break;
                 }
 
-                IRtpPacket* const packet = m_pushPackets.front();
+                IRtpPacket* packet = m_pushPackets.front();
                 m_pushPackets.pop_front();
                 PushPacket(packet);
                 packet->Release();

@@ -34,7 +34,7 @@ CRtpSessionSslclientEx::CreateInstance(const RTP_SESSION_INFO*      localInfo,
     assert(sslConfig != NULL);
     if (localInfo == NULL || localInfo->mmType == 0 || sslConfig == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     assert(
@@ -46,7 +46,7 @@ CRtpSessionSslclientEx::CreateInstance(const RTP_SESSION_INFO*      localInfo,
         localInfo->packMode != RTP_EPM_TCP2    &&
         localInfo->packMode != RTP_EPM_TCP4)
     {
-        return (NULL);
+        return NULL;
     }
 
     return new CRtpSessionSslclientEx(*localInfo, suspendRecv, sslConfig, sslSni);

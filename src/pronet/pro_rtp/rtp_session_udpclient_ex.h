@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(RTP_SESSION_UDPCLIENT_EX_H)
+#ifndef RTP_SESSION_UDPCLIENT_EX_H
 #define RTP_SESSION_UDPCLIENT_EX_H
 
 #include "rtp_session_base.h"
@@ -37,7 +37,7 @@ public:
         const char*          remoteIp,
         unsigned short       remotePort,
         const char*          localIp,         /* = NULL */
-        unsigned long        timeoutInSeconds /* = 0 */
+        unsigned int         timeoutInSeconds /* = 0 */
         );
 
     virtual void Fini();

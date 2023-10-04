@@ -11,7 +11,7 @@
  * purpose.  It is provided "as is" without express or implied warranty.
  */
 
-#if !defined(__SGI_STL_INTERNAL_ALLOC_H)
+#ifndef __SGI_STL_INTERNAL_ALLOC_H
 #define __SGI_STL_INTERNAL_ALLOC_H
 
 #include <cstddef>

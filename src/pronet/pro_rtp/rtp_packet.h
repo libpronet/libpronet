@@ -20,7 +20,7 @@
  * RFC-1889/1890, RFC-3550/3551
  */
 
-#if !defined(RTP_PACKET_H)
+#ifndef RTP_PACKET_H
 #define RTP_PACKET_H
 
 #include "rtp_base.h"

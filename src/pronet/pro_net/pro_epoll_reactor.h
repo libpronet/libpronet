@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(PRO_EPOLL_REACTOR_H)
+#ifndef PRO_EPOLL_REACTOR_H
 #define PRO_EPOLL_REACTOR_H
 
 #include "pro_base_reactor.h"
@@ -57,7 +57,7 @@ private:
 
     virtual void OnError(
         int64_t sockId,
-        long    errorCode
+        int     errorCode
         );
 
 private:

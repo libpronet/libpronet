@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(PRO_SERVICE_PIPE_H)
+#ifndef PRO_SERVICE_PIPE_H
 #define PRO_SERVICE_PIPE_H
 
 #include "pro_tcp_transport.h"
@@ -233,8 +233,8 @@ private:
 
     virtual void OnClose(
         IProTransport* trans,
-        long           errorCode,
-        long           sslCode
+        int            errorCode,
+        int            sslCode
         );
 
     virtual void OnHeartbeat(IProTransport* trans)

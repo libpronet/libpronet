@@ -33,7 +33,7 @@ CProChannelTaskPool::~CProChannelTaskPool()
 }
 
 bool
-CProChannelTaskPool::Start(size_t threadCount)
+CProChannelTaskPool::Start(unsigned int threadCount)
 {
     assert(threadCount > 0);
     if (threadCount == 0)
@@ -54,7 +54,7 @@ CProChannelTaskPool::Start(size_t threadCount)
 
         for (int i = 0; i < (int)threadCount; ++i)
         {
-            CProFunctorCommandTask* const task = new CProFunctorCommandTask;
+            CProFunctorCommandTask* task = new CProFunctorCommandTask;
             task2Channels[task] = 0;
             if (!task->Start())
             {
@@ -173,6 +173,8 @@ CProChannelTaskPool::Put(uint64_t            channelId,
         return false;
     }
 
+    bool ret = false;
+
     {
         CProThreadMutexGuard mon(m_lock);
 
@@ -187,11 +189,10 @@ CProChannelTaskPool::Put(uint64_t            channelId,
             return false;
         }
 
-        CProFunctorCommandTask* const task = itr->second;
-        task->Put(command);
+        ret = itr->second->Put(command);
     }
 
-    return true;
+    return ret;
 }
 
 size_t
@@ -207,8 +208,7 @@ CProChannelTaskPool::GetSize() const
 
         for (; itr != end; ++itr)
         {
-            CProFunctorCommandTask* const task = itr->first;
-            size += task->GetSize();
+            size += itr->first->GetSize();
         }
     }
 

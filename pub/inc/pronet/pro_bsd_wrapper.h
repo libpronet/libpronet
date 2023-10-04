@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(____PRO_BSD_WRAPPER_H____)
+#ifndef ____PRO_BSD_WRAPPER_H____
 #define ____PRO_BSD_WRAPPER_H____
 
 #include "pro_a.h"
@@ -184,11 +184,11 @@ void
 pbsd_startup();
 
 int
-pbsd_errno(void* action); /* = NULL */
+pbsd_errno(const void* action); /* = NULL */
 
 int
-pbsd_gethostname(char* name,
-                 int   namelen);
+pbsd_gethostname(char*  name,
+                 size_t len);
 
 uint32_t
 pbsd_inet_aton(const char* ipornamestring); /* = NULL */
@@ -275,32 +275,32 @@ pbsd_listen(int64_t fd);
 
 int64_t
 pbsd_accept(int64_t           fd,
-            pbsd_sockaddr_in* addr);
+            pbsd_sockaddr_in* srcaddr);
 
 int64_t
 pbsd_accept_un(int64_t           fd,
-               pbsd_sockaddr_un* addr);
+               pbsd_sockaddr_un* srcaddr);
 
 int
 pbsd_connect(int64_t                 fd,
-             const pbsd_sockaddr_in* addr);
+             const pbsd_sockaddr_in* dstaddr);
 
 int
 pbsd_connect_un(int64_t                 fd,
-                const pbsd_sockaddr_un* addr);
+                const pbsd_sockaddr_un* dstaddr);
 
 int
 pbsd_send(int64_t     fd,
           const void* buf,
-          int         buflen,
+          size_t      len,
           int         flags);
 
 int
 pbsd_sendto(int64_t                 fd,
             const void*             buf,
-            int                     buflen,
+            size_t                  len,
             int                     flags,
-            const pbsd_sockaddr_in* addr);
+            const pbsd_sockaddr_in* dstaddr);
 
 int
 pbsd_sendmsg(int64_t            fd,
@@ -310,15 +310,15 @@ pbsd_sendmsg(int64_t            fd,
 int
 pbsd_recv(int64_t fd,
           void*   buf,
-          int     buflen,
+          size_t  len,
           int     flags);
 
 int
 pbsd_recvfrom(int64_t           fd,
               void*             buf,
-              int               buflen,
+              size_t            len,
               int               flags,
-              pbsd_sockaddr_in* addr);
+              pbsd_sockaddr_in* srcaddr);
 
 int
 pbsd_recvmsg(int64_t      fd,

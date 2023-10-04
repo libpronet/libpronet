@@ -85,7 +85,7 @@ CProConnector::Init(IProConnectorObserver* observer,
                     const char*            remoteIp,
                     unsigned short         remotePort,
                     const char*            localBindIp,      /* = NULL */
-                    unsigned long          timeoutInSeconds) /* = 0 */
+                    unsigned int           timeoutInSeconds) /* = 0 */
 {
     assert(observer != NULL);
     assert(reactorTask != NULL);
@@ -95,7 +95,7 @@ CProConnector::Init(IProConnectorObserver* observer,
     if (observer == NULL || reactorTask == NULL ||
         remoteIp == NULL || remoteIp[0] == '\0' || remotePort == 0)
     {
-        return (false);
+        return false;
     }
 
     if (timeoutInSeconds == 0)
@@ -118,7 +118,7 @@ CProConnector::Init(IProConnectorObserver* observer,
         remoteAddr.sin_addr.s_addr == (uint32_t)-1 ||
         remoteAddr.sin_addr.s_addr == 0)
     {
-        return (false);
+        return false;
     }
 
     {
@@ -127,10 +127,9 @@ CProConnector::Init(IProConnectorObserver* observer,
         assert(m_observer == NULL);
         assert(m_reactorTask == NULL);
         assert(m_handshaker == NULL);
-        if (m_observer != NULL || m_reactorTask != NULL ||
-            m_handshaker != NULL)
+        if (m_observer != NULL || m_reactorTask != NULL || m_handshaker != NULL)
         {
-            return (false);
+            return false;
         }
 
         if (m_enableUnixSocket && remoteAddr.sin_addr.s_addr == pbsd_inet_aton("127.0.0.1"))
@@ -152,7 +151,7 @@ CProConnector::Init(IProConnectorObserver* observer,
         m_timerId1         = reactorTask->ScheduleTimer(this, (uint64_t)timeoutInSeconds * 1000, false, 0);
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -190,17 +189,13 @@ CProConnector::Fini()
 unsigned long
 CProConnector::AddRef()
 {
-    const unsigned long refCount = CProEventHandler::AddRef();
-
-    return (refCount);
+    return CProEventHandler::AddRef();
 }
 
 unsigned long
 CProConnector::Release()
 {
-    const unsigned long refCount = CProEventHandler::Release();
-
-    return (refCount);
+    return CProEventHandler::Release();
 }
 
 void
@@ -332,7 +327,7 @@ CProConnector::OnException(int64_t sockId)
 
 void
 CProConnector::OnError(int64_t sockId,
-                       long    errorCode)
+                       int     errorCode)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -399,7 +394,7 @@ CProConnector::OnHandshakeOk(IProTcpHandshaker* handshaker,
                              int64_t            sockId,
                              bool               unixSocket,
                              const void*        buf,
-                             unsigned long      size)
+                             size_t             size)
 {
     assert(handshaker != NULL);
     assert(sockId != -1);
@@ -508,7 +503,7 @@ CProConnector::OnHandshakeOk(IProTcpHandshaker* handshaker,
 
 void
 CProConnector::OnHandshakeError(IProTcpHandshaker* handshaker,
-                                long               errorCode)
+                                int                errorCode)
 {
     assert(handshaker != NULL);
     if (handshaker == NULL)
@@ -641,7 +636,7 @@ CProConnector::OnTimer(void*    factory,
             else
 #endif
             {
-                const int option = 1;
+                int option = 1;
                 pbsd_setsockopt(m_sockId, IPPROTO_TCP, TCP_NODELAY, &option, sizeof(int));
 
                 if (pbsd_bind(m_sockId, &m_localAddr, false) != 0)

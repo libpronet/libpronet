@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(____PRO_THREAD_H____)
+#ifndef ____PRO_THREAD_H____
 #define ____PRO_THREAD_H____
 
 #include "pro_a.h"
@@ -35,7 +35,7 @@ class CProThreadBase
 {
 public:
 
-    size_t GetThreadCount() const;
+    unsigned int GetThreadCount() const;
 
 protected:
 
@@ -63,7 +63,7 @@ private:
 
 private:
 
-    size_t                     m_threadCount;
+    unsigned int               m_threadCount;
 #if !defined(_WIN32)
     CProStlMap<uint64_t, bool> m_threadId2Realtime;
 #endif

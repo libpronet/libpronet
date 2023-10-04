@@ -20,7 +20,7 @@
  * RFC-1889/1890, RFC-3550/3551
  */
 
-#if !defined(RTP_SESSION_MCAST_H)
+#ifndef RTP_SESSION_MCAST_H
 #define RTP_SESSION_MCAST_H
 
 #include "rtp_session_base.h"

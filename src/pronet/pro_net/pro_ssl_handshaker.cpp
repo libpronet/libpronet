@@ -76,7 +76,7 @@ CProSslHandshaker::Init(IProSslHandshakerObserver* observer,
                         size_t                     sendDataSize,     /* = 0 */
                         size_t                     recvDataSize,     /* = 0 */
                         bool                       recvFirst,        /* = false */
-                        unsigned long              timeoutInSeconds) /* = 0 */
+                        unsigned int               timeoutInSeconds) /* = 0 */
 {
     assert(observer != NULL);
     assert(reactorTask != NULL);
@@ -84,7 +84,7 @@ CProSslHandshaker::Init(IProSslHandshakerObserver* observer,
     assert(sockId != -1);
     if (observer == NULL || reactorTask == NULL || ctx == NULL || sockId == -1)
     {
-        return (false);
+        return false;
     }
 
     if (timeoutInSeconds == 0)
@@ -100,7 +100,7 @@ CProSslHandshaker::Init(IProSslHandshakerObserver* observer,
         assert(m_ctx == NULL);
         if (m_observer != NULL || m_reactorTask != NULL || m_ctx != NULL)
         {
-            return (false);
+            return false;
         }
 
         if (sendData != NULL && sendDataSize > 0)
@@ -110,12 +110,12 @@ CProSslHandshaker::Init(IProSslHandshakerObserver* observer,
 
         if (recvDataSize > 0 && !m_recvPool.Resize(recvDataSize))
         {
-            return (false);
+            return false;
         }
 
         if (!reactorTask->AddHandler(sockId, this, PRO_MASK_WRITE | PRO_MASK_READ))
         {
-            return (false);
+            return false;
         }
 
         observer->AddRef();
@@ -130,7 +130,7 @@ CProSslHandshaker::Init(IProSslHandshakerObserver* observer,
         m_timerId     = reactorTask->ScheduleTimer(this, (uint64_t)timeoutInSeconds * 1000, false, 0);
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -209,7 +209,7 @@ CProSslHandshaker::DoRecv(int64_t sockId)
 
         if (!m_sslOk)
         {
-            const int ret = mbedtls_ssl_handshake((mbedtls_ssl_context*)m_ctx);
+            int ret = mbedtls_ssl_handshake((mbedtls_ssl_context*)m_ctx);
             if (ret == 0)
             {
                 m_sslOk = true;
@@ -251,8 +251,8 @@ CProSslHandshaker::DoRecv(int64_t sockId)
 
         do
         {
-            const size_t idleSize = m_recvPool.ContinuousIdleSize();
-            const size_t minSize  = (msgSize == 0 || msgSize > idleSize) ? idleSize : msgSize;
+            size_t idleSize = m_recvPool.ContinuousIdleSize();
+            size_t minSize  = (msgSize == 0 || msgSize > idleSize) ? idleSize : msgSize;
 
             if (idleSize == 0)
             {
@@ -261,7 +261,7 @@ CProSslHandshaker::DoRecv(int64_t sockId)
                 break;
             }
 
-            const int recvSize = mbedtls_ssl_read((mbedtls_ssl_context*)m_ctx,
+            int recvSize = mbedtls_ssl_read((mbedtls_ssl_context*)m_ctx,
                 (unsigned char*)m_recvPool.ContinuousIdleBuf(), minSize);
             assert(recvSize <= (int)minSize);
 
@@ -312,8 +312,8 @@ CProSslHandshaker::DoRecv(int64_t sockId)
 
         if (!error)
         {
-            unsigned long     theSize = 0;
-            const void* const theBuf  = m_sendPool.PreSend(theSize);
+            size_t      theSize = 0;
+            const void* theBuf  = m_sendPool.PreSend(theSize);
 
             if (
                 !m_onWr
@@ -369,7 +369,7 @@ CProSslHandshaker::DoSend(int64_t sockId)
     IProSslHandshakerObserver* observer  = NULL;
     PRO_SSL_CTX*               ctx       = NULL;
     void*                      buf       = NULL;
-    unsigned long              size      = 0;
+    size_t                     size      = 0;
     int                        errorCode = 0;
     int                        sslCode   = 0;
     bool                       error     = false;
@@ -387,14 +387,14 @@ CProSslHandshaker::DoSend(int64_t sockId)
             return;
         }
 
-        unsigned long     theSize   = 0;
-        const void* const theBuf    = m_sendPool.PreSend(theSize);
+        size_t            theSize   = 0;
+        const void*       theBuf    = m_sendPool.PreSend(theSize);
         const CProBuffer* onSendBuf = NULL;
         size_t            idleSize  = 0;
 
         if (!m_sslOk)
         {
-            const int ret = mbedtls_ssl_handshake((mbedtls_ssl_context*)m_ctx);
+            int ret = mbedtls_ssl_handshake((mbedtls_ssl_context*)m_ctx);
             if (ret == 0)
             {
                 m_sslOk = true;
@@ -439,7 +439,7 @@ CProSslHandshaker::DoSend(int64_t sockId)
 
         if (theBuf != NULL && theSize > 0)
         {
-            const int sentSize = mbedtls_ssl_write(
+            int sentSize = mbedtls_ssl_write(
                 (mbedtls_ssl_context*)m_ctx, (unsigned char*)theBuf, theSize);
             assert(sentSize <= (int)theSize);
 
@@ -548,7 +548,7 @@ EXIT:
 
 void
 CProSslHandshaker::OnError(int64_t sockId,
-                           long    errorCode)
+                           int     errorCode)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -557,7 +557,7 @@ CProSslHandshaker::OnError(int64_t sockId,
     }
 
     IProSslHandshakerObserver* observer = NULL;
-    const int                  sslCode  = 0;
+    int                        sslCode  = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -599,8 +599,8 @@ CProSslHandshaker::OnTimer(void*    factory,
     }
 
     IProSslHandshakerObserver* observer  = NULL;
-    const int                  errorCode = PBSD_ETIMEDOUT;
-    const int                  sslCode   = 0;
+    int                        errorCode = PBSD_ETIMEDOUT;
+    int                        sslCode   = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);

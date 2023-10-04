@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(PRO_SERVICE_HOST_H)
+#ifndef PRO_SERVICE_HOST_H
 #define PRO_SERVICE_HOST_H
 
 #include "pro_service_pipe.h"

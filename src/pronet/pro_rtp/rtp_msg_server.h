@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(RTP_MSG_SERVER_H)
+#ifndef RTP_MSG_SERVER_H
 #define RTP_MSG_SERVER_H
 
 #include "rtp_base.h"
@@ -43,7 +43,6 @@ struct RTP_MSG_AsyncOnAcceptSession
         sslCtx     = NULL;
         sockId     = -1;
         unixSocket = false;
-        remoteIp   = "";
         remotePort = 0;
 
         memset(&remoteInfo, 0, sizeof(RTP_SESSION_INFO));
@@ -113,7 +112,7 @@ public:
         IRtpMsgServerObserver* observer,
         IProReactor*           reactor,
         unsigned short         serviceHubPort,
-        unsigned long          timeoutInSeconds /* = 0 */
+        unsigned int           timeoutInSeconds /* = 0 */
         );
 
     void Fini();
@@ -219,8 +218,8 @@ private:
 
     virtual void OnCloseSession(
         IRtpSession* session,
-        long         errorCode,
-        long         sslCode,
+        int          errorCode,
+        int          sslCode,
         bool         tcpConnected
         );
 

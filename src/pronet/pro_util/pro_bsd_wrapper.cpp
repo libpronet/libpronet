@@ -135,8 +135,8 @@ pbsd_getaddrinfo_i(const char*              name,
         return;
     }
 
-    const uint32_t loopmin = pbsd_ntoh32(pbsd_inet_addr_i("127.0.0.0"));
-    const uint32_t loopmax = pbsd_ntoh32(pbsd_inet_addr_i("127.255.255.255"));
+    uint32_t loopmin = pbsd_ntoh32(pbsd_inet_addr_i("127.0.0.0"));
+    uint32_t loopmax = pbsd_ntoh32(pbsd_inet_addr_i("127.255.255.255"));
 
     struct addrinfo hints = { 0 };
     hints.ai_family   = AF_INET;
@@ -163,7 +163,7 @@ pbsd_getaddrinfo_i(const char*              name,
 
         addr = (pbsd_sockaddr_in*)itr->ai_addr;
 
-        const uint32_t iphost = pbsd_ntoh32(addr->sin_addr.s_addr);
+        uint32_t iphost = pbsd_ntoh32(addr->sin_addr.s_addr);
         if (
             (iphost < loopmin || iphost > loopmax)
             &&
@@ -193,7 +193,7 @@ GetLocalFirstIpWithGW_i(char        localFirstIp[64],
         return;
     }
 
-    const int64_t sockId = pbsd_socket(AF_INET, SOCK_DGRAM, 0);
+    int64_t sockId = pbsd_socket(AF_INET, SOCK_DGRAM, 0);
     if (sockId == -1)
     {
         return;
@@ -280,7 +280,7 @@ pbsd_startup()
 }
 
 int
-pbsd_errno(void* action) /* = NULL */
+pbsd_errno(const void* action) /* = NULL */
 {
     int errcode = 0;
 
@@ -312,10 +312,10 @@ pbsd_errno(void* action) /* = NULL */
 }
 
 int
-pbsd_gethostname(char* name,
-                 int   namelen)
+pbsd_gethostname(char*  name,
+                 size_t len)
 {
-    return gethostname(name, namelen);
+    return gethostname(name, (int)len);
 }
 
 uint32_t
@@ -416,8 +416,8 @@ pbsd_hton64(uint64_t host64)
 #if defined(PRO_WORDS_BIGENDIAN)
     net64 = host64;
 #else
-    const uint32_t high = pbsd_hton32((uint32_t)(host64 >> 32));
-    const uint32_t low  = pbsd_hton32((uint32_t)host64);
+    uint32_t high = pbsd_hton32((uint32_t)(host64 >> 32));
+    uint32_t low  = pbsd_hton32((uint32_t)host64);
     net64 =   low;
     net64 <<= 32;
     net64 |=  high;
@@ -483,7 +483,7 @@ pbsd_socket(int af,
 
         if (af == AF_INET && type == SOCK_DGRAM)
         {
-            const int option = 1;
+            int option = 1;
             pbsd_setsockopt(fd, SOL_SOCKET, SO_BROADCAST, &option, sizeof(int));
 
 #if defined(_WIN32)
@@ -688,8 +688,8 @@ pbsd_setsockopt(int64_t     fd,
             break;
         }
 
-        unsigned char* const p   = (unsigned char*)optval;
-        int                  sum = 0;
+        unsigned char* p   = (unsigned char*)optval;
+        int            sum = 0;
 
         for (int i = 0; i < optlen; ++i)
         {
@@ -810,13 +810,13 @@ pbsd_bind(int64_t                 fd,
 {
     if (reuseaddr)
     {
-        const int option = 1;
+        int option = 1;
         pbsd_setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(int));
     }
     else
     {
 #if defined(_WIN32)
-        const int option = 1;
+        int option = 1;
         pbsd_setsockopt(fd, SOL_SOCKET, SO_EXCLUSIVEADDRUSE, &option, sizeof(int));
 #endif
     }
@@ -861,7 +861,7 @@ pbsd_listen(int64_t fd)
 
 int64_t
 pbsd_accept(int64_t           fd,
-            pbsd_sockaddr_in* addr)
+            pbsd_sockaddr_in* srcaddr)
 {
     int64_t newfd = -1;
 
@@ -872,13 +872,13 @@ pbsd_accept(int64_t           fd,
         int addrlen = sizeof(pbsd_sockaddr_in);
         if (sizeof(SOCKET) == 8)
         {
-            newfd = (int64_t)accept(
-                (SOCKET)fd, (struct sockaddr*)addr, addr != NULL ? &addrlen : NULL);
+            newfd = (int64_t)accept((SOCKET)fd,
+                (struct sockaddr*)srcaddr, srcaddr != NULL ? &addrlen : NULL);
         }
         else
         {
-            newfd = (int32_t)accept(
-                (SOCKET)fd, (struct sockaddr*)addr, addr != NULL ? &addrlen : NULL);
+            newfd = (int32_t)accept((SOCKET)fd,
+                (struct sockaddr*)srcaddr, srcaddr != NULL ? &addrlen : NULL);
         }
     }
     while (0);
@@ -893,8 +893,8 @@ pbsd_accept(int64_t           fd,
         do
         {
             socklen_t addrlen = sizeof(pbsd_sockaddr_in);
-            newfd     = (int32_t)accept4(
-                (int)fd, (struct sockaddr*)addr, addr != NULL ? &addrlen : NULL, SOCK_CLOEXEC);
+            newfd     = (int32_t)accept4((int)fd,
+                (struct sockaddr*)srcaddr, srcaddr != NULL ? &addrlen : NULL, SOCK_CLOEXEC);
             errorcode = pbsd_errno((void*)&pbsd_accept);
         }
         while (newfd < 0 && errorcode == PBSD_EINTR);
@@ -906,8 +906,8 @@ pbsd_accept(int64_t           fd,
         do
         {
             socklen_t addrlen = sizeof(pbsd_sockaddr_in);
-            newfd = (int32_t)accept(
-                (int)fd, (struct sockaddr*)addr, addr != NULL ? &addrlen : NULL);
+            newfd = (int32_t)accept((int)fd,
+                (struct sockaddr*)srcaddr, srcaddr != NULL ? &addrlen : NULL);
         }
         while (newfd < 0 && pbsd_errno((void*)&pbsd_accept) == PBSD_EINTR);
 
@@ -936,7 +936,7 @@ pbsd_accept(int64_t           fd,
 
 int64_t
 pbsd_accept_un(int64_t           fd,
-               pbsd_sockaddr_un* addr)
+               pbsd_sockaddr_un* srcaddr)
 {
     int64_t newfd = -1;
 
@@ -950,8 +950,8 @@ pbsd_accept_un(int64_t           fd,
         do
         {
             socklen_t addrlen = sizeof(pbsd_sockaddr_un);
-            newfd     = (int32_t)accept4(
-                (int)fd, (struct sockaddr*)addr, addr != NULL ? &addrlen : NULL, SOCK_CLOEXEC);
+            newfd     = (int32_t)accept4((int)fd,
+                (struct sockaddr*)srcaddr, srcaddr != NULL ? &addrlen : NULL, SOCK_CLOEXEC);
             errorcode = pbsd_errno((void*)&pbsd_accept_un);
         }
         while (newfd < 0 && errorcode == PBSD_EINTR);
@@ -963,8 +963,8 @@ pbsd_accept_un(int64_t           fd,
         do
         {
             socklen_t addrlen = sizeof(pbsd_sockaddr_un);
-            newfd = (int32_t)accept(
-                (int)fd, (struct sockaddr*)addr, addr != NULL ? &addrlen : NULL);
+            newfd = (int32_t)accept((int)fd,
+                (struct sockaddr*)srcaddr, srcaddr != NULL ? &addrlen : NULL);
         }
         while (newfd < 0 && pbsd_errno((void*)&pbsd_accept_un) == PBSD_EINTR);
 
@@ -993,22 +993,22 @@ pbsd_accept_un(int64_t           fd,
 
 int
 pbsd_connect(int64_t                 fd,
-             const pbsd_sockaddr_in* addr)
+             const pbsd_sockaddr_in* dstaddr)
 {
     int retc = -1;
 
 #if defined(_WIN32)
     do
     {
-        retc = connect(
-            (SOCKET)fd, (struct sockaddr*)addr, addr != NULL ? sizeof(pbsd_sockaddr_in) : 0);
+        retc = connect((SOCKET)fd,
+            (struct sockaddr*)dstaddr, dstaddr != NULL ? sizeof(pbsd_sockaddr_in) : 0);
     }
     while (0);
 #else
     do
     {
-        retc = connect(
-            (int)fd, (struct sockaddr*)addr, addr != NULL ? sizeof(pbsd_sockaddr_in) : 0);
+        retc = connect((int)fd,
+            (struct sockaddr*)dstaddr, dstaddr != NULL ? sizeof(pbsd_sockaddr_in) : 0);
     }
     while (retc != 0 && pbsd_errno((void*)&pbsd_connect) == PBSD_EINTR);
 #endif
@@ -1018,15 +1018,15 @@ pbsd_connect(int64_t                 fd,
 
 int
 pbsd_connect_un(int64_t                 fd,
-                const pbsd_sockaddr_un* addr)
+                const pbsd_sockaddr_un* dstaddr)
 {
     int retc = -1;
 
 #if !defined(_WIN32)
     do
     {
-        retc = connect(
-            (int)fd, (struct sockaddr*)addr, addr != NULL ? sizeof(pbsd_sockaddr_un) : 0);
+        retc = connect((int)fd,
+            (struct sockaddr*)dstaddr, dstaddr != NULL ? sizeof(pbsd_sockaddr_un) : 0);
     }
     while (retc != 0 && pbsd_errno((void*)&pbsd_connect_un) == PBSD_EINTR);
 #endif
@@ -1037,7 +1037,7 @@ pbsd_connect_un(int64_t                 fd,
 int
 pbsd_send(int64_t     fd,
           const void* buf,
-          int         buflen,
+          size_t      len,
           int         flags)
 {
     int retc = -1;
@@ -1045,13 +1045,13 @@ pbsd_send(int64_t     fd,
 #if defined(_WIN32)
     do
     {
-        retc = send((SOCKET)fd, (char*)buf, buflen, flags);
+        retc = send((SOCKET)fd, (char*)buf, (int)len, flags);
     }
     while (0);
 #else
     do
     {
-        retc = send((int)fd, buf, buflen, flags);
+        retc = send((int)fd, buf, len, flags);
     }
     while (retc < 0 && pbsd_errno((void*)&pbsd_send) == PBSD_EINTR);
 #endif
@@ -1062,24 +1062,24 @@ pbsd_send(int64_t     fd,
 int
 pbsd_sendto(int64_t                 fd,
             const void*             buf,
-            int                     buflen,
+            size_t                  len,
             int                     flags,
-            const pbsd_sockaddr_in* addr)
+            const pbsd_sockaddr_in* dstaddr)
 {
     int retc = -1;
 
 #if defined(_WIN32)
     do
     {
-        retc = sendto((SOCKET)fd, (char*)buf, buflen, flags,
-            (struct sockaddr*)addr, addr != NULL ? sizeof(pbsd_sockaddr_in) : 0);
+        retc = sendto((SOCKET)fd, (char*)buf, (int)len, flags,
+            (struct sockaddr*)dstaddr, dstaddr != NULL ? sizeof(pbsd_sockaddr_in) : 0);
     }
     while (0);
 #else
     do
     {
-        retc = sendto((int)fd, buf, buflen, flags,
-            (struct sockaddr*)addr, addr != NULL ? sizeof(pbsd_sockaddr_in) : 0);
+        retc = sendto((int)fd, buf, len, flags,
+            (struct sockaddr*)dstaddr, dstaddr != NULL ? sizeof(pbsd_sockaddr_in) : 0);
     }
     while (retc < 0 && pbsd_errno((void*)&pbsd_sendto) == PBSD_EINTR);
 #endif
@@ -1108,7 +1108,7 @@ pbsd_sendmsg(int64_t            fd,
 int
 pbsd_recv(int64_t fd,
           void*   buf,
-          int     buflen,
+          size_t  len,
           int     flags)
 {
     int retc = -1;
@@ -1116,13 +1116,13 @@ pbsd_recv(int64_t fd,
 #if defined(_WIN32)
     do
     {
-        retc = recv((SOCKET)fd, (char*)buf, buflen, flags);
+        retc = recv((SOCKET)fd, (char*)buf, (int)len, flags);
     }
     while (0);
 #else
     do
     {
-        retc = recv((int)fd, buf, buflen, flags);
+        retc = recv((int)fd, buf, len, flags);
     }
     while (retc < 0 && pbsd_errno((void*)&pbsd_recv) == PBSD_EINTR);
 #endif
@@ -1133,9 +1133,9 @@ pbsd_recv(int64_t fd,
 int
 pbsd_recvfrom(int64_t           fd,
               void*             buf,
-              int               buflen,
+              size_t            len,
               int               flags,
-              pbsd_sockaddr_in* addr)
+              pbsd_sockaddr_in* srcaddr)
 {
     int retc = -1;
 
@@ -1143,16 +1143,16 @@ pbsd_recvfrom(int64_t           fd,
     do
     {
         int addrlen = sizeof(pbsd_sockaddr_in);
-        retc = recvfrom((SOCKET)fd, (char*)buf, buflen, flags,
-            (struct sockaddr*)addr, addr != NULL ? &addrlen : NULL);
+        retc = recvfrom((SOCKET)fd, (char*)buf, (int)len, flags,
+            (struct sockaddr*)srcaddr, srcaddr != NULL ? &addrlen : NULL);
     }
     while (0);
 #else
     do
     {
         socklen_t addrlen = sizeof(pbsd_sockaddr_in);
-        retc = recvfrom((int)fd, buf, buflen, flags,
-            (struct sockaddr*)addr, addr != NULL ? &addrlen : NULL);
+        retc = recvfrom((int)fd, buf, len, flags,
+            (struct sockaddr*)srcaddr, srcaddr != NULL ? &addrlen : NULL);
     }
     while (retc < 0 && pbsd_errno((void*)&pbsd_recvfrom) == PBSD_EINTR);
 #endif
@@ -1253,7 +1253,7 @@ pbsd_poll(pbsd_pollfd* fds,
 int
 pbsd_epoll_create()
 {
-    const int epfd = epoll_create(PBSD_EPOLL_SIZE);
+    int epfd = epoll_create(PBSD_EPOLL_SIZE);
     if (epfd < 0)
     {
         return -1;
@@ -1411,7 +1411,7 @@ ProGetLocalIpList(CProStlVector<CProStlString>& localIpList)
     CProStlVector<uint32_t> ips;
     pbsd_getaddrinfo_i(name, ips);
 
-    const int c = (int)ips.size();
+    int c = (int)ips.size();
     if (c == 0)
     {
         return;

@@ -36,9 +36,7 @@
 CC2sServer*
 CC2sServer::CreateInstance(CProLogFile& logFile)
 {
-    CC2sServer* const server = new CC2sServer(logFile);
-
-    return (server);
+    return new CC2sServer(logFile);
 }
 
 CC2sServer::CC2sServer(CProLogFile& logFile)
@@ -63,7 +61,7 @@ CC2sServer::Init(IProReactor*                  reactor,
     assert(reactor != NULL);
     if (reactor == NULL)
     {
-        return (false);
+        return false;
     }
 
     PRO_SSL_CLIENT_CONFIG* uplinkSslConfig = NULL;
@@ -77,10 +75,10 @@ CC2sServer::Init(IProReactor*                  reactor,
         assert(m_uplinkSslConfig == NULL);
         assert(m_localSslConfig == NULL);
         assert(m_msgC2s == NULL);
-        if (m_reactor != NULL || m_uplinkSslConfig != NULL ||
-            m_localSslConfig != NULL || m_msgC2s != NULL)
+        if (m_reactor != NULL || m_uplinkSslConfig != NULL || m_localSslConfig != NULL ||
+            m_msgC2s != NULL)
         {
-            return (false);
+            return false;
         }
 
         if (configInfo.c2ss_ssl_uplink)
@@ -96,7 +94,7 @@ CC2sServer::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.c2ss_ssl_uplink_cafiles[i].empty())
                 {
-                    caFiles.push_back(&configInfo.c2ss_ssl_uplink_cafiles[i][0]);
+                    caFiles.push_back(configInfo.c2ss_ssl_uplink_cafiles[i].c_str());
                 }
             }
 
@@ -107,7 +105,7 @@ CC2sServer::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.c2ss_ssl_uplink_crlfiles[i].empty())
                 {
-                    crlFiles.push_back(&configInfo.c2ss_ssl_uplink_crlfiles[i][0]);
+                    crlFiles.push_back(configInfo.c2ss_ssl_uplink_crlfiles[i].c_str());
                 }
             }
 
@@ -133,9 +131,7 @@ CC2sServer::Init(IProReactor*                  reactor,
                 }
 
                 ProSslClientConfig_EnableSha1Cert(
-                    uplinkSslConfig,
-                    configInfo.c2ss_ssl_uplink_enable_sha1cert
-                    );
+                    uplinkSslConfig, configInfo.c2ss_ssl_uplink_enable_sha1cert);
 
                 if (!ProSslClientConfig_SetCaList(
                     uplinkSslConfig,
@@ -148,11 +144,7 @@ CC2sServer::Init(IProReactor*                  reactor,
                     goto EXIT;
                 }
 
-                if (!ProSslClientConfig_SetSuiteList(
-                    uplinkSslConfig,
-                    &suites[0],
-                    suites.size()
-                    ))
+                if (!ProSslClientConfig_SetSuiteList(uplinkSslConfig, &suites[0], suites.size()))
                 {
                     goto EXIT;
                 }
@@ -172,7 +164,7 @@ CC2sServer::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.c2ss_ssl_local_cafiles[i].empty())
                 {
-                    caFiles.push_back(&configInfo.c2ss_ssl_local_cafiles[i][0]);
+                    caFiles.push_back(configInfo.c2ss_ssl_local_cafiles[i].c_str());
                 }
             }
 
@@ -183,7 +175,7 @@ CC2sServer::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.c2ss_ssl_local_crlfiles[i].empty())
                 {
-                    crlFiles.push_back(&configInfo.c2ss_ssl_local_crlfiles[i][0]);
+                    crlFiles.push_back(configInfo.c2ss_ssl_local_crlfiles[i].c_str());
                 }
             }
 
@@ -194,7 +186,7 @@ CC2sServer::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.c2ss_ssl_local_certfiles[i].empty())
                 {
-                    certFiles.push_back(&configInfo.c2ss_ssl_local_certfiles[i][0]);
+                    certFiles.push_back(configInfo.c2ss_ssl_local_certfiles[i].c_str());
                 }
             }
 
@@ -207,9 +199,7 @@ CC2sServer::Init(IProReactor*                  reactor,
                 }
 
                 ProSslServerConfig_EnableSha1Cert(
-                    localSslConfig,
-                    configInfo.c2ss_ssl_local_enable_sha1cert
-                    );
+                    localSslConfig, configInfo.c2ss_ssl_local_enable_sha1cert);
 
                 if (!ProSslServerConfig_SetCaList(
                     localSslConfig,
@@ -227,7 +217,7 @@ CC2sServer::Init(IProReactor*                  reactor,
                     &certFiles[0],
                     certFiles.size(),
                     configInfo.c2ss_ssl_local_keyfile.c_str(),
-                    NULL
+                    NULL /* password to decrypt the keyfile */
                     ))
                 {
                     goto EXIT;
@@ -269,14 +259,12 @@ CC2sServer::Init(IProReactor*                  reactor,
         if (!m_configInfo.c2ss_uplink_password.empty())
         {
             ProZeroMemory(
-                &m_configInfo.c2ss_uplink_password[0],
-                m_configInfo.c2ss_uplink_password.length()
-                );
+                &m_configInfo.c2ss_uplink_password[0], m_configInfo.c2ss_uplink_password.length());
             m_configInfo.c2ss_uplink_password = "";
         }
     }
 
-    return (true);
+    return true;
 
 EXIT:
 
@@ -284,7 +272,7 @@ EXIT:
     ProSslServerConfig_Delete(localSslConfig);
     ProSslClientConfig_Delete(uplinkSslConfig);
 
-    return (false);
+    return false;
 }
 
 void
@@ -319,17 +307,13 @@ CC2sServer::Fini()
 unsigned long
 CC2sServer::AddRef()
 {
-    const unsigned long refCount = CProRefCount::AddRef();
-
-    return (refCount);
+    return CProRefCount::AddRef();
 }
 
 unsigned long
 CC2sServer::Release()
 {
-    const unsigned long refCount = CProRefCount::Release();
-
-    return (refCount);
+    return CProRefCount::Release();
 }
 
 void
@@ -374,8 +358,7 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
     assert(myUser != NULL);
     assert(myPublicIp != NULL);
     assert(myPublicIp[0] != '\0');
-    if (msgC2s == NULL || myUser == NULL || myPublicIp == NULL ||
-        myPublicIp[0] == '\0')
+    if (msgC2s == NULL || myUser == NULL || myPublicIp == NULL || myPublicIp[0] == '\0')
     {
         return;
     }
@@ -432,8 +415,8 @@ CC2sServer::OnOkC2s(IRtpMsgC2s*         msgC2s,
 
 void
 CC2sServer::OnCloseC2s(IRtpMsgC2s* msgC2s,
-                       long        errorCode,
-                       long        sslCode,
+                       int         errorCode,
+                       int         sslCode,
                        bool        tcpConnected)
 {
     assert(msgC2s != NULL);
@@ -483,8 +466,8 @@ CC2sServer::OnCloseC2s(IRtpMsgC2s* msgC2s,
             (unsigned int)myUser.classId,
             (unsigned long long)myUser.UserId(),
             (unsigned int)myUser.instId,
-            (int)errorCode,
-            (int)sslCode,
+            errorCode,
+            sslCode,
             (int)tcpConnected,
             remoteIp,
             (unsigned int)remotePort
@@ -503,8 +486,7 @@ CC2sServer::OnOkUser(IRtpMsgC2s*         msgC2s,
     assert(user != NULL);
     assert(userPublicIp != NULL);
     assert(userPublicIp[0] != '\0');
-    if (msgC2s == NULL || user == NULL || userPublicIp == NULL ||
-        userPublicIp[0] == '\0')
+    if (msgC2s == NULL || user == NULL || userPublicIp == NULL || userPublicIp[0] == '\0')
     {
         return;
     }
@@ -551,8 +533,8 @@ CC2sServer::OnOkUser(IRtpMsgC2s*         msgC2s,
 void
 CC2sServer::OnCloseUser(IRtpMsgC2s*         msgC2s,
                         const RTP_MSG_USER* user,
-                        long                errorCode,
-                        long                sslCode)
+                        int                 errorCode,
+                        int                 sslCode)
 {
     assert(msgC2s != NULL);
     assert(user != NULL);
@@ -590,8 +572,8 @@ CC2sServer::OnCloseUser(IRtpMsgC2s*         msgC2s,
             (unsigned int)user->classId,
             (unsigned long long)user->UserId(),
             (unsigned int)user->instId,
-            (int)errorCode,
-            (int)sslCode,
+            errorCode,
+            sslCode,
             (unsigned int)userCount
             );
         m_logFile.Log(traceInfo, PRO_LL_INFO, true);

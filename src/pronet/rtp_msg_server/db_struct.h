@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(DB_STRUCT_H)
+#ifndef DB_STRUCT_H
 #define DB_STRUCT_H
 
 #include "../pro_util/pro_memory_pool.h"

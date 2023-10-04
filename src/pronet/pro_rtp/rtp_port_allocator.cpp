@@ -43,7 +43,7 @@ CRtpPortAllocator::SetPortRange(unsigned short minPort,
 {
     if (minPort == 0 || maxPort == 0 || minPort > maxPort)
     {
-        return (false);
+        return false;
     }
 
     m_lock.Lock();
@@ -52,7 +52,7 @@ CRtpPortAllocator::SetPortRange(unsigned short minPort,
     m_portItr  = (unsigned short)(ProRand_0_1() * m_portSpan);
     m_lock.Unlock();
 
-    return (true);
+    return true;
 }
 
 void
@@ -78,5 +78,5 @@ CRtpPortAllocator::AllocPort(bool rfc)
         --port;
     }
 
-    return (port);
+    return port;
 }

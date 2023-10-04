@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(PRO_SSL_TRANSPORT_H)
+#ifndef PRO_SSL_TRANSPORT_H
 #define PRO_SSL_TRANSPORT_H
 
 #include "pro_tcp_transport.h"

@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(C2S_SERVER_H)
+#ifndef C2S_SERVER_H
 #define C2S_SERVER_H
 
 #include "../pro_rtp/rtp_base.h"
@@ -193,8 +193,8 @@ private:
 
     virtual void OnCloseC2s(
         IRtpMsgC2s* msgC2s,
-        long        errorCode,
-        long        sslCode,
+        int         errorCode,
+        int         sslCode,
         bool        tcpConnected
         );
 
@@ -214,8 +214,8 @@ private:
     virtual void OnCloseUser(
         IRtpMsgC2s*         msgC2s,
         const RTP_MSG_USER* user,
-        long                errorCode,
-        long                sslCode
+        int                 errorCode,
+        int                 sslCode
         );
 
     virtual void OnHeartbeatUser(

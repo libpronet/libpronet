@@ -20,7 +20,7 @@
  * This is an implementation of the "Decorate" pattern.
  */
 
-#if !defined(RTP_SESSION_WRAPPER_H)
+#ifndef RTP_SESSION_WRAPPER_H
 #define RTP_SESSION_WRAPPER_H
 
 #include "rtp_base.h"
@@ -99,8 +99,8 @@ private:
         );
 
     virtual bool SendPacketByTimer(
-        IRtpPacket*   packet,
-        unsigned long sendDurationMs /* = 0 */
+        IRtpPacket*  packet,
+        unsigned int sendDurationMs /* = 0 */
         );
 
     virtual void GetSendOnSendTick(
@@ -181,8 +181,8 @@ private:
 
     virtual void OnCloseSession(
         IRtpSession* session,
-        long         errorCode,
-        long         sslCode,
+        int          errorCode,
+        int          sslCode,
         bool         tcpConnected
         );
 
@@ -220,7 +220,7 @@ private:
     int64_t                   m_traceTick;
 
     uint64_t                  m_sendTimerId;
-    unsigned long             m_sendDurationMs;
+    unsigned int              m_sendDurationMs;
     int64_t                   m_pushTick;
     CProStlDeque<IRtpPacket*> m_pushPackets;
 

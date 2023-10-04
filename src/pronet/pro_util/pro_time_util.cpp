@@ -82,17 +82,16 @@ ProGetLocalTime(PRO_LOCAL_TIME& localTime,
         return;
     }
 
-    const int64_t tt = (int64_t)tv.tv_sec * 1000000 + tv.tv_usec +
-        (int64_t)deltaMilliseconds * 1000;
+    int64_t tt = (int64_t)tv.tv_sec * 1000000 + tv.tv_usec + (int64_t)deltaMilliseconds * 1000;
 
-    const time_t seconds      = (time_t)(tt / 1000000);
-    const time_t microseconds = (time_t)(tt % 1000000);
+    time_t seconds      = (time_t)(tt / 1000000);
+    time_t microseconds = (time_t)(tt % 1000000);
     if (seconds <= 0)
     {
         return;
     }
 
-    const struct tm* const tm = localtime(&seconds);
+    const struct tm* tm = localtime(&seconds);
     if (tm == NULL)
     {
         return;
@@ -301,11 +300,10 @@ ProGetLocalTimeval(struct timeval& localTimeval,
         return;
     }
 
-    const int64_t tt = (int64_t)tv.tv_sec * 1000000 + tv.tv_usec +
-        (int64_t)deltaMilliseconds * 1000;
+    int64_t tt = (int64_t)tv.tv_sec * 1000000 + tv.tv_usec + (int64_t)deltaMilliseconds * 1000;
 
-    const time_t seconds      = (time_t)(tt / 1000000);
-    const time_t microseconds = (time_t)(tt % 1000000);
+    time_t seconds      = (time_t)(tt / 1000000);
+    time_t microseconds = (time_t)(tt % 1000000);
     if (seconds <= 0)
     {
         return;

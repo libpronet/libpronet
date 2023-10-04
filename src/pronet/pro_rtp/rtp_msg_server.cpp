@@ -104,7 +104,7 @@ CRtpMsgServer::CreateInstance(RTP_MM_TYPE                  mmType,
     assert(mmType <= RTP_MMT_MSG_MAX);
     if (mmType < RTP_MMT_MSG_MIN || mmType > RTP_MMT_MSG_MAX)
     {
-        return (NULL);
+        return NULL;
     }
 
     return new CRtpMsgServer(mmType, sslConfig, sslForced);
@@ -136,14 +136,14 @@ bool
 CRtpMsgServer::Init(IRtpMsgServerObserver* observer,
                     IProReactor*           reactor,
                     unsigned short         serviceHubPort,
-                    unsigned long          timeoutInSeconds) /* = 0 */
+                    unsigned int           timeoutInSeconds) /* = 0 */
 {
     assert(observer != NULL);
     assert(reactor != NULL);
     assert(serviceHubPort > 0);
     if (observer == NULL || reactor == NULL || serviceHubPort == 0)
     {
-        return (false);
+        return false;
     }
 
     if (timeoutInSeconds == 0)
@@ -163,7 +163,7 @@ CRtpMsgServer::Init(IRtpMsgServerObserver* observer,
         assert(m_service == NULL);
         if (m_observer != NULL || m_reactor != NULL || m_task != NULL || m_service != NULL)
         {
-            return (false);
+            return false;
         }
 
         task = new CProFunctorCommandTask;
@@ -187,14 +187,14 @@ CRtpMsgServer::Init(IRtpMsgServerObserver* observer,
         m_serviceHubPort = serviceHubPort;
     }
 
-    return (true);
+    return true;
 
 EXIT:
 
     DeleteRtpService(service);
     delete task;
 
-    return (false);
+    return false;
 }
 
 void
@@ -226,8 +226,8 @@ CRtpMsgServer::Fini()
         m_observer = NULL;
     }
 
-    CProStlMap<IRtpSession*, RTP_MSG_LINK_CTX*>::iterator       itr = session2Ctx.begin();
-    CProStlMap<IRtpSession*, RTP_MSG_LINK_CTX*>::iterator const end = session2Ctx.end();
+    auto itr = session2Ctx.begin();
+    auto end = session2Ctx.end();
 
     for (; itr != end; ++itr)
     {
@@ -263,7 +263,7 @@ CRtpMsgServer::GetServicePort() const
         servicePort = m_serviceHubPort;
     }
 
-    return (servicePort);
+    return servicePort;
 }
 
 PRO_SSL_SUITE_ID
@@ -277,23 +277,22 @@ CRtpMsgServer::GetSslSuite(const RTP_MSG_USER* user,
     assert(user != NULL);
     if (user == NULL)
     {
-        return (suiteId);
+        return suiteId;
     }
 
     {
         CProThreadMutexGuard mon(m_lock);
 
-        CProStlMap<RTP_MSG_USER, RTP_MSG_LINK_CTX*>::const_iterator const itr =
-            m_user2Ctx.find(*user);
+        auto itr = m_user2Ctx.find(*user);
         if (itr != m_user2Ctx.end())
         {
-            const RTP_MSG_LINK_CTX* const ctx = itr->second;
+            const RTP_MSG_LINK_CTX* ctx = itr->second;
 
             suiteId = ctx->session->GetSslSuite(suiteName);
         }
     }
 
-    return (suiteId);
+    return suiteId;
 }
 
 void
@@ -301,21 +300,19 @@ CRtpMsgServer::GetUserCount(size_t* pendingUserCount,   /* = NULL */
                             size_t* baseUserCount,      /* = NULL */
                             size_t* subUserCount) const /* = NULL */
 {
-    {
-        CProThreadMutexGuard mon(m_lock);
+    CProThreadMutexGuard mon(m_lock);
 
-        if (pendingUserCount != NULL)
-        {
-            *pendingUserCount = m_task != NULL ? m_task->GetSize() : 0;
-        }
-        if (baseUserCount != NULL)
-        {
-            *baseUserCount    = m_session2Ctx.size();
-        }
-        if (subUserCount != NULL)
-        {
-            *subUserCount     = m_user2Ctx.size() - m_session2Ctx.size();
-        }
+    if (pendingUserCount != NULL)
+    {
+        *pendingUserCount = m_task != NULL ? m_task->GetSize() : 0;
+    }
+    if (baseUserCount != NULL)
+    {
+        *baseUserCount    = m_session2Ctx.size();
+    }
+    if (subUserCount != NULL)
+    {
+        *subUserCount     = m_user2Ctx.size() - m_session2Ctx.size();
     }
 }
 
@@ -336,7 +333,7 @@ CRtpMsgServer::KickoutUser(const RTP_MSG_USER* user)
             return;
         }
 
-        IProFunctorCommand* const command =
+        IProFunctorCommand* command =
             CProFunctorCommand_cpp<CRtpMsgServer, ACTION>::CreateInstance(
                 *this,
                 &CRtpMsgServer::AsyncKickoutUser,
@@ -351,7 +348,7 @@ CRtpMsgServer::KickoutUser(const RTP_MSG_USER* user)
 void
 CRtpMsgServer::AsyncKickoutUser(int64_t* args)
 {
-    const RTP_MSG_USER user((unsigned char)args[0], args[1], (uint16_t)args[2]);
+    RTP_MSG_USER user((unsigned char)args[0], args[1], (uint16_t)args[2]);
     assert(user.classId > 0);
     assert(user.UserId() > 0);
 
@@ -367,22 +364,21 @@ CRtpMsgServer::AsyncKickoutUser(int64_t* args)
             return;
         }
 
-        CProStlMap<RTP_MSG_USER, RTP_MSG_LINK_CTX*>::iterator const itr =
-            m_user2Ctx.find(user);
+        auto itr = m_user2Ctx.find(user);
         if (itr == m_user2Ctx.end())
         {
             return;
         }
 
-        RTP_MSG_LINK_CTX* const ctx = itr->second;
+        RTP_MSG_LINK_CTX* ctx = itr->second;
 
         if (user == ctx->baseUser)
         {
             oldSession = ctx->session;
             oldUsers   = ctx->subUsers;
 
-            CProStlSet<RTP_MSG_USER>::iterator       itr2 = oldUsers.begin();
-            CProStlSet<RTP_MSG_USER>::iterator const end2 = oldUsers.end();
+            auto itr2 = oldUsers.begin();
+            auto end2 = oldUsers.end();
 
             for (; itr2 != end2; ++itr2)
             {
@@ -409,8 +405,8 @@ CRtpMsgServer::AsyncKickoutUser(int64_t* args)
         observer = m_observer;
     }
 
-    CProStlSet<RTP_MSG_USER>::iterator       itr = oldUsers.begin();
-    CProStlSet<RTP_MSG_USER>::iterator const end = oldUsers.end();
+    auto itr = oldUsers.begin();
+    auto end = oldUsers.end();
 
     for (; itr != end; ++itr)
     {
@@ -447,7 +443,7 @@ CRtpMsgServer::SendMsg2(const void*         buf1,
     assert(dstUserCount > 0);
     if (buf1 == NULL || size1 == 0 || dstUsers == NULL || dstUserCount == 0)
     {
-        return (false);
+        return false;
     }
 
     bool                                                   ret          = true;
@@ -460,7 +456,7 @@ CRtpMsgServer::SendMsg2(const void*         buf1,
 
         if (m_observer == NULL || m_reactor == NULL || m_task == NULL || m_service == NULL)
         {
-            return (false);
+            return false;
         }
 
         for (int i = 0; i < (int)dstUserCount; ++i)
@@ -471,15 +467,14 @@ CRtpMsgServer::SendMsg2(const void*         buf1,
                 continue;
             }
 
-            CProStlMap<RTP_MSG_USER, RTP_MSG_LINK_CTX*>::iterator const itr =
-                m_user2Ctx.find(dstUsers[i]);
+            auto itr = m_user2Ctx.find(dstUsers[i]);
             if (itr == m_user2Ctx.end())
             {
                 ret = false;
                 continue;
             }
 
-            const RTP_MSG_LINK_CTX* const dstCtx = itr->second;
+            const RTP_MSG_LINK_CTX* dstCtx = itr->second;
 
             if (dstUsers[i] == dstCtx->baseUser)
             {
@@ -489,8 +484,7 @@ CRtpMsgServer::SendMsg2(const void*         buf1,
             }
             else
             {
-                CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::iterator const itr2 =
-                    session2SubUsers.find(dstCtx->session);
+                auto itr2 = session2SubUsers.find(dstCtx->session);
                 if (itr2 != session2SubUsers.end())
                 {
                     itr2->second.push_back(dstUsers[i]);
@@ -509,7 +503,7 @@ CRtpMsgServer::SendMsg2(const void*         buf1,
      */
     for (int i = 0; i < (int)sessionCount; ++i)
     {
-        const bool ret2 = SendMsgToDownlink(m_mmType, sessions + i, 1, buf1, size1,
+        bool ret2 = SendMsgToDownlink(m_mmType, sessions + i, 1, buf1, size1,
             buf2, size2, charset, ROOT_ID, NULL, 0);
         if (!ret2)
         {
@@ -523,15 +517,15 @@ CRtpMsgServer::SendMsg2(const void*         buf1,
      * to subUsers
      */
     {
-        CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::iterator       itr = session2SubUsers.begin();
-        CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::iterator const end = session2SubUsers.end();
+        auto itr = session2SubUsers.begin();
+        auto end = session2SubUsers.end();
 
         for (; itr != end; ++itr)
         {
             IRtpSession*                       session = itr->first;
             const CProStlVector<RTP_MSG_USER>& users   = itr->second;
 
-            const bool ret2 = SendMsgToDownlink(m_mmType, &session, 1, buf1, size1,
+            bool ret2 = SendMsgToDownlink(m_mmType, &session, 1, buf1, size1,
                 buf2, size2, charset, ROOT_ID, &users[0], (unsigned char)users.size());
             if (!ret2)
             {
@@ -542,7 +536,7 @@ CRtpMsgServer::SendMsg2(const void*         buf1,
         }
     }
 
-    return (ret);
+    return ret;
 }
 
 void
@@ -619,7 +613,7 @@ CRtpMsgServer::GetSendingBytes(const RTP_MSG_USER* user) const
     assert(user != NULL);
     if (user == NULL)
     {
-        return (0);
+        return 0;
     }
 
     size_t sendingBytes = 0;
@@ -627,11 +621,10 @@ CRtpMsgServer::GetSendingBytes(const RTP_MSG_USER* user) const
     {
         CProThreadMutexGuard mon(m_lock);
 
-        CProStlMap<RTP_MSG_USER, RTP_MSG_LINK_CTX*>::const_iterator const itr =
-            m_user2Ctx.find(*user);
+        auto itr = m_user2Ctx.find(*user);
         if (itr != m_user2Ctx.end())
         {
-            const RTP_MSG_LINK_CTX* const ctx = itr->second;
+            const RTP_MSG_LINK_CTX* ctx = itr->second;
 
             ctx->session->GetFlowctrlInfo(NULL, NULL, NULL, NULL, &sendingBytes, NULL);
         }
@@ -662,8 +655,7 @@ CRtpMsgServer::OnAcceptSession(IRtpService*            service,
     assert(remoteInfo->sessionType == RTP_ST_TCPCLIENT_EX);
     assert(remoteInfo->mmType == m_mmType);
     assert(remoteInfo->packMode == RTP_MSG_PACK_MODE);
-    if (remoteInfo->sessionType != RTP_ST_TCPCLIENT_EX ||
-        remoteInfo->mmType != m_mmType                 ||
+    if (remoteInfo->sessionType != RTP_ST_TCPCLIENT_EX || remoteInfo->mmType != m_mmType ||
         remoteInfo->packMode != RTP_MSG_PACK_MODE)
     {
         goto EXIT;
@@ -687,7 +679,7 @@ CRtpMsgServer::OnAcceptSession(IRtpService*            service,
             goto EXIT;
         }
 
-        RTP_MSG_AsyncOnAcceptSession* const arg = new RTP_MSG_AsyncOnAcceptSession;
+        RTP_MSG_AsyncOnAcceptSession* arg = new RTP_MSG_AsyncOnAcceptSession;
         arg->sockId     = sockId;
         arg->unixSocket = unixSocket;
         arg->remoteIp   = remoteIp;
@@ -695,7 +687,7 @@ CRtpMsgServer::OnAcceptSession(IRtpService*            service,
         arg->remoteInfo = *remoteInfo;
         arg->nonce      = *nonce;
 
-        IProFunctorCommand* const command =
+        IProFunctorCommand* command =
             CProFunctorCommand_cpp<CRtpMsgServer, ACTION>::CreateInstance(
                 *this,
                 &CRtpMsgServer::AsyncOnAcceptSession,
@@ -727,8 +719,8 @@ CRtpMsgServer::OnAcceptSession(IRtpService*            service,
     assert(remoteIp != NULL);
     assert(remoteInfo != NULL);
     assert(nonce != NULL);
-    if (service == NULL || sslCtx == NULL || sockId == -1 ||
-        remoteIp == NULL || remoteInfo == NULL || nonce == NULL)
+    if (service == NULL || sslCtx == NULL || sockId == -1 || remoteIp == NULL ||
+        remoteInfo == NULL || nonce == NULL)
     {
         return;
     }
@@ -736,8 +728,7 @@ CRtpMsgServer::OnAcceptSession(IRtpService*            service,
     assert(remoteInfo->sessionType == RTP_ST_SSLCLIENT_EX);
     assert(remoteInfo->mmType == m_mmType);
     assert(remoteInfo->packMode == RTP_MSG_PACK_MODE);
-    if (remoteInfo->sessionType != RTP_ST_SSLCLIENT_EX ||
-        remoteInfo->mmType != m_mmType                 ||
+    if (remoteInfo->sessionType != RTP_ST_SSLCLIENT_EX || remoteInfo->mmType != m_mmType ||
         remoteInfo->packMode != RTP_MSG_PACK_MODE)
     {
         goto EXIT;
@@ -761,7 +752,7 @@ CRtpMsgServer::OnAcceptSession(IRtpService*            service,
             goto EXIT;
         }
 
-        RTP_MSG_AsyncOnAcceptSession* const arg = new RTP_MSG_AsyncOnAcceptSession;
+        RTP_MSG_AsyncOnAcceptSession* arg = new RTP_MSG_AsyncOnAcceptSession;
         arg->sslCtx     = sslCtx;
         arg->sockId     = sockId;
         arg->unixSocket = unixSocket;
@@ -770,7 +761,7 @@ CRtpMsgServer::OnAcceptSession(IRtpService*            service,
         arg->remoteInfo = *remoteInfo;
         arg->nonce      = *nonce;
 
-        IProFunctorCommand* const command =
+        IProFunctorCommand* command =
             CProFunctorCommand_cpp<CRtpMsgServer, ACTION>::CreateInstance(
                 *this,
                 &CRtpMsgServer::AsyncOnAcceptSession,
@@ -790,7 +781,7 @@ EXIT:
 void
 CRtpMsgServer::AsyncOnAcceptSession(int64_t* args)
 {
-    RTP_MSG_AsyncOnAcceptSession* const arg = (RTP_MSG_AsyncOnAcceptSession*)args[0];
+    RTP_MSG_AsyncOnAcceptSession* arg = (RTP_MSG_AsyncOnAcceptSession*)args[0];
 
     assert(arg->sockId != -1);
     assert(
@@ -834,20 +825,9 @@ CRtpMsgServer::AsyncOnAcceptSession(int64_t* args)
     baseUser.instId = pbsd_ntoh16(baseUser.instId);
 
     assert(baseUser.classId > 0);
-    assert(
-        baseUser.UserId() == 0
-        ||
-        (baseUser.UserId() >= NODE_UID_MIN && baseUser.UserId() <= NODE_UID_MAX)
-       );
+    assert(baseUser.UserId() <= NODE_UID_MAXX);
     assert(!baseUser.IsRoot());
-    if (
-        baseUser.classId == 0
-        ||
-        (baseUser.UserId() != 0 &&
-        (baseUser.UserId() < NODE_UID_MIN || baseUser.UserId() > NODE_UID_MAX))
-        ||
-        baseUser.IsRoot()
-       )
+    if (baseUser.classId == 0 || baseUser.UserId() > NODE_UID_MAXX || baseUser.IsRoot())
     {
         goto EXIT;
     }
@@ -866,14 +846,7 @@ CRtpMsgServer::AsyncOnAcceptSession(int64_t* args)
 
     if (baseUser.UserId() == 0)
     {
-        if (baseUser.classId == SERVER_CID)
-        {
-            baseUser.UserId(MakeServerId_i());
-        }
-        else
-        {
-            baseUser.UserId(MakeClientId_i());
-        }
+        baseUser.UserId(MakeUserId_i(baseUser.classId));
     }
 
     /*
@@ -903,9 +876,9 @@ CRtpMsgServer::AsyncOnAcceptSession(int64_t* args)
 
     ret = false;
 
-    assert(userId >= NODE_UID_MIN);
+    assert(userId > 0);
     assert(userId <= NODE_UID_MAXX);
-    if (userId < NODE_UID_MIN || userId > NODE_UID_MAXX)
+    if (userId == 0 || userId > NODE_UID_MAXX)
     {
         goto EXIT;
     }
@@ -939,8 +912,8 @@ CRtpMsgServer::AsyncOnAcceptSession(int64_t* args)
         initArgs.sslserverEx.useAckData  = true;
         memcpy(initArgs.sslserverEx.ackData, &hdr0, sizeof(RTP_MSG_HEADER0));
 
-        ret = AddBaseUser(RTP_ST_SSLSERVER_EX, initArgs, localInfo,
-            baseUser, arg->remoteIp, appData, isC2s);
+        ret = AddBaseUser(RTP_ST_SSLSERVER_EX, initArgs, localInfo, baseUser,
+            arg->remoteIp, appData, isC2s);
     }
     else
     {
@@ -952,8 +925,8 @@ CRtpMsgServer::AsyncOnAcceptSession(int64_t* args)
         initArgs.tcpserverEx.useAckData  = true;
         memcpy(initArgs.tcpserverEx.ackData, &hdr0, sizeof(RTP_MSG_HEADER0));
 
-        ret = AddBaseUser(RTP_ST_TCPSERVER_EX, initArgs, localInfo,
-            baseUser, arg->remoteIp, appData, isC2s);
+        ret = AddBaseUser(RTP_ST_TCPSERVER_EX, initArgs, localInfo, baseUser,
+            arg->remoteIp, appData, isC2s);
     }
 
 EXIT:
@@ -979,18 +952,18 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
         return;
     }
 
-    RTP_MSG_HEADER* const msgHeaderPtr = (RTP_MSG_HEADER*)packet->GetPayloadBuffer();
+    RTP_MSG_HEADER* msgHeaderPtr = (RTP_MSG_HEADER*)packet->GetPayloadBuffer();
     if (msgHeaderPtr->dstUserCount == 0)
     {
         msgHeaderPtr->dstUserCount = 1;
     }
 
-    const size_t msgHeaderSize =
+    size_t msgHeaderSize =
         sizeof(RTP_MSG_HEADER) + sizeof(RTP_MSG_USER) * (msgHeaderPtr->dstUserCount - 1);
 
-    const void* const msgBodyPtr  = (char*)msgHeaderPtr + msgHeaderSize;
-    const size_t      msgBodySize = packet->GetPayloadSize() - msgHeaderSize;
-    const uint16_t    charset     = pbsd_ntoh16(msgHeaderPtr->charset);
+    const void* msgBodyPtr  = (char*)msgHeaderPtr + msgHeaderSize;
+    int         msgBodySize = (int)(packet->GetPayloadSize() - msgHeaderSize);
+    uint16_t    charset     = pbsd_ntoh16(msgHeaderPtr->charset);
 
     RTP_MSG_USER srcUser = msgHeaderPtr->srcUser;
     srcUser.instId       = pbsd_ntoh16(srcUser.instId);
@@ -1016,14 +989,13 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
             return;
         }
 
-        CProStlMap<IRtpSession*, RTP_MSG_LINK_CTX*>::iterator const itr =
-            m_session2Ctx.find(session);
+        auto itr = m_session2Ctx.find(session);
         if (itr == m_session2Ctx.end())
         {
             return;
         }
 
-        const RTP_MSG_LINK_CTX* const srcCtx = itr->second;
+        const RTP_MSG_LINK_CTX* srcCtx = itr->second;
         if (srcUser != srcCtx->baseUser &&
             srcCtx->subUsers.find(srcUser) == srcCtx->subUsers.end())
         {
@@ -1045,7 +1017,7 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
 
             if (dstUser.IsRoot())
             {
-                if (dstUser.instId == ROOT_ID_C2S.instId)
+                if (dstUser.instId == ROOT_ID_C2SPORT.instId)
                 {
                     toC2sPort = true;
                 }
@@ -1056,14 +1028,13 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
                 continue;
             }
 
-            CProStlMap<RTP_MSG_USER, RTP_MSG_LINK_CTX*>::iterator const itr2 =
-                m_user2Ctx.find(dstUser);
+            auto itr2 = m_user2Ctx.find(dstUser);
             if (itr2 == m_user2Ctx.end())
             {
                 continue;
             }
 
-            const RTP_MSG_LINK_CTX* const dstCtx = itr2->second;
+            const RTP_MSG_LINK_CTX* dstCtx = itr2->second;
 
             if (dstUser == dstCtx->baseUser)
             {
@@ -1073,8 +1044,7 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
             }
             else
             {
-                CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::iterator const itr3 =
-                    session2SubUsers.find(dstCtx->session);
+                auto itr3 = session2SubUsers.find(dstCtx->session);
                 if (itr3 != session2SubUsers.end())
                 {
                     itr3->second.push_back(dstUser);
@@ -1092,13 +1062,12 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
          */
         do
         {
-            if (!toC2sPort || !srcCtx->isC2s ||
-                srcUser.classId != SERVER_CID || srcUser != srcCtx->baseUser)
+            if (!toC2sPort || !srcCtx->isC2s || srcUser != srcCtx->baseUser)
             {
                 break;
             }
 
-            const CProStlString            theString((char*)msgBodyPtr, msgBodySize);
+            CProStlString                  theString((char*)msgBodyPtr, msgBodySize);
             CProStlVector<PRO_CONFIG_ITEM> theConfigs;
 
             if (!CProConfigStream::StringToConfigs(theString, theConfigs))
@@ -1106,7 +1075,7 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
                 break;
             }
 
-            RTP_MSG_AsyncOnRecvSession* const arg = new RTP_MSG_AsyncOnRecvSession;
+            RTP_MSG_AsyncOnRecvSession* arg = new RTP_MSG_AsyncOnRecvSession;
             arg->session = session;
             arg->c2sUser = srcUser;
             arg->msgStream.Add(theConfigs);
@@ -1132,7 +1101,7 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
             }
 
             arg->session->AddRef();
-            IProFunctorCommand* const command =
+            IProFunctorCommand* command =
                 CProFunctorCommand_cpp<CRtpMsgServer, ACTION>::CreateInstance(
                     *this,
                     &CRtpMsgServer::AsyncOnRecvSession,
@@ -1170,8 +1139,8 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
      * to subUsers
      */
     {
-        CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::iterator       itr = session2SubUsers.begin();
-        CProStlMap<IRtpSession*, CProStlVector<RTP_MSG_USER> >::iterator const end = session2SubUsers.end();
+        auto itr = session2SubUsers.begin();
+        auto end = session2SubUsers.end();
 
         for (; itr != end; ++itr)
         {
@@ -1189,7 +1158,7 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
      */
     if (observer != NULL)
     {
-        observer->OnRecvMsg(this, msgBodyPtr, (unsigned long)msgBodySize, charset, &srcUser);
+        observer->OnRecvMsg(this, msgBodyPtr, msgBodySize, charset, &srcUser);
         observer->Release();
     }
 }
@@ -1197,7 +1166,7 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
 void
 CRtpMsgServer::AsyncOnRecvSession(int64_t* args)
 {
-    RTP_MSG_AsyncOnRecvSession* const arg = (RTP_MSG_AsyncOnRecvSession*)args[0];
+    RTP_MSG_AsyncOnRecvSession* arg = (RTP_MSG_AsyncOnRecvSession*)args[0];
 
     CProStlString msgName;
     arg->msgStream.Get(TAG_msg_name, msgName);
@@ -1224,9 +1193,9 @@ CRtpMsgServer::ProcessMsg_client_login(IRtpSession*            session,
                                        const RTP_MSG_USER&     c2sUser)
 {
     assert(session != NULL);
-    assert(c2sUser.classId == SERVER_CID);
+    assert(c2sUser.classId > 0);
     assert(c2sUser.UserId() > 0);
-    if (session == NULL || c2sUser.classId != SERVER_CID || c2sUser.UserId() == 0)
+    if (session == NULL || c2sUser.classId == 0 || c2sUser.UserId() == 0)
     {
         return;
     }
@@ -1247,21 +1216,11 @@ CRtpMsgServer::ProcessMsg_client_login(IRtpSession*            session,
     RtpMsgString2User(client_id.c_str(), &subUser);
 
     assert(subUser.classId > 0);
-    assert(
-        subUser.UserId() == 0
-        ||
-        (subUser.UserId() >= NODE_UID_MIN && subUser.UserId() <= NODE_UID_MAX)
-       );
+    assert(subUser.UserId() <= NODE_UID_MAXX);
     assert(!subUser.IsRoot());
     assert(subUser != c2sUser);
-    if (
-        subUser.classId == 0
-        ||
-        (subUser.UserId() != 0 &&
-        (subUser.UserId() < NODE_UID_MIN || subUser.UserId() > NODE_UID_MAX))
-        ||
-        subUser.IsRoot() || subUser == c2sUser
-       )
+    if (subUser.classId == 0 || subUser.UserId() > NODE_UID_MAXX || subUser.IsRoot() ||
+        subUser == c2sUser)
     {
         return;
     }
@@ -1273,27 +1232,11 @@ CRtpMsgServer::ProcessMsg_client_login(IRtpSession*            session,
         return;
     }
 
-    char hash[32];
-    char nonce[32];
+    unsigned char hash[32];
+    unsigned char nonce[32];
 
     {
-        const char* const p = client_hash_string.c_str();
-
-        for (int i = 0; i < 32; ++i)
-        {
-            char tmpString[3] = { 0 };
-            tmpString[0] = p[i * 2];
-            tmpString[1] = p[i * 2 + 1];
-
-            unsigned int tmpInt = 0;
-            sscanf(tmpString, "%02x", &tmpInt); /* unsigned */
-
-            hash[i] = (char)tmpInt;
-        }
-    }
-
-    {
-        const char* const p = client_nonce_string.c_str();
+        const char* p = client_hash_string.c_str();
 
         for (int i = 0; i < 32; ++i)
         {
@@ -1304,7 +1247,23 @@ CRtpMsgServer::ProcessMsg_client_login(IRtpSession*            session,
             unsigned int tmpInt = 0;
             sscanf(tmpString, "%02x", &tmpInt);
 
-            nonce[i] = (char)tmpInt;
+            hash[i] = (unsigned char)tmpInt;
+        }
+    }
+
+    {
+        const char* p = client_nonce_string.c_str();
+
+        for (int i = 0; i < 32; ++i)
+        {
+            char tmpString[3] = { 0 };
+            tmpString[0] = p[i * 2];
+            tmpString[1] = p[i * 2 + 1];
+
+            unsigned int tmpInt = 0;
+            sscanf(tmpString, "%02x", &tmpInt);
+
+            nonce[i] = (unsigned char)tmpInt;
         }
     }
 
@@ -1364,10 +1323,10 @@ CRtpMsgServer::ProcessMsg_client_login(IRtpSession*            session,
         subUser.UserId(userId);
         subUser.instId = instId;
 
-        assert(userId >= NODE_UID_MIN);
+        assert(userId > 0);
         assert(userId <= NODE_UID_MAXX);
         assert(subUser != c2sUser);
-        if (userId < NODE_UID_MIN || userId > NODE_UID_MAXX || subUser == c2sUser)
+        if (userId == 0 || userId > NODE_UID_MAXX || subUser == c2sUser)
         {
             ret = false;
         }
@@ -1408,9 +1367,9 @@ CRtpMsgServer::ProcessMsg_client_logout(IRtpSession*            session,
                                         const RTP_MSG_USER&     c2sUser)
 {
     assert(session != NULL);
-    assert(c2sUser.classId == SERVER_CID);
+    assert(c2sUser.classId > 0);
     assert(c2sUser.UserId() > 0);
-    if (session == NULL || c2sUser.classId != SERVER_CID || c2sUser.UserId() == 0)
+    if (session == NULL || c2sUser.classId == 0 || c2sUser.UserId() == 0)
     {
         return;
     }
@@ -1439,14 +1398,13 @@ CRtpMsgServer::ProcessMsg_client_logout(IRtpSession*            session,
             return;
         }
 
-        CProStlMap<RTP_MSG_USER, RTP_MSG_LINK_CTX*>::iterator const itr =
-            m_user2Ctx.find(subUser);
+        auto itr = m_user2Ctx.find(subUser);
         if (itr == m_user2Ctx.end())
         {
             return;
         }
 
-        RTP_MSG_LINK_CTX* const ctx = itr->second;
+        RTP_MSG_LINK_CTX* ctx = itr->second;
         if (!ctx->isC2s || c2sUser != ctx->baseUser)
         {
             return;
@@ -1465,8 +1423,8 @@ CRtpMsgServer::ProcessMsg_client_logout(IRtpSession*            session,
 
 void
 CRtpMsgServer::OnCloseSession(IRtpSession* session,
-                              long         errorCode,
-                              long         sslCode,
+                              int          errorCode,
+                              int          sslCode,
                               bool         tcpConnected)
 {
     assert(session != NULL);
@@ -1484,7 +1442,7 @@ CRtpMsgServer::OnCloseSession(IRtpSession* session,
         }
 
         session->AddRef();
-        IProFunctorCommand* const command =
+        IProFunctorCommand* command =
             CProFunctorCommand_cpp<CRtpMsgServer, ACTION>::CreateInstance(
                 *this,
                 &CRtpMsgServer::AsyncOnCloseSession,
@@ -1499,9 +1457,9 @@ CRtpMsgServer::OnCloseSession(IRtpSession* session,
 void
 CRtpMsgServer::AsyncOnCloseSession(int64_t* args)
 {
-    IRtpSession* const session   = (IRtpSession*)args[0];
-    const long         errorCode = (long)        args[1];
-    const long         sslCode   = (long)        args[2];
+    IRtpSession* session   = (IRtpSession*)args[0];
+    int          errorCode = (int)         args[1];
+    int          sslCode   = (int)         args[2];
 
     IRtpMsgServerObserver*   observer = NULL;
     CProStlSet<RTP_MSG_USER> oldUsers;
@@ -1516,8 +1474,7 @@ CRtpMsgServer::AsyncOnCloseSession(int64_t* args)
             return;
         }
 
-        CProStlMap<IRtpSession*, RTP_MSG_LINK_CTX*>::iterator const itr =
-            m_session2Ctx.find(session);
+        auto itr = m_session2Ctx.find(session);
         if (itr == m_session2Ctx.end())
         {
             session->Release();
@@ -1525,14 +1482,14 @@ CRtpMsgServer::AsyncOnCloseSession(int64_t* args)
             return;
         }
 
-        RTP_MSG_LINK_CTX* const ctx = itr->second;
+        RTP_MSG_LINK_CTX* ctx = itr->second;
         session->Release();
 
         oldUsers = ctx->subUsers;
         oldUsers.insert(ctx->baseUser);
 
-        CProStlSet<RTP_MSG_USER>::iterator       itr2 = oldUsers.begin();
-        CProStlSet<RTP_MSG_USER>::iterator const end2 = oldUsers.end();
+        auto itr2 = oldUsers.begin();
+        auto end2 = oldUsers.end();
 
         for (; itr2 != end2; ++itr2)
         {
@@ -1546,8 +1503,8 @@ CRtpMsgServer::AsyncOnCloseSession(int64_t* args)
         observer = m_observer;
     }
 
-    CProStlSet<RTP_MSG_USER>::iterator       itr = oldUsers.begin();
-    CProStlSet<RTP_MSG_USER>::iterator const end = oldUsers.end();
+    auto itr = oldUsers.begin();
+    auto end = oldUsers.end();
 
     for (; itr != end; ++itr)
     {
@@ -1580,14 +1537,13 @@ CRtpMsgServer::OnHeartbeatSession(IRtpSession* session,
             return;
         }
 
-        CProStlMap<IRtpSession*, RTP_MSG_LINK_CTX*>::iterator const itr =
-            m_session2Ctx.find(session);
+        auto itr = m_session2Ctx.find(session);
         if (itr == m_session2Ctx.end())
         {
             return;
         }
 
-        const RTP_MSG_LINK_CTX* const ctx = itr->second;
+        const RTP_MSG_LINK_CTX* ctx = itr->second;
         user = ctx->baseUser;
 
         m_observer->AddRef();
@@ -1615,7 +1571,7 @@ CRtpMsgServer::AddBaseUser(RTP_SESSION_TYPE        sessionType,
     assert(baseUser.UserId() > 0);
     if (baseUser.classId == 0 || baseUser.UserId() == 0)
     {
-        return (false);
+        return false;
     }
 
     IRtpMsgServerObserver*   observer   = NULL;
@@ -1628,13 +1584,13 @@ CRtpMsgServer::AddBaseUser(RTP_SESSION_TYPE        sessionType,
 
         if (m_observer == NULL || m_reactor == NULL || m_task == NULL || m_service == NULL)
         {
-            return (false);
+            return false;
         }
 
         newSession = CreateRtpSessionWrapper(sessionType, &initArgs, &localInfo);
         if (newSession == NULL)
         {
-            return (false);
+            return false;
         }
 
         newSession->SetOutputRedline(isC2s ? m_redlineBytesC2s : m_redlineBytesUsr, 0, 0);
@@ -1642,19 +1598,18 @@ CRtpMsgServer::AddBaseUser(RTP_SESSION_TYPE        sessionType,
         /*
          * remove old
          */
-        CProStlMap<RTP_MSG_USER, RTP_MSG_LINK_CTX*>::iterator const itr =
-            m_user2Ctx.find(baseUser);
+        auto itr = m_user2Ctx.find(baseUser);
         if (itr != m_user2Ctx.end())
         {
-            RTP_MSG_LINK_CTX* const ctx = itr->second;
+            RTP_MSG_LINK_CTX* ctx = itr->second;
 
             if (baseUser == ctx->baseUser)
             {
                 oldSession = ctx->session;
                 oldUsers   = ctx->subUsers;
 
-                CProStlSet<RTP_MSG_USER>::iterator       itr2 = oldUsers.begin();
-                CProStlSet<RTP_MSG_USER>::iterator const end2 = oldUsers.end();
+                auto itr2 = oldUsers.begin();
+                auto end2 = oldUsers.end();
 
                 for (; itr2 != end2; ++itr2)
                 {
@@ -1681,7 +1636,7 @@ CRtpMsgServer::AddBaseUser(RTP_SESSION_TYPE        sessionType,
         /*
          * add new
          */
-        RTP_MSG_LINK_CTX* const ctx = new RTP_MSG_LINK_CTX;
+        RTP_MSG_LINK_CTX* ctx = new RTP_MSG_LINK_CTX;
         ctx->session  = newSession;
         ctx->baseUser = baseUser;
         ctx->isC2s    = isC2s;
@@ -1693,8 +1648,8 @@ CRtpMsgServer::AddBaseUser(RTP_SESSION_TYPE        sessionType,
         observer = m_observer;
     }
 
-    CProStlSet<RTP_MSG_USER>::iterator       itr = oldUsers.begin();
-    CProStlSet<RTP_MSG_USER>::iterator const end = oldUsers.end();
+    auto itr = oldUsers.begin();
+    auto end = oldUsers.end();
 
     for (; itr != end; ++itr)
     {
@@ -1709,7 +1664,7 @@ CRtpMsgServer::AddBaseUser(RTP_SESSION_TYPE        sessionType,
     newSession->Release();
     DeleteRtpSessionWrapper(oldSession);
 
-    return (true);
+    return true;
 }
 
 void
@@ -1719,12 +1674,12 @@ CRtpMsgServer::AddSubUser(const RTP_MSG_USER&  c2sUser,
                           const CProStlString& msgText,
                           int64_t              appData)
 {
-    assert(c2sUser.classId == SERVER_CID);
+    assert(c2sUser.classId > 0);
     assert(c2sUser.UserId() > 0);
     assert(subUser.classId > 0);
     assert(subUser.UserId() > 0);
     assert(subUser != c2sUser);
-    if (c2sUser.classId != SERVER_CID || c2sUser.UserId() == 0 ||
+    if (c2sUser.classId == 0 || c2sUser.UserId() == 0 ||
         subUser.classId == 0 || subUser.UserId() == 0 || subUser == c2sUser)
     {
         return;
@@ -1743,14 +1698,13 @@ CRtpMsgServer::AddSubUser(const RTP_MSG_USER&  c2sUser,
             return;
         }
 
-        CProStlMap<RTP_MSG_USER, RTP_MSG_LINK_CTX*>::iterator itr =
-            m_user2Ctx.find(c2sUser);
+        auto itr = m_user2Ctx.find(c2sUser);
         if (itr == m_user2Ctx.end())
         {
             return;
         }
 
-        RTP_MSG_LINK_CTX* const newCtx = itr->second;
+        RTP_MSG_LINK_CTX* newCtx = itr->second;
         if (!newCtx->isC2s || c2sUser != newCtx->baseUser)
         {
             return;
@@ -1764,15 +1718,15 @@ CRtpMsgServer::AddSubUser(const RTP_MSG_USER&  c2sUser,
         itr = m_user2Ctx.find(subUser);
         if (itr != m_user2Ctx.end())
         {
-            RTP_MSG_LINK_CTX* const oldCtx = itr->second;
+            RTP_MSG_LINK_CTX* oldCtx = itr->second;
 
             if (subUser == oldCtx->baseUser)
             {
                 oldSession = oldCtx->session;
                 oldUsers   = oldCtx->subUsers;
 
-                CProStlSet<RTP_MSG_USER>::iterator       itr2 = oldUsers.begin();
-                CProStlSet<RTP_MSG_USER>::iterator const end2 = oldUsers.end();
+                auto itr2 = oldUsers.begin();
+                auto end2 = oldUsers.end();
 
                 for (; itr2 != end2; ++itr2)
                 {
@@ -1810,8 +1764,8 @@ CRtpMsgServer::AddSubUser(const RTP_MSG_USER&  c2sUser,
         observer = m_observer;
     }
 
-    CProStlSet<RTP_MSG_USER>::iterator       itr = oldUsers.begin();
-    CProStlSet<RTP_MSG_USER>::iterator const end = oldUsers.end();
+    auto itr = oldUsers.begin();
+    auto end = oldUsers.end();
 
     for (; itr != end; ++itr)
     {
@@ -1858,7 +1812,7 @@ CRtpMsgServer::SendMsgToDownlink(RTP_MM_TYPE         mmType,
     if (sessions == NULL || sessionCount == 0 || buf1 == NULL || size1 == 0 ||
         srcUser.classId == 0 || srcUser.UserId() == 0)
     {
-        return (false);
+        return false;
     }
 
     if (buf2 == NULL || size2 == 0)
@@ -1873,17 +1827,15 @@ CRtpMsgServer::SendMsgToDownlink(RTP_MM_TYPE         mmType,
         dstUserCount = 1;
     }
 
-    const size_t msgHeaderSize =
-        sizeof(RTP_MSG_HEADER) + sizeof(RTP_MSG_USER) * (dstUserCount - 1);
+    size_t msgHeaderSize = sizeof(RTP_MSG_HEADER) + sizeof(RTP_MSG_USER) * (dstUserCount - 1);
 
-    IRtpPacket* const packet =
-        CreateRtpPacketSpace(msgHeaderSize + size1 + size2, RTP_MSG_PACK_MODE);
+    IRtpPacket* packet = CreateRtpPacketSpace(msgHeaderSize + size1 + size2, RTP_MSG_PACK_MODE);
     if (packet == NULL)
     {
-        return (false);
+        return false;
     }
 
-    RTP_MSG_HEADER* const msgHeaderPtr = (RTP_MSG_HEADER*)packet->GetPayloadBuffer();
+    RTP_MSG_HEADER* msgHeaderPtr = (RTP_MSG_HEADER*)packet->GetPayloadBuffer();
     memset(msgHeaderPtr, 0, msgHeaderSize);
 
     msgHeaderPtr->charset        = pbsd_hton16(charset);
@@ -1922,7 +1874,7 @@ CRtpMsgServer::SendMsgToDownlink(RTP_MM_TYPE         mmType,
 
     packet->Release();
 
-    return (ret);
+    return ret;
 }
 
 void
@@ -1932,13 +1884,12 @@ CRtpMsgServer::NotifyKickout(RTP_MM_TYPE         mmType,
                              const RTP_MSG_USER& subUser)
 {
     assert(session != NULL);
-    assert(c2sUser.classId == SERVER_CID);
+    assert(c2sUser.classId > 0);
     assert(c2sUser.UserId() > 0);
     assert(subUser.classId > 0);
     assert(subUser.UserId() > 0);
     assert(subUser != c2sUser);
-    if (session == NULL ||
-        c2sUser.classId != SERVER_CID || c2sUser.UserId() == 0 ||
+    if (session == NULL || c2sUser.classId == 0 || c2sUser.UserId() == 0 ||
         subUser.classId == 0 || subUser.UserId() == 0 || subUser == c2sUser)
     {
         return;

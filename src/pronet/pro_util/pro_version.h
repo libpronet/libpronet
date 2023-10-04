@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(____PRO_VERSION_H____)
+#ifndef ____PRO_VERSION_H____
 #define ____PRO_VERSION_H____
 
 /////////////////////////////////////////////////////////////////////////////

@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(RTP_SESSION_TCPCLIENT_EX_H)
+#ifndef RTP_SESSION_TCPCLIENT_EX_H
 #define RTP_SESSION_TCPCLIENT_EX_H
 
 #include "rtp_session_base.h"
@@ -46,7 +46,7 @@ public:
         unsigned short       remotePort,
         const char*          password,        /* = NULL */
         const char*          localIp,         /* = NULL */
-        unsigned long        timeoutInSeconds /* = 0 */
+        unsigned int         timeoutInSeconds /* = 0 */
         );
 
     virtual void Fini();
@@ -110,12 +110,12 @@ protected:
         int64_t            sockId,
         bool               unixSocket,
         const void*        buf,
-        unsigned long      size
+        size_t             size
         );
 
     virtual void OnHandshakeError(
         IProTcpHandshaker* handshaker,
-        long               errorCode
+        int                errorCode
         );
 
     virtual void OnHandshakeOk(
@@ -124,13 +124,13 @@ protected:
         int64_t            sockId,
         bool               unixSocket,
         const void*        buf,
-        unsigned long      size
+        size_t             size
         );
 
     virtual void OnHandshakeError(
         IProSslHandshaker* handshaker,
-        long               errorCode,
-        long               sslCode
+        int                errorCode,
+        int                sslCode
         );
 
     virtual void OnRecv(
@@ -164,7 +164,7 @@ private:
     const PRO_SSL_CLIENT_CONFIG* const m_sslConfig;
     const CProStlString                m_sslSni;
     CProStlString                      m_password;
-    unsigned long                      m_timeoutInSeconds;
+    unsigned int                       m_timeoutInSeconds;
 
     IProConnector*                     m_connector;
     IProTcpHandshaker*                 m_tcpHandshaker;

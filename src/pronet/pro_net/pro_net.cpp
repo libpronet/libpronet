@@ -89,15 +89,15 @@ ProCreateReactor(unsigned long ioThreadCount,
 {
     ProNetInit();
 
-    CProTpReactorTask* const reactorTask = new CProTpReactorTask;
+    CProTpReactorTask* reactorTask = new CProTpReactorTask;
     if (!reactorTask->Start(ioThreadCount, ioThreadPriority))
     {
         delete reactorTask;
 
-        return (NULL);
+        return NULL;
     }
 
-    return (reactorTask);
+    return reactorTask;
 }
 
 PRO_NET_API
@@ -109,7 +109,7 @@ ProDeleteReactor(IProReactor* reactor)
         return;
     }
 
-    CProTpReactorTask* const p = (CProTpReactorTask*)reactor;
+    CProTpReactorTask* p = (CProTpReactorTask*)reactor;
     delete p;
 }
 
@@ -122,20 +122,20 @@ ProCreateAcceptor(IProAcceptorObserver* observer,
 {
     ProNetInit();
 
-    CProAcceptor* const acceptor = CProAcceptor::CreateInstance(false);
+    CProAcceptor* acceptor = CProAcceptor::CreateInstance(false);
     if (acceptor == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     if (!acceptor->Init(observer, (CProTpReactorTask*)reactor, localIp, localPort, 0))
     {
         acceptor->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return ((IProAcceptor*)acceptor);
+    return (IProAcceptor*)acceptor;
 }
 
 PRO_NET_API
@@ -144,14 +144,14 @@ ProCreateAcceptorEx(IProAcceptorObserver* observer,
                     IProReactor*          reactor,
                     const char*           localIp,          /* = NULL */
                     unsigned short        localPort,        /* = 0 */
-                    unsigned long         timeoutInSeconds) /* = 0 */
+                    unsigned int          timeoutInSeconds) /* = 0 */
 {
     ProNetInit();
 
-    CProAcceptor* const acceptor = CProAcceptor::CreateInstance(true);
+    CProAcceptor* acceptor = CProAcceptor::CreateInstance(true);
     if (acceptor == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     if (!acceptor->Init(
@@ -159,10 +159,10 @@ ProCreateAcceptorEx(IProAcceptorObserver* observer,
     {
         acceptor->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return ((IProAcceptor*)acceptor);
+    return (IProAcceptor*)acceptor;
 }
 
 PRO_NET_API
@@ -172,12 +172,12 @@ ProGetAcceptorPort(IProAcceptor* acceptor)
     assert(acceptor != NULL);
     if (acceptor == NULL)
     {
-        return (0);
+        return 0;
     }
 
-    CProAcceptor* const p = (CProAcceptor*)acceptor;
+    CProAcceptor* p = (CProAcceptor*)acceptor;
 
-    return (p->GetLocalPort());
+    return p->GetLocalPort();
 }
 
 PRO_NET_API
@@ -189,7 +189,7 @@ ProDeleteAcceptor(IProAcceptor* acceptor)
         return;
     }
 
-    CProAcceptor* const p = (CProAcceptor*)acceptor;
+    CProAcceptor* p = (CProAcceptor*)acceptor;
     p->Fini();
     p->Release();
 }
@@ -202,14 +202,14 @@ ProCreateConnector(bool                   enableUnixSocket,
                    const char*            remoteIp,
                    unsigned short         remotePort,
                    const char*            localBindIp,      /* = NULL */
-                   unsigned long          timeoutInSeconds) /* = 0 */
+                   unsigned int           timeoutInSeconds) /* = 0 */
 {
     ProNetInit();
 
-    CProConnector* const connector = CProConnector::CreateInstance(enableUnixSocket, false, 0, 0);
+    CProConnector* connector = CProConnector::CreateInstance(enableUnixSocket, false, 0, 0);
     if (connector == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     if (!connector->Init(observer, (CProTpReactorTask*)reactor,
@@ -217,10 +217,10 @@ ProCreateConnector(bool                   enableUnixSocket,
     {
         connector->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return ((IProConnector*)connector);
+    return (IProConnector*)connector;
 }
 
 PRO_NET_API
@@ -233,15 +233,15 @@ ProCreateConnectorEx(bool                   enableUnixSocket,
                      const char*            remoteIp,
                      unsigned short         remotePort,
                      const char*            localBindIp,      /* = NULL */
-                     unsigned long          timeoutInSeconds) /* = 0 */
+                     unsigned int           timeoutInSeconds) /* = 0 */
 {
     ProNetInit();
 
-    CProConnector* const connector = CProConnector::CreateInstance(
+    CProConnector* connector = CProConnector::CreateInstance(
         enableUnixSocket, true, serviceId, serviceOpt);
     if (connector == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     if (!connector->Init(observer, (CProTpReactorTask*)reactor,
@@ -249,10 +249,10 @@ ProCreateConnectorEx(bool                   enableUnixSocket,
     {
         connector->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return ((IProConnector*)connector);
+    return (IProConnector*)connector;
 }
 
 PRO_NET_API
@@ -264,7 +264,7 @@ ProDeleteConnector(IProConnector* connector)
         return;
     }
 
-    CProConnector* const p = (CProConnector*)connector;
+    CProConnector* p = (CProConnector*)connector;
     p->Fini();
     p->Release();
 }
@@ -279,26 +279,25 @@ ProCreateTcpHandshaker(IProTcpHandshakerObserver* observer,
                        size_t                     sendDataSize,     /* = 0 */
                        size_t                     recvDataSize,     /* = 0 */
                        bool                       recvFirst,        /* = false */
-                       unsigned long              timeoutInSeconds) /* = 0 */
+                       unsigned int               timeoutInSeconds) /* = 0 */
 {
     ProNetInit();
 
-    CProTcpHandshaker* const handshaker = CProTcpHandshaker::CreateInstance();
+    CProTcpHandshaker* handshaker = CProTcpHandshaker::CreateInstance();
     if (handshaker == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
-    if (!handshaker->Init(observer, (CProTpReactorTask*)reactor,
-        sockId, unixSocket, sendData, sendDataSize, recvDataSize,
-        recvFirst, timeoutInSeconds))
+    if (!handshaker->Init(observer, (CProTpReactorTask*)reactor, sockId, unixSocket,
+        sendData, sendDataSize, recvDataSize, recvFirst, timeoutInSeconds))
     {
         handshaker->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return ((IProTcpHandshaker*)handshaker);
+    return (IProTcpHandshaker*)handshaker;
 }
 
 PRO_NET_API
@@ -310,7 +309,7 @@ ProDeleteTcpHandshaker(IProTcpHandshaker* handshaker)
         return;
     }
 
-    CProTcpHandshaker* const p = (CProTcpHandshaker*)handshaker;
+    CProTcpHandshaker* p = (CProTcpHandshaker*)handshaker;
     p->Fini();
     p->Release();
 }
@@ -326,26 +325,25 @@ ProCreateSslHandshaker(IProSslHandshakerObserver* observer,
                        size_t                     sendDataSize,     /* = 0 */
                        size_t                     recvDataSize,     /* = 0 */
                        bool                       recvFirst,        /* = false */
-                       unsigned long              timeoutInSeconds) /* = 0 */
+                       unsigned int               timeoutInSeconds) /* = 0 */
 {
     ProNetInit();
 
-    CProSslHandshaker* const handshaker = CProSslHandshaker::CreateInstance();
+    CProSslHandshaker* handshaker = CProSslHandshaker::CreateInstance();
     if (handshaker == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
-    if (!handshaker->Init(observer, (CProTpReactorTask*)reactor,
-        ctx, sockId, unixSocket, sendData, sendDataSize, recvDataSize,
-        recvFirst, timeoutInSeconds))
+    if (!handshaker->Init(observer, (CProTpReactorTask*)reactor, ctx, sockId, unixSocket,
+        sendData, sendDataSize, recvDataSize, recvFirst, timeoutInSeconds))
     {
         handshaker->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return ((IProSslHandshaker*)handshaker);
+    return (IProSslHandshaker*)handshaker;
 }
 
 PRO_NET_API
@@ -357,7 +355,7 @@ ProDeleteSslHandshaker(IProSslHandshaker* handshaker)
         return;
     }
 
-    CProSslHandshaker* const p = (CProSslHandshaker*)handshaker;
+    CProSslHandshaker* p = (CProSslHandshaker*)handshaker;
     p->Fini();
     p->Release();
 }
@@ -375,21 +373,21 @@ ProCreateTcpTransport(IProTransportObserver* observer,
 {
     ProNetInit();
 
-    CProTcpTransport* const trans = CProTcpTransport::CreateInstance(false, recvPoolSize);
+    CProTcpTransport* trans = CProTcpTransport::CreateInstance(false, recvPoolSize);
     if (trans == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
-    if (!trans->Init(observer, (CProTpReactorTask*)reactor, sockId,
-        unixSocket, sockBufSizeRecv, sockBufSizeSend, suspendRecv))
+    if (!trans->Init(observer, (CProTpReactorTask*)reactor, sockId, unixSocket,
+        sockBufSizeRecv, sockBufSizeSend, suspendRecv))
     {
         trans->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return (trans);
+    return trans;
 }
 
 PRO_NET_API
@@ -407,22 +405,21 @@ ProCreateUdpTransport(IProTransportObserver* observer,
 {
     ProNetInit();
 
-    CProUdpTransport* const trans = CProUdpTransport::CreateInstance(bindToLocal, recvPoolSize);
+    CProUdpTransport* trans = CProUdpTransport::CreateInstance(bindToLocal, recvPoolSize);
     if (trans == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
-    if (!trans->Init(observer, (CProTpReactorTask*)reactor,
-        localIp, localPort, defaultRemoteIp, defaultRemotePort,
-        sockBufSizeRecv, sockBufSizeSend))
+    if (!trans->Init(observer, (CProTpReactorTask*)reactor, localIp, localPort,
+        defaultRemoteIp, defaultRemotePort, sockBufSizeRecv, sockBufSizeSend))
     {
         trans->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return (trans);
+    return trans;
 }
 
 PRO_NET_API
@@ -438,21 +435,21 @@ ProCreateMcastTransport(IProTransportObserver* observer,
 {
     ProNetInit();
 
-    CProMcastTransport* const trans = CProMcastTransport::CreateInstance(recvPoolSize);
+    CProMcastTransport* trans = CProMcastTransport::CreateInstance(recvPoolSize);
     if (trans == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
-    if (!trans->Init(observer, (CProTpReactorTask*)reactor,
-        mcastIp, mcastPort, localBindIp, sockBufSizeRecv, sockBufSizeSend))
+    if (!trans->Init(observer, (CProTpReactorTask*)reactor, mcastIp, mcastPort, localBindIp,
+        sockBufSizeRecv, sockBufSizeSend))
     {
         trans->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return (trans);
+    return trans;
 }
 
 PRO_NET_API
@@ -469,21 +466,21 @@ ProCreateSslTransport(IProTransportObserver* observer,
 {
     ProNetInit();
 
-    CProSslTransport* const trans = CProSslTransport::CreateInstance(recvPoolSize);
+    CProSslTransport* trans = CProSslTransport::CreateInstance(recvPoolSize);
     if (trans == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
-    if (!trans->Init(observer, (CProTpReactorTask*)reactor, ctx, sockId,
-        unixSocket, sockBufSizeRecv, sockBufSizeSend, suspendRecv))
+    if (!trans->Init(observer, (CProTpReactorTask*)reactor, ctx, sockId, unixSocket,
+        sockBufSizeRecv, sockBufSizeSend, suspendRecv))
     {
         trans->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return (trans);
+    return trans;
 }
 
 PRO_NET_API
@@ -495,29 +492,29 @@ ProDeleteTransport(IProTransport* trans)
         return;
     }
 
-    const PRO_TRANS_TYPE type = trans->GetType();
+    PRO_TRANS_TYPE type = trans->GetType();
 
     if (type == PRO_TRANS_TCP)
     {
-        CProTcpTransport* const p = (CProTcpTransport*)trans;
+        CProTcpTransport* p = (CProTcpTransport*)trans;
         p->Fini();
         p->Release();
     }
     else if (type == PRO_TRANS_UDP)
     {
-        CProUdpTransport* const p = (CProUdpTransport*)trans;
+        CProUdpTransport* p = (CProUdpTransport*)trans;
         p->Fini();
         p->Release();
     }
     else if (type == PRO_TRANS_MCAST)
     {
-        CProMcastTransport* const p = (CProMcastTransport*)trans;
+        CProMcastTransport* p = (CProMcastTransport*)trans;
         p->Fini();
         p->Release();
     }
     else if (type == PRO_TRANS_SSL)
     {
-        CProSslTransport* const p = (CProSslTransport*)trans;
+        CProSslTransport* p = (CProSslTransport*)trans;
         p->Fini();
         p->Release();
     }
@@ -534,23 +531,23 @@ ProCreateServiceHub(IProReactor*   reactor,
 {
     ProNetInit();
 
-    CProServiceHub* const hub = CProServiceHub::CreateInstance(
+    CProServiceHub* hub = CProServiceHub::CreateInstance(
         false, /* enableServiceExt is false */
         enableLoadBalance
         );
     if (hub == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     if (!hub->Init(reactor, servicePort, 0))
     {
         hub->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return ((IProServiceHub*)hub);
+    return (IProServiceHub*)hub;
 }
 
 PRO_NET_API
@@ -558,27 +555,27 @@ IProServiceHub*
 ProCreateServiceHubEx(IProReactor*   reactor,
                       unsigned short servicePort,
                       bool           enableLoadBalance, /* = false */
-                      unsigned long  timeoutInSeconds)  /* = 0 */
+                      unsigned int   timeoutInSeconds)  /* = 0 */
 {
     ProNetInit();
 
-    CProServiceHub* const hub = CProServiceHub::CreateInstance(
+    CProServiceHub* hub = CProServiceHub::CreateInstance(
         true, /* enableServiceExt is true */
         enableLoadBalance
         );
     if (hub == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     if (!hub->Init(reactor, servicePort, timeoutInSeconds))
     {
         hub->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return ((IProServiceHub*)hub);
+    return (IProServiceHub*)hub;
 }
 
 PRO_NET_API
@@ -590,7 +587,7 @@ ProDeleteServiceHub(IProServiceHub* hub)
         return;
     }
 
-    CProServiceHub* const p = (CProServiceHub*)hub;
+    CProServiceHub* p = (CProServiceHub*)hub;
     p->Fini();
     p->Release();
 }
@@ -603,20 +600,20 @@ ProCreateServiceHost(IProServiceHostObserver* observer,
 {
     ProNetInit();
 
-    CProServiceHost* const host = CProServiceHost::CreateInstance(0); /* serviceId is 0 */
+    CProServiceHost* host = CProServiceHost::CreateInstance(0); /* serviceId is 0 */
     if (host == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     if (!host->Init(observer, reactor, servicePort))
     {
         host->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return ((IProServiceHost*)host);
+    return (IProServiceHost*)host;
 }
 
 PRO_NET_API
@@ -631,23 +628,23 @@ ProCreateServiceHostEx(IProServiceHostObserver* observer,
     assert(serviceId > 0);
     if (serviceId == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
-    CProServiceHost* const host = CProServiceHost::CreateInstance(serviceId);
+    CProServiceHost* host = CProServiceHost::CreateInstance(serviceId);
     if (host == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     if (!host->Init(observer, reactor, servicePort))
     {
         host->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return ((IProServiceHost*)host);
+    return (IProServiceHost*)host;
 }
 
 PRO_NET_API
@@ -659,7 +656,7 @@ ProDeleteServiceHost(IProServiceHost* host)
         return;
     }
 
-    CProServiceHost* const p = (CProServiceHost*)host;
+    CProServiceHost* p = (CProServiceHost*)host;
     p->Fini();
     p->Release();
 }
@@ -674,7 +671,7 @@ ProOpenTcpSockId(const char*    localIp, /* = NULL */
     assert(localPort > 0);
     if (localPort == 0)
     {
-        return (-1);
+        return -1;
     }
 
     pbsd_sockaddr_in localAddr;
@@ -685,13 +682,13 @@ ProOpenTcpSockId(const char*    localIp, /* = NULL */
 
     if (localAddr.sin_addr.s_addr == (uint32_t)-1)
     {
-        return (-1);
+        return -1;
     }
 
     int64_t sockId = pbsd_socket(AF_INET, SOCK_STREAM, 0);
     if (sockId == -1)
     {
-        return (-1);
+        return -1;
     }
 
     if (pbsd_bind(sockId, &localAddr, false) != 0)
@@ -700,7 +697,7 @@ ProOpenTcpSockId(const char*    localIp, /* = NULL */
         sockId = -1;
     }
 
-    return (sockId);
+    return sockId;
 }
 
 PRO_NET_API
@@ -713,7 +710,7 @@ ProOpenUdpSockId(const char*    localIp, /* = NULL */
     assert(localPort > 0);
     if (localPort == 0)
     {
-        return (-1);
+        return -1;
     }
 
     pbsd_sockaddr_in localAddr;
@@ -724,13 +721,13 @@ ProOpenUdpSockId(const char*    localIp, /* = NULL */
 
     if (localAddr.sin_addr.s_addr == (uint32_t)-1)
     {
-        return (-1);
+        return -1;
     }
 
     int64_t sockId = pbsd_socket(AF_INET, SOCK_DGRAM, 0);
     if (sockId == -1)
     {
-        return (-1);
+        return -1;
     }
 
     if (pbsd_bind(sockId, &localAddr, false) != 0)
@@ -739,7 +736,7 @@ ProOpenUdpSockId(const char*    localIp, /* = NULL */
         sockId = -1;
     }
 
-    return (sockId);
+    return sockId;
 }
 
 PRO_NET_API

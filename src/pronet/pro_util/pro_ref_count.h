@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(____PRO_REF_COUNT_H____)
+#ifndef ____PRO_REF_COUNT_H____
 #define ____PRO_REF_COUNT_H____
 
 #include "pro_a.h"
@@ -36,7 +36,7 @@ public:
 
     virtual unsigned long Release()
     {
-        const unsigned long count = --m_count;
+        unsigned long count = --m_count;
         if (count == 0)
         {
             delete this;

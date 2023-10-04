@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(RTP_PORT_ALLOCATOR_H)
+#ifndef RTP_PORT_ALLOCATOR_H
 #define RTP_PORT_ALLOCATOR_H
 
 #include "../pro_util/pro_memory_pool.h"

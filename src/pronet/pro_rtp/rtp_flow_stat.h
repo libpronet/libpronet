@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(RTP_FLOW_STAT_H)
+#ifndef RTP_FLOW_STAT_H
 #define RTP_FLOW_STAT_H
 
 #include "../pro_util/pro_memory_pool.h"

@@ -20,7 +20,7 @@
  * This is an implementation of the "Strategy" pattern.
  */
 
-#if !defined(RTP_BUCKET_H)
+#ifndef RTP_BUCKET_H
 #define RTP_BUCKET_H
 
 #include "rtp_base.h"

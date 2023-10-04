@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(TEST_H)
+#ifndef TEST_H
 #define TEST_H
 
 #include "../pro_net/pro_net.h"
@@ -190,12 +190,12 @@ private:
         int64_t            sockId,
         bool               unixSocket,
         const void*        buf,
-        unsigned long      size
+        size_t             size
         );
 
     virtual void OnHandshakeError(
         IProTcpHandshaker* handshaker,
-        long               errorCode
+        int                errorCode
         );
 
     virtual void OnHandshakeOk(
@@ -204,13 +204,13 @@ private:
         int64_t            sockId,
         bool               unixSocket,
         const void*        buf,
-        unsigned long      size
+        size_t             size
         );
 
     virtual void OnHandshakeError(
         IProSslHandshaker* handshaker,
-        long               errorCode,
-        long               sslCode
+        int                errorCode,
+        int                sslCode
         );
 
     virtual void OnRecv(
@@ -227,8 +227,8 @@ private:
 
     virtual void OnClose(
         IProTransport* trans,
-        long           errorCode,
-        long           sslCode
+        int            errorCode,
+        int            sslCode
         );
 
     virtual void OnHeartbeat(IProTransport* trans);

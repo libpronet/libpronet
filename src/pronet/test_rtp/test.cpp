@@ -74,7 +74,7 @@ CheckMode_i(TEST_MODE mode)
         }
     }
 
-    return (ret);
+    return ret;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -86,12 +86,10 @@ CTest::CreateInstance(TEST_MODE mode)
     assert(CheckMode_i(mode));
     if (!CheckMode_i(mode))
     {
-        return (NULL);
+        return NULL;
     }
 
-    CTest* const tester = new CTest(mode);
-
-    return (tester);
+    return new CTest(mode);
 }
 
 CTest::CTest(TEST_MODE mode)
@@ -128,7 +126,7 @@ CTest::Init(IProReactor*       reactor,
     assert(IsServerMode(m_mode));
     if (reactor == NULL || !IsServerMode(m_mode))
     {
-        return (false);
+        return false;
     }
 
     {
@@ -138,23 +136,21 @@ CTest::Init(IProReactor*       reactor,
         assert(m_session == NULL);
         if (m_reactor != NULL || m_session != NULL)
         {
-            return (false);
+            return false;
         }
 
         if (m_mode == TM_UDPE || m_mode == TM_UDPS)
         {
-            m_session = CreateUdpServer(
-                reactor, param.local_ip, param.local_port);
+            m_session = CreateUdpServer(reactor, param.local_ip, param.local_port);
         }
         else
         {
-            m_session = CreateTcpServer(
-                reactor, param.local_ip, param.local_port);
+            m_session = CreateTcpServer(reactor, param.local_ip, param.local_port);
         }
 
         if (m_session == NULL)
         {
-            return (false);
+            return false;
         }
 
         m_params.server   = param;
@@ -168,7 +164,7 @@ CTest::Init(IProReactor*       reactor,
         m_outputShaper.SetAvgBitRate((double)param.kbps * 1000);
     }
 
-    return (true);
+    return true;
 }
 
 bool
@@ -179,7 +175,7 @@ CTest::Init(IProReactor*       reactor,
     assert(!IsServerMode(m_mode));
     if (reactor == NULL || IsServerMode(m_mode))
     {
-        return (false);
+        return false;
     }
 
     {
@@ -189,23 +185,21 @@ CTest::Init(IProReactor*       reactor,
         assert(m_session == NULL);
         if (m_reactor != NULL || m_session != NULL)
         {
-            return (false);
+            return false;
         }
 
         if (m_mode == TM_UDPC)
         {
-            m_session = CreateUdpClient(
-                reactor, param.remote_ip, param.remote_port);
+            m_session = CreateUdpClient(reactor, param.remote_ip, param.remote_port);
         }
         else
         {
-            m_session = CreateTcpClient(
-                reactor, param.remote_ip, param.remote_port);
+            m_session = CreateTcpClient(reactor, param.remote_ip, param.remote_port);
         }
 
         if (m_session == NULL)
         {
-            return (false);
+            return false;
         }
 
         m_params.client   = param;
@@ -219,7 +213,7 @@ CTest::Init(IProReactor*       reactor,
         m_outputShaper.SetAvgBitRate((double)param.kbps * 1000);
     }
 
-    return (true);
+    return true;
 }
 
 IRtpSession*
@@ -230,7 +224,7 @@ CTest::CreateUdpServer(IProReactor*   reactor,
     assert(reactor != NULL);
     if (reactor == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     RTP_SESSION_INFO localInfo;
@@ -245,15 +239,13 @@ CTest::CreateUdpServer(IProReactor*   reactor,
     initArgs.udpserverEx.timeoutInSeconds = UDP_SERVER_TIMEOUT;
     if (localIp != NULL)
     {
-        strncpy_pro(initArgs.udpserverEx.localIp,
-            sizeof(initArgs.udpserverEx.localIp), localIp);
+        strncpy_pro(initArgs.udpserverEx.localIp, sizeof(initArgs.udpserverEx.localIp), localIp);
     }
 
-    IRtpSession* const session = CreateRtpSessionWrapper(
-        RTP_ST_UDPSERVER_EX, &initArgs, &localInfo);
+    IRtpSession* session = CreateRtpSessionWrapper(RTP_ST_UDPSERVER_EX, &initArgs, &localInfo);
     if (session != NULL)
     {
-        const int64_t sockId = session->GetSockId();
+        int64_t sockId = session->GetSockId();
 
         int option;
         option = (int)SOCK_BUF_SIZE_RECV;
@@ -265,7 +257,7 @@ CTest::CreateUdpServer(IProReactor*   reactor,
         PrintSessionCreated(session);
     }
 
-    return (session);
+    return session;
 }
 
 IRtpSession*
@@ -276,7 +268,7 @@ CTest::CreateTcpServer(IProReactor*   reactor,
     assert(reactor != NULL);
     if (reactor == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     RTP_SESSION_INFO localInfo;
@@ -291,18 +283,17 @@ CTest::CreateTcpServer(IProReactor*   reactor,
     initArgs.tcpserver.timeoutInSeconds = TCP_SERVER_TIMEOUT;
     if (localIp != NULL)
     {
-        strncpy_pro(initArgs.tcpserver.localIp,
-            sizeof(initArgs.tcpserver.localIp), localIp);
+        strncpy_pro(initArgs.tcpserver.localIp, sizeof(initArgs.tcpserver.localIp), localIp);
     }
 
-    IRtpSession* const session = CreateRtpSessionWrapper(RTP_ST_TCPSERVER, &initArgs, &localInfo);
+    IRtpSession* session = CreateRtpSessionWrapper(RTP_ST_TCPSERVER, &initArgs, &localInfo);
     if (session != NULL)
     {
         session->SetOutputRedline(REDLINE_BYTES, 0, 0);
         PrintSessionCreated(session);
     }
 
-    return (session);
+    return session;
 }
 
 IRtpSession*
@@ -314,10 +305,9 @@ CTest::CreateUdpClient(IProReactor*   reactor,
     assert(remoteIp != NULL);
     assert(remoteIp[0] != '\0');
     assert(remotePort > 0);
-    if (reactor == NULL || remoteIp == NULL || remoteIp[0] == '\0' ||
-        remotePort == 0)
+    if (reactor == NULL || remoteIp == NULL || remoteIp[0] == '\0' || remotePort == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     RTP_SESSION_INFO localInfo;
@@ -330,14 +320,12 @@ CTest::CreateUdpClient(IProReactor*   reactor,
     initArgs.udpclientEx.reactor          = reactor;
     initArgs.udpclientEx.remotePort       = remotePort;
     initArgs.udpclientEx.timeoutInSeconds = UDP_CLIENT_TIMEOUT;
-    strncpy_pro(initArgs.udpclientEx.remoteIp,
-        sizeof(initArgs.udpclientEx.remoteIp), remoteIp);
+    strncpy_pro(initArgs.udpclientEx.remoteIp, sizeof(initArgs.udpclientEx.remoteIp), remoteIp);
 
-    IRtpSession* const session = CreateRtpSessionWrapper(
-        RTP_ST_UDPCLIENT_EX, &initArgs, &localInfo);
+    IRtpSession* session = CreateRtpSessionWrapper(RTP_ST_UDPCLIENT_EX, &initArgs, &localInfo);
     if (session != NULL)
     {
-        const int64_t sockId = session->GetSockId();
+        int64_t sockId = session->GetSockId();
 
         int option;
         option = (int)SOCK_BUF_SIZE_RECV;
@@ -349,7 +337,7 @@ CTest::CreateUdpClient(IProReactor*   reactor,
         PrintSessionCreated(session);
     }
 
-    return (session);
+    return session;
 }
 
 IRtpSession*
@@ -361,10 +349,9 @@ CTest::CreateTcpClient(IProReactor*   reactor,
     assert(remoteIp != NULL);
     assert(remoteIp[0] != '\0');
     assert(remotePort > 0);
-    if (reactor == NULL || remoteIp == NULL || remoteIp[0] == '\0' ||
-        remotePort == 0)
+    if (reactor == NULL || remoteIp == NULL || remoteIp[0] == '\0' || remotePort == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     RTP_SESSION_INFO localInfo;
@@ -377,17 +364,16 @@ CTest::CreateTcpClient(IProReactor*   reactor,
     initArgs.tcpclient.reactor          = reactor;
     initArgs.tcpclient.remotePort       = remotePort;
     initArgs.tcpclient.timeoutInSeconds = TCP_CLIENT_TIMEOUT;
-    strncpy_pro(initArgs.tcpclient.remoteIp,
-        sizeof(initArgs.tcpclient.remoteIp), remoteIp);
+    strncpy_pro(initArgs.tcpclient.remoteIp, sizeof(initArgs.tcpclient.remoteIp), remoteIp);
 
-    IRtpSession* const session = CreateRtpSessionWrapper(RTP_ST_TCPCLIENT, &initArgs, &localInfo);
+    IRtpSession* session = CreateRtpSessionWrapper(RTP_ST_TCPCLIENT, &initArgs, &localInfo);
     if (session != NULL)
     {
         session->SetOutputRedline(REDLINE_BYTES, 0, 0);
         PrintSessionCreated(session);
     }
 
-    return (session);
+    return session;
 }
 
 void
@@ -421,17 +407,13 @@ CTest::Fini()
 unsigned long
 CTest::AddRef()
 {
-    const unsigned long refCount = CProRefCount::AddRef();
-
-    return (refCount);
+    return CProRefCount::AddRef();
 }
 
 unsigned long
 CTest::Release()
 {
-    const unsigned long refCount = CProRefCount::Release();
-
-    return (refCount);
+    return CProRefCount::Release();
 }
 
 void
@@ -582,13 +564,12 @@ CTest::OnRecvSession(IRtpSession* session,
     assert(session != NULL);
     assert(packet != NULL);
     assert(packet->GetPayloadSize() >= sizeof(TEST_PACKET_HDR));
-    if (session == NULL || packet == NULL ||
-        packet->GetPayloadSize() < sizeof(TEST_PACKET_HDR))
+    if (session == NULL || packet == NULL || packet->GetPayloadSize() < sizeof(TEST_PACKET_HDR))
     {
         return;
     }
 
-    TEST_PACKET_HDR* const ptr = (TEST_PACKET_HDR*)packet->GetPayloadBuffer();
+    TEST_PACKET_HDR* ptr = (TEST_PACKET_HDR*)packet->GetPayloadBuffer();
 
     TEST_PACKET_HDR hdr = *ptr;
     hdr.version = pbsd_ntoh16(hdr.version);
@@ -607,7 +588,7 @@ CTest::OnRecvSession(IRtpSession* session,
             return;
         }
 
-        const int64_t tick = ProGetTickCount64();
+        int64_t tick = ProGetTickCount64();
         m_session->SetMagic(tick);
 
         if (m_mode == TM_UDPE || m_mode == TM_TCPE)
@@ -634,8 +615,8 @@ CTest::OnRecvSession(IRtpSession* session,
 
 void
 CTest::OnCloseSession(IRtpSession* session,
-                      long         errorCode,
-                      long         sslCode,
+                      int          errorCode,
+                      int          sslCode,
                       bool         tcpConnected)
 {
     assert(session != NULL);
@@ -753,7 +734,7 @@ CTest::OnTimerSend(uint64_t timerId,
             return;
         }
 
-        IRtpPacket* const packet = CreateRtpPacketSpace((size_t)packetSize);
+        IRtpPacket* packet = CreateRtpPacketSpace((size_t)packetSize);
         if (packet == NULL)
         {
             return;
@@ -786,7 +767,7 @@ CTest::OnTimerSend(uint64_t timerId,
         hdr.version = pbsd_hton16(hdr.version);
         hdr.srcTick = pbsd_hton64(tick);
 
-        TEST_PACKET_HDR* const ptr = (TEST_PACKET_HDR*)packet->GetPayloadBuffer();
+        TEST_PACKET_HDR* ptr = (TEST_PACKET_HDR*)packet->GetPayloadBuffer();
         *ptr = hdr;
 
         m_session->SendPacket(packet);
@@ -951,13 +932,13 @@ CTest::OnTimerHtbt(uint64_t timerId)
         {
             if (m_mode == TM_UDPE || m_mode == TM_UDPS)
             {
-                m_session = CreateUdpServer(m_reactor,
-                    m_params.server.local_ip, m_params.server.local_port);
+                m_session = CreateUdpServer(
+                    m_reactor, m_params.server.local_ip, m_params.server.local_port);
             }
             else
             {
-                m_session = CreateTcpServer(m_reactor,
-                    m_params.server.local_ip, m_params.server.local_port);
+                m_session = CreateTcpServer(
+                    m_reactor, m_params.server.local_ip, m_params.server.local_port);
             }
         }
     }

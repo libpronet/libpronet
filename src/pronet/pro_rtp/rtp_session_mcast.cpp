@@ -39,7 +39,7 @@ CRtpSessionMcast::CreateInstance(const RTP_SESSION_INFO* localInfo)
     assert(localInfo->mmType != 0);
     if (localInfo == NULL || localInfo->mmType == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     return new CRtpSessionMcast(*localInfo);
@@ -72,10 +72,9 @@ CRtpSessionMcast::Init(IRtpSessionObserver* observer,
     assert(reactor != NULL);
     assert(mcastIp != NULL);
     assert(mcastIp[0] != '\0');
-    if (observer == NULL || reactor == NULL || mcastIp == NULL ||
-        mcastIp[0] == '\0')
+    if (observer == NULL || reactor == NULL || mcastIp == NULL || mcastIp[0] == '\0')
     {
-        return (false);
+        return false;
     }
 
     size_t sockBufSizeRecv = 0; /* zero by default */
@@ -91,7 +90,7 @@ CRtpSessionMcast::Init(IRtpSessionObserver* observer,
         assert(m_trans == NULL);
         if (m_observer != NULL || m_reactor != NULL || m_trans != NULL)
         {
-            return (false);
+            return false;
         }
 
         int count = MAX_TRY_TIMES;
@@ -117,9 +116,8 @@ CRtpSessionMcast::Init(IRtpSessionObserver* observer,
                 }
             }
 
-            m_trans = ProCreateMcastTransport(
-                this, reactor, mcastIp, mcastPort2, localIp,
-                sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
+            m_trans = ProCreateMcastTransport(this, reactor, mcastIp, mcastPort2,
+                localIp, sockBufSizeRecv, sockBufSizeSend, recvPoolSize);
             if (m_trans != NULL)
             {
                 break;
@@ -131,7 +129,7 @@ CRtpSessionMcast::Init(IRtpSessionObserver* observer,
 
         if (m_trans == NULL)
         {
-            return (false);
+            return false;
         }
 
         char theIp[64] = "";
@@ -150,7 +148,7 @@ CRtpSessionMcast::Init(IRtpSessionObserver* observer,
         m_onOkTimerId = reactor->ScheduleTimer(this, 0, false);
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -194,28 +192,26 @@ CRtpSessionMcast::AddMcastReceiver(const char* mcastIp)
 
         if (m_observer == NULL || m_reactor == NULL || m_trans == NULL)
         {
-            return (false);
+            return false;
         }
 
         ret = m_trans->AddMcastReceiver(mcastIp);
     }
 
-    return (ret);
+    return ret;
 }
 
 void
 CRtpSessionMcast::RemoveMcastReceiver(const char* mcastIp)
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_observer == NULL || m_reactor == NULL || m_trans == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactor == NULL || m_trans == NULL)
-        {
-            return;
-        }
-
-        m_trans->RemoveMcastReceiver(mcastIp);
+        return;
     }
+
+    m_trans->RemoveMcastReceiver(mcastIp);
 }
 
 void
@@ -247,8 +243,8 @@ CRtpSessionMcast::OnRecv(IProTransport*          trans,
                 return;
             }
 
-            IProRecvPool&       recvPool = *m_trans->GetRecvPool();
-            const unsigned long dataSize = recvPool.PeekDataSize();
+            IProRecvPool& recvPool = *m_trans->GetRecvPool();
+            size_t        dataSize = recvPool.PeekDataSize();
 
             if (dataSize == 0)
             {
@@ -270,7 +266,7 @@ CRtpSessionMcast::OnRecv(IProTransport*          trans,
                 const char* payloadBuffer = NULL;
                 uint16_t    payloadSize   = 0;
 
-                const bool ret = CRtpPacket::ParseRtpBuffer(
+                bool ret = CRtpPacket::ParseRtpBuffer(
                     (char*)packet->GetPayloadBuffer(),
                     packet->GetPayloadSize16(),
                     hdr,

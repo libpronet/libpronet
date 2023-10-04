@@ -40,46 +40,30 @@ String2Mode_i(const char* modeString)
     assert(modeString[0] != '\0');
     if (modeString == NULL || modeString[0] == '\0')
     {
-        return (mode);
+        return mode;
     }
 
-    if (stricmp(modeString, "-udpecho")  == 0 ||
-        stricmp(modeString, "--udpecho") == 0)
+    if (stricmp(modeString, "-udpecho") == 0 || stricmp(modeString, "--udpecho") == 0)
     {
         mode = TM_UDPE;
     }
-    else if (
-        stricmp(modeString, "-tcpecho")  == 0 ||
-        stricmp(modeString, "--tcpecho") == 0
-        )
+    else if (stricmp(modeString, "-tcpecho") == 0 || stricmp(modeString, "--tcpecho") == 0)
     {
         mode = TM_TCPE;
     }
-    else if (
-        stricmp(modeString, "-udps")  == 0 ||
-        stricmp(modeString, "--udps") == 0
-        )
+    else if (stricmp(modeString, "-udps") == 0 || stricmp(modeString, "--udps") == 0)
     {
         mode = TM_UDPS;
     }
-    else if (
-        stricmp(modeString, "-tcps")  == 0 ||
-        stricmp(modeString, "--tcps") == 0
-        )
+    else if (stricmp(modeString, "-tcps") == 0 || stricmp(modeString, "--tcps") == 0)
     {
         mode = TM_TCPS;
     }
-    else if (
-        stricmp(modeString, "-udpc")  == 0 ||
-        stricmp(modeString, "--udpc") == 0
-        )
+    else if (stricmp(modeString, "-udpc") == 0 || stricmp(modeString, "--udpc") == 0)
     {
         mode = TM_UDPC;
     }
-    else if (
-        stricmp(modeString, "-tcpc")  == 0 ||
-        stricmp(modeString, "--tcpc") == 0
-        )
+    else if (stricmp(modeString, "-tcpc") == 0 || stricmp(modeString, "--tcpc") == 0)
     {
         mode = TM_TCPC;
     }
@@ -87,7 +71,7 @@ String2Mode_i(const char* modeString)
     {
     }
 
-    return (mode);
+    return mode;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -446,5 +430,5 @@ EXIT:
     ProDeleteReactor(reactor);
     ProSleep(3000);
 
-    return (0);
+    return 0;
 }

@@ -58,8 +58,8 @@ CRtpReorder::Reset()
 void
 CRtpReorder::Clean()
 {
-    CProStlMap<int64_t, IRtpPacket*>::iterator       itr = m_seq64ToPacket.begin();
-    CProStlMap<int64_t, IRtpPacket*>::iterator const end = m_seq64ToPacket.end();
+    auto itr = m_seq64ToPacket.begin();
+    auto end = m_seq64ToPacket.end();
 
     for (; itr != end; ++itr)
     {
@@ -120,9 +120,9 @@ CRtpReorder::PushBackAddRef(IRtpPacket* packet)
         return;
     }
 
-    const int64_t tick = ProGetTickCount64();
+    int64_t tick = ProGetTickCount64();
 
-    const uint16_t seq16 = packet->GetSequence();
+    uint16_t seq16 = packet->GetSequence();
     if (m_minSeq64 < 0)
     {
         m_minSeq64      = seq16;
@@ -151,8 +151,8 @@ CRtpReorder::PushBackAddRef(IRtpPacket* packet)
     }
     else if (seq16 < (uint16_t)m_minSeq64)
     {
-        const uint16_t dist1 = (uint16_t)-1 - (uint16_t)m_minSeq64 + seq16 + 1;
-        const uint16_t dist2 = (uint16_t)m_minSeq64 - seq16;
+        uint16_t dist1 = (uint16_t)-1 - (uint16_t)m_minSeq64 + seq16 + 1;
+        uint16_t dist2 = (uint16_t)m_minSeq64 - seq16;
 
         if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* go forward */
         {
@@ -174,8 +174,8 @@ CRtpReorder::PushBackAddRef(IRtpPacket* packet)
     }
     else
     {
-        const uint16_t dist1 = seq16 - (uint16_t)m_minSeq64;
-        const uint16_t dist2 = (uint16_t)-1 - seq16 + (uint16_t)m_minSeq64 + 1;
+        uint16_t dist1 = seq16 - (uint16_t)m_minSeq64;
+        uint16_t dist2 = (uint16_t)-1 - seq16 + (uint16_t)m_minSeq64 + 1;
 
         if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* go forward */
         {
@@ -226,7 +226,7 @@ CRtpReorder::PushBackAddRef(IRtpPacket* packet)
 IRtpPacket*
 CRtpReorder::PopFront(bool force)
 {
-    const int64_t tick = ProGetTickCount64();
+    int64_t tick = ProGetTickCount64();
 
     if (tick - m_lastValidTick > m_maxBrokenDuration * 1000)
     {
@@ -235,14 +235,14 @@ CRtpReorder::PopFront(bool force)
         return NULL;
     }
 
-    CProStlMap<int64_t, IRtpPacket*>::iterator const itr = m_seq64ToPacket.begin();
+    auto itr = m_seq64ToPacket.begin();
     if (itr == m_seq64ToPacket.end())
     {
         return NULL;
     }
 
-    const int64_t     seq64  = itr->first;
-    CRtpPacket* const packet = (CRtpPacket*)itr->second;
+    int64_t     seq64  = itr->first;
+    CRtpPacket* packet = (CRtpPacket*)itr->second;
 
     if (seq64 == m_minSeq64                        ||
         m_seq64ToPacket.size() > m_heightInPackets ||

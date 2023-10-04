@@ -67,14 +67,14 @@ CProTcpHandshaker::Init(IProTcpHandshakerObserver* observer,
                         size_t                     sendDataSize,     /* = 0 */
                         size_t                     recvDataSize,     /* = 0 */
                         bool                       recvFirst,        /* = false */
-                        unsigned long              timeoutInSeconds) /* = 0 */
+                        unsigned int               timeoutInSeconds) /* = 0 */
 {
     assert(observer != NULL);
     assert(reactorTask != NULL);
     assert(sockId != -1);
     if (observer == NULL || reactorTask == NULL || sockId == -1)
     {
-        return (false);
+        return false;
     }
 
     if (timeoutInSeconds == 0)
@@ -89,7 +89,7 @@ CProTcpHandshaker::Init(IProTcpHandshakerObserver* observer,
         assert(m_reactorTask == NULL);
         if (m_observer != NULL || m_reactorTask != NULL)
         {
-            return (false);
+            return false;
         }
 
         if (sendData != NULL && sendDataSize > 0)
@@ -99,7 +99,7 @@ CProTcpHandshaker::Init(IProTcpHandshakerObserver* observer,
 
         if (recvDataSize > 0 && !m_recvPool.Resize(recvDataSize))
         {
-            return (false);
+            return false;
         }
 
         unsigned long mask = 0;
@@ -121,7 +121,7 @@ CProTcpHandshaker::Init(IProTcpHandshakerObserver* observer,
         }
         if (!reactorTask->AddHandler(sockId, this, mask))
         {
-            return (false);
+            return false;
         }
 
         observer->AddRef();
@@ -132,7 +132,7 @@ CProTcpHandshaker::Init(IProTcpHandshakerObserver* observer,
         m_timerId     = reactorTask->ScheduleTimer(this, (uint64_t)timeoutInSeconds * 1000, false, 0);
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -186,7 +186,7 @@ CProTcpHandshaker::OnInput(int64_t sockId)
             return;
         }
 
-        const size_t idleSize = m_recvPool.ContinuousIdleSize();
+        size_t idleSize = m_recvPool.ContinuousIdleSize();
         if (idleSize == 0)
         {
             m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_READ);
@@ -194,7 +194,7 @@ CProTcpHandshaker::OnInput(int64_t sockId)
             return;
         }
 
-        const int recvSize = pbsd_recv(m_sockId, m_recvPool.ContinuousIdleBuf(), (int)idleSize, 0);
+        int recvSize = pbsd_recv(m_sockId, m_recvPool.ContinuousIdleBuf(), idleSize, 0);
         assert(recvSize <= (int)idleSize);
 
         if (recvSize > (int)idleSize)
@@ -254,7 +254,7 @@ CProTcpHandshaker::OnOutput(int64_t sockId)
 
     IProTcpHandshakerObserver* observer  = NULL;
     void*                      buf       = NULL;
-    unsigned long              size      = 0;
+    size_t                     size      = 0;
     int                        errorCode = 0;
     bool                       error     = false;
 
@@ -271,14 +271,14 @@ CProTcpHandshaker::OnOutput(int64_t sockId)
             return;
         }
 
-        unsigned long     theSize   = 0;
-        const void* const theBuf    = m_sendPool.PreSend(theSize);
+        size_t            theSize   = 0;
+        const void*       theBuf    = m_sendPool.PreSend(theSize);
         const CProBuffer* onSendBuf = NULL;
         size_t            idleSize  = 0;
 
         if (theBuf != NULL && theSize > 0)
         {
-            const int sentSize = pbsd_send(m_sockId, theBuf, theSize, 0);
+            int sentSize = pbsd_send(m_sockId, theBuf, theSize, 0);
             assert(sentSize <= (int)theSize);
 
             if (sentSize > (int)theSize)
@@ -301,7 +301,7 @@ CProTcpHandshaker::OnOutput(int64_t sockId)
             }
             else
             {
-                const int errorCode2 = pbsd_errno((void*)&pbsd_send);
+                int errorCode2 = pbsd_errno((void*)&pbsd_send);
                 if (errorCode2 != PBSD_EWOULDBLOCK)
                 {
                     error     = true;
@@ -376,7 +376,7 @@ EXIT:
 
 void
 CProTcpHandshaker::OnError(int64_t sockId,
-                           long    errorCode)
+                           int     errorCode)
 {
     assert(sockId != -1);
     if (sockId == -1)
@@ -426,7 +426,7 @@ CProTcpHandshaker::OnTimer(void*    factory,
     }
 
     IProTcpHandshakerObserver* observer  = NULL;
-    const int                  errorCode = PBSD_ETIMEDOUT;
+    int                        errorCode = PBSD_ETIMEDOUT;
 
     {
         CProThreadMutexGuard mon(m_lock);

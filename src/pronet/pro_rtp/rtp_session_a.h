@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(RTP_SESSION_A_H)
+#ifndef RTP_SESSION_A_H
 #define RTP_SESSION_A_H
 
 #include "rtp_base.h"
@@ -90,7 +90,7 @@ CreateRtpSessionTcpclient(IRtpSessionObserver*    observer,
                           const char*             remoteIp,
                           unsigned short          remotePort,
                           const char*             localIp          = NULL,
-                          unsigned long           timeoutInSeconds = 0,
+                          unsigned int            timeoutInSeconds = 0,
                           bool                    suspendRecv      = false);
 
 /*
@@ -109,7 +109,7 @@ CreateRtpSessionTcpclient(IRtpSessionObserver*    observer,
  *
  * 说明: 可以使用IRtpSession::GetLocalPort()获取本地端口号
  *
- *       suspendRecv用于一些需要精确控制时序的场景
+ *      suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
 CreateRtpSessionTcpserver(IRtpSessionObserver*    observer,
@@ -117,7 +117,7 @@ CreateRtpSessionTcpserver(IRtpSessionObserver*    observer,
                           const RTP_SESSION_INFO* localInfo,
                           const char*             localIp          = NULL,
                           unsigned short          localPort        = 0,
-                          unsigned long           timeoutInSeconds = 0,
+                          unsigned int            timeoutInSeconds = 0,
                           bool                    suspendRecv      = false);
 
 /*
@@ -143,7 +143,7 @@ CreateRtpSessionUdpclientEx(IRtpSessionObserver*    observer,
                             const char*             remoteIp,
                             unsigned short          remotePort,
                             const char*             localIp          = NULL,
-                            unsigned long           timeoutInSeconds = 0);
+                            unsigned int            timeoutInSeconds = 0);
 
 /*
  * 功能: 创建一个RTP_ST_UDPSERVER_EX类型的会话
@@ -166,7 +166,7 @@ CreateRtpSessionUdpserverEx(IRtpSessionObserver*    observer,
                             const RTP_SESSION_INFO* localInfo,
                             const char*             localIp          = NULL,
                             unsigned short          localPort        = 0,
-                            unsigned long           timeoutInSeconds = 0);
+                            unsigned int            timeoutInSeconds = 0);
 
 /*
  * 功能: 创建一个RTP_ST_TCPCLIENT_EX类型的会话
@@ -194,7 +194,7 @@ CreateRtpSessionTcpclientEx(IRtpSessionObserver*    observer,
                             unsigned short          remotePort,
                             const char*             password         = NULL,
                             const char*             localIp          = NULL,
-                            unsigned long           timeoutInSeconds = 0,
+                            unsigned int            timeoutInSeconds = 0,
                             bool                    suspendRecv      = false);
 
 /*
@@ -244,7 +244,7 @@ CreateRtpSessionTcpserverEx(IRtpSessionObserver*    observer,
  *
  * 说明: sslConfig指定的对象必须在会话的生命周期内一直有效
  *
- *       suspendRecv用于一些需要精确控制时序的场景
+ *      suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
 CreateRtpSessionSslclientEx(IRtpSessionObserver*         observer,
@@ -256,7 +256,7 @@ CreateRtpSessionSslclientEx(IRtpSessionObserver*         observer,
                             unsigned short               remotePort,
                             const char*                  password         = NULL,
                             const char*                  localIp          = NULL,
-                            unsigned long                timeoutInSeconds = 0,
+                            unsigned int                 timeoutInSeconds = 0,
                             bool                         suspendRecv      = false);
 
 /*
@@ -275,10 +275,10 @@ CreateRtpSessionSslclientEx(IRtpSessionObserver*         observer,
  *
  * 返回值: 会话对象或NULL
  *
- * 说明: 如果创建成功, 会话将成为(sslCtx, sockId)的属主; 否则, 调用者应该
- *       释放(sslCtx, sockId)对应的资源
+ * 说明: 如果创建成功, 会话将成为(sslCtx, sockId)的属主; 否则, 调用者应该释放
+ *      (sslCtx, sockId)对应的资源
  *
- *       suspendRecv用于一些需要精确控制时序的场景
+ *      suspendRecv用于一些需要精确控制时序的场景
  */
 IRtpSession*
 CreateRtpSessionSslserverEx(IRtpSessionObserver*    observer,
@@ -305,10 +305,10 @@ CreateRtpSessionSslserverEx(IRtpSessionObserver*    observer,
  * 返回值: 会话对象或NULL
  *
  * 说明: 合法的多播地址为[224.0.0.0 ~ 239.255.255.255],
- *       推荐的多播地址为[224.0.1.0 ~ 238.255.255.255],
- *       RFC-1112(IGMPv1), RFC-2236(IGMPv2), RFC-3376(IGMPv3)
+ *      推荐的多播地址为[224.0.1.0 ~ 238.255.255.255],
+ *      RFC-1112(IGMPv1), RFC-2236(IGMPv2), RFC-3376(IGMPv3)
  *
- *       可以使用IRtpSession::GetLocalPort()获取多播端口号
+ *      可以使用IRtpSession::GetLocalPort()获取多播端口号
  */
 IRtpSession*
 CreateRtpSessionMcast(IRtpSessionObserver*    observer,
@@ -332,10 +332,10 @@ CreateRtpSessionMcast(IRtpSessionObserver*    observer,
  * 返回值: 会话对象或NULL
  *
  * 说明: 合法的多播地址为[224.0.0.0 ~ 239.255.255.255],
- *       推荐的多播地址为[224.0.1.0 ~ 238.255.255.255],
- *       RFC-1112(IGMPv1), RFC-2236(IGMPv2), RFC-3376(IGMPv3)
+ *      推荐的多播地址为[224.0.1.0 ~ 238.255.255.255],
+ *      RFC-1112(IGMPv1), RFC-2236(IGMPv2), RFC-3376(IGMPv3)
  *
- *       可以使用IRtpSession::GetLocalPort()获取多播端口号
+ *      可以使用IRtpSession::GetLocalPort()获取多播端口号
  */
 IRtpSession*
 CreateRtpSessionMcastEx(IRtpSessionObserver*    observer,

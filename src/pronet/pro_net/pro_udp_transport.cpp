@@ -81,7 +81,7 @@ CProUdpTransport::Init(IProTransportObserver* observer,
     assert(reactorTask != NULL);
     if (observer == NULL || reactorTask == NULL)
     {
-        return (false);
+        return false;
     }
 
     pbsd_sockaddr_in localAddr;
@@ -99,7 +99,7 @@ CProUdpTransport::Init(IProTransportObserver* observer,
     if (localAddr.sin_addr.s_addr  == (uint32_t)-1 ||
         remoteAddr.sin_addr.s_addr == (uint32_t)-1)
     {
-        return (false);
+        return false;
     }
 
     {
@@ -109,18 +109,18 @@ CProUdpTransport::Init(IProTransportObserver* observer,
         assert(m_reactorTask == NULL);
         if (m_observer != NULL || m_reactorTask != NULL)
         {
-            return (false);
+            return false;
         }
 
         if (!m_recvPool.Resize(m_recvPoolSize))
         {
-            return (false);
+            return false;
         }
 
-        const int64_t sockId = pbsd_socket(AF_INET, SOCK_DGRAM, 0);
+        int64_t sockId = pbsd_socket(AF_INET, SOCK_DGRAM, 0);
         if (sockId == -1)
         {
-            return (false);
+            return false;
         }
 
         int option;
@@ -129,27 +129,25 @@ CProUdpTransport::Init(IProTransportObserver* observer,
         option = (int)sockBufSizeSend;
         pbsd_setsockopt(sockId, SOL_SOCKET, SO_SNDBUF, &option, sizeof(int));
 
-        if (m_bindToLocal &&
-            pbsd_bind(sockId, &localAddr, false) != 0)
+        if (m_bindToLocal && pbsd_bind(sockId, &localAddr, false) != 0)
         {
             ProCloseSockId(sockId);
 
-            return (false);
+            return false;
         }
 
-        if (m_bindToLocal &&
-            pbsd_getsockname(sockId, &localAddr) != 0)
+        if (m_bindToLocal && pbsd_getsockname(sockId, &localAddr) != 0)
         {
             ProCloseSockId(sockId);
 
-            return (false);
+            return false;
         }
 
         if (!reactorTask->AddHandler(sockId, this, PRO_MASK_READ))
         {
             ProCloseSockId(sockId);
 
-            return (false);
+            return false;
         }
 
         observer->AddRef();
@@ -160,7 +158,7 @@ CProUdpTransport::Init(IProTransportObserver* observer,
         m_defaultRemoteAddr = remoteAddr;
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -192,17 +190,13 @@ CProUdpTransport::Fini()
 unsigned long
 CProUdpTransport::AddRef()
 {
-    const unsigned long refCount = CProEventHandler::AddRef();
-
-    return (refCount);
+    return CProEventHandler::AddRef();
 }
 
 unsigned long
 CProUdpTransport::Release()
 {
-    const unsigned long refCount = CProEventHandler::Release();
-
-    return (refCount);
+    return CProEventHandler::Release();
 }
 
 PRO_SSL_SUITE_ID
@@ -210,7 +204,7 @@ CProUdpTransport::GetSslSuite(char suiteName[64]) const
 {
     strcpy(suiteName, "NONE");
 
-    return (PRO_SSL_SUITE_NONE);
+    return PRO_SSL_SUITE_NONE;
 }
 
 int64_t
@@ -224,7 +218,7 @@ CProUdpTransport::GetSockId() const
         sockId = m_sockId;
     }
 
-    return (sockId);
+    return sockId;
 }
 
 const char*
@@ -236,7 +230,7 @@ CProUdpTransport::GetLocalIp(char localIp[64]) const
         pbsd_inet_ntoa(m_localAddr.sin_addr.s_addr, localIp);
     }
 
-    return (localIp);
+    return localIp;
 }
 
 unsigned short
@@ -250,7 +244,7 @@ CProUdpTransport::GetLocalPort() const
         localPort = pbsd_ntoh16(m_localAddr.sin_port);
     }
 
-    return (localPort);
+    return localPort;
 }
 
 const char*
@@ -262,7 +256,7 @@ CProUdpTransport::GetRemoteIp(char remoteIp[64]) const
         pbsd_inet_ntoa(m_defaultRemoteAddr.sin_addr.s_addr, remoteIp);
     }
 
-    return (remoteIp);
+    return remoteIp;
 }
 
 unsigned short
@@ -276,7 +270,7 @@ CProUdpTransport::GetRemotePort() const
         remotePort = pbsd_ntoh16(m_defaultRemoteAddr.sin_port);
     }
 
-    return (remotePort);
+    return remotePort;
 }
 
 bool
@@ -289,7 +283,7 @@ CProUdpTransport::SendData(const void*             buf,
     assert(size > 0);
     if (buf == NULL || size == 0)
     {
-        return (false);
+        return false;
     }
 
     const pbsd_sockaddr_in* realAddr = NULL;
@@ -299,118 +293,108 @@ CProUdpTransport::SendData(const void*             buf,
 
         if (m_observer == NULL || m_reactorTask == NULL)
         {
-            return (false);
+            return false;
         }
 
         realAddr = remoteAddr != NULL ? remoteAddr : &m_defaultRemoteAddr;
         if (realAddr->sin_addr.s_addr == 0 || realAddr->sin_port == 0)
         {
-            return (false);
+            return false;
         }
     }
 
-    const int sentSize = pbsd_sendto(m_sockId, buf, (int)size, 0, realAddr);
+    int sentSize = pbsd_sendto(m_sockId, buf, size, 0, realAddr);
 
-    return (sentSize == (int)size);
+    return sentSize == (int)size;
 }
 
 void
 CProUdpTransport::SuspendRecv()
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_observer == NULL || m_reactorTask == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactorTask == NULL)
-        {
-            return;
-        }
-
-        m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_READ);
+        return;
     }
+
+    m_reactorTask->RemoveHandler(m_sockId, this, PRO_MASK_READ);
 }
 
 void
 CProUdpTransport::ResumeRecv()
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_observer == NULL || m_reactorTask == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactorTask == NULL)
-        {
-            return;
-        }
-
-        m_reactorTask->AddHandler(m_sockId, this, PRO_MASK_READ);
+        return;
     }
+
+    m_reactorTask->AddHandler(m_sockId, this, PRO_MASK_READ);
 }
 
 void
 CProUdpTransport::StartHeartbeat()
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_observer == NULL || m_reactorTask == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
+        return;
+    }
 
-        if (m_observer == NULL || m_reactorTask == NULL)
-        {
-            return;
-        }
-
-        if (m_timerId == 0)
-        {
-            m_timerId = m_reactorTask->ScheduleHeartbeatTimer(this, 0);
-        }
+    if (m_timerId == 0)
+    {
+        m_timerId = m_reactorTask->SetupHeartbeatTimer(this, 0);
     }
 }
 
 void
 CProUdpTransport::StopHeartbeat()
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_observer == NULL || m_reactorTask == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_observer == NULL || m_reactorTask == NULL)
-        {
-            return;
-        }
-
-        m_reactorTask->CancelTimer(m_timerId);
-        m_timerId = 0;
+        return;
     }
+
+    m_reactorTask->CancelTimer(m_timerId);
+    m_timerId = 0;
 }
 
 void
 CProUdpTransport::UdpConnResetAsError(const pbsd_sockaddr_in* remoteAddr) /* = NULL */
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_observer == NULL || m_reactorTask == NULL)
     {
-        CProThreadMutexGuard mon(m_lock);
+        return;
+    }
 
-        if (m_observer == NULL || m_reactorTask == NULL)
-        {
-            return;
-        }
-
-        m_connResetAsError = true;
+    m_connResetAsError = true;
 
 #if defined(_WIN32)
-        long          arg           = 1;
-        unsigned long bytesReturned = 0;
-        ::WSAIoctl((SOCKET)m_sockId, (unsigned long)SIO_UDP_CONNRESET,
-            &arg, sizeof(long), NULL, 0, &bytesReturned, NULL, NULL);
+    long          arg           = 1;
+    unsigned long bytesReturned = 0;
+    ::WSAIoctl((SOCKET)m_sockId, (unsigned long)SIO_UDP_CONNRESET,
+        &arg, sizeof(long), NULL, 0, &bytesReturned, NULL, NULL);
 #endif
 
 #if !defined(PRO_LACKS_UDP_CONNECT)
-        if (remoteAddr != NULL)
-        {
-            pbsd_connect(m_sockId, remoteAddr);
+    if (remoteAddr != NULL)
+    {
+        pbsd_connect(m_sockId, remoteAddr);
 
-            pbsd_sockaddr_in localAddr;
-            if (pbsd_getsockname(m_sockId, &localAddr) == 0)
-            {
-                m_localAddr = localAddr;
-            }
+        pbsd_sockaddr_in localAddr;
+        if (pbsd_getsockname(m_sockId, &localAddr) == 0)
+        {
+            m_localAddr = localAddr;
         }
-#endif
     }
+#endif
 }
 
 void
@@ -440,7 +424,7 @@ CProUdpTransport::OnInput(int64_t sockId)
             return;
         }
 
-        const size_t idleSize = m_recvPool.ContinuousIdleSize();
+        size_t idleSize = m_recvPool.ContinuousIdleSize();
 
         assert(idleSize > 0);
         if (idleSize == 0)
@@ -451,8 +435,8 @@ CProUdpTransport::OnInput(int64_t sockId)
             goto EXIT;
         }
 
-        recvSize = pbsd_recvfrom(m_sockId,
-            m_recvPool.ContinuousIdleBuf(), (int)idleSize, 0, &remoteAddr);
+        recvSize = pbsd_recvfrom(
+            m_sockId, m_recvPool.ContinuousIdleBuf(), idleSize, 0, &remoteAddr);
         assert(recvSize <= (int)idleSize);
 
         if (recvSize > (int)idleSize)
@@ -485,10 +469,7 @@ EXIT:
             observer->OnRecv(this, &remoteAddr);
             assert(m_recvPool.ContinuousIdleSize() > 0);
         }
-        else if (
-            recvSize < 0 && errorCode == PBSD_ECONNRESET &&
-            m_connResetAsError
-            )
+        else if (recvSize < 0 && errorCode == PBSD_ECONNRESET && m_connResetAsError)
         {
             m_canUpcall = false;
             observer->OnClose(this, PBSD_ECONNRESET, 0);
@@ -516,7 +497,7 @@ EXIT:
 
 void
 CProUdpTransport::OnError(int64_t sockId,
-                          long    errorCode)
+                          int     errorCode)
 {
     assert(sockId != -1);
     if (sockId == -1)

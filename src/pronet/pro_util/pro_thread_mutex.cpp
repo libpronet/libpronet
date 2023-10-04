@@ -98,7 +98,7 @@ public:
         assert(mutex != NULL);
 
         mutex->Unlock();
-        const unsigned long retc = ::WaitForSingleObject(m_sem, milliseconds);
+        unsigned long retc = ::WaitForSingleObject(m_sem, milliseconds);
         mutex->Lock();
 
         return retc == WAIT_OBJECT_0;
@@ -112,7 +112,7 @@ public:
         assert(mutex != NULL);
 
         mutex->Unlock();
-        const unsigned long retc = ::WaitForSingleObject(m_sem, milliseconds);
+        unsigned long retc = ::WaitForSingleObject(m_sem, milliseconds);
         mutex->Lock();
 
         return retc == WAIT_OBJECT_0;
@@ -316,7 +316,7 @@ private:
             milliseconds = 1;
         }
 
-        const int64_t sockId = m_pipe.GetReaderSockId();
+        int64_t sockId = m_pipe.GetReaderSockId();
         if (sockId == -1)
         {
             m_pipe.Fini();
@@ -335,7 +335,7 @@ private:
         pfd.events = POLLIN;
 
         Unlock(mutex, recursive);
-        const int retc = pbsd_poll(&pfd, 1, milliseconds);
+        int retc = pbsd_poll(&pfd, 1, milliseconds);
         Lock(mutex, recursive);
 
         if (retc == 0)
@@ -377,12 +377,12 @@ private:
         pthread_mutex_t* mutext = NULL;
         if (recursive)
         {
-            CProRecursiveThreadMutex* const mutex2 = (CProRecursiveThreadMutex*)mutex;
+            CProRecursiveThreadMutex* mutex2 = (CProRecursiveThreadMutex*)mutex;
             mutext = (pthread_mutex_t*)mutex2->GetNativePthreadObj();
         }
         else
         {
-            CProThreadMutex* const mutex2 = (CProThreadMutex*)mutex;
+            CProThreadMutex* mutex2 = (CProThreadMutex*)mutex;
             mutext = (pthread_mutex_t*)mutex2->GetNativePthreadObj();
         }
         if (mutext == NULL)
@@ -393,7 +393,7 @@ private:
         struct timespec abstime = { 0 };
 
 #if defined(PRO_HAS_PTHREAD_CONDATTR_SETCLOCK)
-        const int64_t tick = ProGetTickCount64() + milliseconds;
+        int64_t tick = ProGetTickCount64() + milliseconds;
 
         abstime.tv_sec  = (time_t)(tick / 1000);
         abstime.tv_nsec = (long)  (tick % 1000 * 1000000);
@@ -418,7 +418,7 @@ private:
             else
             {
                 ++m_waiters;
-                const int retc = pthread_cond_timedwait(&m_condt, mutext, &abstime);
+                int retc = pthread_cond_timedwait(&m_condt, mutext, &abstime);
                 --m_waiters;
 
                 if (retc != 0)
@@ -443,12 +443,12 @@ private:
 
         if (recursive)
         {
-            CProRecursiveThreadMutex* const mutex2 = (CProRecursiveThreadMutex*)mutex;
+            CProRecursiveThreadMutex* mutex2 = (CProRecursiveThreadMutex*)mutex;
             mutex2->Lock();
         }
         else
         {
-            CProThreadMutex* const mutex2 = (CProThreadMutex*)mutex;
+            CProThreadMutex* mutex2 = (CProThreadMutex*)mutex;
             mutex2->Lock();
         }
     }
@@ -462,12 +462,12 @@ private:
 
         if (recursive)
         {
-            CProRecursiveThreadMutex* const mutex2 = (CProRecursiveThreadMutex*)mutex;
+            CProRecursiveThreadMutex* mutex2 = (CProRecursiveThreadMutex*)mutex;
             mutex2->Unlock();
         }
         else
         {
-            CProThreadMutex* const mutex2 = (CProThreadMutex*)mutex;
+            CProThreadMutex* mutex2 = (CProThreadMutex*)mutex;
             mutex2->Unlock();
         }
     }
@@ -587,7 +587,7 @@ CProRecursiveThreadMutex::~CProRecursiveThreadMutex()
 void
 CProRecursiveThreadMutex::Lock()
 {
-    const uint64_t threadId = ProGetThreadId();
+    uint64_t threadId = ProGetThreadId();
 
     m_mutex->Lock();   /* [[[[ */
 
@@ -607,7 +607,7 @@ CProRecursiveThreadMutex::Lock()
 void
 CProRecursiveThreadMutex::Unlock()
 {
-    const uint64_t threadId = ProGetThreadId();
+    uint64_t threadId = ProGetThreadId();
 
     m_mutex->Lock();   /* [[[[ */
 

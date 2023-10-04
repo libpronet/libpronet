@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(MSG_SERVER_H)
+#ifndef MSG_SERVER_H
 #define MSG_SERVER_H
 
 #include "../pro_rtp/rtp_base.h"
@@ -158,8 +158,8 @@ private:
         const RTP_MSG_USER* user,
         const char*         userPublicIp,
         const RTP_MSG_USER* c2sUser, /* = NULL */
-        const char          hash[32],
-        const char          nonce[32],
+        const unsigned char hash[32],
+        const unsigned char nonce[32],
         uint64_t*           userId,
         uint16_t*           instId,
         int64_t*            appData,
@@ -177,8 +177,8 @@ private:
     virtual void OnCloseUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
-        long                errorCode,
-        long                sslCode
+        int                 errorCode,
+        int                 sslCode
         );
 
     virtual void OnHeartbeatUser(
@@ -192,7 +192,7 @@ private:
     virtual void OnRecvMsg(
         IRtpMsgServer*      msgServer,
         const void*         buf,
-        unsigned long       size,
+        size_t              size,
         uint16_t            charset,
         const RTP_MSG_USER* srcUser
         )

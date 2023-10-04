@@ -16,36 +16,11 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(____PRO_A_H____)
+#ifndef ____PRO_A_H____
 #define ____PRO_A_H____
 
 /////////////////////////////////////////////////////////////////////////////
 ////
-
-#if !defined(PRO_INT8)
-#define PRO_INT8   char
-#endif
-#if !defined(PRO_INT16)
-#define PRO_INT16  short
-#endif
-#if !defined(PRO_INT32)
-#define PRO_INT32  int
-#endif
-#if !defined(PRO_INT64)
-#define PRO_INT64  long long
-#endif
-#if !defined(PRO_UINT8)
-#define PRO_UINT8  unsigned char
-#endif
-#if !defined(PRO_UINT16)
-#define PRO_UINT16 unsigned short
-#endif
-#if !defined(PRO_UINT32)
-#define PRO_UINT32 unsigned int
-#endif
-#if !defined(PRO_UINT64)
-#define PRO_UINT64 unsigned long long
-#endif
 
 /*
  * definitions for Linux, see the "build/DEFINE.txt"

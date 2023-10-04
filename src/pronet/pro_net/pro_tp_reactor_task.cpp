@@ -80,7 +80,7 @@ CProTpReactorTask::Start(unsigned long ioThreadCount,
          ioThreadPriority != 2)
        )
     {
-        return (false);
+        return false;
     }
 
     {
@@ -89,7 +89,7 @@ CProTpReactorTask::Start(unsigned long ioThreadCount,
         assert(m_acceptThreadCount + m_ioThreadCount == 0);
         if (m_acceptThreadCount + m_ioThreadCount != 0)
         {
-            return (false);
+            return false;
         }
 
         m_acceptThreadCount = 1;
@@ -108,7 +108,7 @@ CProTpReactorTask::Start(unsigned long ioThreadCount,
 
             for (int i = 0; i < (int)m_ioThreadCount; ++i)
             {
-                CProBaseReactor* const reactor = new CProReactorImpl;
+                CProBaseReactor* reactor = new CProReactorImpl;
                 if (!reactor->Init())
                 {
                     delete reactor;
@@ -160,13 +160,13 @@ CProTpReactorTask::Start(unsigned long ioThreadCount,
         }
     }
 
-    return (true);
+    return true;
 
 EXIT:
 
     StopMe();
 
-    return (false);
+    return false;
 }}
 
 void
@@ -197,8 +197,8 @@ CProTpReactorTask::StopMe()
             m_acceptReactor->Fini();
         }
 
-        int       i = 0;
-        const int c = (int)m_ioReactors.size();
+        int i = 0;
+        int c = (int)m_ioReactors.size();
 
         for (; i < c; ++i)
         {
@@ -215,8 +215,8 @@ CProTpReactorTask::StopMe()
 
         delete m_acceptReactor;
 
-        int       i = 0;
-        const int c = (int)m_ioReactors.size();
+        int i = 0;
+        int c = (int)m_ioReactors.size();
 
         for (; i < c; ++i)
         {
@@ -247,7 +247,7 @@ CProTpReactorTask::AddHandler(int64_t           sockId,
     assert(mask != 0);
     if (sockId == -1 || handler == NULL || mask == 0)
     {
-        return (false);
+        return false;
     }
 
     if (PRO_BIT_ENABLED(mask, PRO_MASK_ACCEPT))
@@ -255,7 +255,7 @@ CProTpReactorTask::AddHandler(int64_t           sockId,
         assert(mask == PRO_MASK_ACCEPT);
         if (mask != PRO_MASK_ACCEPT)
         {
-            return (false);
+            return false;
         }
     }
 
@@ -268,14 +268,14 @@ CProTpReactorTask::AddHandler(int64_t           sockId,
             m_curThreadCount != m_acceptThreadCount + m_ioThreadCount ||
             m_wantExit)
         {
-            return (false);
+            return false;
         }
 
         CProBaseReactor* ioReactor = handler->GetReactor();
         if (ioReactor == NULL)
         {
-            int       i = 0;
-            const int c = (int)m_ioReactors.size();
+            int i = 0;
+            int c = (int)m_ioReactors.size();
 
             for (; i < c; ++i)
             {
@@ -316,7 +316,7 @@ CProTpReactorTask::AddHandler(int64_t           sockId,
         handler->AddMask(mask);
     }
 
-    return (ret);
+    return ret;
 }
 
 void
@@ -351,7 +351,7 @@ CProTpReactorTask::RemoveHandler(int64_t           sockId,
         {
             unsigned long ioMask = mask & ~PRO_MASK_ACCEPT;
 
-            CProBaseReactor* const ioReactor = handler->GetReactor();
+            CProBaseReactor* ioReactor = handler->GetReactor();
             if (ioReactor != NULL)
             {
                 ioReactor->RemoveHandler(sockId, ioMask);
@@ -383,13 +383,13 @@ CProTpReactorTask::ScheduleTimer(IProOnTimer* onTimer,
             m_curThreadCount != m_acceptThreadCount + m_ioThreadCount ||
             m_wantExit)
         {
-            return (0);
+            return 0;
         }
 
         timerId = m_timerFactory.ScheduleTimer(onTimer, timeSpan, recurring, userData);
     }
 
-    return (timerId);
+    return timerId;
 }
 
 uint64_t
@@ -405,17 +405,17 @@ CProTpReactorTask::ScheduleHeartbeatTimer(IProOnTimer* onTimer,
             m_curThreadCount != m_acceptThreadCount + m_ioThreadCount ||
             m_wantExit)
         {
-            return (0);
+            return 0;
         }
 
         timerId = m_timerFactory.ScheduleHeartbeatTimer(onTimer, userData);
     }
 
-    return (timerId);
+    return timerId;
 }
 
 bool
-CProTpReactorTask::UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds)
+CProTpReactorTask::UpdateHeartbeatTimers(unsigned int htbtIntervalInSeconds)
 {
     bool ret = false;
 
@@ -426,29 +426,27 @@ CProTpReactorTask::UpdateHeartbeatTimers(unsigned long htbtIntervalInSeconds)
             m_curThreadCount != m_acceptThreadCount + m_ioThreadCount ||
             m_wantExit)
         {
-            return (false);
+            return false;
         }
 
         ret = m_timerFactory.UpdateHeartbeatTimers(htbtIntervalInSeconds);
     }
 
-    return (ret);
+    return ret;
 }
 
 void
 CProTpReactorTask::CancelTimer(uint64_t timerId)
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_acceptThreadCount + m_ioThreadCount == 0 ||
+        m_curThreadCount != m_acceptThreadCount + m_ioThreadCount)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_acceptThreadCount + m_ioThreadCount == 0 ||
-            m_curThreadCount != m_acceptThreadCount + m_ioThreadCount)
-        {
-            return;
-        }
-
-        m_timerFactory.CancelTimer(timerId);
+        return;
     }
+
+    m_timerFactory.CancelTimer(timerId);
 }
 
 uint64_t
@@ -466,29 +464,27 @@ CProTpReactorTask::ScheduleMmTimer(IProOnTimer* onTimer,
             m_curThreadCount != m_acceptThreadCount + m_ioThreadCount ||
             m_wantExit)
         {
-            return (0);
+            return 0;
         }
 
         timerId = m_mmTimerFactory.ScheduleTimer(onTimer, timeSpan, recurring, userData);
     }
 
-    return (timerId);
+    return timerId;
 }
 
 void
 CProTpReactorTask::CancelMmTimer(uint64_t timerId)
 {
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_acceptThreadCount + m_ioThreadCount == 0 ||
+        m_curThreadCount != m_acceptThreadCount + m_ioThreadCount)
     {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_acceptThreadCount + m_ioThreadCount == 0 ||
-            m_curThreadCount != m_acceptThreadCount + m_ioThreadCount)
-        {
-            return;
-        }
-
-        m_mmTimerFactory.CancelTimer(timerId);
+        return;
     }
+
+    m_mmTimerFactory.CancelTimer(timerId);
 }
 
 void
@@ -562,9 +558,9 @@ CProTpReactorTask::GetTraceInfo(char*  buf,
 void
 CProTpReactorTask::Svc()
 {
-    const uint64_t threadId = ProGetThreadId();
+    uint64_t threadId = ProGetThreadId();
 
-    unsigned long threadCount = 0;
+    unsigned int threadCount = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);

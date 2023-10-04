@@ -43,8 +43,8 @@ CProFunctorCommandTask::~CProFunctorCommandTask()
 }
 
 bool
-CProFunctorCommandTask::Start(bool   realtime,    /* = false */
-                              size_t threadCount) /* = 1 */
+CProFunctorCommandTask::Start(bool         realtime,    /* = false */
+                              unsigned int threadCount) /* = 1 */
 {{
     CProThreadMutexGuard mon(m_lockAtom);
 
@@ -65,28 +65,15 @@ CProFunctorCommandTask::Start(bool   realtime,    /* = false */
 
         m_threadCount = threadCount; /* for StopMe() */
 
-        /*
-         * threads
-         */
+        for (int i = 0; i < (int)threadCount; ++i)
         {
-            int i;
-
-            for (i = 0; i < (int)m_threadCount; ++i)
-            {
-                if (!Spawn(realtime))
-                {
-                    break;
-                }
-            }
-
-            assert(i == (int)m_threadCount);
-            if (i != (int)m_threadCount)
+            if (!Spawn(realtime))
             {
                 goto EXIT;
             }
         }
 
-        while (m_curThreadCount < m_threadCount)
+        while (m_curThreadCount < threadCount)
         {
             m_initCond.Wait(&m_lock);
         }
@@ -221,7 +208,7 @@ CProFunctorCommandTask::GetUserData() const
 void
 CProFunctorCommandTask::Svc()
 {
-    const uint64_t threadId = ProGetThreadId();
+    uint64_t threadId = ProGetThreadId();
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -263,8 +250,8 @@ CProFunctorCommandTask::Svc()
 
         command->Execute();
 
-        CProThreadMutexCondition* const cond = (CProThreadMutexCondition*)command->GetUserData1();
-        CProThreadMutex*          const lock = (CProThreadMutex*)         command->GetUserData2();
+        CProThreadMutexCondition* cond = (CProThreadMutexCondition*)command->GetUserData1();
+        CProThreadMutex*          lock = (CProThreadMutex*)         command->GetUserData2();
         if (cond != NULL && lock != NULL)
         {
             lock->Lock();
@@ -275,16 +262,16 @@ CProFunctorCommandTask::Svc()
         command->Destroy();
     } /* end of while () */
 
-    int       i = 0;
-    const int c = (int)commands.size();
+    int i = 0;
+    int c = (int)commands.size();
 
     for (; i < c; ++i)
     {
-        IProFunctorCommand* const command = commands[i];
+        IProFunctorCommand* command = commands[i];
         command->Execute();
 
-        CProThreadMutexCondition* const cond = (CProThreadMutexCondition*)command->GetUserData1();
-        CProThreadMutex*          const lock = (CProThreadMutex*)         command->GetUserData2();
+        CProThreadMutexCondition* cond = (CProThreadMutexCondition*)command->GetUserData1();
+        CProThreadMutex*          lock = (CProThreadMutex*)         command->GetUserData2();
         if (cond != NULL && lock != NULL)
         {
             lock->Lock();

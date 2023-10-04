@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(PRO_BASE_REACTOR_H)
+#ifndef PRO_BASE_REACTOR_H
 #define PRO_BASE_REACTOR_H
 
 #include "pro_event_handler.h"

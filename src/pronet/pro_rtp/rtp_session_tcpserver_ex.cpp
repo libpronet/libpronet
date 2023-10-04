@@ -35,7 +35,7 @@ CRtpSessionTcpserverEx::CreateInstance(const RTP_SESSION_INFO* localInfo,
     assert(localInfo->mmType != 0);
     if (localInfo == NULL || localInfo->mmType == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     assert(
@@ -47,7 +47,7 @@ CRtpSessionTcpserverEx::CreateInstance(const RTP_SESSION_INFO* localInfo,
         localInfo->packMode != RTP_EPM_TCP2    &&
         localInfo->packMode != RTP_EPM_TCP4)
     {
-        return (NULL);
+        return NULL;
     }
 
     return new CRtpSessionTcpserverEx(*localInfo, suspendRecv, NULL);
@@ -86,7 +86,7 @@ CRtpSessionTcpserverEx::Init(IRtpSessionObserver* observer,
     assert(sockId != -1);
     if (observer == NULL || reactor == NULL || sockId == -1)
     {
-        return (false);
+        return false;
     }
 
     size_t sockBufSizeRecv = 0; /* zero by default */
@@ -102,14 +102,13 @@ CRtpSessionTcpserverEx::Init(IRtpSessionObserver* observer,
         assert(m_trans == NULL);
         if (m_observer != NULL || m_reactor != NULL || m_trans != NULL)
         {
-            return (false);
+            return false;
         }
 
         if (m_sslCtx != NULL)
         {
-            m_trans = ProCreateSslTransport(
-                this, reactor, m_sslCtx, sockId, unixSocket, sockBufSizeRecv,
-                sockBufSizeSend, recvPoolSize, m_suspendRecv);
+            m_trans = ProCreateSslTransport(this, reactor, m_sslCtx, sockId, unixSocket,
+                sockBufSizeRecv, sockBufSizeSend, recvPoolSize, m_suspendRecv);
             if (m_trans != NULL)
             {
                 m_sslCtx = NULL;
@@ -117,13 +116,12 @@ CRtpSessionTcpserverEx::Init(IRtpSessionObserver* observer,
         }
         else
         {
-            m_trans = ProCreateTcpTransport(
-                this, reactor, sockId, unixSocket, sockBufSizeRecv,
-                sockBufSizeSend, recvPoolSize, m_suspendRecv);
+            m_trans = ProCreateTcpTransport(this, reactor, sockId, unixSocket,
+                sockBufSizeRecv, sockBufSizeSend, recvPoolSize, m_suspendRecv);
         }
         if (m_trans == NULL)
         {
-            return (false);
+            return false;
         }
 
         char theIp[64] = "";
@@ -152,13 +150,13 @@ CRtpSessionTcpserverEx::Init(IRtpSessionObserver* observer,
         }
     }
 
-    return (true);
+    return true;
 
 EXIT:
 
     Fini();
 
-    return (false);
+    return false;
 }
 
 void
@@ -192,17 +190,13 @@ CRtpSessionTcpserverEx::Fini()
 unsigned long
 CRtpSessionTcpserverEx::AddRef()
 {
-    const unsigned long refCount = CRtpSessionBase::AddRef();
-
-    return (refCount);
+    return CRtpSessionBase::AddRef();
 }
 
 unsigned long
 CRtpSessionTcpserverEx::Release()
 {
-    const unsigned long refCount = CRtpSessionBase::Release();
-
-    return (refCount);
+    return CRtpSessionBase::Release();
 }
 
 void
@@ -306,8 +300,8 @@ CRtpSessionTcpserverEx::Recv0(CRtpPacket*& packet,
 
     while (1)
     {
-        IProRecvPool&       recvPool = *m_trans->GetRecvPool();
-        const unsigned long dataSize = recvPool.PeekDataSize();
+        IProRecvPool& recvPool = *m_trans->GetRecvPool();
+        size_t        dataSize = recvPool.PeekDataSize();
 
         if (dataSize < sizeof(RTP_EXT))
         {
@@ -374,7 +368,7 @@ CRtpSessionTcpserverEx::Recv0(CRtpPacket*& packet,
         break;
     } /* end of while () */
 
-    return (ret);
+    return ret;
 }
 
 bool
@@ -392,8 +386,8 @@ CRtpSessionTcpserverEx::Recv2(CRtpPacket*& packet,
 
     while (1)
     {
-        IProRecvPool&       recvPool = *m_trans->GetRecvPool();
-        const unsigned long dataSize = recvPool.PeekDataSize();
+        IProRecvPool& recvPool = *m_trans->GetRecvPool();
+        size_t        dataSize = recvPool.PeekDataSize();
 
         if (dataSize < sizeof(uint16_t))
         {
@@ -432,7 +426,7 @@ CRtpSessionTcpserverEx::Recv2(CRtpPacket*& packet,
         break;
     } /* end of while () */
 
-    return (ret);
+    return ret;
 }
 
 bool
@@ -450,9 +444,9 @@ CRtpSessionTcpserverEx::Recv4(CRtpPacket*& packet,
 
     while (1)
     {
-        IProRecvPool&       recvPool = *m_trans->GetRecvPool();
-        const unsigned long dataSize = recvPool.PeekDataSize();
-        const unsigned long freeSize = recvPool.GetFreeSize();
+        IProRecvPool& recvPool = *m_trans->GetRecvPool();
+        size_t        dataSize = recvPool.PeekDataSize();
+        size_t        freeSize = recvPool.GetFreeSize();
 
         if (m_bigPacket == NULL)
         {
@@ -529,9 +523,9 @@ CRtpSessionTcpserverEx::Recv4(CRtpPacket*& packet,
                 break;
             }
 
-            const size_t pos = (size_t)m_bigPacket->GetMagic2();
-            void* const  buf = (char*)m_bigPacket->GetPayloadBuffer() + pos;
-            size_t       len = m_bigPacket->GetPayloadSize() - pos;
+            size_t pos = (size_t)m_bigPacket->GetMagic2();
+            void*  buf = (char*)m_bigPacket->GetPayloadBuffer() + pos;
+            size_t len = m_bigPacket->GetPayloadSize() - pos;
             if (len > dataSize)
             {
                 len = dataSize;
@@ -552,7 +546,7 @@ CRtpSessionTcpserverEx::Recv4(CRtpPacket*& packet,
         }
     } /* end of while () */
 
-    return (ret);
+    return ret;
 }
 
 bool
@@ -562,7 +556,7 @@ CRtpSessionTcpserverEx::DoHandshake(bool useAckData,
     assert(m_trans != NULL);
     if (m_trans == NULL)
     {
-        return (false);
+        return false;
     }
 
     /*
@@ -576,20 +570,20 @@ CRtpSessionTcpserverEx::DoHandshake(bool useAckData,
         memcpy(ack.userData, ackData, 64);
     }
 
-    IRtpPacket* const packet = CreateRtpPacket(&ack, sizeof(RTP_SESSION_ACK));
+    IRtpPacket* packet = CreateRtpPacket(&ack, sizeof(RTP_SESSION_ACK));
     if (packet == NULL)
     {
-        return (false);
+        return false;
     }
 
     packet->SetMmId(m_info.mmId);
     packet->SetMmType(m_info.mmType);
 
-    const bool ret = m_trans->SendData(
+    bool ret = m_trans->SendData(
         (char*)packet->GetPayloadBuffer() - sizeof(RTP_HEADER) - sizeof(RTP_EXT),
         packet->GetPayloadSize() + sizeof(RTP_HEADER) + sizeof(RTP_EXT)
         );
     packet->Release();
 
-    return (ret);
+    return ret;
 }

@@ -59,7 +59,7 @@ CProNotifyPipe::Init()
 
 #if defined(_WIN32)
 
-    const int64_t sockId = pbsd_socket(AF_INET, SOCK_DGRAM, 0);
+    int64_t sockId = pbsd_socket(AF_INET, SOCK_DGRAM, 0);
     if (sockId == -1)
     {
         return;
@@ -107,7 +107,7 @@ CProNotifyPipe::Init()
 
     int64_t sockIds[2] = { -1, -1 };
 
-    const int retc = pbsd_socketpair(sockIds); /* connected */
+    int retc = pbsd_socketpair(sockIds); /* connected */
     if (retc != 0)
     {
         return;
@@ -138,13 +138,13 @@ CProNotifyPipe::Fini()
 void
 CProNotifyPipe::Notify()
 {
-    const int64_t sockId = GetWriterSockId();
+    int64_t sockId = GetWriterSockId();
     if (sockId == -1)
     {
         return;
     }
 
-    const int64_t tick = ProGetTickCount64();
+    int64_t tick = ProGetTickCount64();
     if (tick > m_notifyTick)
     {
         m_signal     = false;
@@ -156,7 +156,7 @@ CProNotifyPipe::Notify()
         return;
     }
 
-    const char buf[] = { 0 };
+    char buf[] = { 0 };
     if (pbsd_send(sockId, buf, sizeof(buf), 0) > 0) /* connected */
     {
         m_signal     = true;
@@ -167,13 +167,13 @@ CProNotifyPipe::Notify()
 bool
 CProNotifyPipe::Roger()
 {
-    const int64_t sockId = GetReaderSockId();
+    int64_t sockId = GetReaderSockId();
     if (sockId == -1)
     {
         return false;
     }
 
-    const int recvSize = pbsd_recv(sockId, g_s_buffer, sizeof(g_s_buffer), 0); /* connected */
+    int recvSize = pbsd_recv(sockId, g_s_buffer, sizeof(g_s_buffer), 0); /* connected */
     if (
         (recvSize > 0 && recvSize <= (int)sizeof(g_s_buffer))
         ||

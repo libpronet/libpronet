@@ -30,10 +30,6 @@
 #include "../pro_util/pro_version.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(_WIN32)
-#include <windows.h>
-#endif
-
 #if defined(__cplusplus)
 extern "C" {
 #endif
@@ -43,19 +39,19 @@ extern "C" {
 
 #define TRACE_EXT_NAME ".pro_rtp.trace"
 
-CProFileMonitor               g_fileMonitor;
+CProFileMonitor              g_fileMonitor;
 
-static CRtpPortAllocator*     g_s_udpPortAllocator   = NULL;
-static CRtpPortAllocator*     g_s_tcpPortAllocator   = NULL;
-static volatile unsigned long g_s_keepaliveInSeconds = 60;
-static volatile unsigned long g_s_flowctrlInSeconds  = 1;
-static volatile unsigned long g_s_statInSeconds      = 5;
-static size_t                 g_s_udpSockBufSizeRecv[256]; /* mmType0 ~ mmType255 */
-static size_t                 g_s_udpSockBufSizeSend[256]; /* mmType0 ~ mmType255 */
-static size_t                 g_s_udpRecvPoolSize[256];    /* mmType0 ~ mmType255 */
-static size_t                 g_s_tcpSockBufSizeRecv[256]; /* mmType0 ~ mmType255 */
-static size_t                 g_s_tcpSockBufSizeSend[256]; /* mmType0 ~ mmType255 */
-static size_t                 g_s_tcpRecvPoolSize[256];    /* mmType0 ~ mmType255 */
+static CRtpPortAllocator*    g_s_udpPortAllocator   = NULL;
+static CRtpPortAllocator*    g_s_tcpPortAllocator   = NULL;
+static volatile unsigned int g_s_keepaliveInSeconds = 60;
+static volatile unsigned int g_s_flowctrlInSeconds  = 1;
+static volatile unsigned int g_s_statInSeconds      = 5;
+static size_t                g_s_udpSockBufSizeRecv[256]; /* mmType0 ~ mmType255 */
+static size_t                g_s_udpSockBufSizeSend[256]; /* mmType0 ~ mmType255 */
+static size_t                g_s_udpRecvPoolSize[256];    /* mmType0 ~ mmType255 */
+static size_t                g_s_tcpSockBufSizeRecv[256]; /* mmType0 ~ mmType255 */
+static size_t                g_s_tcpSockBufSizeSend[256]; /* mmType0 ~ mmType255 */
+static size_t                g_s_tcpRecvPoolSize[256];    /* mmType0 ~ mmType255 */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -147,7 +143,7 @@ ParseRtpStreamToPacket(const void* streamBuffer,
     const char* payloadBuffer = NULL;
     uint16_t    payloadSize   = 0;
 
-    const bool ret = CRtpPacket::ParseRtpBuffer(
+    bool ret = CRtpPacket::ParseRtpBuffer(
         (char*)streamBuffer,
         streamSize,
         hdr,
@@ -156,7 +152,7 @@ ParseRtpStreamToPacket(const void* streamBuffer,
         );
     if (!ret || payloadBuffer == NULL || payloadSize == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     hdr.v  = 2;
@@ -164,18 +160,17 @@ ParseRtpStreamToPacket(const void* streamBuffer,
     hdr.x  = 0;
     hdr.cc = 0;
 
-    IRtpPacket* const packet = CRtpPacket::CreateInstance(
+    IRtpPacket* packet = CRtpPacket::CreateInstance(
         payloadBuffer, payloadSize, RTP_EPM_DEFAULT);
     if (packet == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
-    RTP_HEADER* const packetHdr =
-        (RTP_HEADER*)((char*)packet->GetPayloadBuffer() - sizeof(RTP_HEADER));
+    RTP_HEADER* packetHdr = (RTP_HEADER*)((char*)packet->GetPayloadBuffer() - sizeof(RTP_HEADER));
     *packetHdr = hdr;
 
-    return (packet);
+    return packet;
 }
 
 PRO_RTP_API
@@ -187,20 +182,20 @@ FindRtpStreamFromPacket(const IRtpPacket* packet,
     assert(streamSize != NULL);
     if (packet == NULL || streamSize == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     if (packet->GetPackMode() != RTP_EPM_DEFAULT)
     {
-        return (NULL);
+        return NULL;
     }
 
-    const char* const payloadBuffer = (char*)packet->GetPayloadBuffer();
-    const uint16_t    payloadSize   = packet->GetPayloadSize16();
+    const char* payloadBuffer = (char*)packet->GetPayloadBuffer();
+    uint16_t    payloadSize   = packet->GetPayloadSize16();
 
     *streamSize = payloadSize + sizeof(RTP_HEADER);
 
-    return (payloadBuffer - sizeof(RTP_HEADER));
+    return payloadBuffer - sizeof(RTP_HEADER);
 }
 
 PRO_RTP_API
@@ -258,7 +253,7 @@ AllocRtpUdpPort(bool rfc)
 {
     assert(g_s_udpPortAllocator != NULL);
 
-    return (g_s_udpPortAllocator->AllocPort(rfc));
+    return g_s_udpPortAllocator->AllocPort(rfc);
 }
 
 PRO_RTP_API
@@ -267,12 +262,12 @@ AllocRtpTcpPort(bool rfc)
 {
     assert(g_s_tcpPortAllocator != NULL);
 
-    return (g_s_tcpPortAllocator->AllocPort(rfc));
+    return g_s_tcpPortAllocator->AllocPort(rfc);
 }
 
 PRO_RTP_API
 void
-SetRtpKeepaliveTimeout(unsigned long keepaliveInSeconds) /* = 60 */
+SetRtpKeepaliveTimeout(unsigned int keepaliveInSeconds) /* = 60 */
 {
     assert(keepaliveInSeconds > 0);
     if (keepaliveInSeconds == 0)
@@ -284,15 +279,15 @@ SetRtpKeepaliveTimeout(unsigned long keepaliveInSeconds) /* = 60 */
 }
 
 PRO_RTP_API
-unsigned long
+unsigned int
 GetRtpKeepaliveTimeout()
 {
-    return (g_s_keepaliveInSeconds);
+    return g_s_keepaliveInSeconds;
 }
 
 PRO_RTP_API
 void
-SetRtpFlowctrlTimeSpan(unsigned long flowctrlInSeconds) /* = 1 */
+SetRtpFlowctrlTimeSpan(unsigned int flowctrlInSeconds) /* = 1 */
 {
     assert(flowctrlInSeconds > 0);
     if (flowctrlInSeconds == 0)
@@ -304,15 +299,15 @@ SetRtpFlowctrlTimeSpan(unsigned long flowctrlInSeconds) /* = 1 */
 }
 
 PRO_RTP_API
-unsigned long
+unsigned int
 GetRtpFlowctrlTimeSpan()
 {
-    return (g_s_flowctrlInSeconds);
+    return g_s_flowctrlInSeconds;
 }
 
 PRO_RTP_API
 void
-SetRtpStatTimeSpan(unsigned long statInSeconds) /* = 5 */
+SetRtpStatTimeSpan(unsigned int statInSeconds) /* = 5 */
 {
     assert(statInSeconds > 0);
     if (statInSeconds == 0)
@@ -324,10 +319,10 @@ SetRtpStatTimeSpan(unsigned long statInSeconds) /* = 5 */
 }
 
 PRO_RTP_API
-unsigned long
+unsigned int
 GetRtpStatTimeSpan()
 {
-    return (g_s_statInSeconds);
+    return g_s_statInSeconds;
 }
 
 PRO_RTP_API
@@ -421,25 +416,24 @@ CreateRtpService(const PRO_SSL_SERVER_CONFIG* sslConfig,        /* = NULL */
                  IProReactor*                 reactor,
                  RTP_MM_TYPE                  mmType,
                  unsigned short               serviceHubPort,
-                 unsigned long                timeoutInSeconds) /* = 0 */
+                 unsigned int                 timeoutInSeconds) /* = 0 */
 {
     ProRtpInit();
 
-    CRtpService* const service =
-        CRtpService::CreateInstance(sslConfig, mmType);
+    CRtpService* service = CRtpService::CreateInstance(sslConfig, mmType);
     if (service == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     if (!service->Init(observer, reactor, serviceHubPort, timeoutInSeconds))
     {
         service->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return ((IRtpService*)service);
+    return (IRtpService*)service;
 }
 
 PRO_RTP_API
@@ -451,21 +445,21 @@ DeleteRtpService(IRtpService* service)
         return;
     }
 
-    CRtpService* const p = (CRtpService*)service;
+    CRtpService* p = (CRtpService*)service;
     p->Fini();
     p->Release();
 }
 
 PRO_RTP_API
 bool
-CheckRtpServiceData(const char  serviceNonce[32],
-                    const char* servicePassword,
-                    const char  clientPasswordHash[32])
+CheckRtpServiceData(const unsigned char serviceNonce[32],
+                    const char*         servicePassword,
+                    const unsigned char clientPasswordHash[32])
 {
-    char servicePasswordHash[32];
+    unsigned char servicePasswordHash[32];
     ProCalcPasswordHash(serviceNonce, servicePassword, servicePasswordHash);
 
-    return (memcmp(clientPasswordHash, servicePasswordHash, 32) == 0);
+    return memcmp(clientPasswordHash, servicePasswordHash, 32) == 0;
 }
 
 PRO_RTP_API
@@ -476,21 +470,20 @@ CreateRtpSessionWrapper(RTP_SESSION_TYPE        sessionType,
 {
     ProRtpInit();
 
-    CRtpSessionWrapper* const sessionWrapper =
-        CRtpSessionWrapper::CreateInstance(localInfo);
+    CRtpSessionWrapper* sessionWrapper = CRtpSessionWrapper::CreateInstance(localInfo);
     if (sessionWrapper == NULL)
     {
-        return (NULL);
+        return NULL;
     }
 
     if (!sessionWrapper->Init(sessionType, initArgs))
     {
         sessionWrapper->Release();
 
-        return (NULL);
+        return NULL;
     }
 
-    return (sessionWrapper);
+    return sessionWrapper;
 }
 
 PRO_RTP_API
@@ -502,7 +495,7 @@ DeleteRtpSessionWrapper(IRtpSession* sessionWrapper)
         return;
     }
 
-    CRtpSessionWrapper* const p = (CRtpSessionWrapper*)sessionWrapper;
+    CRtpSessionWrapper* p = (CRtpSessionWrapper*)sessionWrapper;
     p->Fini();
     p->Release();
 }
@@ -511,36 +504,28 @@ PRO_RTP_API
 IRtpBucket*
 CreateRtpBaseBucket()
 {
-    CRtpBucket* const bucket = new CRtpBucket;
-
-    return (bucket);
+    return new CRtpBucket;
 }
 
 PRO_RTP_API
 IRtpBucket*
 CreateRtpAudioBucket()
 {
-    CRtpAudioBucket* const bucket = new CRtpAudioBucket;
-
-    return (bucket);
+    return new CRtpAudioBucket;
 }
 
 PRO_RTP_API
 IRtpBucket*
 CreateRtpVideoBucket()
 {
-    CRtpVideoBucket* const bucket = new CRtpVideoBucket;
-
-    return (bucket);
+    return new CRtpVideoBucket;
 }
 
 PRO_RTP_API
 IRtpReorder*
 CreateRtpReorder()
 {
-    CRtpReorder* const reorder = new CRtpReorder;
-
-    return (reorder);
+    return new CRtpReorder;
 }
 
 PRO_RTP_API

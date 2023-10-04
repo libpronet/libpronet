@@ -33,9 +33,7 @@
 CTest*
 CTest::CreateInstance()
 {
-    CTest* const tester = new CTest;
-
-    return (tester);
+    return new CTest;
 }
 
 CTest::CTest()
@@ -62,7 +60,7 @@ CTest::Init(IProReactor*                  reactor,
     assert(reactor != NULL);
     if (reactor == NULL)
     {
-        return (false);
+        return false;
     }
 
     PRO_SSL_SERVER_CONFIG* sslConfig = NULL;
@@ -76,10 +74,9 @@ CTest::Init(IProReactor*                  reactor,
         assert(m_sslConfig == NULL);
         assert(m_acceptor == NULL);
         assert(m_service == NULL);
-        if (m_reactor != NULL || m_sslConfig != NULL || m_acceptor != NULL ||
-            m_service != NULL)
+        if (m_reactor != NULL || m_sslConfig != NULL || m_acceptor != NULL || m_service != NULL)
         {
-            return (false);
+            return false;
         }
 
         if (configInfo.tcps_enable_ssl)
@@ -95,7 +92,7 @@ CTest::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.tcps_ssl_cafiles[i].empty())
                 {
-                    caFiles.push_back(&configInfo.tcps_ssl_cafiles[i][0]);
+                    caFiles.push_back(configInfo.tcps_ssl_cafiles[i].c_str());
                 }
             }
 
@@ -106,7 +103,7 @@ CTest::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.tcps_ssl_crlfiles[i].empty())
                 {
-                    crlFiles.push_back(&configInfo.tcps_ssl_crlfiles[i][0]);
+                    crlFiles.push_back(configInfo.tcps_ssl_crlfiles[i].c_str());
                 }
             }
 
@@ -117,7 +114,7 @@ CTest::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.tcps_ssl_certfiles[i].empty())
                 {
-                    certFiles.push_back(&configInfo.tcps_ssl_certfiles[i][0]);
+                    certFiles.push_back(configInfo.tcps_ssl_certfiles[i].c_str());
                 }
             }
 
@@ -158,8 +155,7 @@ CTest::Init(IProReactor*                  reactor,
 
         if (configInfo.tcps_using_hub)
         {
-            service  = ProCreateServiceHostEx(
-                this, reactor, configInfo.tcps_port, 1); /* serviceId is 1 */
+            service  = ProCreateServiceHostEx(this, reactor, configInfo.tcps_port, 1); /* serviceId is 1 */
         }
         else
         {
@@ -180,7 +176,7 @@ CTest::Init(IProReactor*                  reactor,
 
     SetHeartbeatDataSize(configInfo.tcps_heartbeat_bytes);
 
-    return (true);
+    return true;
 
 EXIT:
 
@@ -188,7 +184,7 @@ EXIT:
     ProDeleteAcceptor(acceptor);
     ProSslServerConfig_Delete(sslConfig);
 
-    return (false);
+    return false;
 }
 
 void
@@ -225,8 +221,8 @@ CTest::Fini()
     }
 
     {
-        CProStlSet<IProTransport*>::iterator       itr = transports.begin();
-        CProStlSet<IProTransport*>::iterator const end = transports.end();
+        auto itr = transports.begin();
+        auto end = transports.end();
 
         for (; itr != end; ++itr)
         {
@@ -235,8 +231,8 @@ CTest::Fini()
     }
 
     {
-        CProStlMap<IProSslHandshaker*, PRO_NONCE>::iterator       itr = sslHandshaker2Nonce.begin();
-        CProStlMap<IProSslHandshaker*, PRO_NONCE>::iterator const end = sslHandshaker2Nonce.end();
+        auto itr = sslHandshaker2Nonce.begin();
+        auto end = sslHandshaker2Nonce.end();
 
         for (; itr != end; ++itr)
         {
@@ -245,8 +241,8 @@ CTest::Fini()
     }
 
     {
-        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator       itr = tcpHandshaker2Nonce.begin();
-        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator const end = tcpHandshaker2Nonce.end();
+        auto itr = tcpHandshaker2Nonce.begin();
+        auto end = tcpHandshaker2Nonce.end();
 
         for (; itr != end; ++itr)
         {
@@ -262,17 +258,13 @@ CTest::Fini()
 unsigned long
 CTest::AddRef()
 {
-    const unsigned long refCount = CProRefCount::AddRef();
-
-    return (refCount);
+    return CProRefCount::AddRef();
 }
 
 unsigned long
 CTest::Release()
 {
-    const unsigned long refCount = CProRefCount::Release();
-
-    return (refCount);
+    return CProRefCount::Release();
 }
 
 void
@@ -306,7 +298,7 @@ CTest::GetHeartbeatDataSize() const
         size = m_heartbeatSize;
     }
 
-    return (size);
+    return size;
 }
 
 unsigned long
@@ -320,7 +312,7 @@ CTest::GetTransportCount() const
         count = (unsigned long)m_transports.size();
     }
 
-    return (count);
+    return count;
 }
 
 void
@@ -361,7 +353,7 @@ CTest::OnAccept(IProAcceptor*    acceptor,
 
         if (serviceOpt == 0)
         {
-            IProTcpHandshaker* const handshaker = ProCreateTcpHandshaker(
+            IProTcpHandshaker* handshaker = ProCreateTcpHandshaker(
                 this,
                 m_reactor,
                 sockId,
@@ -390,8 +382,7 @@ CTest::OnAccept(IProAcceptor*    acceptor,
                 return;
             }
 
-            PRO_SSL_CTX* const sslCtx =
-                ProSslCtx_CreateS(m_sslConfig, sockId, nonce);
+            PRO_SSL_CTX* sslCtx = ProSslCtx_CreateS(m_sslConfig, sockId, nonce);
             if (sslCtx == NULL)
             {
                 ProCloseSockId(sockId);
@@ -399,7 +390,7 @@ CTest::OnAccept(IProAcceptor*    acceptor,
                 return;
             }
 
-            IProSslHandshaker* const handshaker = ProCreateSslHandshaker(
+            IProSslHandshaker* handshaker = ProCreateSslHandshaker(
                 this,
                 m_reactor,
                 sslCtx,
@@ -462,7 +453,7 @@ CTest::OnServiceAccept(IProServiceHost* serviceHost,
 
         if (serviceOpt == 0)
         {
-            IProTcpHandshaker* const handshaker = ProCreateTcpHandshaker(
+            IProTcpHandshaker* handshaker = ProCreateTcpHandshaker(
                 this,
                 m_reactor,
                 sockId,
@@ -491,8 +482,7 @@ CTest::OnServiceAccept(IProServiceHost* serviceHost,
                 return;
             }
 
-            PRO_SSL_CTX* const sslCtx =
-                ProSslCtx_CreateS(m_sslConfig, sockId, nonce);
+            PRO_SSL_CTX* sslCtx = ProSslCtx_CreateS(m_sslConfig, sockId, nonce);
             if (sslCtx == NULL)
             {
                 ProCloseSockId(sockId);
@@ -500,7 +490,7 @@ CTest::OnServiceAccept(IProServiceHost* serviceHost,
                 return;
             }
 
-            IProSslHandshaker* const handshaker = ProCreateSslHandshaker(
+            IProSslHandshaker* handshaker = ProCreateSslHandshaker(
                 this,
                 m_reactor,
                 sslCtx,
@@ -530,7 +520,7 @@ CTest::OnHandshakeOk(IProTcpHandshaker* handshaker,
                      int64_t            sockId,
                      bool               unixSocket,
                      const void*        buf,
-                     unsigned long      size)
+                     size_t             size)
 {
     assert(handshaker != NULL);
     assert(sockId != -1);
@@ -549,8 +539,7 @@ CTest::OnHandshakeOk(IProTcpHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator const itr =
-            m_tcpHandshaker2Nonce.find(handshaker);
+        auto itr = m_tcpHandshaker2Nonce.find(handshaker);
         if (itr == m_tcpHandshaker2Nonce.end())
         {
             ProCloseSockId(sockId);
@@ -558,7 +547,7 @@ CTest::OnHandshakeOk(IProTcpHandshaker* handshaker,
             return;
         }
 
-        IProTransport* const trans = ProCreateTcpTransport(
+        IProTransport* trans = ProCreateTcpTransport(
             this,
             m_reactor,
             sockId,
@@ -586,7 +575,7 @@ CTest::OnHandshakeOk(IProTcpHandshaker* handshaker,
 
 void
 CTest::OnHandshakeError(IProTcpHandshaker* handshaker,
-                        long               errorCode)
+                        int                errorCode)
 {
     assert(handshaker != NULL);
     if (handshaker == NULL)
@@ -602,8 +591,7 @@ CTest::OnHandshakeError(IProTcpHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator const itr =
-            m_tcpHandshaker2Nonce.find(handshaker);
+        auto itr = m_tcpHandshaker2Nonce.find(handshaker);
         if (itr == m_tcpHandshaker2Nonce.end())
         {
             return;
@@ -621,7 +609,7 @@ CTest::OnHandshakeOk(IProSslHandshaker* handshaker,
                      int64_t            sockId,
                      bool               unixSocket,
                      const void*        buf,
-                     unsigned long      size)
+                     size_t             size)
 {
     assert(handshaker != NULL);
     assert(ctx != NULL);
@@ -642,8 +630,7 @@ CTest::OnHandshakeOk(IProSslHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProSslHandshaker*, PRO_NONCE>::iterator const itr =
-            m_sslHandshaker2Nonce.find(handshaker);
+        auto itr = m_sslHandshaker2Nonce.find(handshaker);
         if (itr == m_sslHandshaker2Nonce.end())
         {
             ProSslCtx_Delete(ctx);
@@ -652,7 +639,7 @@ CTest::OnHandshakeOk(IProSslHandshaker* handshaker,
             return;
         }
 
-        IProTransport* const trans = ProCreateSslTransport(
+        IProTransport* trans = ProCreateSslTransport(
             this,
             m_reactor,
             ctx,
@@ -683,8 +670,8 @@ CTest::OnHandshakeOk(IProSslHandshaker* handshaker,
 
 void
 CTest::OnHandshakeError(IProSslHandshaker* handshaker,
-                        long               errorCode,
-                        long               sslCode)
+                        int                errorCode,
+                        int                sslCode)
 {
     assert(handshaker != NULL);
     if (handshaker == NULL)
@@ -700,8 +687,7 @@ CTest::OnHandshakeError(IProSslHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProSslHandshaker*, PRO_NONCE>::iterator const itr =
-            m_sslHandshaker2Nonce.find(handshaker);
+        auto itr = m_sslHandshaker2Nonce.find(handshaker);
         if (itr == m_sslHandshaker2Nonce.end())
         {
             return;
@@ -742,8 +728,8 @@ CTest::OnRecv(IProTransport*          trans,
                 return;
             }
 #endif
-            IProRecvPool&       recvPool = *trans->GetRecvPool();
-            const unsigned long dataSize = recvPool.PeekDataSize();
+            IProRecvPool& recvPool = *trans->GetRecvPool();
+            size_t        dataSize = recvPool.PeekDataSize();
 
             if (dataSize < sizeof(uint16_t))
             {
@@ -821,8 +807,8 @@ CTest::OnRecv(IProTransport*          trans,
 
 void
 CTest::OnClose(IProTransport* trans,
-               long           errorCode,
-               long           sslCode)
+               int            errorCode,
+               int            sslCode)
 {
     assert(trans != NULL);
     if (trans == NULL)
@@ -860,8 +846,8 @@ CTest::OnClose(IProTransport* trans,
             " CTest::OnClose(errorCode : [%d, %d], peer : %s:%u) \n"
             ,
             timeString.c_str(),
-            (int)errorCode,
-            (int)sslCode,
+            errorCode,
+            sslCode,
             remoteIp,
             (unsigned int)trans->GetRemotePort()
             );

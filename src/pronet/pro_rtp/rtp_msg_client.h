@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(RTP_MSG_CLIENT_H)
+#ifndef RTP_MSG_CLIENT_H
 #define RTP_MSG_CLIENT_H
 
 #include "rtp_base.h"
@@ -40,7 +40,7 @@ public:
     virtual void OnTransferMsg(
         IRtpMsgClient*      msgClient,
         const void*         buf,
-        unsigned long       size,
+        size_t              size,
         uint16_t            charset,
         const RTP_MSG_USER& srcUser,
         const RTP_MSG_USER* dstUsers,
@@ -75,7 +75,7 @@ public:
         const RTP_MSG_USER*    user,
         const char*            password,        /* = NULL */
         const char*            localIp,         /* = NULL */
-        unsigned long          timeoutInSeconds /* = 0 */
+        unsigned int           timeoutInSeconds /* = 0 */
         );
 
     void Fini();
@@ -127,7 +127,7 @@ public:
 
     bool TransferMsg(
         const void*         buf,
-        unsigned long       size,
+        size_t              size,
         uint16_t            charset,
         const RTP_MSG_USER* dstUsers,
         unsigned char       dstUserCount,
@@ -161,8 +161,8 @@ private:
 
     virtual void OnCloseSession(
         IRtpSession* session,
-        long         errorCode,
-        long         sslCode,
+        int          errorCode,
+        int          sslCode,
         bool         tcpConnected
         );
 

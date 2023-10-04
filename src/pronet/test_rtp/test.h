@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(TEST_H)
+#ifndef TEST_H
 #define TEST_H
 
 #include "../pro_rtp/rtp_base.h"
@@ -126,15 +126,12 @@ public:
 
     static bool IsUdpMode(TEST_MODE mode)
     {
-        return (mode == TM_UDPE || mode == TM_UDPS || mode == TM_UDPC);
+        return mode == TM_UDPE || mode == TM_UDPS || mode == TM_UDPC;
     }
 
     static bool IsServerMode(TEST_MODE mode)
     {
-        return (
-            mode == TM_UDPE || mode == TM_TCPE ||
-            mode == TM_UDPS || mode == TM_TCPS
-            );
+        return mode == TM_UDPE || mode == TM_TCPE || mode == TM_UDPS || mode == TM_TCPS;
     }
 
 private:
@@ -159,8 +156,8 @@ private:
 
     virtual void OnCloseSession(
         IRtpSession* session,
-        long         errorCode,
-        long         sslCode,
+        int          errorCode,
+        int          sslCode,
         bool         tcpConnected
         );
 

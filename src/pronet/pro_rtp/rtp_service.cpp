@@ -37,7 +37,7 @@ CRtpService::CreateInstance(const PRO_SSL_SERVER_CONFIG* sslConfig, /* = NULL */
     assert(mmType != 0);
     if (mmType == 0)
     {
-        return (NULL);
+        return NULL;
     }
 
     return new CRtpService(sslConfig, mmType);
@@ -64,14 +64,14 @@ bool
 CRtpService::Init(IRtpServiceObserver* observer,
                   IProReactor*         reactor,
                   unsigned short       serviceHubPort,
-                  unsigned long        timeoutInSeconds) /* = 0 */
+                  unsigned int         timeoutInSeconds) /* = 0 */
 {
     assert(observer != NULL);
     assert(reactor != NULL);
     assert(serviceHubPort > 0);
     if (observer == NULL || reactor == NULL || serviceHubPort == 0)
     {
-        return (false);
+        return false;
     }
 
     {
@@ -82,14 +82,13 @@ CRtpService::Init(IRtpServiceObserver* observer,
         assert(m_serviceHost == NULL);
         if (m_observer != NULL || m_reactor != NULL || m_serviceHost != NULL)
         {
-            return (false);
+            return false;
         }
 
-        m_serviceHost = ProCreateServiceHostEx(
-            this, reactor, serviceHubPort, m_mmType);
+        m_serviceHost = ProCreateServiceHostEx(this, reactor, serviceHubPort, m_mmType);
         if (m_serviceHost == NULL)
         {
-            return (false);
+            return false;
         }
 
         observer->AddRef();
@@ -98,7 +97,7 @@ CRtpService::Init(IRtpServiceObserver* observer,
         m_timeoutInSeconds = timeoutInSeconds;
     }
 
-    return (true);
+    return true;
 }
 
 void
@@ -129,8 +128,8 @@ CRtpService::Fini()
     }
 
     {
-        CProStlMap<IProSslHandshaker*, PRO_NONCE>::iterator       itr = sslHandshaker2Nonce.begin();
-        CProStlMap<IProSslHandshaker*, PRO_NONCE>::iterator const end = sslHandshaker2Nonce.end();
+        auto itr = sslHandshaker2Nonce.begin();
+        auto end = sslHandshaker2Nonce.end();
 
         for (; itr != end; ++itr)
         {
@@ -139,8 +138,8 @@ CRtpService::Fini()
     }
 
     {
-        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator       itr = tcpHandshaker2Nonce.begin();
-        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator const end = tcpHandshaker2Nonce.end();
+        auto itr = tcpHandshaker2Nonce.begin();
+        auto end = tcpHandshaker2Nonce.end();
 
         for (; itr != end; ++itr)
         {
@@ -155,17 +154,13 @@ CRtpService::Fini()
 unsigned long
 CRtpService::AddRef()
 {
-    const unsigned long refCount = CProRefCount::AddRef();
-
-    return (refCount);
+    return CProRefCount::AddRef();
 }
 
 unsigned long
 CRtpService::Release()
 {
-    const unsigned long refCount = CProRefCount::Release();
-
-    return (refCount);
+    return CProRefCount::Release();
 }
 
 void
@@ -183,13 +178,12 @@ CRtpService::OnServiceAccept(IProServiceHost* serviceHost,
     assert(sockId != -1);
     assert(serviceId > 0);
     assert(nonce != NULL);
-    if (serviceHost == NULL || sockId == -1 || serviceId == 0 ||
-        nonce == NULL)
+    if (serviceHost == NULL || sockId == -1 || serviceId == 0 || nonce == NULL)
     {
         return;
     }
 
-    const RTP_MM_TYPE mmType = serviceId;
+    RTP_MM_TYPE mmType = serviceId;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -211,8 +205,7 @@ CRtpService::OnServiceAccept(IProServiceHost* serviceHost,
         /*
          * ddos?
          */
-        if (m_tcpHandshaker2Nonce.size() + m_sslHandshaker2Nonce.size() >=
-            PRO_SERVICER_LENGTH)
+        if (m_tcpHandshaker2Nonce.size() + m_sslHandshaker2Nonce.size() >= PRO_SERVICER_LENGTH)
         {
             ProCloseSockId(sockId);
 
@@ -221,7 +214,7 @@ CRtpService::OnServiceAccept(IProServiceHost* serviceHost,
 
         if (serviceOpt == 0)
         {
-            IProTcpHandshaker* const handshaker = ProCreateTcpHandshaker(
+            IProTcpHandshaker* handshaker = ProCreateTcpHandshaker(
                 this,
                 m_reactor,
                 sockId,
@@ -250,8 +243,7 @@ CRtpService::OnServiceAccept(IProServiceHost* serviceHost,
                 return;
             }
 
-            PRO_SSL_CTX* const sslCtx =
-                ProSslCtx_CreateS(m_sslConfig, sockId, nonce);
+            PRO_SSL_CTX* sslCtx = ProSslCtx_CreateS(m_sslConfig, sockId, nonce);
             if (sslCtx == NULL)
             {
                 ProCloseSockId(sockId);
@@ -259,7 +251,7 @@ CRtpService::OnServiceAccept(IProServiceHost* serviceHost,
                 return;
             }
 
-            IProSslHandshaker* const handshaker = ProCreateSslHandshaker(
+            IProSslHandshaker* handshaker = ProCreateSslHandshaker(
                 this,
                 m_reactor,
                 sslCtx,
@@ -289,7 +281,7 @@ CRtpService::OnHandshakeOk(IProTcpHandshaker* handshaker,
                            int64_t            sockId,
                            bool               unixSocket,
                            const void*        buf,
-                           unsigned long      size)
+                           size_t             size)
 {
     assert(handshaker != NULL);
     assert(sockId != -1);
@@ -312,8 +304,7 @@ CRtpService::OnHandshakeOk(IProTcpHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator const itr =
-            m_tcpHandshaker2Nonce.find(handshaker);
+        auto itr = m_tcpHandshaker2Nonce.find(handshaker);
         if (itr == m_tcpHandshaker2Nonce.end())
         {
             ProCloseSockId(sockId);
@@ -328,11 +319,9 @@ CRtpService::OnHandshakeOk(IProTcpHandshaker* handshaker,
         }
 
         assert(buf != NULL);
-        assert(size == sizeof(RTP_EXT) + sizeof(RTP_HEADER) +
-            sizeof(RTP_SESSION_INFO));
+        assert(size == sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_SESSION_INFO));
         if (buf == NULL ||
-            size != sizeof(RTP_EXT) + sizeof(RTP_HEADER) +
-            sizeof(RTP_SESSION_INFO))
+            size != sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_SESSION_INFO))
         {
             ProCloseSockId(sockId);
             sockId = -1;
@@ -411,7 +400,7 @@ CRtpService::OnHandshakeOk(IProTcpHandshaker* handshaker,
 
 void
 CRtpService::OnHandshakeError(IProTcpHandshaker* handshaker,
-                              long               errorCode)
+                              int                errorCode)
 {
     assert(handshaker != NULL);
     if (handshaker == NULL)
@@ -427,8 +416,7 @@ CRtpService::OnHandshakeError(IProTcpHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProTcpHandshaker*, PRO_NONCE>::iterator const itr =
-            m_tcpHandshaker2Nonce.find(handshaker);
+        auto itr = m_tcpHandshaker2Nonce.find(handshaker);
         if (itr == m_tcpHandshaker2Nonce.end())
         {
             return;
@@ -446,7 +434,7 @@ CRtpService::OnHandshakeOk(IProSslHandshaker* handshaker,
                            int64_t            sockId,
                            bool               unixSocket,
                            const void*        buf,
-                           unsigned long      size)
+                           size_t             size)
 {
     assert(handshaker != NULL);
     assert(ctx != NULL);
@@ -471,8 +459,7 @@ CRtpService::OnHandshakeOk(IProSslHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProSslHandshaker*, PRO_NONCE>::iterator const itr =
-            m_sslHandshaker2Nonce.find(handshaker);
+        auto itr = m_sslHandshaker2Nonce.find(handshaker);
         if (itr == m_sslHandshaker2Nonce.end())
         {
             ProSslCtx_Delete(ctx);
@@ -489,11 +476,9 @@ CRtpService::OnHandshakeOk(IProSslHandshaker* handshaker,
 
         assert(ctx != NULL);
         assert(buf != NULL);
-        assert(size == sizeof(RTP_EXT) + sizeof(RTP_HEADER) +
-            sizeof(RTP_SESSION_INFO));
+        assert(size == sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_SESSION_INFO));
         if (ctx == NULL || buf == NULL ||
-            size != sizeof(RTP_EXT) + sizeof(RTP_HEADER) +
-            sizeof(RTP_SESSION_INFO))
+            size != sizeof(RTP_EXT) + sizeof(RTP_HEADER) + sizeof(RTP_SESSION_INFO))
         {
             ProSslCtx_Delete(ctx);
             ProCloseSockId(sockId);
@@ -578,8 +563,8 @@ CRtpService::OnHandshakeOk(IProSslHandshaker* handshaker,
 
 void
 CRtpService::OnHandshakeError(IProSslHandshaker* handshaker,
-                              long               errorCode,
-                              long               sslCode)
+                              int                errorCode,
+                              int                sslCode)
 {
     assert(handshaker != NULL);
     if (handshaker == NULL)
@@ -595,8 +580,7 @@ CRtpService::OnHandshakeError(IProSslHandshaker* handshaker,
             return;
         }
 
-        CProStlMap<IProSslHandshaker*, PRO_NONCE>::iterator const itr =
-            m_sslHandshaker2Nonce.find(handshaker);
+        auto itr = m_sslHandshaker2Nonce.find(handshaker);
         if (itr == m_sslHandshaker2Nonce.end())
         {
             return;

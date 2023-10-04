@@ -1,4 +1,4 @@
-#if !defined(MBEDTLS_THREADING_ALT_H)
+#ifndef MBEDTLS_THREADING_ALT_H
 #define MBEDTLS_THREADING_ALT_H
 
 #if defined(__cplusplus)

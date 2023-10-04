@@ -16,7 +16,7 @@
  * This file is part of LibProNet (https://github.com/libpronet/libpronet)
  */
 
-#if !defined(TEST_H)
+#ifndef TEST_H
 #define TEST_H
 
 #include "../pro_rtp/rtp_base.h"
@@ -154,15 +154,15 @@ private:
     virtual void OnRecvMsg(
         IRtpMsgClient*      msgClient,
         const void*         buf,
-        unsigned long       size,
+        size_t              size,
         uint16_t            charset,
         const RTP_MSG_USER* srcUser
         );
 
     virtual void OnCloseMsg(
         IRtpMsgClient* msgClient,
-        long           errorCode,
-        long           sslCode,
+        int            errorCode,
+        int            sslCode,
         bool           tcpConnected
         );
 

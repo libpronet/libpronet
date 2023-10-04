@@ -34,7 +34,7 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-static const unsigned char SERVER_CID = 1; /* 1-... */
+static const unsigned char SERVER_CID = 1;
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -43,14 +43,12 @@ CMsgServer*
 CMsgServer::CreateInstance(CProLogFile&   logFile,
                            CDbConnection& db)
 {
-    CMsgServer* const server = new CMsgServer(logFile, db);
-
-    return (server);
+    return new CMsgServer(logFile, db);
 }
 
 CMsgServer::CMsgServer(CProLogFile&   logFile,
                        CDbConnection& db)
-                       :
+:
 m_logFile(logFile),
 m_db(db)
 {
@@ -71,7 +69,7 @@ CMsgServer::Init(IProReactor*                  reactor,
     assert(reactor != NULL);
     if (reactor == NULL)
     {
-        return (false);
+        return false;
     }
 
     PRO_SSL_SERVER_CONFIG* sslConfig = NULL;
@@ -85,7 +83,7 @@ CMsgServer::Init(IProReactor*                  reactor,
         assert(m_msgServer == NULL);
         if (m_reactor != NULL || m_sslConfig != NULL || m_msgServer != NULL)
         {
-            return (false);
+            return false;
         }
 
         if (configInfo.msgs_enable_ssl)
@@ -101,7 +99,7 @@ CMsgServer::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.msgs_ssl_cafiles[i].empty())
                 {
-                    caFiles.push_back(&configInfo.msgs_ssl_cafiles[i][0]);
+                    caFiles.push_back(configInfo.msgs_ssl_cafiles[i].c_str());
                 }
             }
 
@@ -112,7 +110,7 @@ CMsgServer::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.msgs_ssl_crlfiles[i].empty())
                 {
-                    crlFiles.push_back(&configInfo.msgs_ssl_crlfiles[i][0]);
+                    crlFiles.push_back(configInfo.msgs_ssl_crlfiles[i].c_str());
                 }
             }
 
@@ -123,7 +121,7 @@ CMsgServer::Init(IProReactor*                  reactor,
             {
                 if (!configInfo.msgs_ssl_certfiles[i].empty())
                 {
-                    certFiles.push_back(&configInfo.msgs_ssl_certfiles[i][0]);
+                    certFiles.push_back(configInfo.msgs_ssl_certfiles[i].c_str());
                 }
             }
 
@@ -153,7 +151,7 @@ CMsgServer::Init(IProReactor*                  reactor,
                     &certFiles[0],
                     certFiles.size(),
                     configInfo.msgs_ssl_keyfile.c_str(),
-                    NULL
+                    NULL /* password to decrypt the keyfile */
                     ))
                 {
                     goto EXIT;
@@ -184,14 +182,14 @@ CMsgServer::Init(IProReactor*                  reactor,
         m_msgServer  = msgServer;
     }
 
-    return (true);
+    return true;
 
 EXIT:
 
     DeleteRtpMsgServer(msgServer);
     ProSslServerConfig_Delete(sslConfig);
 
-    return (false);
+    return false;
 }
 
 void
@@ -222,17 +220,13 @@ CMsgServer::Fini()
 unsigned long
 CMsgServer::AddRef()
 {
-    const unsigned long refCount = CProRefCount::AddRef();
-
-    return (refCount);
+    return CProRefCount::AddRef();
 }
 
 unsigned long
 CMsgServer::Release()
 {
-    const unsigned long refCount = CProRefCount::Release();
-
-    return (refCount);
+    return CProRefCount::Release();
 }
 
 void
@@ -257,8 +251,8 @@ CMsgServer::KickoutUsers(const CProStlSet<RTP_MSG_USER>& users)
         traceInfo += " CMsgServer::KickoutUsers() \n";
         traceInfo += " [[[ begin \n";
 
-        CProStlSet<RTP_MSG_USER>::const_iterator       itr = users.begin();
-        CProStlSet<RTP_MSG_USER>::const_iterator const end = users.end();
+        auto itr = users.begin();
+        auto end = users.end();
 
         for (; itr != end; ++itr)
         {
@@ -323,8 +317,8 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
                         const RTP_MSG_USER* user,
                         const char*         userPublicIp,
                         const RTP_MSG_USER* c2sUser, /* = NULL */
-                        const char          hash[32],
-                        const char          nonce[32],
+                        const unsigned char hash[32],
+                        const unsigned char nonce[32],
                         uint64_t*           userId,
                         uint16_t*           instId,
                         int64_t*            appData,
@@ -340,12 +334,11 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
     assert(instId != NULL);
     assert(appData != NULL);
     assert(isC2s != NULL);
-    if (msgServer == NULL || user == NULL ||
-        user->classId == 0 || user->UserId() == 0 ||
-        userPublicIp == NULL || userPublicIp[0] == '\0' ||
-        userId == NULL || instId == NULL || appData == NULL || isC2s == NULL)
+    if (msgServer == NULL || user == NULL || user->classId == 0 || user->UserId() == 0 ||
+        userPublicIp == NULL || userPublicIp[0] == '\0' || userId == NULL || instId == NULL ||
+        appData == NULL || isC2s == NULL)
     {
-        return (false);
+        return false;
     }
 
     char c2sIdString[64] = "NULL";
@@ -362,18 +355,17 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
 
         if (m_reactor == NULL || m_msgServer == NULL)
         {
-            return (false);
+            return false;
         }
 
         if (msgServer != m_msgServer)
         {
-            return (false);
+            return false;
         }
 
         const MSG_USER_CTX* ctx = NULL;
 
-        CProStlMap<uint64_t, MSG_USER_CTX>::iterator const itr =
-            m_uid2Ctx[user->classId].find(user->UserId());
+        auto itr = m_uid2Ctx[user->classId].find(user->UserId());
         if (itr != m_uid2Ctx[user->classId].end())
         {
             ctx = &itr->second;
@@ -382,11 +374,11 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
         TBL_MSG_USER_ROW userRow;
 
         {
-            long ret2 = GetMsgUserRow(m_db, *user, userRow); /* uid */
+            long ret2 = GetMsgUserRow(m_db, *user, userRow); /* cid-uid */
             if (ret2 == 0)
             {
-                const RTP_MSG_USER user0(user->classId, 0, 0);
-                ret2 = GetMsgUserRow(m_db, user0, userRow);  /* uid0 */
+                RTP_MSG_USER user0(user->classId, 0, 0);
+                ret2 = GetMsgUserRow(m_db, user0, userRow);  /* cid-0 */
             }
 
             if (ret2 < 0)
@@ -403,7 +395,7 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
             }
             else
             {
-                const uint32_t bindedIp = pbsd_inet_aton(userRow._bindedip_.c_str());
+                uint32_t bindedIp = pbsd_inet_aton(userRow._bindedip_.c_str());
                 if (bindedIp != (uint32_t)-1 && bindedIp != 0 &&
                     pbsd_inet_aton(userPublicIp) != bindedIp)
                 {
@@ -458,8 +450,7 @@ EXIT:
                 traceInfo,
                 sizeof(traceInfo),
                 "\n"
-                " CMsgServer::OnCheckUser(id : %u-%llu-%u,"
-                " fromIp : %s, fromC2s : %s) ok! \n"
+                " CMsgServer::OnCheckUser(id : %u-%llu-%u, fromIp : %s, fromC2s : %s) ok! \n"
                 ,
                 (unsigned int)user->classId,
                 (unsigned long long)user->UserId(),
@@ -488,7 +479,7 @@ EXIT:
         m_logFile.Log(traceInfo, PRO_LL_DEBUG, true);
     }}}
 
-    return (ret);
+    return ret;
 }
 
 void
@@ -502,8 +493,7 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
     assert(user != NULL);
     assert(userPublicIp != NULL);
     assert(userPublicIp[0] != '\0');
-    if (msgServer == NULL || user == NULL || userPublicIp == NULL ||
-        userPublicIp[0] == '\0')
+    if (msgServer == NULL || user == NULL || userPublicIp == NULL || userPublicIp[0] == '\0')
     {
         return;
     }
@@ -568,8 +558,8 @@ CMsgServer::OnOkUser(IRtpMsgServer*      msgServer,
 void
 CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
                         const RTP_MSG_USER* user,
-                        long                errorCode,
-                        long                sslCode)
+                        int                 errorCode,
+                        int                 sslCode)
 {
     assert(msgServer != NULL);
     assert(user != NULL);
@@ -591,8 +581,7 @@ CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
             return;
         }
 
-        CProStlMap<uint64_t, MSG_USER_CTX>::iterator const itr =
-            m_uid2Ctx[user->classId].find(user->UserId());
+        auto itr = m_uid2Ctx[user->classId].find(user->UserId());
         if (itr == m_uid2Ctx[user->classId].end())
         {
             return;
@@ -621,14 +610,13 @@ CMsgServer::OnCloseUser(IRtpMsgServer*      msgServer,
             traceInfo,
             sizeof(traceInfo),
             "\n"
-            " CMsgServer::OnCloseUser(id : %u-%llu-%u,"
-            " errorCode : [%d, %d], users : %u+%u) \n"
+            " CMsgServer::OnCloseUser(id : %u-%llu-%u, errorCode : [%d, %d], users : %u+%u) \n"
             ,
             (unsigned int)user->classId,
             (unsigned long long)user->UserId(),
             (unsigned int)user->instId,
-            (int)errorCode,
-            (int)sslCode,
+            errorCode,
+            sslCode,
             (unsigned int)baseUserCount,
             (unsigned int)subUserCount
             );
