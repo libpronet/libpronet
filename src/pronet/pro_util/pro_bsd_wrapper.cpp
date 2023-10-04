@@ -27,7 +27,7 @@
 ////
 
 #define PBSD_GOOGLE_DNS   "8.8.8.8"
-#define PBSD_EPOLL_SIZE   10000
+#define PBSD_EPOLL_SIZE   20000
 
 #if defined(_WIN32)
 #define PBSD_EINTR        WSAEINTR        /* 10004 */

@@ -35,7 +35,7 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define MAX_PENDING_COUNT         10000
+#define MAX_PENDING_COUNT         (PRO_ACCEPTOR_LENGTH + PRO_SERVICER_LENGTH)
 #define DEFAULT_REDLINE_BYTES_C2S (1024 * 1024 * 8)
 #define DEFAULT_REDLINE_BYTES_USR (1024 * 1024)
 #define DEFAULT_TIMEOUT           20
