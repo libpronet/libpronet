@@ -158,6 +158,10 @@ int64_t
 ProGetTickCount64();
 
 extern
+int64_t
+ProGetNtpTickCount64();
+
+extern
 void
 ProSleep(unsigned int milliseconds);
 

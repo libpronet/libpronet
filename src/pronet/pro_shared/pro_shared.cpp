@@ -390,12 +390,7 @@ GetTickCount32_i()
 
 #else
 
-    struct timeval tv = { 0 };
-    gettimeofday(&tv, NULL);
-
-    ret =  tv.tv_sec;
-    ret *= 1000;
-    ret += tv.tv_usec / 1000;
+    assert(0);
 
 #endif
 
@@ -555,16 +550,63 @@ ProGetTickCount64()
 
 #else
 
-    struct timeval tv = { 0 };
-    gettimeofday(&tv, NULL);
-
-    ret =  tv.tv_sec;
-    ret *= 1000;
-    ret += tv.tv_usec / 1000;
+    assert(0);
 
 #endif
 
     return ret;
+}
+
+PRO_SHARED_API
+int64_t
+ProGetNtpTickCount64()
+{
+    Init_i();
+
+    int64_t tick1970 = 0;
+
+#if defined(_WIN32)
+
+    SYSTEMTIME st;
+    ::GetLocalTime(&st);
+
+    FILETIME ft;
+    if (::SystemTimeToFileTime(&st, &ft))
+    {
+        int64_t ft64 = ft.dwHighDateTime;
+        ft64 <<= 32;
+        ft64 |=  ft.dwLowDateTime;
+        ft64 /=  10000;
+
+        const int64_t TIME_DIFF_WINDOWS_UNIX = 11644473600LL; /* [1601 ~ 1970] */
+
+        tick1970 = ft64 - TIME_DIFF_WINDOWS_UNIX * 1000;
+    }
+
+#elif !defined(PRO_LACKS_CLOCK_GETTIME)
+
+    struct timespec ts = { 0 };
+    clock_gettime(CLOCK_REALTIME, &ts);
+
+    tick1970 =  ts.tv_sec;
+    tick1970 *= 1000;
+    tick1970 += ts.tv_nsec / 1000000;
+
+#else
+
+    struct timeval tv = { 0 };
+    if (gettimeofday(&tv, NULL) == 0)
+    {
+        tick1970 =  tv.tv_sec;
+        tick1970 *= 1000;
+        tick1970 += tv.tv_usec / 1000;
+    }
+
+#endif
+
+    const int64_t TIME_DIFF_NTP_UNIX = 2208988800LL; /* [1900 ~ 1970] */
+
+    return tick1970 + TIME_DIFF_NTP_UNIX * 1000;
 }
 
 PRO_SHARED_API

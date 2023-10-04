@@ -6,6 +6,7 @@ EXPORTS
     ProRand_0_1
     ProRand_0_32767
     ProGetTickCount64
+    ProGetNtpTickCount64
     ProSleep
     ProMakeTimerId
     ProMakeMmTimerId

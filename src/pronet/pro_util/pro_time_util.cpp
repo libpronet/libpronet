@@ -76,8 +76,7 @@ ProGetLocalTime(PRO_LOCAL_TIME& localTime,
      * [1970 ~ 2038]
      */
     struct timeval tv = { 0 };
-    gettimeofday(&tv, NULL);
-    if (tv.tv_sec <= 0)
+    if (gettimeofday(&tv, NULL) != 0)
     {
         return;
     }
@@ -292,13 +291,11 @@ ProGetLocalTimeval(struct timeval& localTimeval,
     tv.tv_sec  = (long)time(NULL);
     tv.tv_usec = (long)st.wMilliseconds * 1000;
 #else
-    gettimeofday(&tv, NULL);
-#endif
-
-    if (tv.tv_sec <= 0)
+    if (gettimeofday(&tv, NULL) != 0)
     {
         return;
     }
+#endif
 
     int64_t tt = (int64_t)tv.tv_sec * 1000000 + tv.tv_usec + (int64_t)deltaMilliseconds * 1000;
 

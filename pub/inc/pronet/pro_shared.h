@@ -131,6 +131,19 @@ int64_t
 ProGetTickCount64();
 
 /*
+ * 功能: 获取当前的NTP参考系tick值
+ *
+ * 参数: 无
+ *
+ * 返回值: tick值. 单位(ms)
+ *
+ * 说明: 无
+ */
+PRO_SHARED_API
+int64_t
+ProGetNtpTickCount64();
+
+/*
  * 功能: 休眠当前线程
  *
  * 参数:
