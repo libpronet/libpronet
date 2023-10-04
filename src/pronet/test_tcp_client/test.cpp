@@ -148,7 +148,7 @@ CTest::Init(IProReactor*                  reactor,
         m_reactor    = reactor;
         m_configInfo = configInfo;
         m_sslConfig  = sslConfig;
-        m_timerId    = reactor->ScheduleTimer(this, 100, true); /* 100ms */
+        m_timerId    = reactor->SetupTimer(this, 100, 100); /* 100ms */
     }
 
     SetHeartbeatDataSize(configInfo.tcpc_heartbeat_bytes);
@@ -928,6 +928,7 @@ CTest::OnHeartbeat(IProTransport* trans)
 void
 CTest::OnTimer(void*    factory,
                uint64_t timerId,
+               int64_t  tick,
                int64_t  userData)
 {
     assert(factory != NULL);

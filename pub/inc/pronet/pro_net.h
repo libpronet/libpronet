@@ -162,6 +162,7 @@ public:
     virtual void OnTimer(
         void*    factory,
         uint64_t timerId,
+        int64_t  tick,
         int64_t  userData
         ) = 0;
 };
@@ -184,10 +185,10 @@ public:
      *
      * 返回值为定时器id. 0无效
      */
-    virtual uint64_t ScheduleTimer(
+    virtual uint64_t SetupTimer(
         IProOnTimer* onTimer,
-        uint64_t     timeSpan,  /* 定时周期(ms) */
-        bool         recurring, /* 是否重复. 如果timeSpan为0, recurring必须为false */
+        uint64_t     firstDelay, /* 首次触发延迟(ms) */
+        uint64_t     period,     /* 定时周期(ms). 如果为0, 则该定时器只触发一次 */
         int64_t      userData = 0
         ) = 0;
 
@@ -199,7 +200,7 @@ public:
      *
      * 返回值为定时器id. 0无效
      */
-    virtual uint64_t ScheduleHeartbeatTimer(
+    virtual uint64_t SetupHeartbeatTimer(
         IProOnTimer* onTimer,
         int64_t      userData = 0
         ) = 0;
@@ -221,10 +222,10 @@ public:
      *
      * 返回值为定时器id. 0无效
      */
-    virtual uint64_t ScheduleMmTimer(
+    virtual uint64_t SetupMmTimer(
         IProOnTimer* onTimer,
-        uint64_t     timeSpan,  /* 定时周期(ms) */
-        bool         recurring, /* 是否重复. 如果timeSpan为0, recurring必须为false */
+        uint64_t     firstDelay, /* 首次触发延迟(ms) */
+        uint64_t     period,     /* 定时周期(ms). 如果为0, 则该定时器只触发一次 */
         int64_t      userData = 0
         ) = 0;
 

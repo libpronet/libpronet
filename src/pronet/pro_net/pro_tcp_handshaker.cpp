@@ -129,7 +129,7 @@ CProTcpHandshaker::Init(IProTcpHandshakerObserver* observer,
         m_reactorTask = reactorTask;
         m_sockId      = sockId;
         m_unixSocket  = unixSocket;
-        m_timerId     = reactorTask->ScheduleTimer(this, (uint64_t)timeoutInSeconds * 1000, false, 0);
+        m_timerId     = reactorTask->SetupTimer(this, (uint64_t)timeoutInSeconds * 1000, 0, 0);
     }
 
     return true;
@@ -416,6 +416,7 @@ CProTcpHandshaker::OnError(int64_t sockId,
 void
 CProTcpHandshaker::OnTimer(void*    factory,
                            uint64_t timerId,
+                           int64_t  tick,
                            int64_t  userData)
 {
     assert(factory != NULL);

@@ -350,10 +350,10 @@ CProTpReactorTask::RemoveHandler(int64_t           sockId,
 }
 
 uint64_t
-CProTpReactorTask::ScheduleTimer(IProOnTimer* onTimer,
-                                 uint64_t     timeSpan,
-                                 bool         recurring,
-                                 int64_t      userData) /* = 0 */
+CProTpReactorTask::SetupTimer(IProOnTimer* onTimer,
+                              uint64_t     firstDelay,
+                              uint64_t     period,
+                              int64_t      userData) /* = 0 */
 {
     uint64_t timerId = 0;
 
@@ -367,15 +367,15 @@ CProTpReactorTask::ScheduleTimer(IProOnTimer* onTimer,
             return 0;
         }
 
-        timerId = m_timerFactory.ScheduleTimer(onTimer, timeSpan, recurring, userData);
+        timerId = m_timerFactory.SetupTimer(onTimer, firstDelay, period, userData);
     }
 
     return timerId;
 }
 
 uint64_t
-CProTpReactorTask::ScheduleHeartbeatTimer(IProOnTimer* onTimer,
-                                          int64_t      userData) /* = 0 */
+CProTpReactorTask::SetupHeartbeatTimer(IProOnTimer* onTimer,
+                                       int64_t      userData) /* = 0 */
 {
     uint64_t timerId = 0;
 
@@ -389,7 +389,7 @@ CProTpReactorTask::ScheduleHeartbeatTimer(IProOnTimer* onTimer,
             return 0;
         }
 
-        timerId = m_timerFactory.ScheduleHeartbeatTimer(onTimer, userData);
+        timerId = m_timerFactory.SetupHeartbeatTimer(onTimer, userData);
     }
 
     return timerId;
@@ -431,10 +431,10 @@ CProTpReactorTask::CancelTimer(uint64_t timerId)
 }
 
 uint64_t
-CProTpReactorTask::ScheduleMmTimer(IProOnTimer* onTimer,
-                                   uint64_t     timeSpan,
-                                   bool         recurring,
-                                   int64_t      userData) /* = 0 */
+CProTpReactorTask::SetupMmTimer(IProOnTimer* onTimer,
+                                uint64_t     firstDelay,
+                                uint64_t     period,
+                                int64_t      userData) /* = 0 */
 {
     uint64_t timerId = 0;
 
@@ -448,7 +448,7 @@ CProTpReactorTask::ScheduleMmTimer(IProOnTimer* onTimer,
             return 0;
         }
 
-        timerId = m_mmTimerFactory.ScheduleTimer(onTimer, timeSpan, recurring, userData);
+        timerId = m_mmTimerFactory.SetupTimer(onTimer, firstDelay, period, userData);
     }
 
     return timerId;

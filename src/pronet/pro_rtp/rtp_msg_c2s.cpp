@@ -223,7 +223,7 @@ CRtpMsgC2s::Init(IRtpMsgC2sObserver* observer,
         m_msgClient              = msgClient;
         m_service                = service;
         m_serviceHubPort         = localServiceHubPort;
-        m_timerId                = reactor->ScheduleTimer(this, HEARTBEAT_INTERVAL * 1000, true);
+        m_timerId                = reactor->SetupTimer(this, HEARTBEAT_INTERVAL * 1000, HEARTBEAT_INTERVAL * 1000);
         m_connectTick            = ProGetTickCount64();
         m_uplinkIp               = uplinkIpByDNS;
         m_uplinkPort             = uplinkPort;
@@ -845,8 +845,8 @@ CRtpMsgC2s::AcceptSession(IRtpService*            service,
             sprintf(nonceString + j * 2, "%02x", (unsigned int)nonce.nonce[j]);
         }
 
-        uint64_t timerId = m_reactor->ScheduleTimer(
-            this, (uint64_t)m_localTimeoutInSeconds * 1000, false);
+        uint64_t timerId = m_reactor->SetupTimer(
+            this, (uint64_t)m_localTimeoutInSeconds * 1000, 0);
 
         CProConfigStream msgStream;
         msgStream.Add      (TAG_msg_name           , MSG_client_login);
@@ -1580,6 +1580,7 @@ CRtpMsgC2s::OnHeartbeatMsg(IRtpMsgClient* msgClient,
 void
 CRtpMsgC2s::OnTimer(void*    factory,
                     uint64_t timerId,
+                    int64_t  tick,
                     int64_t  userData)
 {
     assert(factory != NULL);
@@ -1599,8 +1600,6 @@ CRtpMsgC2s::OnTimer(void*    factory,
 
         if (timerId == m_timerId)
         {
-            const int64_t tick = ProGetTickCount64();
-
             if (m_msgClient == NULL && tick - m_connectTick >= RECONNECT_INTERVAL * 1000)
             {
                 m_connectTick = tick;

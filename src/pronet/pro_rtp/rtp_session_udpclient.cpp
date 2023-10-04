@@ -137,7 +137,7 @@ CRtpSessionUdpclient::Init(IRtpSessionObserver* observer,
         observer->AddRef();
         m_observer    = observer;
         m_reactor     = reactor;
-        m_onOkTimerId = reactor->ScheduleTimer(this, 0, false);
+        m_onOkTimerId = reactor->SetupTimer(this, 0, 0);
     }
 
     return true;

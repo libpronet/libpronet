@@ -64,14 +64,14 @@ public:
         unsigned long     mask
         );
 
-    virtual uint64_t ScheduleTimer(
+    virtual uint64_t SetupTimer(
         IProOnTimer* onTimer,
-        uint64_t     timeSpan,
-        bool         recurring,
+        uint64_t     firstDelay,
+        uint64_t     period,
         int64_t      userData /* = 0 */
         );
 
-    virtual uint64_t ScheduleHeartbeatTimer(
+    virtual uint64_t SetupHeartbeatTimer(
         IProOnTimer* onTimer,
         int64_t      userData /* = 0 */
         );
@@ -80,10 +80,10 @@ public:
 
     virtual void CancelTimer(uint64_t timerId);
 
-    virtual uint64_t ScheduleMmTimer(
+    virtual uint64_t SetupMmTimer(
         IProOnTimer* onTimer,
-        uint64_t     timeSpan,
-        bool         recurring,
+        uint64_t     firstDelay,
+        uint64_t     period,
         int64_t      userData /* = 0 */
         );
 

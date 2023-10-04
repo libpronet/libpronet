@@ -1090,6 +1090,7 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
 void
 CRtpSessionBase::OnTimer(void*    factory,
                          uint64_t timerId,
+                         int64_t  tick,
                          int64_t  userData)
 {
     assert(factory != NULL);

@@ -462,7 +462,7 @@ CProTcpTransport::StartHeartbeat()
 
     if (m_timerId == 0)
     {
-        m_timerId = m_reactorTask->ScheduleHeartbeatTimer(this, 0);
+        m_timerId = m_reactorTask->SetupHeartbeatTimer(this, 0);
     }
 }
 
@@ -910,6 +910,7 @@ CProTcpTransport::OnError(int64_t sockId,
 void
 CProTcpTransport::OnTimer(void*    factory,
                           uint64_t timerId,
+                          int64_t  tick,
                           int64_t  userData)
 {
     assert(factory != NULL);

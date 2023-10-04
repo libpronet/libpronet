@@ -115,7 +115,7 @@ CProServiceHost::Init(IProServiceHostObserver* observer,
         observer->AddRef();
         m_observer    = observer;
         m_reactor     = reactor;
-        m_timerId     = reactor->ScheduleTimer(this, HEARTBEAT_INTERVAL * 1000, true);
+        m_timerId     = reactor->SetupTimer(this, HEARTBEAT_INTERVAL * 1000, HEARTBEAT_INTERVAL * 1000);
         m_servicePort = servicePort;
         m_connectTick = ProGetTickCount64();
 
@@ -584,6 +584,7 @@ CProServiceHost::OnClose(CProServicePipe* pipe)
 void
 CProServiceHost::OnTimer(void*    factory,
                          uint64_t timerId,
+                         int64_t  tick,
                          int64_t  userData)
 {
     assert(factory != NULL);
@@ -605,8 +606,6 @@ CProServiceHost::OnTimer(void*    factory,
         {
             return;
         }
-
-        const int64_t tick = ProGetTickCount64();
 
         if (m_pipe == NULL && m_connector == NULL &&
             tick - m_connectTick >= RECONNECT_INTERVAL * 1000)

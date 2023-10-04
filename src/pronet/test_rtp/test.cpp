@@ -157,10 +157,10 @@ CTest::Init(IProReactor*       reactor,
         m_reactor         = reactor;
         if (m_mode != TM_UDPE && m_mode != TM_TCPE)
         {
-            m_sendTimerId = m_sender.ScheduleTimer(this, SEND_TIMER_MS, true, 1); /* 1 --- send */
+            m_sendTimerId = m_sender.SetupTimer(this, SEND_TIMER_MS, SEND_TIMER_MS, 1); /* 1 --- send */
         }
-        m_recvTimerId     = reactor->ScheduleTimer(this, RECV_TIMER_MS, true, 2); /* 2 --- recv */
-        m_htbtTimerId     = reactor->ScheduleTimer(this, HTBT_TIMER_MS, true, 3); /* 3 --- htbt */
+        m_recvTimerId     = reactor->SetupTimer(this, RECV_TIMER_MS, RECV_TIMER_MS, 2); /* 2 --- recv */
+        m_htbtTimerId     = reactor->SetupTimer(this, HTBT_TIMER_MS, HTBT_TIMER_MS, 3); /* 3 --- htbt */
         m_outputShaper.SetAvgBitRate((double)param.kbps * 1000);
     }
 
@@ -206,10 +206,10 @@ CTest::Init(IProReactor*       reactor,
         m_reactor         = reactor;
         if (m_mode != TM_UDPE && m_mode != TM_TCPE)
         {
-            m_sendTimerId = m_sender.ScheduleTimer(this, SEND_TIMER_MS, true, 1); /* 1 --- send */
+            m_sendTimerId = m_sender.SetupTimer(this, SEND_TIMER_MS, SEND_TIMER_MS, 1); /* 1 --- send */
         }
-        m_recvTimerId     = reactor->ScheduleTimer(this, RECV_TIMER_MS, true, 2); /* 2 --- recv */
-        m_htbtTimerId     = reactor->ScheduleTimer(this, HTBT_TIMER_MS, true, 3); /* 3 --- htbt */
+        m_recvTimerId     = reactor->SetupTimer(this, RECV_TIMER_MS, RECV_TIMER_MS, 2); /* 2 --- recv */
+        m_htbtTimerId     = reactor->SetupTimer(this, HTBT_TIMER_MS, HTBT_TIMER_MS, 3); /* 3 --- htbt */
         m_outputShaper.SetAvgBitRate((double)param.kbps * 1000);
     }
 
@@ -657,6 +657,7 @@ CTest::OnCloseSession(IRtpSession* session,
 void
 CTest::OnTimer(void*    factory,
                uint64_t timerId,
+               int64_t  tick,
                int64_t  userData)
 {
     if (userData == 1)
@@ -665,17 +666,17 @@ CTest::OnTimer(void*    factory,
 
         do
         {
-            OnTimerSend(timerId, tryAgain);
+            OnTimerSend(timerId, tick, tryAgain);
         }
         while (tryAgain);
     }
     else if (userData == 2)
     {
-        OnTimerRecv(timerId);
+        OnTimerRecv(timerId, tick);
     }
     else if (userData == 3)
     {
-        OnTimerHtbt(timerId);
+        OnTimerHtbt(timerId, tick);
     }
     else
     {
@@ -684,6 +685,7 @@ CTest::OnTimer(void*    factory,
 
 void
 CTest::OnTimerSend(uint64_t timerId,
+                   int64_t  tick,
                    bool&    tryAgain)
 {
     tryAgain = false;
@@ -743,8 +745,6 @@ CTest::OnTimerSend(uint64_t timerId,
         ++m_outputPacketCount;
         m_outputShaper.FlushGreenBits(packetSize * 8);
 
-        const int64_t tick = ProGetTickCount64();
-
         if (m_outputTs64 == -1)
         {
             m_outputTs64 = tick * 90;
@@ -778,7 +778,8 @@ CTest::OnTimerSend(uint64_t timerId,
 }
 
 void
-CTest::OnTimerRecv(uint64_t timerId)
+CTest::OnTimerRecv(uint64_t timerId,
+                   int64_t  tick)
 {
     assert(timerId > 0);
     if (timerId == 0)
@@ -888,7 +889,8 @@ CTest::OnTimerRecv(uint64_t timerId)
 }
 
 void
-CTest::OnTimerHtbt(uint64_t timerId)
+CTest::OnTimerHtbt(uint64_t timerId,
+                   int64_t  tick)
 {
     assert(timerId > 0);
     if (timerId == 0)
@@ -914,9 +916,8 @@ CTest::OnTimerHtbt(uint64_t timerId)
          */
         if (m_session != NULL && IsUdpMode(m_mode))
         {
-            const int64_t magic = m_session->GetMagic();
-            if (magic > 0 &&
-                ProGetTickCount64() - magic >= TRAFFIC_BROKEN_TIMEOUT * 1000)
+            int64_t magic = m_session->GetMagic();
+            if (magic > 0 && tick - magic >= TRAFFIC_BROKEN_TIMEOUT * 1000)
             {
                 PrintSessionBroken(m_session);
 

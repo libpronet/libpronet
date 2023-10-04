@@ -150,7 +150,7 @@ CRtpSessionTcpserver::Init(IRtpSessionObserver* observer,
         m_observer       = observer;
         m_reactor        = reactor;
         m_localAddr      = localAddr;
-        m_timeoutTimerId = reactor->ScheduleTimer(this, (uint64_t)timeoutInSeconds * 1000, false);
+        m_timeoutTimerId = reactor->SetupTimer(this, (uint64_t)timeoutInSeconds * 1000, 0);
     }
 
     return true;

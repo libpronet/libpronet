@@ -147,8 +147,8 @@ CProConnector::Init(IProConnectorObserver* observer,
         m_localAddr        = localAddr;
         m_remoteAddr       = remoteAddr;
         m_timeoutInSeconds = timeoutInSeconds;
-        m_timerId0         = reactorTask->ScheduleTimer(this, 0, false, 0);
-        m_timerId1         = reactorTask->ScheduleTimer(this, (uint64_t)timeoutInSeconds * 1000, false, 0);
+        m_timerId0         = reactorTask->SetupTimer(this, 0, 0, 0);
+        m_timerId1         = reactorTask->SetupTimer(this, (uint64_t)timeoutInSeconds * 1000, 0, 0);
     }
 
     return true;
@@ -568,6 +568,7 @@ CProConnector::OnHandshakeError(IProTcpHandshaker* handshaker,
 void
 CProConnector::OnTimer(void*    factory,
                        uint64_t timerId,
+                       int64_t  tick,
                        int64_t  userData)
 {
     assert(factory != NULL);

@@ -127,7 +127,7 @@ CProSslHandshaker::Init(IProSslHandshakerObserver* observer,
         m_unixSocket  = unixSocket;
         m_onWr        = true;
         m_recvFirst   = recvFirst;
-        m_timerId     = reactorTask->ScheduleTimer(this, (uint64_t)timeoutInSeconds * 1000, false, 0);
+        m_timerId     = reactorTask->SetupTimer(this, (uint64_t)timeoutInSeconds * 1000, 0, 0);
     }
 
     return true;
@@ -589,6 +589,7 @@ CProSslHandshaker::OnError(int64_t sockId,
 void
 CProSslHandshaker::OnTimer(void*    factory,
                            uint64_t timerId,
+                           int64_t  tick,
                            int64_t  userData)
 {
     assert(factory != NULL);

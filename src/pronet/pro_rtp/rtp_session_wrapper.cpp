@@ -591,7 +591,8 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
         }
         if (enableTrace)
         {
-            m_timerId = m_reactor->ScheduleTimer(this, HEARTBEAT_INTERVAL * 1000, true);
+            m_timerId = m_reactor->SetupTimer(
+                this, HEARTBEAT_INTERVAL * 1000, HEARTBEAT_INTERVAL * 1000);
         }
     }
 
@@ -903,7 +904,7 @@ CRtpSessionWrapper::SendPacketByTimer(IRtpPacket*  packet,
 
         if (m_sendTimerId == 0)
         {
-            m_sendTimerId = m_reactor->ScheduleMmTimer(this, 1, true); /* 1ms */
+            m_sendTimerId = m_reactor->SetupMmTimer(this, 1, 1); /* 1ms */
         }
 
         packet->AddRef();
@@ -1586,6 +1587,7 @@ CRtpSessionWrapper::OnHeartbeatSession(IRtpSession* session,
 void
 CRtpSessionWrapper::OnTimer(void*    factory,
                             uint64_t timerId,
+                            int64_t  tick,
                             int64_t  userData)
 {
     assert(factory != NULL);
@@ -1602,8 +1604,6 @@ CRtpSessionWrapper::OnTimer(void*    factory,
         {
             return;
         }
-
-        const int64_t tick = ProGetTickCount64();
 
         if (timerId == m_timerId)
         {

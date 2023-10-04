@@ -237,6 +237,7 @@ private:
     virtual void OnTimer(
         void*    factory,
         uint64_t timerId,
+        int64_t  tick,
         int64_t  userData
         );
 

@@ -39,8 +39,7 @@ struct PRO_TIMER_NODE
         timerId       = 0;
 
         onTimer       = NULL;
-        timeSpan      = 0;
-        recurring     = false;
+        period        = 0;
         heartbeat     = false;
         htbtSlotIndex = 0;
         userData      = 0;
@@ -64,8 +63,7 @@ struct PRO_TIMER_NODE
     uint64_t     timerId;
 
     IProOnTimer* onTimer;
-    int64_t      timeSpan;
-    bool         recurring;
+    int64_t      period;
     bool         heartbeat;
     unsigned int htbtSlotIndex;
     int64_t      userData;
@@ -94,6 +92,7 @@ public:
     virtual void OnTimer(
         void*    factory,
         uint64_t timerId,
+        int64_t  tick,
         int64_t  userData
         ) = 0;
 };
@@ -114,14 +113,14 @@ public:
 
     void Stop();
 
-    uint64_t ScheduleTimer(
+    uint64_t SetupTimer(
         IProOnTimer* onTimer,
-        uint64_t     timeSpan, /* [0, 0xFFFFFFFFFFFF] */
-        bool         recurring,
+        uint64_t     firstDelay, /* [0, 0xFFFFFFFFFFFF] */
+        uint64_t     period,     /* [0, 0xFFFFFFFFFFFF] */
         int64_t      userData = 0
         );
 
-    uint64_t ScheduleHeartbeatTimer(
+    uint64_t SetupHeartbeatTimer(
         IProOnTimer* onTimer,
         int64_t      userData = 0
         );
@@ -148,7 +147,7 @@ private:
     unsigned int                  m_mmResolution;
     CProStlSet<PRO_TIMER_NODE>    m_timers;
     CProStlMap<uint64_t, int64_t> m_timerId2ExpireTick;
-    int64_t                       m_htbtTimeSpan;
+    int64_t                       m_htbtPeriod;
     CProStlVector<size_t>         m_htbtTimerCounts;
     CProThreadMutexCondition      m_cond;
     mutable CProThreadMutex       m_lock;

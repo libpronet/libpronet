@@ -137,8 +137,8 @@ CRtpSessionUdpclientEx::Init(IRtpSessionObserver* observer,
         observer->AddRef();
         m_observer       = observer;
         m_reactor        = reactor;
-        m_timeoutTimerId = reactor->ScheduleTimer(this, (uint64_t)timeoutInSeconds * 1000, false);
-        m_syncTimerId    = reactor->ScheduleTimer(this, SEND_SYNC_INTERVAL_MS, true);
+        m_timeoutTimerId = reactor->SetupTimer(this, (uint64_t)timeoutInSeconds * 1000, 0);
+        m_syncTimerId    = reactor->SetupTimer(this, SEND_SYNC_INTERVAL_MS, SEND_SYNC_INTERVAL_MS);
 
         if (!DoHandshake1())
         {
@@ -415,9 +415,10 @@ CRtpSessionUdpclientEx::OnRecv(IProTransport*          trans,
 void
 CRtpSessionUdpclientEx::OnTimer(void*    factory,
                                 uint64_t timerId,
+                                int64_t  tick,
                                 int64_t  userData)
 {
-    CRtpSessionBase::OnTimer(factory, timerId, userData);
+    CRtpSessionBase::OnTimer(factory, timerId, tick, userData);
 
     assert(factory != NULL);
     assert(timerId > 0);

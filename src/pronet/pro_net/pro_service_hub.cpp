@@ -116,7 +116,7 @@ CProServiceHub::Init(IProReactor*   reactor,
         }
 
         m_reactor = reactor;
-        m_timerId = reactor->ScheduleTimer(this, HEARTBEAT_INTERVAL * 1000, true);
+        m_timerId = reactor->SetupTimer(this, HEARTBEAT_INTERVAL * 1000, HEARTBEAT_INTERVAL * 1000);
     }
 
     return true;
@@ -566,6 +566,7 @@ CProServiceHub::OnClose(CProServicePipe* pipe)
 void
 CProServiceHub::OnTimer(void*    factory,
                         uint64_t timerId,
+                        int64_t  tick,
                         int64_t  userData)
 {
     assert(factory != NULL);
@@ -589,8 +590,6 @@ CProServiceHub::OnTimer(void*    factory,
         {
             return;
         }
-
-        const int64_t tick = ProGetTickCount64();
 
         {
             auto itr = m_expireSocks.begin();

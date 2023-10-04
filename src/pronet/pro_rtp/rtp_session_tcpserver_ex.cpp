@@ -139,7 +139,7 @@ CRtpSessionTcpserverEx::Init(IRtpSessionObserver* observer,
         m_reactor      = reactor;
         m_tcpConnected = true; /* !!! */
         m_handshakeOk  = true; /* !!! */
-        m_onOkTimerId  = reactor->ScheduleTimer(this, 0, false);
+        m_onOkTimerId  = reactor->SetupTimer(this, 0, 0);
 
         if (!DoHandshake(useAckData, ackData))
         {

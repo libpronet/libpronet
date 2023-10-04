@@ -199,7 +199,7 @@ CRtpMsgClient::Init(IRtpMsgClientObserver* observer,
         m_observer = observer;
         m_reactor  = reactor;
         m_userBak  = *user;
-        m_timerId  = reactor->ScheduleTimer(this, (uint64_t)timeoutInSeconds * 1000, false);
+        m_timerId  = reactor->SetupTimer(this, (uint64_t)timeoutInSeconds * 1000, 0);
     }
 
     return true;
@@ -803,6 +803,7 @@ CRtpMsgClient::OnHeartbeatSession(IRtpSession* session,
 void
 CRtpMsgClient::OnTimer(void*    factory,
                        uint64_t timerId,
+                       int64_t  tick,
                        int64_t  userData)
 {
     assert(factory != NULL);

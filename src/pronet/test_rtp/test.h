@@ -171,6 +171,7 @@ private:
     virtual void OnTimer(
         void*    factory,
         uint64_t timerId,
+        int64_t  tick,
         int64_t  userData
         );
 
@@ -206,12 +207,19 @@ private:
 
     void OnTimerSend(
         uint64_t timerId,
+        int64_t  tick,
         bool&    tryAgain
         );
 
-    void OnTimerRecv(uint64_t timerId);
+    void OnTimerRecv(
+        uint64_t timerId,
+        int64_t  tick
+        );
 
-    void OnTimerHtbt(uint64_t timerId);
+    void OnTimerHtbt(
+        uint64_t timerId,
+        int64_t  tick
+        );
 
 private:
 

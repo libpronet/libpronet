@@ -538,6 +538,7 @@ CProUdpTransport::OnError(int64_t sockId,
 void
 CProUdpTransport::OnTimer(void*    factory,
                           uint64_t timerId,
+                          int64_t  tick,
                           int64_t  userData)
 {
     assert(factory != NULL);
