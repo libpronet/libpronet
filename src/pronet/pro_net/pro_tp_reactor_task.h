@@ -48,10 +48,7 @@ public:
 
     virtual ~CProTpReactorTask();
 
-    bool Start(
-        unsigned long ioThreadCount,
-        long          ioThreadPriority /* = 0, 1, 2 */
-        );
+    bool Start(unsigned int ioThreadCount);
 
     void Stop();
 
@@ -111,7 +108,6 @@ private:
     CProTimerFactory                m_mmTimerFactory;
     unsigned int                    m_acceptThreadCount;
     unsigned int                    m_ioThreadCount;
-    long                            m_ioThreadPriority;
     unsigned int                    m_curThreadCount;
     bool                            m_wantExit;
     CProStlSet<uint64_t>            m_threadIds;

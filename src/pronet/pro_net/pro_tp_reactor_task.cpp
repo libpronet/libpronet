@@ -29,10 +29,6 @@
 #include "../pro_util/pro_timer_factory.h"
 #include "../pro_util/pro_z.h"
 
-#if defined(_WIN32)
-#include <windows.h>
-#endif
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -50,7 +46,6 @@ CProTpReactorTask::CProTpReactorTask()
     m_acceptReactor     = NULL;
     m_acceptThreadCount = 0;
     m_ioThreadCount     = 0;
-    m_ioThreadPriority  = 0;
     m_curThreadCount    = 0;
     m_wantExit          = false;
 }
@@ -61,24 +56,12 @@ CProTpReactorTask::~CProTpReactorTask()
 }
 
 bool
-CProTpReactorTask::Start(unsigned long ioThreadCount,
-                         long          ioThreadPriority) /* = 0, 1, 2 */
+CProTpReactorTask::Start(unsigned int ioThreadCount)
 {{
     CProThreadMutexGuard mon(m_lockAtom);
 
     assert(ioThreadCount > 0);
-    assert(
-        ioThreadPriority == 0 ||
-        ioThreadPriority == 1 ||
-        ioThreadPriority == 2
-        );
-    if (
-        ioThreadCount == 0
-        ||
-        (ioThreadPriority != 0 &&
-         ioThreadPriority != 1 &&
-         ioThreadPriority != 2)
-       )
+    if (ioThreadCount == 0)
     {
         return false;
     }
@@ -94,7 +77,6 @@ CProTpReactorTask::Start(unsigned long ioThreadCount,
 
         m_acceptThreadCount = 1;
         m_ioThreadCount     = ioThreadCount; /* for StopMe() */
-        m_ioThreadPriority  = ioThreadPriority;
 
         /*
          * reactors
@@ -228,7 +210,6 @@ CProTpReactorTask::StopMe()
         m_acceptReactor     = NULL;
         m_acceptThreadCount = 0;
         m_ioThreadCount     = 0;
-        m_ioThreadPriority  = 0;
         m_curThreadCount    = 0;
         m_wantExit          = false;
     }
@@ -576,10 +557,6 @@ CProTpReactorTask::Svc()
     }
     else
     {
-#if defined(_WIN32)
-        ::SetThreadPriority(::GetCurrentThread(), m_ioThreadPriority);
-#endif
-
         m_ioReactors[threadCount - 2]->WorkerRun();
     }
 

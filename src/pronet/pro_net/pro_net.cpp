@@ -84,13 +84,12 @@ ProNetVersion(unsigned char* major, /* = NULL */
 
 PRO_NET_API
 IProReactor*
-ProCreateReactor(unsigned long ioThreadCount,
-                 long          ioThreadPriority) /* = 0 */
+ProCreateReactor(unsigned int ioThreadCount)
 {
     ProNetInit();
 
     CProTpReactorTask* reactorTask = new CProTpReactorTask;
-    if (!reactorTask->Start(ioThreadCount, ioThreadPriority))
+    if (!reactorTask->Start(ioThreadCount))
     {
         delete reactorTask;
 

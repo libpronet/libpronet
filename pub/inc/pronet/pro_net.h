@@ -770,19 +770,15 @@ ProNetVersion(unsigned char* major,  /* = NULL */
  * 功能: 创建一个反应器
  *
  * 参数:
- * ioThreadCount    : 处理收发事件的线程数
- * ioThreadPriority : 收发线程的优先级(0/1/2)
+ * ioThreadCount : 处理收发事件的线程数
  *
  * 返回值: 反应器对象或NULL
  *
- * 说明: ioThreadPriority可能对一些特殊的应用场景有用处. 比如多媒体通信中,
- *       可以将视频链路和音频链路放到不同的reactor中, 并将音频reactor的
- *       ioThreadPriority略微调高, 这样在数据密集时可以改善音频的处理
+ * 说明: 无
  */
 PRO_NET_API
 IProReactor*
-ProCreateReactor(unsigned long ioThreadCount,
-                 long          ioThreadPriority = 0);
+ProCreateReactor(unsigned int ioThreadCount);
 
 /*
  * 功能: 删除一个反应器
