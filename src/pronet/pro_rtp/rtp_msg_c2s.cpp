@@ -46,10 +46,8 @@
 #define RECONNECT_INTERVAL        5
 #define DEFAULT_TIMEOUT           20
 
-static const RTP_MSG_USER  ROOT_ID_C2S(1, 1, 65535);        /* 1-1-65535 */
-static const unsigned char SERVER_CID    = 1;               /* 1-... */
-static const uint64_t      NODE_UID_MIN  = 1;               /* 1 ~ 0xFFFFFFFFFF */
-static const uint64_t      NODE_UID_MAXX = 0xFFFFFFFFFFULL; /* 1 ~ 0xFFFFFFFFFF */
+static const RTP_MSG_USER  ROOT_ID_C2SPORT(1, 1, 65535); /* 1-1-65535 */
+static const uint64_t      NODE_UID_MAXX = 0xFFFFFFFFFFULL;
 
 typedef void (CRtpMsgC2s::* ACTION)(int64_t*);
 
@@ -859,7 +857,7 @@ CRtpMsgC2s::AcceptSession(IRtpService*            service,
         CProStlString theString;
         msgStream.ToString(theString);
 
-        if (!m_msgClient->SendMsg(theString.c_str(), theString.length(), 0, &ROOT_ID_C2S, 1))
+        if (!m_msgClient->SendMsg(theString.c_str(), theString.length(), 0, &ROOT_ID_C2SPORT, 1))
         {
             m_reactor->CancelTimer(timerId);
 
@@ -1136,7 +1134,7 @@ CRtpMsgC2s::OnRecvMsg(IRtpMsgClient*      msgClient,
         return;
     }
 
-    if (*srcUser != ROOT_ID_C2S)
+    if (*srcUser != ROOT_ID_C2SPORT)
     {
         return;
     }

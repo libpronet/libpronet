@@ -36,8 +36,7 @@
 #define DEFAULT_REDLINE_BYTES (1024 * 1024)
 #define DEFAULT_TIMEOUT       20
 
-static const uint64_t NODE_UID_MIN  = 1;               /* 1 ~ 0xFFFFFFFFFF */
-static const uint64_t NODE_UID_MAXX = 0xFFFFFFFFFFULL; /* 1 ~ 0xFFFFFFFFFF */
+static const uint64_t NODE_UID_MAXX = 0xFFFFFFFFFFULL;
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -661,28 +660,27 @@ CRtpMsgClient::OnRecvSession(IRtpSession* session,
         }
         else                   /* for c2s */
         {
-            unsigned char badUserCount = 0;
+            unsigned char invalidUserCount = 0;
 
             for (int i = 0; i < (int)msgHeaderPtr->dstUserCount; ++i)
             {
                 dstUsers[dstUserCount]        = msgHeaderPtr->dstUsers[i];
                 dstUsers[dstUserCount].instId = pbsd_ntoh16(dstUsers[dstUserCount].instId);
 
-                if (dstUsers[dstUserCount].classId > 0 &&
-                    dstUsers[dstUserCount].UserId() == 0)
+                if (dstUsers[dstUserCount].classId == 0 || dstUsers[dstUserCount].UserId() == 0)
                 {
-                    ++badUserCount;
-                    continue;
+                    ++invalidUserCount;
                 }
-
-                if (dstUsers[dstUserCount].classId > 0 &&
-                    dstUsers[dstUserCount] != m_userBak)
+                else if (dstUsers[dstUserCount] != m_userBak)
                 {
                     ++dstUserCount;
                 }
+                else
+                {
+                }
             }
 
-            msgHeaderPtr->dstUserCount -= badUserCount;
+            msgHeaderPtr->dstUserCount -= invalidUserCount;
         }
 
         m_reactor->CancelTimer(m_timerId);

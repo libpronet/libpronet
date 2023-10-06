@@ -416,8 +416,11 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
                 goto EXIT;
             }
 
-            if (user->classId == SERVER_CID &&
-                ctx->iids.find(user->instId) != ctx->iids.end())
+            if (
+                (user->classId == SERVER_CID || userRow._isc2s_ != 0)
+                &&
+                ctx->iids.find(user->instId) != ctx->iids.end()
+               )
             {
                 errorString = "Busy ID";
 
@@ -435,7 +438,7 @@ CMsgServer::OnCheckUser(IRtpMsgServer*      msgServer,
         *userId  = user->UserId();
         *instId  = user->instId;
         *appData = 0; /* You can do something. */
-        *isC2s   = userRow._isc2s_ != 0;
+        *isC2s   = c2sUser == NULL && userRow._isc2s_ != 0;
     }
 
     ret = true;

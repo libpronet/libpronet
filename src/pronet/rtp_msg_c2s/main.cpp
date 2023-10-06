@@ -35,9 +35,7 @@
 #define CONFIG_FILE_NAME "rtp_msg_c2s.cfg"
 #define LOG_LOOP_BYTES   (50 * 1000 * 1000)
 
-static const unsigned char SERVER_CID    = 1;               /* 1-... */
-static const uint64_t      NODE_UID_MIN  = 1;               /* 1 ~ 0xFFFFFFFFFF */
-static const uint64_t      NODE_UID_MAXX = 0xFFFFFFFFFFULL; /* 1 ~ 0xFFFFFFFFFF */
+static const uint64_t NODE_UID_MAXX = 0xFFFFFFFFFFULL;
 
 /////////////////////////////////////////////////////////////////////////////
 ////

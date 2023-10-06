@@ -40,54 +40,37 @@
 #define DEFAULT_REDLINE_BYTES_USR (1024 * 1024)
 #define DEFAULT_TIMEOUT           20
 
-static const RTP_MSG_USER  ROOT_ID    (1, 1, 0);            /* 1-1 */
-static const RTP_MSG_USER  ROOT_ID_C2S(1, 1, 65535);        /* 1-1-65535 */
-static const unsigned char SERVER_CID    = 1;               /* 1-... */
-static const uint64_t      NODE_UID_MIN  = 1;               /* 1 ~ ... */
-static const uint64_t      NODE_UID_MAX  = 0xEFFFFFFFFFULL; /* 1 ~ 0xEFFFFFFFFF */
-static const uint64_t      NODE_UID_MAXX = 0xFFFFFFFFFFULL; /* 1 ~ 0xFFFFFFFFFF */
+static const RTP_MSG_USER  ROOT_ID        (1, 1, 0);     /* 1-1 */
+static const RTP_MSG_USER  ROOT_ID_C2SPORT(1, 1, 65535); /* 1-1-65535 */
+static const uint64_t      NODE_UID_MAXX = 0xFFFFFFFFFFULL;
 
 typedef void (CRtpMsgServer::* ACTION)(int64_t*);
 
-static uint64_t        g_s_nextServerId = 0xF000000000ULL; /* 0xF000000000 ~ 0xFFFFFFFFFF */
-static uint64_t        g_s_nextClientId = 0xF000000000ULL; /* 0xF000000000 ~ 0xFFFFFFFFFF */
-static CProThreadMutex g_s_lock;
+static uint64_t g_s_nextUserId[256] = { 0 }; /* cid0 ~ cid255, [0xF000000000, 0xFFFFFFFFFF] */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+/*
+ * All calls come from the same thread, so no lock is required.
+ */
 static
 uint64_t
-MakeServerId_i()
+MakeUserId_i(unsigned char classId)
 {
-    g_s_lock.Lock();
-
-    const uint64_t userId = g_s_nextServerId;
-    ++g_s_nextServerId;
-    if (g_s_nextServerId > 0xFFFFFFFFFFULL)
+    uint64_t& nextUserId = g_s_nextUserId[classId];
+    if (nextUserId == 0)
     {
-        g_s_nextServerId = 0xF000000000ULL;
+        nextUserId = 0xF000000000ULL;
     }
 
-    g_s_lock.Unlock();
+    uint64_t userId = nextUserId;
 
-    return userId;
-}
-
-static
-uint64_t
-MakeClientId_i()
-{
-    g_s_lock.Lock();
-
-    const uint64_t userId = g_s_nextClientId;
-    ++g_s_nextClientId;
-    if (g_s_nextClientId > 0xFFFFFFFFFFULL)
+    ++nextUserId;
+    if (nextUserId > 0xFFFFFFFFFFULL)
     {
-        g_s_nextClientId = 0xF000000000ULL;
+        nextUserId = 0xF000000000ULL;
     }
-
-    g_s_lock.Unlock();
 
     return userId;
 }
@@ -1114,14 +1097,22 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
         /*
          * to stdPort
          */
-        if (
-            toStdPort
-            ||
-            (toC2sPort && !srcCtx->isC2s)
+        if (toStdPort)
+        {
+            m_observer->AddRef();
+            observer = m_observer;
+        }
+        else if (
+            toC2sPort
+            &&
+            (!srcCtx->isC2s || srcUser != srcCtx->baseUser)
            )
         {
             m_observer->AddRef();
             observer = m_observer;
+        }
+        else
+        {
         }
     }
 
@@ -1288,14 +1279,7 @@ CRtpMsgServer::ProcessMsg_client_login(IRtpSession*            session,
 
     if (subUser.UserId() == 0)
     {
-        if (subUser.classId == SERVER_CID)
-        {
-            subUser.UserId(MakeServerId_i());
-        }
-        else
-        {
-            subUser.UserId(MakeClientId_i());
-        }
+        subUser.UserId(MakeUserId_i(subUser.classId));
     }
 
     /*
@@ -1357,7 +1341,7 @@ CRtpMsgServer::ProcessMsg_client_login(IRtpSession*            session,
         msgStream.ToString(theString);
 
         SendMsgToDownlink(m_mmType, &session, 1, theString.c_str(), theString.length(),
-            NULL, 0, 0, ROOT_ID_C2S, &c2sUser, 1);
+            NULL, 0, 0, ROOT_ID_C2SPORT, &c2sUser, 1);
     }
 }
 
@@ -1783,7 +1767,7 @@ CRtpMsgServer::AddSubUser(const RTP_MSG_USER&  c2sUser,
      * 2. response
      */
     SendMsgToDownlink(m_mmType, &newSession, 1, msgText.c_str(), msgText.length(),
-        NULL, 0, 0, ROOT_ID_C2S, &c2sUser, 1);
+        NULL, 0, 0, ROOT_ID_C2SPORT, &c2sUser, 1);
 
     newSession->ResumeRecv(); /* !!! */
     newSession->Release();
@@ -1906,5 +1890,5 @@ CRtpMsgServer::NotifyKickout(RTP_MM_TYPE         mmType,
     msgStream.ToString(theString);
 
     SendMsgToDownlink(mmType, &session, 1, theString.c_str(), theString.length(),
-        NULL, 0, 0, ROOT_ID_C2S, &c2sUser, 1);
+        NULL, 0, 0, ROOT_ID_C2SPORT, &c2sUser, 1);
 }

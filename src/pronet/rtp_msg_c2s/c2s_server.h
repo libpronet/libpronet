@@ -61,7 +61,7 @@ struct C2S_SERVER_CONFIG_INFO
         c2ss_log_loop_bytes             = 50 * 1000 * 1000;
         c2ss_log_level_green            = 0;
 
-        RtpMsgString2User("1-10000001-1", &c2ss_uplink_id);
+        RtpMsgString2User("255-0-0", &c2ss_uplink_id);
 
         c2ss_ssl_uplink_cafiles.push_back("ca.crt");
         c2ss_ssl_uplink_cafiles.push_back("");
