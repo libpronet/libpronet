@@ -283,8 +283,7 @@ pbsd_closesocket_i(int64_t fd)
 }
 
 /*
- * Be sure to initialize important global data first to prevent crashes
- * caused by it being used before entering main()!!!
+ * Initialize important global data before main() is called!!!
  */
 static
 void
@@ -381,12 +380,10 @@ GetTickCount32_i()
 
 #elif !defined(PRO_LACKS_CLOCK_GETTIME)   /* for non-MacOS */
 
-    struct timespec ts = { 0 };
-    clock_gettime(CLOCK_MONOTONIC, &ts);
+    struct timespec now = { 0 };
+    clock_gettime(CLOCK_MONOTONIC, &now);
 
-    ret =  ts.tv_sec;
-    ret *= 1000;
-    ret += ts.tv_nsec / 1000000;
+    ret = (int64_t)now.tv_sec * 1000 + now.tv_nsec / 1000000;
 
 #else
 
@@ -541,12 +538,10 @@ ProGetTickCount64()
 
 #elif !defined(PRO_LACKS_CLOCK_GETTIME)   /* for non-MacOS */
 
-    struct timespec ts = { 0 };
-    clock_gettime(CLOCK_MONOTONIC, &ts);
+    struct timespec now = { 0 };
+    clock_gettime(CLOCK_MONOTONIC, &now);
 
-    ret =  ts.tv_sec;
-    ret *= 1000;
-    ret += ts.tv_nsec / 1000000;
+    ret = (int64_t)now.tv_sec * 1000 + now.tv_nsec / 1000000;
 
 #else
 
@@ -567,46 +562,31 @@ ProGetNtpTickCount64()
 
 #if defined(_WIN32)
 
-    SYSTEMTIME st;
-    ::GetLocalTime(&st);
-
     FILETIME ft;
-    if (::SystemTimeToFileTime(&st, &ft))
+    ::GetSystemTimeAsFileTime(&ft);
+
+    int64_t ft64 = ft.dwHighDateTime;
+    ft64 <<= 32;
+    ft64 |=  ft.dwLowDateTime;
+    ft64 /=  10000;
+
+    const int64_t TIME_DIFF_WINDOWS_UNIX = 11644473600LL; /* 1601 ---> 1970 */
+
+    tick1970 = ft64 - TIME_DIFF_WINDOWS_UNIX * 1000;
+
+#else  /* _WIN32 */
+
+    struct timeval now = { 0 };
+    if (gettimeofday(&now, NULL) == 0)
     {
-        int64_t ft64 = ft.dwHighDateTime;
-        ft64 <<= 32;
-        ft64 |=  ft.dwLowDateTime;
-        ft64 /=  10000;
-
-        const int64_t TIME_DIFF_WINDOWS_UNIX = 11644473600LL; /* [1601 ~ 1970] */
-
-        tick1970 = ft64 - TIME_DIFF_WINDOWS_UNIX * 1000;
+        tick1970 = (int64_t)now.tv_sec * 1000 + now.tv_usec / 1000;
     }
 
-#elif !defined(PRO_LACKS_CLOCK_GETTIME)
+#endif /* _WIN32 */
 
-    struct timespec ts = { 0 };
-    clock_gettime(CLOCK_REALTIME, &ts);
+    const int64_t TIME_DIFF_UNIX_NTP = 2208988800LL; /* 1970 ---> 1900 */
 
-    tick1970 =  ts.tv_sec;
-    tick1970 *= 1000;
-    tick1970 += ts.tv_nsec / 1000000;
-
-#else
-
-    struct timeval tv = { 0 };
-    if (gettimeofday(&tv, NULL) == 0)
-    {
-        tick1970 =  tv.tv_sec;
-        tick1970 *= 1000;
-        tick1970 += tv.tv_usec / 1000;
-    }
-
-#endif
-
-    const int64_t TIME_DIFF_NTP_UNIX = 2208988800LL; /* [1900 ~ 1970] */
-
-    return tick1970 + TIME_DIFF_NTP_UNIX * 1000;
+    return tick1970 + TIME_DIFF_UNIX_NTP * 1000;
 }
 
 PRO_SHARED_API

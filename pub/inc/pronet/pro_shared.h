@@ -118,7 +118,7 @@ int
 ProRand_0_32767();
 
 /*
- * 功能: 获取当前的系统tick值
+ * 功能: 获取以系统启动时刻为起点的tick值
  *
  * 参数: 无
  *
@@ -131,13 +131,13 @@ int64_t
 ProGetTickCount64();
 
 /*
- * 功能: 获取当前的NTP参考系tick值
+ * 功能: 获取以NTP原点为起点的tick值
  *
  * 参数: 无
  *
  * 返回值: tick值. 单位(ms)
  *
- * 说明: 这里的NTP参考系基于本地时间而非GMT/UTC时间
+ * 说明: NTP原点是 1900-01-01 00:00:00 UTC
  */
 PRO_SHARED_API
 int64_t
