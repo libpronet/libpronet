@@ -124,7 +124,7 @@ ProRand_0_32767();
  *
  * 返回值: tick值. 单位(ms)
  *
- * 说明: Windows版本使用TLS实现
+ * 说明: 多线程之间能保证单调递增
  */
 PRO_SHARED_API
 int64_t
@@ -137,7 +137,7 @@ ProGetTickCount64();
  *
  * 返回值: tick值. 单位(ms)
  *
- * 说明: 无
+ * 说明: 这里的NTP参考系基于本地时间而非GMT/UTC时间
  */
 PRO_SHARED_API
 int64_t

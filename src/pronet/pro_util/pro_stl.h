@@ -34,6 +34,10 @@
 #include <map>
 #include <set>
 #include <string>
+#include <tuple>
+#include <unordered_map>
+#include <unordered_set>
+#include <utility>
 #include <vector>
 
 /////////////////////////////////////////////////////////////////////////////
@@ -62,22 +66,14 @@ class CProStlList
 
 template<class ____K, class ____Ty, unsigned int ____poolIndex = 0, class ____Pr = std::less<____K> >
 class CProStlMap
-#if !defined(_MSC_VER) || (_MSC_VER > 1200) /* 1200 is 6.0 */
 : public std::map<____K, ____Ty, ____Pr, std::pro_allocator<std::pair<const ____K, ____Ty>, ____poolIndex> >
-#else
-: public std::map<____K, ____Ty, ____Pr, std::pro_allocator<____Ty, ____poolIndex> >
-#endif
 {
     DECLARE_SGI_POOL(0)
 };
 
 template<class ____K, class ____Ty, unsigned int ____poolIndex = 0, class ____Pr = std::less<____K> >
 class CProStlMultimap
-#if !defined(_MSC_VER) || (_MSC_VER > 1200) /* 1200 is 6.0 */
 : public std::multimap<____K, ____Ty, ____Pr, std::pro_allocator<std::pair<const ____K, ____Ty>, ____poolIndex> >
-#else
-: public std::multimap<____K, ____Ty, ____Pr, std::pro_allocator<____Ty, ____poolIndex> >
-#endif
 {
     DECLARE_SGI_POOL(0)
 };
@@ -92,6 +88,34 @@ class CProStlSet
 template<class ____K, unsigned int ____poolIndex = 0, class ____Pr = std::less<____K> >
 class CProStlMultiset
 : public std::multiset<____K, ____Pr, std::pro_allocator<____K, ____poolIndex> >
+{
+    DECLARE_SGI_POOL(0)
+};
+
+template<class ____K, class ____Ty, unsigned int ____poolIndex = 0, class ____H = std::hash<____K>, class ____Pr = std::equal_to<____K> >
+class CProStlHashMap
+: public std::unordered_map<____K, ____Ty, ____H, ____Pr, std::pro_allocator<std::pair<const ____K, ____Ty>, ____poolIndex> >
+{
+    DECLARE_SGI_POOL(0)
+};
+
+template<class ____K, class ____Ty, unsigned int ____poolIndex = 0, class ____H = std::hash<____K>, class ____Pr = std::equal_to<____K> >
+class CProStlHashMultimap
+: public std::unordered_multimap<____K, ____Ty, ____H, ____Pr, std::pro_allocator<std::pair<const ____K, ____Ty>, ____poolIndex> >
+{
+    DECLARE_SGI_POOL(0)
+};
+
+template<class ____K, unsigned int ____poolIndex = 0, class ____H = std::hash<____K>, class ____Pr = std::equal_to<____K> >
+class CProStlHashSet
+: public std::unordered_set<____K, ____H, ____Pr, std::pro_allocator<____K, ____poolIndex> >
+{
+    DECLARE_SGI_POOL(0)
+};
+
+template<class ____K, unsigned int ____poolIndex = 0, class ____H = std::hash<____K>, class ____Pr = std::equal_to<____K> >
+class CProStlHashMultiset
+: public std::unordered_multiset<____K, ____H, ____Pr, std::pro_allocator<____K, ____poolIndex> >
 {
     DECLARE_SGI_POOL(0)
 };

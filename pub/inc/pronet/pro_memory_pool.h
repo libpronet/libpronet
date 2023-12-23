@@ -106,7 +106,6 @@ public:
     {
     }
 
-#if !defined(_MSC_VER) || (_MSC_VER > 1200) /* 1200 is 6.0 */
     template<class ____Other>
     pro_allocator(const pro_allocator<____Other, ____poolIndex>&)
     {
@@ -123,7 +122,6 @@ public:
          */
         return *this;
     }
-#endif
 
     ____Ty* allocate(size_t ____N)
     {
@@ -201,7 +199,6 @@ public:
          */
     }
 
-#if !defined(_MSC_VER) || (_MSC_VER > 1200) /* 1200 is 6.0 */
     template<class ____Other>
     pro_allocator(const pro_allocator<____Other>&)
     {
@@ -218,7 +215,6 @@ public:
          */
         return *this;
     }
-#endif
 
     DECLARE_SGI_POOL(0)
 };

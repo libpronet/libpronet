@@ -68,10 +68,8 @@ CheckMode_i(TEST_MODE mode)
     case TM_TCPS:
     case TM_UDPC:
     case TM_TCPC:
-        {
-            ret = true;
-            break;
-        }
+        ret = true;
+        break;
     }
 
     return ret;

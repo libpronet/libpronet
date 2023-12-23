@@ -608,8 +608,15 @@ CRtpMsgClient::OnRecvSession(IRtpSession* session,
 {
     assert(session != NULL);
     assert(packet != NULL);
-    assert(packet->GetPayloadSize() > sizeof(RTP_MSG_HEADER));
-    if (session == NULL || packet == NULL || packet->GetPayloadSize() <= sizeof(RTP_MSG_HEADER))
+    if (session == NULL || packet == NULL)
+    {
+        return;
+    }
+
+    size_t payloadSize = packet->GetPayloadSize();
+
+    assert(payloadSize > sizeof(RTP_MSG_HEADER));
+    if (payloadSize <= sizeof(RTP_MSG_HEADER))
     {
         return;
     }
@@ -623,17 +630,22 @@ CRtpMsgClient::OnRecvSession(IRtpSession* session,
     size_t msgHeaderSize =
         sizeof(RTP_MSG_HEADER) + sizeof(RTP_MSG_USER) * (msgHeaderPtr->dstUserCount - 1);
 
+    assert(payloadSize > msgHeaderSize);
+    if (payloadSize <= msgHeaderSize)
+    {
+        return;
+    }
+
     const void* msgBodyPtr  = (char*)msgHeaderPtr + msgHeaderSize;
-    int         msgBodySize = (int)(packet->GetPayloadSize() - msgHeaderSize);
+    size_t      msgBodySize = payloadSize - msgHeaderSize;
     uint16_t    charset     = pbsd_ntoh16(msgHeaderPtr->charset);
 
     RTP_MSG_USER srcUser = msgHeaderPtr->srcUser;
     srcUser.instId       = pbsd_ntoh16(srcUser.instId);
 
-    assert(msgBodySize > 0);
     assert(srcUser.classId > 0);
     assert(srcUser.UserId() > 0);
-    if (msgBodySize == 0 || srcUser.classId == 0 || srcUser.UserId() == 0)
+    if (srcUser.classId == 0 || srcUser.UserId() == 0)
     {
         return;
     }

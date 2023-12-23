@@ -150,16 +150,16 @@ ProRsaInitPrivPQE(void*       ctx,
                   const char* eString);
 
 void
-ProRsaEncrypt(void*                ctx,
-              const void*          inputBuffer,
-              size_t               inputSize,
-              CProStlVector<char>& outputBuffer);
+ProRsaEncrypt(void*                         ctx,
+              const void*                   inputBuffer,
+              size_t                        inputSize,
+              CProStlVector<unsigned char>& outputBuffer);
 
 void
-ProRsaDecrypt(void*                ctx,
-              const void*          inputBuffer,
-              size_t               inputSize,
-              CProStlVector<char>& outputBuffer);
+ProRsaDecrypt(void*                         ctx,
+              const void*                   inputBuffer,
+              size_t                        inputSize,
+              CProStlVector<unsigned char>& outputBuffer);
 
 bool
 ProRsaKeyGen(unsigned int   keyBytes, /* 128, 256, 512 */
@@ -177,13 +177,34 @@ ProBase64Encode(const void*    inputBuffer,
                 CProStlString& outputString);
 
 void
-ProBase64Decode(const void*          inputBuffer,
-                size_t               inputSize,
-                CProStlVector<char>& outputBuffer);
+ProBase64Decode(const void*                   inputBuffer,
+                size_t                        inputSize,
+                CProStlVector<unsigned char>& outputBuffer);
 
 void
-ProBase64DecodeStr(const char*          inputString,
-                   CProStlVector<char>& outputBuffer);
+ProBase64DecodeStr(const char*                   inputString,
+                   CProStlVector<unsigned char>& outputBuffer);
+
+/*-------------------------------------------------------------------------*/
+
+void
+ProHexUprEncode(const void*    inputBuffer,
+                size_t         inputSize,
+                CProStlString& outputString);
+
+void
+ProHexLwrEncode(const void*    inputBuffer,
+                size_t         inputSize,
+                CProStlString& outputString);
+
+void
+ProHexDecode(const void*                   inputBuffer,
+             size_t                        inputSize,
+             CProStlVector<unsigned char>& outputBuffer);
+
+void
+ProHexDecodeStr(const char*                   inputString,
+                CProStlVector<unsigned char>& outputBuffer);
 
 /*-------------------------------------------------------------------------*/
 

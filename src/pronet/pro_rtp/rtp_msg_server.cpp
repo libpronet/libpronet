@@ -27,6 +27,7 @@
 #include "../pro_util/pro_functor_command_task.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
+#include "../pro_util/pro_ssl_util.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_time_util.h"
@@ -929,8 +930,15 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
 {
     assert(session != NULL);
     assert(packet != NULL);
-    assert(packet->GetPayloadSize() > sizeof(RTP_MSG_HEADER));
-    if (session == NULL || packet == NULL || packet->GetPayloadSize() <= sizeof(RTP_MSG_HEADER))
+    if (session == NULL || packet == NULL)
+    {
+        return;
+    }
+
+    size_t payloadSize = packet->GetPayloadSize();
+
+    assert(payloadSize > sizeof(RTP_MSG_HEADER));
+    if (payloadSize <= sizeof(RTP_MSG_HEADER))
     {
         return;
     }
@@ -944,17 +952,22 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
     size_t msgHeaderSize =
         sizeof(RTP_MSG_HEADER) + sizeof(RTP_MSG_USER) * (msgHeaderPtr->dstUserCount - 1);
 
+    assert(payloadSize > msgHeaderSize);
+    if (payloadSize <= msgHeaderSize)
+    {
+        return;
+    }
+
     const void* msgBodyPtr  = (char*)msgHeaderPtr + msgHeaderSize;
-    int         msgBodySize = (int)(packet->GetPayloadSize() - msgHeaderSize);
+    size_t      msgBodySize = payloadSize - msgHeaderSize;
     uint16_t    charset     = pbsd_ntoh16(msgHeaderPtr->charset);
 
     RTP_MSG_USER srcUser = msgHeaderPtr->srcUser;
     srcUser.instId       = pbsd_ntoh16(srcUser.instId);
 
-    assert(msgBodySize > 0);
     assert(srcUser.classId > 0);
     assert(srcUser.UserId() > 0);
-    if (msgBodySize == 0 || srcUser.classId == 0 || srcUser.UserId() == 0)
+    if (srcUser.classId == 0 || srcUser.UserId() == 0)
     {
         return;
     }
@@ -1216,46 +1229,14 @@ CRtpMsgServer::ProcessMsg_client_login(IRtpSession*            session,
         return;
     }
 
-    assert(client_hash_string.length() == 64);
-    assert(client_nonce_string.length() == 64);
-    if (client_hash_string.length() != 64 || client_nonce_string.length() != 64)
+    CProStlVector<unsigned char> hash;
+    CProStlVector<unsigned char> nonce;
+    ProHexDecode(client_hash_string.c_str() , client_hash_string.length() , hash);
+    ProHexDecode(client_nonce_string.c_str(), client_nonce_string.length(), nonce);
+
+    if (hash.size() != 32 || nonce.size() != 32)
     {
         return;
-    }
-
-    unsigned char hash[32];
-    unsigned char nonce[32];
-
-    {
-        const char* p = client_hash_string.c_str();
-
-        for (int i = 0; i < 32; ++i)
-        {
-            char tmpString[3] = { 0 };
-            tmpString[0] = p[i * 2];
-            tmpString[1] = p[i * 2 + 1];
-
-            unsigned int tmpInt = 0;
-            sscanf(tmpString, "%02x", &tmpInt);
-
-            hash[i] = (unsigned char)tmpInt;
-        }
-    }
-
-    {
-        const char* p = client_nonce_string.c_str();
-
-        for (int i = 0; i < 32; ++i)
-        {
-            char tmpString[3] = { 0 };
-            tmpString[0] = p[i * 2];
-            tmpString[1] = p[i * 2 + 1];
-
-            unsigned int tmpInt = 0;
-            sscanf(tmpString, "%02x", &tmpInt);
-
-            nonce[i] = (unsigned char)tmpInt;
-        }
     }
 
     bool                   ret      = false;
@@ -1293,8 +1274,8 @@ CRtpMsgServer::ProcessMsg_client_login(IRtpSession*            session,
         &subUser,
         client_public_ip.c_str(),
         &c2sUser,
-        hash,
-        nonce,
+        &hash[0],
+        &nonce[0],
         &userId,
         &instId,
         &appData,

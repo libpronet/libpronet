@@ -31,6 +31,12 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+static const char* const HEX_DICT_UPPER = "0123456789ABCDEF";
+static const char* const HEX_DICT_LOWER = "0123456789abcdef";
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
 static
 int
 Rand_i(void*          act,
@@ -131,6 +137,35 @@ MdFinish_i(void* ctx,
     }
 
     mbedtls_md_finish((mbedtls_md_context_t*)ctx, (unsigned char*)hashValue);
+}
+
+static
+void
+HexEncode_i(const void*    inputBuffer,
+            size_t         inputSize,
+            bool           upper,
+            CProStlString& outputString)
+{
+    outputString = "";
+
+    if (inputBuffer == NULL || inputSize == 0)
+    {
+        return;
+    }
+
+    outputString.resize(inputSize * 2);
+
+    const char*          d = upper ? HEX_DICT_UPPER : HEX_DICT_LOWER;
+    const unsigned char* p = (unsigned char*)inputBuffer;
+    char*                q = &outputString[0];
+
+    for (int i = 0; i < (int)inputSize; ++i)
+    {
+        q[0] = d[p[i] >> 4];
+        q[1] = d[p[i] & 0x0F];
+
+        q += 2;
+    }
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -508,10 +543,10 @@ ProRsaInitPrivPQE(void*       ctx,
 }
 
 void
-ProRsaEncrypt(void*                ctx,
-              const void*          inputBuffer,
-              size_t               inputSize,
-              CProStlVector<char>& outputBuffer)
+ProRsaEncrypt(void*                         ctx,
+              const void*                   inputBuffer,
+              size_t                        inputSize,
+              CProStlVector<unsigned char>& outputBuffer)
 {
     outputBuffer.clear();
 
@@ -533,7 +568,7 @@ ProRsaEncrypt(void*                ctx,
     outputBuffer.resize(ctx2->len * blockCount);
 
     const unsigned char* p = (unsigned char*)inputBuffer;
-    unsigned char*       q = (unsigned char*)&outputBuffer[0];
+    unsigned char*       q = &outputBuffer[0];
 
     for (int i = 0; i < (int)blockCount; ++i)
     {
@@ -559,10 +594,10 @@ ProRsaEncrypt(void*                ctx,
 }
 
 void
-ProRsaDecrypt(void*                ctx,
-              const void*          inputBuffer,
-              size_t               inputSize,
-              CProStlVector<char>& outputBuffer)
+ProRsaDecrypt(void*                         ctx,
+              const void*                   inputBuffer,
+              size_t                        inputSize,
+              CProStlVector<unsigned char>& outputBuffer)
 {
     outputBuffer.clear();
 
@@ -584,7 +619,7 @@ ProRsaDecrypt(void*                ctx,
     outputBuffer.resize((ctx2->len - 11) * blockCount);
 
     const unsigned char* p = (unsigned char*)inputBuffer;
-    unsigned char*       q = (unsigned char*)&outputBuffer[0];
+    unsigned char*       q = &outputBuffer[0];
 
     for (int i = 0; i < (int)blockCount; ++i)
     {
@@ -721,8 +756,8 @@ ProBase64Encode(const void*    inputBuffer,
         return;
     }
 
-    size_t size = inputSize * 2 + 8;
-    char*  buf  = (char*)ProMalloc(size);
+    size_t         size = inputSize * 2 + 8;
+    unsigned char* buf  = (unsigned char*)ProMalloc(size);
     if (buf == NULL)
     {
         return;
@@ -730,19 +765,19 @@ ProBase64Encode(const void*    inputBuffer,
 
     size_t olen = 0;
 
-    if (mbedtls_base64_encode(
-        (unsigned char*)buf, size, &olen, (unsigned char*)inputBuffer, inputSize) == 0 && olen > 0)
+    if (mbedtls_base64_encode(buf, size, &olen, (unsigned char*)inputBuffer, inputSize) == 0 &&
+        olen > 0)
     {
-        outputString.assign(buf, olen);
+        outputString.assign((char*)buf, olen);
     }
 
     ProFree(buf);
 }
 
 void
-ProBase64Decode(const void*          inputBuffer,
-                size_t               inputSize,
-                CProStlVector<char>& outputBuffer)
+ProBase64Decode(const void*                   inputBuffer,
+                size_t                        inputSize,
+                CProStlVector<unsigned char>& outputBuffer)
 {
     outputBuffer.clear();
 
@@ -751,8 +786,8 @@ ProBase64Decode(const void*          inputBuffer,
         return;
     }
 
-    size_t size = inputSize + 8;
-    char*  buf  = (char*)ProMalloc(size);
+    size_t         size = inputSize + 8;
+    unsigned char* buf  = (unsigned char*)ProMalloc(size);
     if (buf == NULL)
     {
         return;
@@ -760,8 +795,8 @@ ProBase64Decode(const void*          inputBuffer,
 
     size_t olen = 0;
 
-    if (mbedtls_base64_decode(
-        (unsigned char*)buf, size, &olen, (unsigned char*)inputBuffer, inputSize) == 0 && olen > 0)
+    if (mbedtls_base64_decode(buf, size, &olen, (unsigned char*)inputBuffer, inputSize) == 0 &&
+        olen > 0)
     {
         outputBuffer.resize(olen);
         memcpy(&outputBuffer[0], buf, olen);
@@ -771,8 +806,8 @@ ProBase64Decode(const void*          inputBuffer,
 }
 
 void
-ProBase64DecodeStr(const char*          inputString,
-                   CProStlVector<char>& outputBuffer)
+ProBase64DecodeStr(const char*                   inputString,
+                   CProStlVector<unsigned char>& outputBuffer)
 {
     outputBuffer.clear();
 
@@ -781,25 +816,108 @@ ProBase64DecodeStr(const char*          inputString,
         return;
     }
 
-    size_t inputSize = strlen(inputString);
+    ProBase64Decode(inputString, strlen(inputString), outputBuffer);
+}
 
-    size_t size = inputSize + 8;
-    char*  buf  = (char*)ProMalloc(size);
-    if (buf == NULL)
+/*-------------------------------------------------------------------------*/
+
+void
+ProHexUprEncode(const void*    inputBuffer,
+                size_t         inputSize,
+                CProStlString& outputString)
+{
+    HexEncode_i(inputBuffer, inputSize, true, outputString);
+}
+
+void
+ProHexLwrEncode(const void*    inputBuffer,
+                size_t         inputSize,
+                CProStlString& outputString)
+{
+    HexEncode_i(inputBuffer, inputSize, false, outputString);
+}
+
+void
+ProHexDecode(const void*                   inputBuffer,
+             size_t                        inputSize,
+             CProStlVector<unsigned char>& outputBuffer)
+{
+    outputBuffer.clear();
+
+    if (inputBuffer == NULL || inputSize == 0 || inputSize % 2 != 0)
     {
         return;
     }
 
-    size_t olen = 0;
+    size_t olen = inputSize / 2;
+    outputBuffer.resize(olen);
 
-    if (mbedtls_base64_decode(
-        (unsigned char*)buf, size, &olen, (unsigned char*)inputString, inputSize) == 0 && olen > 0)
+    const char*    p = (char*)inputBuffer;
+    unsigned char* q = &outputBuffer[0];
+
+    for (int i = 0; i < (int)olen; ++i)
     {
-        outputBuffer.resize(olen);
-        memcpy(&outputBuffer[0], buf, olen);
+        unsigned char h = 0;
+        unsigned char l = 0;
+
+        if (p[0] >= '0' && p[0] <= '9')
+        {
+            h =  p[0] - '0';
+        }
+        else if (p[0] >= 'A' && p[0] <= 'F')
+        {
+            h =  p[0] - 'A';
+            h += 10;
+        }
+        else if (p[0] >= 'a' && p[0] <= 'f')
+        {
+            h =  p[0] - 'a';
+            h += 10;
+        }
+        else
+        {
+            outputBuffer.clear();
+            break;
+        }
+
+        if (p[1] >= '0' && p[1] <= '9')
+        {
+            l =  p[1] - '0';
+        }
+        else if (p[1] >= 'A' && p[1] <= 'F')
+        {
+            l =  p[1] - 'A';
+            l += 10;
+        }
+        else if (p[1] >= 'a' && p[1] <= 'f')
+        {
+            l =  p[1] - 'a';
+            l += 10;
+        }
+        else
+        {
+            outputBuffer.clear();
+            break;
+        }
+
+        q[i] = (h << 4) | l;
+
+        p += 2;
+    } /* end of for () */
+}
+
+void
+ProHexDecodeStr(const char*                   inputString,
+                CProStlVector<unsigned char>& outputBuffer)
+{
+    outputBuffer.clear();
+
+    if (inputString == NULL || inputString[0] == '\0')
+    {
+        return;
     }
 
-    ProFree(buf);
+    ProHexDecode(inputString, strlen(inputString), outputBuffer);
 }
 
 /*-------------------------------------------------------------------------*/
@@ -809,16 +927,14 @@ ProCalcPasswordHash(const unsigned char nonce[32],
                     const char*         password,
                     unsigned char       passwordHash[32])
 {
-    char nonceString[64 + 1] = "";
-    nonceString[64] = '\0';
-
-    for (int i = 0; i < 32; ++i)
-    {
-        sprintf(nonceString + i * 2, "%02x", (unsigned int)nonce[i]);
-    }
+    CProStlString nonceString;
+    ProHexLwrEncode(nonce, 32, nonceString);
 
     CProStlString passwordString = nonceString;
-    passwordString += password != NULL ? password : "";
+    if (password != NULL && password[0] != '\0')
+    {
+        passwordString += password;
+    }
 
     ProSha256All(passwordString.c_str(), passwordString.length(), passwordHash);
 

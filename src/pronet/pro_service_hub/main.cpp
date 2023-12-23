@@ -187,69 +187,57 @@ SignalHandler_i(int sig)
     switch (sig)
     {
     case SIGHUP:
-        {
-            printf(
-                "\n"
-                "%s \n"
-                " pro_service_hub --- SIGHUP, exiting... \n"
-                ,
-                timeString.c_str()
-                );
-            fflush(stdout);
-
-            g_s_lock.Lock();
-            g_s_cond.Signal();
-            g_s_lock.Unlock();
-            break;
-        }
+        printf(
+            "\n"
+            "%s \n"
+            " pro_service_hub --- SIGHUP, exiting... \n"
+            ,
+            timeString.c_str()
+            );
+        fflush(stdout);
+        g_s_lock.Lock();
+        g_s_cond.Signal();
+        g_s_lock.Unlock();
+        break;
     case SIGINT:
-        {
-            printf(
-                "\n"
-                "%s \n"
-                " pro_service_hub --- SIGINT, exiting... \n"
-                ,
-                timeString.c_str()
-                );
-            fflush(stdout);
-
-            g_s_lock.Lock();
-            g_s_cond.Signal();
-            g_s_lock.Unlock();
-            break;
-        }
+        printf(
+            "\n"
+            "%s \n"
+            " pro_service_hub --- SIGINT, exiting... \n"
+            ,
+            timeString.c_str()
+            );
+        fflush(stdout);
+        g_s_lock.Lock();
+        g_s_cond.Signal();
+        g_s_lock.Unlock();
+        break;
     case SIGQUIT:
-        {
-            printf(
-                "\n"
-                "%s \n"
-                " pro_service_hub --- SIGQUIT, exiting... \n"
-                ,
-                timeString.c_str()
-                );
-            fflush(stdout);
-
-            g_s_lock.Lock();
-            g_s_cond.Signal();
-            g_s_lock.Unlock();
-            break;
-        }
+        printf(
+            "\n"
+            "%s \n"
+            " pro_service_hub --- SIGQUIT, exiting... \n"
+            ,
+            timeString.c_str()
+            );
+        fflush(stdout);
+        g_s_lock.Lock();
+        g_s_cond.Signal();
+        g_s_lock.Unlock();
+        break;
     case SIGTERM:
-        {
-            printf(
-                "\n"
-                "%s \n"
-                " pro_service_hub --- SIGTERM, exiting... \n"
-                ,
-                timeString.c_str()
-                );
-            fflush(stdout);
-
-            g_s_lock.Lock();
-            g_s_cond.Signal();
-            g_s_lock.Unlock();
-            break;
-        }
+        printf(
+            "\n"
+            "%s \n"
+            " pro_service_hub --- SIGTERM, exiting... \n"
+            ,
+            timeString.c_str()
+            );
+        fflush(stdout);
+        g_s_lock.Lock();
+        g_s_cond.Signal();
+        g_s_lock.Unlock();
+        break;
     } /* end of switch () */
 }
 

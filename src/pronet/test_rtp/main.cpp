@@ -166,121 +166,37 @@ int main(int argc, char* argv[])
     case TM_TCPE:
     case TM_UDPS:
     case TM_TCPS:
+    {
+        TEST_SERVER& prm = params.server;
+
+        if (
+            (mode == TM_UDPE || mode == TM_TCPE)
+            &&
+            argc > 2
+           )
         {
-            TEST_SERVER& prm = params.server;
-
-            if (
-                (mode == TM_UDPE || mode == TM_TCPE)
-                &&
-                argc > 2
-               )
-            {
-                if (argc < 4)
-                {
-                    printf(
-                        "\n"
-                        "%s \n"
-                        " test_rtp --- error! too few arguments. \n"
-                        ,
-                        timeString.c_str()
-                        );
-
-                    goto EXIT;
-                }
-
-                local_ip   = argv[2];
-                local_port = atoi(argv[3]);
-            }
-            else if (
-                (mode == TM_UDPS || mode == TM_TCPS)
-                &&
-                argc > 2
-               )
-            {
-                if (argc < 5)
-                {
-                    printf(
-                        "\n"
-                        "%s \n"
-                        " test_rtp --- error! too few arguments. \n"
-                        ,
-                        timeString.c_str()
-                        );
-
-                    goto EXIT;
-                }
-
-                local_ip        = argv[2];
-                local_port      = atoi(argv[3]);
-                kbps            = atoi(argv[4]);
-                if (argc >= 6)
-                {
-                    packet_size = atoi(argv[5]);
-                }
-            }
-            else
-            {
-            }
-
-            /*
-             * local_ip
-             */
-            strncpy_pro(prm.local_ip, sizeof(prm.local_ip), local_ip);
-
-            /*
-             * local_port
-             */
-            assert(local_port > 0);
-            assert(local_port <= 65535);
-            if (local_port <= 0 || local_port > 65535)
+            if (argc < 4)
             {
                 printf(
                     "\n"
                     "%s \n"
-                    " test_rtp --- error! invalid argument <local_port>. \n"
+                    " test_rtp --- error! too few arguments. \n"
                     ,
                     timeString.c_str()
                     );
 
                 goto EXIT;
             }
-            else
-            {
-                prm.local_port = (unsigned short)local_port;
-            }
 
-            /*
-             * kbps
-             */
-            if (kbps < 1)
-            {
-                kbps = 1;
-            }
-            if (kbps > 8192000)
-            {
-                kbps = 8192000;
-            }
-            prm.kbps = kbps;
-
-            /*
-             * packet_size
-             */
-            if (packet_size < 1)
-            {
-                packet_size = 1;
-            }
-            if (packet_size > 1500)
-            {
-                packet_size = 1500;
-            }
-            prm.packet_size = packet_size;
-            break;
+            local_ip   = argv[2];
+            local_port = atoi(argv[3]);
         }
-    case TM_UDPC:
-    case TM_TCPC:
+        else if (
+            (mode == TM_UDPS || mode == TM_TCPS)
+            &&
+            argc > 2
+           )
         {
-            TEST_CLIENT& prm = params.client;
-
             if (argc < 5)
             {
                 printf(
@@ -294,68 +210,152 @@ int main(int argc, char* argv[])
                 goto EXIT;
             }
 
-            remote_ip       = argv[2];
-            remote_port     = atoi(argv[3]);
+            local_ip        = argv[2];
+            local_port      = atoi(argv[3]);
             kbps            = atoi(argv[4]);
             if (argc >= 6)
             {
                 packet_size = atoi(argv[5]);
             }
-
-            /*
-             * remote_ip
-             */
-            strncpy_pro(prm.remote_ip, sizeof(prm.remote_ip), remote_ip);
-
-            /*
-             * remote_port
-             */
-            assert(remote_port > 0);
-            assert(remote_port <= 65535);
-            if (remote_port <= 0 || remote_port > 65535)
-            {
-                printf(
-                    "\n"
-                    "%s \n"
-                    " test_rtp --- error! invalid argument <remote_port>. \n"
-                    ,
-                    timeString.c_str()
-                    );
-
-                goto EXIT;
-            }
-            else
-            {
-                prm.remote_port = (unsigned short)remote_port;
-            }
-
-            /*
-             * kbps
-             */
-            if (kbps < 1)
-            {
-                kbps = 1;
-            }
-            if (kbps > 8192000)
-            {
-                kbps = 8192000;
-            }
-            prm.kbps = kbps;
-
-            /*
-             * packet_size
-             */
-            if (packet_size < 1)
-            {
-                packet_size = 1;
-            }
-            if (packet_size > 1500)
-            {
-                packet_size = 1500;
-            }
-            prm.packet_size = packet_size;
-            break;
         }
+        else
+        {
+        }
+
+        /*
+         * local_ip
+         */
+        strncpy_pro(prm.local_ip, sizeof(prm.local_ip), local_ip);
+
+        /*
+         * local_port
+         */
+        assert(local_port > 0);
+        assert(local_port <= 65535);
+        if (local_port <= 0 || local_port > 65535)
+        {
+            printf(
+                "\n"
+                "%s \n"
+                " test_rtp --- error! invalid argument <local_port>. \n"
+                ,
+                timeString.c_str()
+                );
+
+            goto EXIT;
+        }
+        else
+        {
+            prm.local_port = (unsigned short)local_port;
+        }
+
+        /*
+         * kbps
+         */
+        if (kbps < 1)
+        {
+            kbps = 1;
+        }
+        if (kbps > 8192000)
+        {
+            kbps = 8192000;
+        }
+        prm.kbps = kbps;
+
+        /*
+         * packet_size
+         */
+        if (packet_size < 1)
+        {
+            packet_size = 1;
+        }
+        if (packet_size > 1500)
+        {
+            packet_size = 1500;
+        }
+        prm.packet_size = packet_size;
+        break;
+    }
+    case TM_UDPC:
+    case TM_TCPC:
+    {
+        TEST_CLIENT& prm = params.client;
+
+        if (argc < 5)
+        {
+            printf(
+                "\n"
+                "%s \n"
+                " test_rtp --- error! too few arguments. \n"
+                ,
+                timeString.c_str()
+                );
+
+            goto EXIT;
+        }
+
+        remote_ip       = argv[2];
+        remote_port     = atoi(argv[3]);
+        kbps            = atoi(argv[4]);
+        if (argc >= 6)
+        {
+            packet_size = atoi(argv[5]);
+        }
+
+        /*
+         * remote_ip
+         */
+        strncpy_pro(prm.remote_ip, sizeof(prm.remote_ip), remote_ip);
+
+        /*
+         * remote_port
+         */
+        assert(remote_port > 0);
+        assert(remote_port <= 65535);
+        if (remote_port <= 0 || remote_port > 65535)
+        {
+            printf(
+                "\n"
+                "%s \n"
+                " test_rtp --- error! invalid argument <remote_port>. \n"
+                ,
+                timeString.c_str()
+                );
+
+            goto EXIT;
+        }
+        else
+        {
+            prm.remote_port = (unsigned short)remote_port;
+        }
+
+        /*
+         * kbps
+         */
+        if (kbps < 1)
+        {
+            kbps = 1;
+        }
+        if (kbps > 8192000)
+        {
+            kbps = 8192000;
+        }
+        prm.kbps = kbps;
+
+        /*
+         * packet_size
+         */
+        if (packet_size < 1)
+        {
+            packet_size = 1;
+        }
+        if (packet_size > 1500)
+        {
+            packet_size = 1500;
+        }
+        prm.packet_size = packet_size;
+        break;
+    }
     } /* end of switch () */
 
     reactor = ProCreateReactor(THREAD_COUNT);

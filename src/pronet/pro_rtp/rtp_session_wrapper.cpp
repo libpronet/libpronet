@@ -115,78 +115,54 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
     switch (sessionType)
     {
     case RTP_ST_UDPCLIENT:
-        {
-            initArgs2.udpclient.localIp[sizeof(initArgs2.udpclient.localIp) - 1] = '\0';
-            break;
-        }
+        initArgs2.udpclient.localIp[sizeof(initArgs2.udpclient.localIp) - 1] = '\0';
+        break;
     case RTP_ST_UDPSERVER:
-        {
-            initArgs2.udpserver.localIp[sizeof(initArgs2.udpserver.localIp) - 1] = '\0';
-            break;
-        }
+        initArgs2.udpserver.localIp[sizeof(initArgs2.udpserver.localIp) - 1] = '\0';
+        break;
     case RTP_ST_TCPCLIENT:
-        {
-            initArgs2.tcpclient.remoteIp[sizeof(initArgs2.tcpclient.remoteIp) - 1] = '\0';
-            initArgs2.tcpclient.localIp[sizeof(initArgs2.tcpclient.localIp) - 1]   = '\0';
-            break;
-        }
+        initArgs2.tcpclient.remoteIp[sizeof(initArgs2.tcpclient.remoteIp) - 1] = '\0';
+        initArgs2.tcpclient.localIp[sizeof(initArgs2.tcpclient.localIp) - 1]   = '\0';
+        break;
     case RTP_ST_TCPSERVER:
-        {
-            initArgs2.tcpserver.localIp[sizeof(initArgs2.tcpserver.localIp) - 1] = '\0';
-            break;
-        }
+        initArgs2.tcpserver.localIp[sizeof(initArgs2.tcpserver.localIp) - 1] = '\0';
+        break;
     case RTP_ST_UDPCLIENT_EX:
-        {
-            initArgs2.udpclientEx.remoteIp[sizeof(initArgs2.udpclientEx.remoteIp) - 1] = '\0';
-            initArgs2.udpclientEx.localIp[sizeof(initArgs2.udpclientEx.localIp) - 1]   = '\0';
-            break;
-        }
+        initArgs2.udpclientEx.remoteIp[sizeof(initArgs2.udpclientEx.remoteIp) - 1] = '\0';
+        initArgs2.udpclientEx.localIp[sizeof(initArgs2.udpclientEx.localIp) - 1]   = '\0';
+        break;
     case RTP_ST_UDPSERVER_EX:
-        {
-            initArgs2.udpserverEx.localIp[sizeof(initArgs2.udpserverEx.localIp) - 1] = '\0';
-            break;
-        }
+        initArgs2.udpserverEx.localIp[sizeof(initArgs2.udpserverEx.localIp) - 1] = '\0';
+        break;
     case RTP_ST_TCPCLIENT_EX:
-        {
-            initArgs2.tcpclientEx.remoteIp[sizeof(initArgs2.tcpclientEx.remoteIp) - 1] = '\0';
-            initArgs2.tcpclientEx.password[sizeof(initArgs2.tcpclientEx.password) - 1] = '\0';
-            initArgs2.tcpclientEx.localIp[sizeof(initArgs2.tcpclientEx.localIp) - 1]   = '\0';
-            break;
-        }
+        initArgs2.tcpclientEx.remoteIp[sizeof(initArgs2.tcpclientEx.remoteIp) - 1] = '\0';
+        initArgs2.tcpclientEx.password[sizeof(initArgs2.tcpclientEx.password) - 1] = '\0';
+        initArgs2.tcpclientEx.localIp[sizeof(initArgs2.tcpclientEx.localIp) - 1]   = '\0';
+        break;
     case RTP_ST_TCPSERVER_EX:
-        {
-            break;
-        }
+        break;
     case RTP_ST_SSLCLIENT_EX:
-        {
-            initArgs2.sslclientEx.sslSni[sizeof(initArgs2.sslclientEx.sslSni) - 1]     = '\0';
-            initArgs2.sslclientEx.remoteIp[sizeof(initArgs2.sslclientEx.remoteIp) - 1] = '\0';
-            initArgs2.sslclientEx.password[sizeof(initArgs2.sslclientEx.password) - 1] = '\0';
-            initArgs2.sslclientEx.localIp[sizeof(initArgs2.sslclientEx.localIp) - 1]   = '\0';
-            break;
-        }
+        initArgs2.sslclientEx.sslSni[sizeof(initArgs2.sslclientEx.sslSni) - 1]     = '\0';
+        initArgs2.sslclientEx.remoteIp[sizeof(initArgs2.sslclientEx.remoteIp) - 1] = '\0';
+        initArgs2.sslclientEx.password[sizeof(initArgs2.sslclientEx.password) - 1] = '\0';
+        initArgs2.sslclientEx.localIp[sizeof(initArgs2.sslclientEx.localIp) - 1]   = '\0';
+        break;
     case RTP_ST_SSLSERVER_EX:
-        {
-            break;
-        }
+        break;
     case RTP_ST_MCAST:
-        {
-            initArgs2.mcast.mcastIp[sizeof(initArgs2.mcast.mcastIp) - 1] = '\0';
-            initArgs2.mcast.localIp[sizeof(initArgs2.mcast.localIp) - 1] = '\0';
-            break;
-        }
+        initArgs2.mcast.mcastIp[sizeof(initArgs2.mcast.mcastIp) - 1] = '\0';
+        initArgs2.mcast.localIp[sizeof(initArgs2.mcast.localIp) - 1] = '\0';
+        break;
     case RTP_ST_MCAST_EX:
-        {
-            initArgs2.mcastEx.mcastIp[sizeof(initArgs2.mcastEx.mcastIp) - 1] = '\0';
-            initArgs2.mcastEx.localIp[sizeof(initArgs2.mcastEx.localIp) - 1] = '\0';
-            break;
-        }
+        initArgs2.mcastEx.mcastIp[sizeof(initArgs2.mcastEx.mcastIp) - 1] = '\0';
+        initArgs2.mcastEx.localIp[sizeof(initArgs2.mcastEx.localIp) - 1] = '\0';
+        break;
     default:
-        {
-            assert(0);
+    {
+        assert(0);
 
-            return false;
-        }
+        return false;
+    }
     } /* end of switch () */
 
     {
@@ -210,336 +186,334 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
         switch (sessionType)
         {
         case RTP_ST_UDPCLIENT:
+        {
+            m_session = CreateRtpSessionUdpclient(
+                this,
+                initArgs2.comm.reactor,
+                &m_info,
+                initArgs2.udpclient.localIp,
+                initArgs2.udpclient.localPort
+                );
+            if (m_session == NULL)
             {
-                m_session = CreateRtpSessionUdpclient(
-                    this,
-                    initArgs2.comm.reactor,
-                    &m_info,
-                    initArgs2.udpclient.localIp,
-                    initArgs2.udpclient.localPort
-                    );
-                if (m_session == NULL)
-                {
-                    break;
-                }
-
-                if (initArgs2.udpclient.bucket == NULL)
-                {
-                    m_bucket  = sysBucket;
-                    sysBucket = NULL;
-                }
-                else
-                {
-                    m_bucket  = initArgs2.udpclient.bucket;
-                }
                 break;
             }
+
+            if (initArgs2.udpclient.bucket == NULL)
+            {
+                m_bucket  = sysBucket;
+                sysBucket = NULL;
+            }
+            else
+            {
+                m_bucket  = initArgs2.udpclient.bucket;
+            }
+            break;
+        }
         case RTP_ST_UDPSERVER:
+        {
+            m_session = CreateRtpSessionUdpserver(
+                this,
+                initArgs2.comm.reactor,
+                &m_info,
+                initArgs2.udpserver.localIp,
+                initArgs2.udpserver.localPort
+                );
+            if (m_session == NULL)
             {
-                m_session = CreateRtpSessionUdpserver(
-                    this,
-                    initArgs2.comm.reactor,
-                    &m_info,
-                    initArgs2.udpserver.localIp,
-                    initArgs2.udpserver.localPort
-                    );
-                if (m_session == NULL)
-                {
-                    break;
-                }
-
-                if (initArgs2.udpserver.bucket == NULL)
-                {
-                    m_bucket  = sysBucket;
-                    sysBucket = NULL;
-                }
-                else
-                {
-                    m_bucket  = initArgs2.udpserver.bucket;
-                }
                 break;
             }
+
+            if (initArgs2.udpserver.bucket == NULL)
+            {
+                m_bucket  = sysBucket;
+                sysBucket = NULL;
+            }
+            else
+            {
+                m_bucket  = initArgs2.udpserver.bucket;
+            }
+            break;
+        }
         case RTP_ST_TCPCLIENT:
+        {
+            m_session = CreateRtpSessionTcpclient(
+                this,
+                initArgs2.comm.reactor,
+                &m_info,
+                initArgs2.tcpclient.remoteIp,
+                initArgs2.tcpclient.remotePort,
+                initArgs2.tcpclient.localIp,
+                initArgs2.tcpclient.timeoutInSeconds,
+                initArgs2.tcpclient.suspendRecv
+                );
+            if (m_session == NULL)
             {
-                m_session = CreateRtpSessionTcpclient(
-                    this,
-                    initArgs2.comm.reactor,
-                    &m_info,
-                    initArgs2.tcpclient.remoteIp,
-                    initArgs2.tcpclient.remotePort,
-                    initArgs2.tcpclient.localIp,
-                    initArgs2.tcpclient.timeoutInSeconds,
-                    initArgs2.tcpclient.suspendRecv
-                    );
-                if (m_session == NULL)
-                {
-                    break;
-                }
-
-                if (initArgs2.tcpclient.bucket == NULL)
-                {
-                    m_bucket  = sysBucket;
-                    sysBucket = NULL;
-                }
-                else
-                {
-                    m_bucket  = initArgs2.tcpclient.bucket;
-                }
                 break;
             }
+
+            if (initArgs2.tcpclient.bucket == NULL)
+            {
+                m_bucket  = sysBucket;
+                sysBucket = NULL;
+            }
+            else
+            {
+                m_bucket  = initArgs2.tcpclient.bucket;
+            }
+            break;
+        }
         case RTP_ST_TCPSERVER:
+        {
+            m_session = CreateRtpSessionTcpserver(
+                this,
+                initArgs2.comm.reactor,
+                &m_info,
+                initArgs2.tcpserver.localIp,
+                initArgs2.tcpserver.localPort,
+                initArgs2.tcpserver.timeoutInSeconds,
+                initArgs2.tcpserver.suspendRecv
+                );
+            if (m_session == NULL)
             {
-                m_session = CreateRtpSessionTcpserver(
-                    this,
-                    initArgs2.comm.reactor,
-                    &m_info,
-                    initArgs2.tcpserver.localIp,
-                    initArgs2.tcpserver.localPort,
-                    initArgs2.tcpserver.timeoutInSeconds,
-                    initArgs2.tcpserver.suspendRecv
-                    );
-                if (m_session == NULL)
-                {
-                    break;
-                }
-
-                if (initArgs2.tcpserver.bucket == NULL)
-                {
-                    m_bucket  = sysBucket;
-                    sysBucket = NULL;
-                }
-                else
-                {
-                    m_bucket  = initArgs2.tcpserver.bucket;
-                }
                 break;
             }
+
+            if (initArgs2.tcpserver.bucket == NULL)
+            {
+                m_bucket  = sysBucket;
+                sysBucket = NULL;
+            }
+            else
+            {
+                m_bucket  = initArgs2.tcpserver.bucket;
+            }
+            break;
+        }
         case RTP_ST_UDPCLIENT_EX:
+        {
+            m_session = CreateRtpSessionUdpclientEx(
+                this,
+                initArgs2.comm.reactor,
+                &m_info,
+                initArgs2.udpclientEx.remoteIp,
+                initArgs2.udpclientEx.remotePort,
+                initArgs2.udpclientEx.localIp,
+                initArgs2.udpclientEx.timeoutInSeconds
+                );
+            if (m_session == NULL)
             {
-                m_session = CreateRtpSessionUdpclientEx(
-                    this,
-                    initArgs2.comm.reactor,
-                    &m_info,
-                    initArgs2.udpclientEx.remoteIp,
-                    initArgs2.udpclientEx.remotePort,
-                    initArgs2.udpclientEx.localIp,
-                    initArgs2.udpclientEx.timeoutInSeconds
-                    );
-                if (m_session == NULL)
-                {
-                    break;
-                }
-
-                if (initArgs2.udpclientEx.bucket == NULL)
-                {
-                    m_bucket  = sysBucket;
-                    sysBucket = NULL;
-                }
-                else
-                {
-                    m_bucket  = initArgs2.udpclientEx.bucket;
-                }
                 break;
             }
+
+            if (initArgs2.udpclientEx.bucket == NULL)
+            {
+                m_bucket  = sysBucket;
+                sysBucket = NULL;
+            }
+            else
+            {
+                m_bucket  = initArgs2.udpclientEx.bucket;
+            }
+            break;
+        }
         case RTP_ST_UDPSERVER_EX:
+        {
+            m_session = CreateRtpSessionUdpserverEx(
+                this,
+                initArgs2.comm.reactor,
+                &m_info,
+                initArgs2.udpserverEx.localIp,
+                initArgs2.udpserverEx.localPort,
+                initArgs2.udpserverEx.timeoutInSeconds
+                );
+            if (m_session == NULL)
             {
-                m_session = CreateRtpSessionUdpserverEx(
-                    this,
-                    initArgs2.comm.reactor,
-                    &m_info,
-                    initArgs2.udpserverEx.localIp,
-                    initArgs2.udpserverEx.localPort,
-                    initArgs2.udpserverEx.timeoutInSeconds
-                    );
-                if (m_session == NULL)
-                {
-                    break;
-                }
-
-                if (initArgs2.udpserverEx.bucket == NULL)
-                {
-                    m_bucket  = sysBucket;
-                    sysBucket = NULL;
-                }
-                else
-                {
-                    m_bucket  = initArgs2.udpserverEx.bucket;
-                }
                 break;
             }
+
+            if (initArgs2.udpserverEx.bucket == NULL)
+            {
+                m_bucket  = sysBucket;
+                sysBucket = NULL;
+            }
+            else
+            {
+                m_bucket  = initArgs2.udpserverEx.bucket;
+            }
+            break;
+        }
         case RTP_ST_TCPCLIENT_EX:
+        {
+            m_session = CreateRtpSessionTcpclientEx(
+                this,
+                initArgs2.comm.reactor,
+                &m_info,
+                initArgs2.tcpclientEx.remoteIp,
+                initArgs2.tcpclientEx.remotePort,
+                initArgs2.tcpclientEx.password,
+                initArgs2.tcpclientEx.localIp,
+                initArgs2.tcpclientEx.timeoutInSeconds,
+                initArgs2.tcpclientEx.suspendRecv
+                );
+            ProZeroMemory(initArgs2.tcpclientEx.password, sizeof(initArgs2.tcpclientEx.password));
+            if (m_session == NULL)
             {
-                m_session = CreateRtpSessionTcpclientEx(
-                    this,
-                    initArgs2.comm.reactor,
-                    &m_info,
-                    initArgs2.tcpclientEx.remoteIp,
-                    initArgs2.tcpclientEx.remotePort,
-                    initArgs2.tcpclientEx.password,
-                    initArgs2.tcpclientEx.localIp,
-                    initArgs2.tcpclientEx.timeoutInSeconds,
-                    initArgs2.tcpclientEx.suspendRecv
-                    );
-                ProZeroMemory(
-                    initArgs2.tcpclientEx.password, sizeof(initArgs2.tcpclientEx.password));
-                if (m_session == NULL)
-                {
-                    break;
-                }
-
-                if (initArgs2.tcpclientEx.bucket == NULL)
-                {
-                    m_bucket  = sysBucket;
-                    sysBucket = NULL;
-                }
-                else
-                {
-                    m_bucket  = initArgs2.tcpclientEx.bucket;
-                }
                 break;
             }
+
+            if (initArgs2.tcpclientEx.bucket == NULL)
+            {
+                m_bucket  = sysBucket;
+                sysBucket = NULL;
+            }
+            else
+            {
+                m_bucket  = initArgs2.tcpclientEx.bucket;
+            }
+            break;
+        }
         case RTP_ST_TCPSERVER_EX:
+        {
+            m_session = CreateRtpSessionTcpserverEx(
+                this,
+                initArgs2.comm.reactor,
+                &m_info,
+                initArgs2.tcpserverEx.sockId,
+                initArgs2.tcpserverEx.unixSocket,
+                initArgs2.tcpserverEx.useAckData,
+                initArgs2.tcpserverEx.ackData,
+                initArgs2.tcpserverEx.suspendRecv
+                );
+            if (m_session == NULL)
             {
-                m_session = CreateRtpSessionTcpserverEx(
-                    this,
-                    initArgs2.comm.reactor,
-                    &m_info,
-                    initArgs2.tcpserverEx.sockId,
-                    initArgs2.tcpserverEx.unixSocket,
-                    initArgs2.tcpserverEx.useAckData,
-                    initArgs2.tcpserverEx.ackData,
-                    initArgs2.tcpserverEx.suspendRecv
-                    );
-                if (m_session == NULL)
-                {
-                    break;
-                }
-
-                if (initArgs2.tcpserverEx.bucket == NULL)
-                {
-                    m_bucket  = sysBucket;
-                    sysBucket = NULL;
-                }
-                else
-                {
-                    m_bucket  = initArgs2.tcpserverEx.bucket;
-                }
                 break;
             }
+
+            if (initArgs2.tcpserverEx.bucket == NULL)
+            {
+                m_bucket  = sysBucket;
+                sysBucket = NULL;
+            }
+            else
+            {
+                m_bucket  = initArgs2.tcpserverEx.bucket;
+            }
+            break;
+        }
         case RTP_ST_SSLCLIENT_EX:
+        {
+            m_session = CreateRtpSessionSslclientEx(
+                this,
+                initArgs2.comm.reactor,
+                &m_info,
+                initArgs2.sslclientEx.sslConfig,
+                initArgs2.sslclientEx.sslSni,
+                initArgs2.sslclientEx.remoteIp,
+                initArgs2.sslclientEx.remotePort,
+                initArgs2.sslclientEx.password,
+                initArgs2.sslclientEx.localIp,
+                initArgs2.sslclientEx.timeoutInSeconds,
+                initArgs2.sslclientEx.suspendRecv
+                );
+            ProZeroMemory(initArgs2.sslclientEx.password, sizeof(initArgs2.sslclientEx.password));
+            if (m_session == NULL)
             {
-                m_session = CreateRtpSessionSslclientEx(
-                    this,
-                    initArgs2.comm.reactor,
-                    &m_info,
-                    initArgs2.sslclientEx.sslConfig,
-                    initArgs2.sslclientEx.sslSni,
-                    initArgs2.sslclientEx.remoteIp,
-                    initArgs2.sslclientEx.remotePort,
-                    initArgs2.sslclientEx.password,
-                    initArgs2.sslclientEx.localIp,
-                    initArgs2.sslclientEx.timeoutInSeconds,
-                    initArgs2.sslclientEx.suspendRecv
-                    );
-                ProZeroMemory(
-                    initArgs2.sslclientEx.password, sizeof(initArgs2.sslclientEx.password));
-                if (m_session == NULL)
-                {
-                    break;
-                }
-
-                if (initArgs2.sslclientEx.bucket == NULL)
-                {
-                    m_bucket  = sysBucket;
-                    sysBucket = NULL;
-                }
-                else
-                {
-                    m_bucket  = initArgs2.sslclientEx.bucket;
-                }
                 break;
             }
+
+            if (initArgs2.sslclientEx.bucket == NULL)
+            {
+                m_bucket  = sysBucket;
+                sysBucket = NULL;
+            }
+            else
+            {
+                m_bucket  = initArgs2.sslclientEx.bucket;
+            }
+            break;
+        }
         case RTP_ST_SSLSERVER_EX:
+        {
+            m_session = CreateRtpSessionSslserverEx(
+                this,
+                initArgs2.comm.reactor,
+                &m_info,
+                initArgs2.sslserverEx.sslCtx,
+                initArgs2.sslserverEx.sockId,
+                initArgs2.sslserverEx.unixSocket,
+                initArgs2.sslserverEx.useAckData,
+                initArgs2.sslserverEx.ackData,
+                initArgs2.sslserverEx.suspendRecv
+                );
+            if (m_session == NULL)
             {
-                m_session = CreateRtpSessionSslserverEx(
-                    this,
-                    initArgs2.comm.reactor,
-                    &m_info,
-                    initArgs2.sslserverEx.sslCtx,
-                    initArgs2.sslserverEx.sockId,
-                    initArgs2.sslserverEx.unixSocket,
-                    initArgs2.sslserverEx.useAckData,
-                    initArgs2.sslserverEx.ackData,
-                    initArgs2.sslserverEx.suspendRecv
-                    );
-                if (m_session == NULL)
-                {
-                    break;
-                }
-
-                if (initArgs2.sslserverEx.bucket == NULL)
-                {
-                    m_bucket  = sysBucket;
-                    sysBucket = NULL;
-                }
-                else
-                {
-                    m_bucket  = initArgs2.sslserverEx.bucket;
-                }
                 break;
             }
+
+            if (initArgs2.sslserverEx.bucket == NULL)
+            {
+                m_bucket  = sysBucket;
+                sysBucket = NULL;
+            }
+            else
+            {
+                m_bucket  = initArgs2.sslserverEx.bucket;
+            }
+            break;
+        }
         case RTP_ST_MCAST:
+        {
+            m_session = CreateRtpSessionMcast(
+                this,
+                initArgs2.comm.reactor,
+                &m_info,
+                initArgs2.mcast.mcastIp,
+                initArgs2.mcast.mcastPort,
+                initArgs2.mcast.localIp
+                );
+            if (m_session == NULL)
             {
-                m_session = CreateRtpSessionMcast(
-                    this,
-                    initArgs2.comm.reactor,
-                    &m_info,
-                    initArgs2.mcast.mcastIp,
-                    initArgs2.mcast.mcastPort,
-                    initArgs2.mcast.localIp
-                    );
-                if (m_session == NULL)
-                {
-                    break;
-                }
-
-                if (initArgs2.mcast.bucket == NULL)
-                {
-                    m_bucket  = sysBucket;
-                    sysBucket = NULL;
-                }
-                else
-                {
-                    m_bucket  = initArgs2.mcast.bucket;
-                }
                 break;
             }
+
+            if (initArgs2.mcast.bucket == NULL)
+            {
+                m_bucket  = sysBucket;
+                sysBucket = NULL;
+            }
+            else
+            {
+                m_bucket  = initArgs2.mcast.bucket;
+            }
+            break;
+        }
         case RTP_ST_MCAST_EX:
+        {
+            m_session = CreateRtpSessionMcastEx(
+                this,
+                initArgs2.comm.reactor,
+                &m_info,
+                initArgs2.mcastEx.mcastIp,
+                initArgs2.mcastEx.mcastPort,
+                initArgs2.mcastEx.localIp
+                );
+            if (m_session == NULL)
             {
-                m_session = CreateRtpSessionMcastEx(
-                    this,
-                    initArgs2.comm.reactor,
-                    &m_info,
-                    initArgs2.mcastEx.mcastIp,
-                    initArgs2.mcastEx.mcastPort,
-                    initArgs2.mcastEx.localIp
-                    );
-                if (m_session == NULL)
-                {
-                    break;
-                }
-
-                if (initArgs2.mcastEx.bucket == NULL)
-                {
-                    m_bucket  = sysBucket;
-                    sysBucket = NULL;
-                }
-                else
-                {
-                    m_bucket  = initArgs2.mcastEx.bucket;
-                }
                 break;
             }
+
+            if (initArgs2.mcastEx.bucket == NULL)
+            {
+                m_bucket  = sysBucket;
+                sysBucket = NULL;
+            }
+            else
+            {
+                m_bucket  = initArgs2.mcastEx.bucket;
+            }
+            break;
+        }
         } /* end of switch () */
 
         if (sysBucket != NULL)
@@ -560,10 +534,8 @@ CRtpSessionWrapper::Init(RTP_SESSION_TYPE     sessionType,
         case RTP_ST_TCPSERVER_EX:
         case RTP_ST_SSLCLIENT_EX:
         case RTP_ST_SSLSERVER_EX:
-            {
-                statInSeconds *= 2; /* double span */
-                break;
-            }
+            statInSeconds *= 2; /* double span */
+            break;
         }
 
         m_statFrameRateInput.SetTimeSpan(statInSeconds);

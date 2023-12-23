@@ -215,53 +215,45 @@ SignalHandler_i(int sig)
     switch (sig)
     {
     case SIGHUP:
-        {
-            printf(
-                "\n"
-                "%s \n"
-                " test_tcp_server --- SIGHUP, exiting... \n"
-                ,
-                timeString.c_str()
-                );
-            g_s_tester->Fini();
-            _exit(0);
-        }
+        printf(
+            "\n"
+            "%s \n"
+            " test_tcp_server --- SIGHUP, exiting... \n"
+            ,
+            timeString.c_str()
+            );
+        g_s_tester->Fini();
+        _exit(0);
     case SIGINT:
-        {
-            printf(
-                "\n"
-                "%s \n"
-                " test_tcp_server --- SIGINT, exiting... \n"
-                ,
-                timeString.c_str()
-                );
-            g_s_tester->Fini();
-            _exit(0);
-        }
+        printf(
+            "\n"
+            "%s \n"
+            " test_tcp_server --- SIGINT, exiting... \n"
+            ,
+            timeString.c_str()
+            );
+        g_s_tester->Fini();
+        _exit(0);
     case SIGQUIT:
-        {
-            printf(
-                "\n"
-                "%s \n"
-                " test_tcp_server --- SIGQUIT, exiting... \n"
-                ,
-                timeString.c_str()
-                );
-            g_s_tester->Fini();
-            _exit(0);
-        }
+        printf(
+            "\n"
+            "%s \n"
+            " test_tcp_server --- SIGQUIT, exiting... \n"
+            ,
+            timeString.c_str()
+            );
+        g_s_tester->Fini();
+        _exit(0);
     case SIGTERM:
-        {
-            printf(
-                "\n"
-                "%s \n"
-                " test_tcp_server --- SIGTERM, exiting... \n"
-                ,
-                timeString.c_str()
-                );
-            g_s_tester->Fini();
-            _exit(0);
-        }
+        printf(
+            "\n"
+            "%s \n"
+            " test_tcp_server --- SIGTERM, exiting... \n"
+            ,
+            timeString.c_str()
+            );
+        g_s_tester->Fini();
+        _exit(0);
     } /* end of switch () */
 }
 

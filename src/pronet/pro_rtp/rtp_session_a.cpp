@@ -358,88 +358,88 @@ DeleteRtpSession(IRtpSession* session)
     switch (sessionInfo.sessionType)
     {
     case RTP_ST_UDPCLIENT:
-        {
-            CRtpSessionUdpclient* p = (CRtpSessionUdpclient*)session;
-            p->Fini();
-            p->Release();
-            break;
-        }
+    {
+        CRtpSessionUdpclient* p = (CRtpSessionUdpclient*)session;
+        p->Fini();
+        p->Release();
+        break;
+    }
     case RTP_ST_UDPSERVER:
-        {
-            CRtpSessionUdpserver* p = (CRtpSessionUdpserver*)session;
-            p->Fini();
-            p->Release();
-            break;
-        }
+    {
+        CRtpSessionUdpserver* p = (CRtpSessionUdpserver*)session;
+        p->Fini();
+        p->Release();
+        break;
+    }
     case RTP_ST_TCPCLIENT:
-        {
-            CRtpSessionTcpclient* p = (CRtpSessionTcpclient*)session;
-            p->Fini();
-            p->Release();
-            break;
-        }
+    {
+        CRtpSessionTcpclient* p = (CRtpSessionTcpclient*)session;
+        p->Fini();
+        p->Release();
+        break;
+    }
     case RTP_ST_TCPSERVER:
-        {
-            CRtpSessionTcpserver* p = (CRtpSessionTcpserver*)session;
-            p->Fini();
-            p->Release();
-            break;
-        }
+    {
+        CRtpSessionTcpserver* p = (CRtpSessionTcpserver*)session;
+        p->Fini();
+        p->Release();
+        break;
+    }
     case RTP_ST_UDPCLIENT_EX:
-        {
-            CRtpSessionUdpclientEx* p = (CRtpSessionUdpclientEx*)session;
-            p->Fini();
-            p->Release();
-            break;
-        }
+    {
+        CRtpSessionUdpclientEx* p = (CRtpSessionUdpclientEx*)session;
+        p->Fini();
+        p->Release();
+        break;
+    }
     case RTP_ST_UDPSERVER_EX:
-        {
-            CRtpSessionUdpserverEx* p = (CRtpSessionUdpserverEx*)session;
-            p->Fini();
-            p->Release();
-            break;
-        }
+    {
+        CRtpSessionUdpserverEx* p = (CRtpSessionUdpserverEx*)session;
+        p->Fini();
+        p->Release();
+        break;
+    }
     case RTP_ST_TCPCLIENT_EX:
-        {
-            CRtpSessionTcpclientEx* p = (CRtpSessionTcpclientEx*)session;
-            p->Fini();
-            p->Release();
-            break;
-        }
+    {
+        CRtpSessionTcpclientEx* p = (CRtpSessionTcpclientEx*)session;
+        p->Fini();
+        p->Release();
+        break;
+    }
     case RTP_ST_TCPSERVER_EX:
-        {
-            CRtpSessionTcpserverEx* p = (CRtpSessionTcpserverEx*)session;
-            p->Fini();
-            p->Release();
-            break;
-        }
+    {
+        CRtpSessionTcpserverEx* p = (CRtpSessionTcpserverEx*)session;
+        p->Fini();
+        p->Release();
+        break;
+    }
     case RTP_ST_SSLCLIENT_EX:
-        {
-            CRtpSessionSslclientEx* p = (CRtpSessionSslclientEx*)session;
-            p->Fini();
-            p->Release();
-            break;
-        }
+    {
+        CRtpSessionSslclientEx* p = (CRtpSessionSslclientEx*)session;
+        p->Fini();
+        p->Release();
+        break;
+    }
     case RTP_ST_SSLSERVER_EX:
-        {
-            CRtpSessionSslserverEx* p = (CRtpSessionSslserverEx*)session;
-            p->Fini();
-            p->Release();
-            break;
-        }
+    {
+        CRtpSessionSslserverEx* p = (CRtpSessionSslserverEx*)session;
+        p->Fini();
+        p->Release();
+        break;
+    }
     case RTP_ST_MCAST:
-        {
-            CRtpSessionMcast* p = (CRtpSessionMcast*)session;
-            p->Fini();
-            p->Release();
-            break;
-        }
+    {
+        CRtpSessionMcast* p = (CRtpSessionMcast*)session;
+        p->Fini();
+        p->Release();
+        break;
+    }
     case RTP_ST_MCAST_EX:
-        {
-            CRtpSessionMcastEx* p = (CRtpSessionMcastEx*)session;
-            p->Fini();
-            p->Release();
-            break;
-        }
+    {
+        CRtpSessionMcastEx* p = (CRtpSessionMcastEx*)session;
+        p->Fini();
+        p->Release();
+        break;
+    }
     } /* end of switch () */
 }

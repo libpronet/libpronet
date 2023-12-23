@@ -827,21 +827,10 @@ CRtpMsgC2s::AcceptSession(IRtpService*            service,
         char idString[64] = "";
         RtpMsgUser2String(&user, idString);
 
-        char hashString[64 + 1] = "";
-        hashString[64] = '\0';
-
-        for (int i = 0; i < 32; ++i)
-        {
-            sprintf(hashString + i * 2, "%02x", (unsigned int)remoteInfo.passwordHash[i]);
-        }
-
-        char nonceString[64 + 1] = "";
-        nonceString[64] = '\0';
-
-        for (int j = 0; j < 32; ++j)
-        {
-            sprintf(nonceString + j * 2, "%02x", (unsigned int)nonce.nonce[j]);
-        }
+        CProStlString hashString;
+        CProStlString nonceString;
+        ProHexLwrEncode(remoteInfo.passwordHash, 32, hashString);
+        ProHexLwrEncode(nonce.nonce, 32, nonceString);
 
         uint64_t timerId = m_reactor->SetupTimer(
             this, (uint64_t)m_localTimeoutInSeconds * 1000, 0);
@@ -890,8 +879,15 @@ CRtpMsgC2s::OnRecvSession(IRtpSession* session,
 {
     assert(session != NULL);
     assert(packet != NULL);
-    assert(packet->GetPayloadSize() > sizeof(RTP_MSG_HEADER));
-    if (session == NULL || packet == NULL || packet->GetPayloadSize() <= sizeof(RTP_MSG_HEADER))
+    if (session == NULL || packet == NULL)
+    {
+        return;
+    }
+
+    size_t payloadSize = packet->GetPayloadSize();
+
+    assert(payloadSize > sizeof(RTP_MSG_HEADER));
+    if (payloadSize <= sizeof(RTP_MSG_HEADER))
     {
         return;
     }
@@ -905,17 +901,22 @@ CRtpMsgC2s::OnRecvSession(IRtpSession* session,
     size_t msgHeaderSize =
         sizeof(RTP_MSG_HEADER) + sizeof(RTP_MSG_USER) * (msgHeaderPtr->dstUserCount - 1);
 
+    assert(payloadSize > msgHeaderSize);
+    if (payloadSize <= msgHeaderSize)
+    {
+        return;
+    }
+
     const void* msgBodyPtr  = (char*)msgHeaderPtr + msgHeaderSize;
-    int         msgBodySize = (int)(packet->GetPayloadSize() - msgHeaderSize);
+    size_t      msgBodySize = payloadSize - msgHeaderSize;
     uint16_t    charset     = pbsd_ntoh16(msgHeaderPtr->charset);
 
     RTP_MSG_USER srcUser = msgHeaderPtr->srcUser;
     srcUser.instId       = pbsd_ntoh16(srcUser.instId);
 
-    assert(msgBodySize > 0);
     assert(srcUser.classId > 0);
     assert(srcUser.UserId() > 0);
-    if (msgBodySize == 0 || srcUser.classId == 0 || srcUser.UserId() == 0)
+    if (srcUser.classId == 0 || srcUser.UserId() == 0)
     {
         return;
     }

@@ -279,48 +279,42 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
     case RTP_ST_UDPCLIENT:
     case RTP_ST_UDPSERVER:
     case RTP_ST_MCAST:
-        {
-            otherSize = sizeof(RTP_HEADER);
-            break;
-        }
+        otherSize = sizeof(RTP_HEADER);
+        break;
     case RTP_ST_TCPCLIENT:
     case RTP_ST_TCPSERVER:
-        {
-            otherSize = sizeof(uint16_t) + sizeof(RTP_HEADER);
-            break;
-        }
+        otherSize = sizeof(uint16_t) + sizeof(RTP_HEADER);
+        break;
     case RTP_ST_UDPCLIENT_EX:
     case RTP_ST_UDPSERVER_EX:
     case RTP_ST_MCAST_EX:
-        {
-            otherSize = sizeof(RTP_EXT) + sizeof(RTP_HEADER);
-            break;
-        }
+        otherSize = sizeof(RTP_EXT) + sizeof(RTP_HEADER);
+        break;
     case RTP_ST_TCPCLIENT_EX:
     case RTP_ST_TCPSERVER_EX:
     case RTP_ST_SSLCLIENT_EX:
     case RTP_ST_SSLSERVER_EX:
+    {
+        assert(packet->GetPackMode() == m_info.packMode);
+        if (packet->GetPackMode() != m_info.packMode)
         {
-            assert(packet->GetPackMode() == m_info.packMode);
-            if (packet->GetPackMode() != m_info.packMode)
-            {
-                return false;
-            }
-
-            if (m_info.packMode == RTP_EPM_DEFAULT)
-            {
-                otherSize = sizeof(RTP_EXT) + sizeof(RTP_HEADER);
-            }
-            else if (m_info.packMode == RTP_EPM_TCP2)
-            {
-                otherSize = sizeof(uint16_t);
-            }
-            else
-            {
-                otherSize = sizeof(uint32_t);
-            }
-            break;
+            return false;
         }
+
+        if (m_info.packMode == RTP_EPM_DEFAULT)
+        {
+            otherSize = sizeof(RTP_EXT) + sizeof(RTP_HEADER);
+        }
+        else if (m_info.packMode == RTP_EPM_TCP2)
+        {
+            otherSize = sizeof(uint16_t);
+        }
+        else
+        {
+            otherSize = sizeof(uint32_t);
+        }
+        break;
+    }
     } /* end of switch () */
 
     bool ret = false;
@@ -1012,49 +1006,47 @@ CRtpSessionBase::OnHeartbeat(IProTransport* trans)
         {
         case RTP_ST_TCPCLIENT:
         case RTP_ST_TCPSERVER:
-            {
-                uint16_t zero = 0;
-                m_trans->SendData(&zero, sizeof(uint16_t));
+        {
+            uint16_t zero = 0;
+            m_trans->SendData(&zero, sizeof(uint16_t));
 
-                return;
-            }
+            return;
+        }
         case RTP_ST_UDPCLIENT_EX:
         case RTP_ST_UDPSERVER_EX:
+        {
+            RTP_EXT ext;
+            memset(&ext, 0, sizeof(RTP_EXT));
+            ext.mmType = m_info.mmType;
+            m_trans->SendData(&ext, sizeof(RTP_EXT));
+            break;
+        }
+        case RTP_ST_TCPCLIENT_EX:
+        case RTP_ST_TCPSERVER_EX:
+        case RTP_ST_SSLCLIENT_EX:
+        case RTP_ST_SSLSERVER_EX:
+            if (m_info.packMode == RTP_EPM_DEFAULT)
             {
                 RTP_EXT ext;
                 memset(&ext, 0, sizeof(RTP_EXT));
                 ext.mmType = m_info.mmType;
                 m_trans->SendData(&ext, sizeof(RTP_EXT));
-                break;
             }
-        case RTP_ST_TCPCLIENT_EX:
-        case RTP_ST_TCPSERVER_EX:
-        case RTP_ST_SSLCLIENT_EX:
-        case RTP_ST_SSLSERVER_EX:
+            else if (m_info.packMode == RTP_EPM_TCP2)
             {
-                if (m_info.packMode == RTP_EPM_DEFAULT)
-                {
-                    RTP_EXT ext;
-                    memset(&ext, 0, sizeof(RTP_EXT));
-                    ext.mmType = m_info.mmType;
-                    m_trans->SendData(&ext, sizeof(RTP_EXT));
-                }
-                else if (m_info.packMode == RTP_EPM_TCP2)
-                {
-                    uint16_t zero = 0;
-                    m_trans->SendData(&zero, sizeof(uint16_t));
-                }
-                else
-                {
-                    uint32_t zero = 0;
-                    m_trans->SendData(&zero, sizeof(uint32_t));
-                }
-                break;
+                uint16_t zero = 0;
+                m_trans->SendData(&zero, sizeof(uint16_t));
             }
+            else
+            {
+                uint32_t zero = 0;
+                m_trans->SendData(&zero, sizeof(uint32_t));
+            }
+            break;
         default:
-            {
-                return;
-            }
+        {
+            return;
+        }
         } /* end of switch () */
 
         peerAliveTick = m_peerAliveTick;
