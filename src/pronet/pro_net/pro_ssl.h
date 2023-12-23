@@ -50,8 +50,8 @@ static const PRO_SSL_AUTH_LEVEL PRO_SSL_AUTHLV_REQUIRED = 2;
 /*
  * [[[[ SSL/TLS suites
  *
- * 这里都是基于证书的AEAD加密套件, 并且, 我们只推荐前向安全(PFS)的加密套件. 如果需要预主密钥
- * (PSK)机制或更加丰富的加密套件, 使用者可以直接引用mbedtls库的定义
+ * 这里都是基于证书的AEAD加密套件, 并且, 我们只推荐前向安全(PFS)的加密套件. 如果需要预共享
+ * 密钥(PSK)机制或更加丰富的加密套件, 使用者可以直接引用mbedtls库的定义
  *
  * please refer to "mbedtls/ssl_ciphersuites.h"
  */
