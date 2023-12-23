@@ -63,34 +63,28 @@ extern "C" {
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if defined(_WIN32)
+#if defined(_MSC_VER)
 
-#define strlwr    _strlwr
-#define strupr    _strupr
 #define stricmp   _stricmp
 #define strnicmp  _strnicmp
 #define snprintf  _snprintf
 #define vsnprintf _vsnprintf
 
-#else  /* _WIN32 */
+#else  /* _MSC_VER */
 
 #define stricmp   strcasecmp
 #define strnicmp  strncasecmp
 
-#endif /* _WIN32 */
+#endif /* _MSC_VER */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if !defined(_WIN32)
+char*
+strlwr_pro(char* str);
 
 char*
-strlwr(char* str);
-
-char*
-strupr(char* str);
-
-#endif /* _WIN32 */
+strupr_pro(char* str);
 
 char*
 strncpy_pro(char*       dest,

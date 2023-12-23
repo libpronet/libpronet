@@ -34,6 +34,52 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+#if !defined(_WIN32) && !defined(PRO_HAS_PTHREAD_CONDATTR_SETCLOCK)
+
+static
+void
+GetTimespec_i(struct timespec& ts,
+              int              deltaMilliseconds) /* = 0 */
+{
+    memset(&ts, 0, sizeof(struct timespec));
+
+#if !defined(PRO_LACKS_CLOCK_GETTIME)
+
+    struct timespec now = { 0 };
+    clock_gettime(CLOCK_REALTIME, &now);
+
+    int64_t tt = (int64_t)now.tv_sec * 1000000000 + now.tv_nsec +
+        (int64_t)deltaMilliseconds * 1000000;
+
+#else  /* PRO_LACKS_CLOCK_GETTIME */
+
+    struct timeval now = { 0 };
+    if (gettimeofday(&now, NULL) != 0)
+    {
+        return;
+    }
+
+    int64_t tt = (int64_t)now.tv_sec * 1000000000 + (int64_t)now.tv_usec * 1000 +
+        (int64_t)deltaMilliseconds * 1000000;
+
+#endif /* PRO_LACKS_CLOCK_GETTIME */
+
+    time_t seconds     = (time_t)(tt / 1000000000);
+    time_t nanoseconds = (time_t)(tt % 1000000000);
+    if (seconds <= 0) /* overflow */
+    {
+        return;
+    }
+
+    ts.tv_sec  = (long)seconds;
+    ts.tv_nsec = (long)nanoseconds;
+}
+
+#endif /* _WIN32, PRO_HAS_PTHREAD_CONDATTR_SETCLOCK */
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
 #if defined(_WIN32)
 
 class CProThreadMutexImpl
@@ -393,16 +439,12 @@ private:
         struct timespec abstime = { 0 };
 
 #if defined(PRO_HAS_PTHREAD_CONDATTR_SETCLOCK)
-        int64_t tick = ProGetTickCount64() + milliseconds;
+        int64_t tt = ProGetTickCount64() + milliseconds;
 
-        abstime.tv_sec  = (time_t)(tick / 1000);
-        abstime.tv_nsec = (long)  (tick % 1000 * 1000000);
+        abstime.tv_sec  = (time_t)(tt / 1000);
+        abstime.tv_nsec = (long)  (tt % 1000 * 1000000);
 #else
-        struct timeval localTimeval = { 0 };
-        ProGetLocalTimeval(localTimeval, milliseconds);
-
-        abstime.tv_sec  = (time_t)localTimeval.tv_sec;
-        abstime.tv_nsec = (long) (localTimeval.tv_usec * 1000);
+        GetTimespec_i(abstime, milliseconds);
 #endif
 
         bool ret = true;

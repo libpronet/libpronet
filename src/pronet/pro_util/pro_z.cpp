@@ -30,8 +30,6 @@ extern "C" {
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if !defined(_WIN32)
-
 static
 inline
 char
@@ -58,15 +56,11 @@ toupper_i(char c)
     return c;
 }
 
-#endif /* _WIN32 */
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#if !defined(_WIN32)
-
 char*
-strlwr(char* str)
+strlwr_pro(char* str)
 {
     if (str != NULL)
     {
@@ -80,7 +74,7 @@ strlwr(char* str)
 }
 
 char*
-strupr(char* str)
+strupr_pro(char* str)
 {
     if (str != NULL)
     {
@@ -92,8 +86,6 @@ strupr(char* str)
 
     return str;
 }
-
-#endif /* _WIN32 */
 
 char*
 strncpy_pro(char*       dest,

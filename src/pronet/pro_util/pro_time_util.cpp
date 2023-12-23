@@ -75,17 +75,17 @@ ProGetLocalTime(PRO_LOCAL_TIME& localTime,
     /*
      * [1970 ~ 2038]
      */
-    struct timeval tv = { 0 };
-    if (gettimeofday(&tv, NULL) != 0)
+    struct timeval now = { 0 };
+    if (gettimeofday(&now, NULL) != 0)
     {
         return;
     }
 
-    int64_t tt = (int64_t)tv.tv_sec * 1000000 + tv.tv_usec + (int64_t)deltaMilliseconds * 1000;
+    int64_t tt = (int64_t)now.tv_sec * 1000000 + now.tv_usec + (int64_t)deltaMilliseconds * 1000;
 
-    time_t seconds      = (time_t)(tt / 1000000);
-    time_t microseconds = (time_t)(tt % 1000000);
-    if (seconds <= 0)
+    time_t seconds  = (time_t)(tt / 1000000);
+    time_t useconds = (time_t)(tt % 1000000);
+    if (seconds <= 0) /* overflow */
     {
         return;
     }
@@ -102,7 +102,7 @@ ProGetLocalTime(PRO_LOCAL_TIME& localTime,
     localTime.hour        = (unsigned short)tm->tm_hour;
     localTime.minute      = (unsigned short)tm->tm_min;
     localTime.second      = (unsigned short)tm->tm_sec;
-    localTime.millisecond = (unsigned short)(microseconds / 1000);
+    localTime.millisecond = (unsigned short)(useconds / 1000);
 
 #endif /* _WIN32 */
 }
@@ -271,41 +271,4 @@ ProString2LocalTime(const char*     timeString,
     localTime.minute      = (unsigned short)minute;
     localTime.second      = (unsigned short)second;
     localTime.millisecond = (unsigned short)millisecond;
-}
-
-void
-ProGetLocalTimeval(struct timeval& localTimeval,
-                   int             deltaMilliseconds) /* = 0 */
-{
-    memset(&localTimeval, 0, sizeof(struct timeval));
-
-    struct timeval tv = { 0 };
-
-#if defined(_WIN32)
-    SYSTEMTIME st;
-    ::GetLocalTime(&st);
-
-    /*
-     * [1970 ~ 2038]
-     */
-    tv.tv_sec  = (long)time(NULL);
-    tv.tv_usec = (long)st.wMilliseconds * 1000;
-#else
-    if (gettimeofday(&tv, NULL) != 0)
-    {
-        return;
-    }
-#endif
-
-    int64_t tt = (int64_t)tv.tv_sec * 1000000 + tv.tv_usec + (int64_t)deltaMilliseconds * 1000;
-
-    time_t seconds      = (time_t)(tt / 1000000);
-    time_t microseconds = (time_t)(tt % 1000000);
-    if (seconds <= 0)
-    {
-        return;
-    }
-
-    localTimeval.tv_sec  = (long)seconds;
-    localTimeval.tv_usec = (long)microseconds;
 }

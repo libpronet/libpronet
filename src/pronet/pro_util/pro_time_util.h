@@ -185,10 +185,6 @@ void
 ProString2LocalTime(const char*     timeString,
                     PRO_LOCAL_TIME& localTime);
 
-void
-ProGetLocalTimeval(struct timeval& localTimeval,
-                   int             deltaMilliseconds = 0);
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
