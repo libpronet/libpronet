@@ -87,35 +87,35 @@ ProDeallocateSgiPoolBuffer(void*        buf,
 
 namespace std {
 
-template<typename ____Ty, unsigned int ____poolIndex = 0>
-class pro_allocator : public allocator<____Ty>
+template<typename __T, unsigned int __poolIndex = 0>
+class pro_allocator : public allocator<__T>
 {
 public:
 
-    template<class ____Other>
+    template<typename __Other>
     struct rebind
     {
-        typedef pro_allocator<____Other, ____poolIndex> other;
+        typedef pro_allocator<__Other, __poolIndex> other;
     };
 
-    pro_allocator() : allocator<____Ty>()
+    pro_allocator() : allocator<__T>()
     {
     }
 
-    pro_allocator(const pro_allocator<____Ty, ____poolIndex>&) : allocator<____Ty>()
+    pro_allocator(const pro_allocator<__T, __poolIndex>&) : allocator<__T>()
     {
     }
 
-    template<class ____Other>
-    pro_allocator(const pro_allocator<____Other, ____poolIndex>&)
+    template<typename __Other>
+    pro_allocator(const pro_allocator<__Other, __poolIndex>&)
     {
         /*
          * do nothing
          */
     }
 
-    template<class ____Other>
-    pro_allocator<____Ty, ____poolIndex>& operator=(const pro_allocator<____Other, ____poolIndex>&)
+    template<typename __Other>
+    pro_allocator<__T, __poolIndex>& operator=(const pro_allocator<__Other, __poolIndex>&)
     {
         /*
          * do nothing
@@ -123,51 +123,51 @@ public:
         return *this;
     }
 
-    ____Ty* allocate(size_t ____N)
+    __T* allocate(size_t __n)
     {
-        ____Ty* p = NULL;
+        __T* p = NULL;
 
 #if !defined(PRO_LACKS_SGI_POOL) && !defined(PRO_LACKS_SGI_POOL_STL)
-        p = (____Ty*)ProAllocateSgiPoolBuffer(sizeof(____Ty) * ____N, ____poolIndex);
+        p = (__T*)ProAllocateSgiPoolBuffer(sizeof(__T) * __n, __poolIndex);
 #else
-        p = (____Ty*)::operator new(sizeof(____Ty) * ____N);
+        p = (__T*)::operator new(sizeof(__T) * __n);
 #endif
 
         return p;
     }
 
-    ____Ty* allocate(size_t ____N, const void*)
+    __T* allocate(size_t __n, const void*)
     {
-        ____Ty* p = NULL;
+        __T* p = NULL;
 
 #if !defined(PRO_LACKS_SGI_POOL) && !defined(PRO_LACKS_SGI_POOL_STL)
-        p = (____Ty*)ProAllocateSgiPoolBuffer(sizeof(____Ty) * ____N, ____poolIndex);
+        p = (__T*)ProAllocateSgiPoolBuffer(sizeof(__T) * __n, __poolIndex);
 #else
-        p = (____Ty*)::operator new(sizeof(____Ty) * ____N);
+        p = (__T*)::operator new(sizeof(__T) * __n);
 #endif
 
         return p;
     }
 
-    char* _Charalloc(size_t ____N)
+    char* _Charalloc(size_t __n)
     {
         char* p = NULL;
 
 #if !defined(PRO_LACKS_SGI_POOL) && !defined(PRO_LACKS_SGI_POOL_STL)
-        p = (char*)ProAllocateSgiPoolBuffer(sizeof(char) * ____N, ____poolIndex);
+        p = (char*)ProAllocateSgiPoolBuffer(sizeof(char) * __n, __poolIndex);
 #else
-        p = (char*)::operator new(sizeof(char) * ____N);
+        p = (char*)::operator new(sizeof(char) * __n);
 #endif
 
         return p;
     }
 
-    void deallocate(void* ____P, size_t)
+    void deallocate(void* __p, size_t)
     {
 #if !defined(PRO_LACKS_SGI_POOL) && !defined(PRO_LACKS_SGI_POOL_STL)
-        ProDeallocateSgiPoolBuffer(____P, ____poolIndex);
+        ProDeallocateSgiPoolBuffer(__p, __poolIndex);
 #else
-        ::operator delete(____P);
+        ::operator delete(__p);
 #endif
     }
 
@@ -179,10 +179,10 @@ class pro_allocator<void> : public allocator<void>
 {
 public:
 
-    template<class ____Other>
+    template<typename __Other>
     struct rebind
     {
-        typedef pro_allocator<____Other> other;
+        typedef pro_allocator<__Other> other;
     };
 
     pro_allocator()
@@ -199,16 +199,16 @@ public:
          */
     }
 
-    template<class ____Other>
-    pro_allocator(const pro_allocator<____Other>&)
+    template<typename __Other>
+    pro_allocator(const pro_allocator<__Other>&)
     {
         /*
          * do nothing
          */
     }
 
-    template<class ____Other>
-    pro_allocator<void>& operator=(const pro_allocator<____Other>&)
+    template<typename __Other>
+    pro_allocator<void>& operator=(const pro_allocator<__Other>&)
     {
         /*
          * do nothing

@@ -30,9 +30,12 @@
 #include <array>
 #include <bitset>
 #include <deque>
+#include <functional>
 #include <list>
 #include <map>
+#include <queue>
 #include <set>
+#include <stack>
 #include <string>
 #include <tuple>
 #include <unordered_map>
@@ -43,86 +46,107 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-template<class ____Ty, unsigned int ____poolIndex = 0>
+template<typename __T>
 class CProStlVector
-: public std::vector<____Ty, std::pro_allocator<____Ty, ____poolIndex> >
+: public std::vector<__T, std::pro_allocator<__T, 0> >
 {
     DECLARE_SGI_POOL(0)
 };
 
-template<class ____Ty, unsigned int ____poolIndex = 0>
+template<typename __T>
 class CProStlDeque
-: public std::deque<____Ty, std::pro_allocator<____Ty, ____poolIndex> >
+: public std::deque<__T, std::pro_allocator<__T, 0> >
 {
     DECLARE_SGI_POOL(0)
 };
 
-template<class ____Ty, unsigned int ____poolIndex = 0>
-class CProStlList
-: public std::list<____Ty, std::pro_allocator<____Ty, ____poolIndex> >
-{
-    DECLARE_SGI_POOL(0)
-};
-
-template<class ____K, class ____Ty, unsigned int ____poolIndex = 0, class ____Pr = std::less<____K> >
-class CProStlMap
-: public std::map<____K, ____Ty, ____Pr, std::pro_allocator<std::pair<const ____K, ____Ty>, ____poolIndex> >
-{
-    DECLARE_SGI_POOL(0)
-};
-
-template<class ____K, class ____Ty, unsigned int ____poolIndex = 0, class ____Pr = std::less<____K> >
-class CProStlMultimap
-: public std::multimap<____K, ____Ty, ____Pr, std::pro_allocator<std::pair<const ____K, ____Ty>, ____poolIndex> >
-{
-    DECLARE_SGI_POOL(0)
-};
-
-template<class ____K, unsigned int ____poolIndex = 0, class ____Pr = std::less<____K> >
-class CProStlSet
-: public std::set<____K, ____Pr, std::pro_allocator<____K, ____poolIndex> >
-{
-    DECLARE_SGI_POOL(0)
-};
-
-template<class ____K, unsigned int ____poolIndex = 0, class ____Pr = std::less<____K> >
-class CProStlMultiset
-: public std::multiset<____K, ____Pr, std::pro_allocator<____K, ____poolIndex> >
-{
-    DECLARE_SGI_POOL(0)
-};
-
-template<class ____K, class ____Ty, unsigned int ____poolIndex = 0, class ____H = std::hash<____K>, class ____Pr = std::equal_to<____K> >
-class CProStlHashMap
-: public std::unordered_map<____K, ____Ty, ____H, ____Pr, std::pro_allocator<std::pair<const ____K, ____Ty>, ____poolIndex> >
-{
-    DECLARE_SGI_POOL(0)
-};
-
-template<class ____K, class ____Ty, unsigned int ____poolIndex = 0, class ____H = std::hash<____K>, class ____Pr = std::equal_to<____K> >
-class CProStlHashMultimap
-: public std::unordered_multimap<____K, ____Ty, ____H, ____Pr, std::pro_allocator<std::pair<const ____K, ____Ty>, ____poolIndex> >
-{
-    DECLARE_SGI_POOL(0)
-};
-
-template<class ____K, unsigned int ____poolIndex = 0, class ____H = std::hash<____K>, class ____Pr = std::equal_to<____K> >
-class CProStlHashSet
-: public std::unordered_set<____K, ____H, ____Pr, std::pro_allocator<____K, ____poolIndex> >
-{
-    DECLARE_SGI_POOL(0)
-};
-
-template<class ____K, unsigned int ____poolIndex = 0, class ____H = std::hash<____K>, class ____Pr = std::equal_to<____K> >
-class CProStlHashMultiset
-: public std::unordered_multiset<____K, ____H, ____Pr, std::pro_allocator<____K, ____poolIndex> >
+template<typename __T, typename __C = CProStlDeque<__T> >
+class CProStlQueue
+: public std::queue<__T, __C>
 {
     DECLARE_SGI_POOL(0)
 };
 
 /*
- * By default, CProStlString and CProStlWstring use the pool #0.
+ * We use 'deque' instead of 'vector'.
  */
+template<typename __T, typename __C = CProStlDeque<__T>, typename __Pr = std::less<typename __C::value_type> >
+class CProStlPriorQueue
+: public std::priority_queue<__T, __C, __Pr>
+{
+    DECLARE_SGI_POOL(0)
+};
+
+template<typename __T, typename __C = CProStlDeque<__T> >
+class CProStlStack
+: public std::stack<__T, __C>
+{
+    DECLARE_SGI_POOL(0)
+};
+
+template<typename __T>
+class CProStlList
+: public std::list<__T, std::pro_allocator<__T, 0> >
+{
+    DECLARE_SGI_POOL(0)
+};
+
+template<typename __K, typename __T, typename __Pr = std::less<__K> >
+class CProStlMap
+: public std::map<__K, __T, __Pr, std::pro_allocator<std::pair<const __K, __T>, 0> >
+{
+    DECLARE_SGI_POOL(0)
+};
+
+template<typename __K, typename __T, typename __Pr = std::less<__K> >
+class CProStlMultimap
+: public std::multimap<__K, __T, __Pr, std::pro_allocator<std::pair<const __K, __T>, 0> >
+{
+    DECLARE_SGI_POOL(0)
+};
+
+template<typename __K, typename __Pr = std::less<__K> >
+class CProStlSet
+: public std::set<__K, __Pr, std::pro_allocator<__K, 0> >
+{
+    DECLARE_SGI_POOL(0)
+};
+
+template<typename __K, typename __Pr = std::less<__K> >
+class CProStlMultiset
+: public std::multiset<__K, __Pr, std::pro_allocator<__K, 0> >
+{
+    DECLARE_SGI_POOL(0)
+};
+
+template<typename __K, typename __T, typename __H = std::hash<__K>, typename __Pr = std::equal_to<__K> >
+class CProStlHashMap
+: public std::unordered_map<__K, __T, __H, __Pr, std::pro_allocator<std::pair<const __K, __T>, 0> >
+{
+    DECLARE_SGI_POOL(0)
+};
+
+template<typename __K, typename __T, typename __H = std::hash<__K>, typename __Pr = std::equal_to<__K> >
+class CProStlHashMultimap
+: public std::unordered_multimap<__K, __T, __H, __Pr, std::pro_allocator<std::pair<const __K, __T>, 0> >
+{
+    DECLARE_SGI_POOL(0)
+};
+
+template<typename __K, typename __H = std::hash<__K>, typename __Pr = std::equal_to<__K> >
+class CProStlHashSet
+: public std::unordered_set<__K, __H, __Pr, std::pro_allocator<__K, 0> >
+{
+    DECLARE_SGI_POOL(0)
+};
+
+template<typename __K, typename __H = std::hash<__K>, typename __Pr = std::equal_to<__K> >
+class CProStlHashMultiset
+: public std::unordered_multiset<__K, __H, __Pr, std::pro_allocator<__K, 0> >
+{
+    DECLARE_SGI_POOL(0)
+};
+
 typedef std::basic_string<char   , std::char_traits<char>   , std::pro_allocator<char   , 0> > CProStlString;
 typedef std::basic_string<wchar_t, std::char_traits<wchar_t>, std::pro_allocator<wchar_t, 0> > CProStlWstring;
 
