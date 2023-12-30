@@ -30,12 +30,16 @@
 #endif
 
 #if !defined(PRO_LACKS_SGI_POOL) && !defined(PRO_LACKS_SGI_POOL_OPNEW)
-#define DECLARE_SGI_POOL(a)                                                                       \
-public:                                                                                           \
-    static void* operator new(size_t size)        { return ProAllocateSgiPoolBuffer(size, (a)); } \
-    static void  operator delete(void* p)         { ProDeallocateSgiPoolBuffer(p, (a)); }         \
-    static void* operator new(size_t, void* p0)   { return p0; }                                  \
-    static void  operator delete(void*, void* p0) { (void)p0; }                                   \
+#define DECLARE_SGI_POOL(a)                                                                      \
+public:                                                                                          \
+    static void* operator new(size_t size)       { return ProAllocateSgiPoolBuffer(size, (a)); } \
+    static void  operator delete(void* p)        { ProDeallocateSgiPoolBuffer(p, (a)); }         \
+    static void* operator new[](size_t size)     { return ProAllocateSgiPoolBuffer(size, (a)); } \
+    static void  operator delete[](void* p)      { ProDeallocateSgiPoolBuffer(p, (a)); }         \
+    static void* operator new(size_t, void* p)   { return p; }                                   \
+    static void  operator delete(void*, void*)   {}                                              \
+    static void* operator new[](size_t, void* p) { return p; }                                   \
+    static void  operator delete[](void*, void*) {}                                              \
 protected:
 #else
 #define DECLARE_SGI_POOL(a)
