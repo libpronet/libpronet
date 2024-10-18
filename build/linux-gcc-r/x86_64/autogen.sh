@@ -27,8 +27,8 @@ CPPFLAGS="-DNDEBUG                          \
           -DPRO_HAS_ACCEPT4                 \
           -DPRO_HAS_EPOLL                   \
           -DPRO_HAS_PTHREAD_EXPLICIT_SCHED" \
-CFLAGS="  -O2 -Wall -fno-strict-aliasing -fvisibility=hidden -march=nocona -m64" \
-CXXFLAGS="-O2 -Wall -fno-strict-aliasing -fvisibility=hidden -march=nocona -m64" \
+CFLAGS="  -std=c++11 -O2 -Wall -fno-strict-aliasing -fvisibility=hidden -march=nocona -m64" \
+CXXFLAGS="-std=c++11 -O2 -Wall -fno-strict-aliasing -fvisibility=hidden -march=nocona -m64" \
 LDFLAGS="" $@
 
 rm -f ./configure

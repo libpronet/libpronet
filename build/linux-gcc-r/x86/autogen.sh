@@ -27,8 +27,8 @@ CPPFLAGS="-DNDEBUG                          \
           -DPRO_HAS_ACCEPT4                 \
           -DPRO_HAS_EPOLL                   \
           -DPRO_HAS_PTHREAD_EXPLICIT_SCHED" \
-CFLAGS="  -O2 -Wall -fno-strict-aliasing -fvisibility=hidden -march=pentium4 -m32" \
-CXXFLAGS="-O2 -Wall -fno-strict-aliasing -fvisibility=hidden -march=pentium4 -m32" \
+CFLAGS="  -std=c++11 -O2 -Wall -fno-strict-aliasing -fvisibility=hidden -march=pentium4 -m32" \
+CXXFLAGS="-std=c++11 -O2 -Wall -fno-strict-aliasing -fvisibility=hidden -march=pentium4 -m32" \
 LDFLAGS="" $@
 
 rm -f ./configure

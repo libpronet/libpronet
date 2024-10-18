@@ -36,8 +36,8 @@ CPPFLAGS="-D_DEBUG                          \
           -DPRO_HAS_ACCEPT4                 \
           -DPRO_HAS_EPOLL                   \
           -DPRO_HAS_PTHREAD_EXPLICIT_SCHED" \
-CFLAGS="  -g -O0 -Wall -fno-strict-aliasing -fvisibility=hidden" \
-CXXFLAGS="-g -O0 -Wall -fno-strict-aliasing -fvisibility=hidden" \
+CFLAGS="  -std=c++11 -g -O0 -Wall -fno-strict-aliasing -fvisibility=hidden" \
+CXXFLAGS="-std=c++11 -g -O0 -Wall -fno-strict-aliasing -fvisibility=hidden" \
 LDFLAGS="" $@
 
 rm -f ./configure

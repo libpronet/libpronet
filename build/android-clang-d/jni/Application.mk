@@ -30,7 +30,7 @@ APP_CFLAGS   += -D_GNU_SOURCE     \
                 -D_LIBC_REENTRANT \
                 -D_REENTRANT      \
                 -Wall -fno-strict-aliasing -fvisibility=hidden
-APP_CPPFLAGS := -fno-rtti -fexceptions
+APP_CPPFLAGS := -std=c++11 -fno-rtti -fexceptions
 APP_LDFLAGS  :=
 
 APP_PLATFORM := android-21
