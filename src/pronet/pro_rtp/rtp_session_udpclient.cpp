@@ -27,7 +27,8 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define MAX_TRY_TIMES 100
+#define MAX_TRY_TIMES      100
+#define MAX_BROKEN_SECONDS 30
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -199,6 +200,11 @@ CRtpSessionUdpclient::SetRemoteIpAndPort(const char*    remoteIp,   /* = NULL */
         CProThreadMutexGuard mon(m_lock);
 
         m_remoteAddrConfig = remoteAddrConfig;
+
+        if (ProGetTickCount64() - m_peerAliveTick > MAX_BROKEN_SECONDS * 1000)
+        {
+            memset(&m_remoteAddr, 0, sizeof(pbsd_sockaddr_in));
+        }
     }
 }
 
