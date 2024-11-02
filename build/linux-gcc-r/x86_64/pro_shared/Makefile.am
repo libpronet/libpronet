@@ -21,9 +21,4 @@ libpro_shared_so_CXXFLAGS = -fPIC
 libpro_shared_so_LDFLAGS = -shared -Wl,-soname,libpro_shared.so -Wl,--no-undefined
 libpro_shared_so_LDADD   =
 
-LIBS = -lstdc++  \
-       -lrt      \
-       -lpthread \
-       -lm       \
-       -lgcc     \
-       -lc
+LIBS = -lpthread -lc

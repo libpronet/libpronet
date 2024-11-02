@@ -46,16 +46,12 @@ libpro_rtp_so_CFLAGS   = -fPIC
 libpro_rtp_so_CXXFLAGS = -fPIC
 
 libpro_rtp_so_LDFLAGS = -shared -Wl,-soname,libpro_rtp.so \
-                        -Wl,-rpath,. -Wl,--no-undefined
+                        -Wl,-rpath,.:${prolibdir} -Wl,--no-undefined
 libpro_rtp_so_LDADD   =
 
 LIBS = ../pro_net/libpro_net.so       \
        ../pro_util/libpro_util.a      \
        ../pro_shared/libpro_shared.so \
        ../mbedtls/libmbedtls.a        \
-       -lstdc++                       \
-       -lrt                           \
        -lpthread                      \
-       -lm                            \
-       -lgcc                          \
        -lc

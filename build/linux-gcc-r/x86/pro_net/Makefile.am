@@ -38,15 +38,11 @@ libpro_net_so_CFLAGS   = -fPIC
 libpro_net_so_CXXFLAGS = -fPIC
 
 libpro_net_so_LDFLAGS = -shared -Wl,-soname,libpro_net.so \
-                        -Wl,-rpath,. -Wl,--no-undefined
+                        -Wl,-rpath,.:${prolibdir} -Wl,--no-undefined
 libpro_net_so_LDADD   =
 
 LIBS = ../pro_util/libpro_util.a      \
        ../pro_shared/libpro_shared.so \
        ../mbedtls/libmbedtls.a        \
-       -lstdc++                       \
-       -lrt                           \
        -lpthread                      \
-       -lm                            \
-       -lgcc                          \
        -lc

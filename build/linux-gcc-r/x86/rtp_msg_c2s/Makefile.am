@@ -22,9 +22,5 @@ LIBS = ../pro_rtp/libpro_rtp.so       \
        ../pro_util/libpro_util.a      \
        ../pro_shared/libpro_shared.so \
        ../mbedtls/libmbedtls.a        \
-       -lstdc++                       \
-       -lrt                           \
        -lpthread                      \
-       -lm                            \
-       -lgcc                          \
        -lc

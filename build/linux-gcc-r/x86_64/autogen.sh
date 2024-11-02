@@ -19,15 +19,11 @@ automake --add-missing --force-missing --foreign
 # Makefile.in ---> Makefile
 #
 ./configure \
-CPPFLAGS="-DNDEBUG                          \
-          -D_GNU_SOURCE                     \
-          -D_LIBC_REENTRANT                 \
-          -D_REENTRANT                      \
-          -DPRO_HAS_ATOMOP                  \
-          -DPRO_HAS_ACCEPT4                 \
-          -DPRO_HAS_EPOLL                   \
-          -DPRO_HAS_PTHREAD_EXPLICIT_SCHED" \
-CFLAGS="  -std=c++11 -O2 -Wall -fno-strict-aliasing -fvisibility=hidden -march=nocona -m64" \
+CPPFLAGS="-DNDEBUG          \
+          -D_GNU_SOURCE     \
+          -D_LIBC_REENTRANT \
+          -D_REENTRANT"     \
+CFLAGS="             -O2 -Wall -fno-strict-aliasing -fvisibility=hidden -march=nocona -m64" \
 CXXFLAGS="-std=c++11 -O2 -Wall -fno-strict-aliasing -fvisibility=hidden -march=nocona -m64" \
 LDFLAGS="" $@
 

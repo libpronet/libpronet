@@ -1,0 +1,10 @@
+prefix=@prefix@
+libdir=${prefix}/libpronet/lib
+includedir=${prefix}/libpronet/include
+
+Name: mbedtls
+Description: mbedtls
+Version: @PACKAGE_VERSION@
+Cflags: -I${includedir}
+Libs: -L${libdir} -lmbedtls
+Libs.private:

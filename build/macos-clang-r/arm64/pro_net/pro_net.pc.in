@@ -1,0 +1,10 @@
+prefix=@prefix@
+libdir=${prefix}/libpronet/lib
+includedir=${prefix}/libpronet/include
+
+Name: pro_net
+Description: pro_net
+Version: @PACKAGE_VERSION@
+Cflags: -I${includedir}
+Libs: -L${libdir} -lpro_net
+Libs.private:
