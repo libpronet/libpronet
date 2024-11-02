@@ -141,7 +141,8 @@ snprintf_pro(char*       dest,
 }
 
 void
-ProGetExeDir_(char buf[1024])
+ProGetExeDir_(char        buf[1024],
+              const char* argv0) /* = NULL */
 {
     long size = 1024;
 
@@ -166,6 +167,10 @@ ProGetExeDir_(char buf[1024])
     {
         buf[bytes] = '\0';
     }
+    else if (argv0 != NULL && argv0[0] != '\0')
+    {
+        strncpy_pro(buf, 1024, argv0);
+    }
     else
     {
         strcpy(buf, "./a.out");
@@ -184,7 +189,8 @@ ProGetExeDir_(char buf[1024])
 }
 
 void
-ProGetExePath(char buf[1024])
+ProGetExePath(char        buf[1024],
+              const char* argv0) /* = NULL */
 {
     long size = 1024;
 
@@ -199,9 +205,13 @@ ProGetExePath(char buf[1024])
     {
         buf[bytes] = '\0';
     }
+    else if (argv0 != NULL && argv0[0] != '\0')
+    {
+        strncpy_pro(buf, 1024, argv0);
+    }
     else
     {
-        buf[0]     = '\0';
+        buf[0] = '\0';
     }
 #endif
 }

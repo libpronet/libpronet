@@ -84,7 +84,7 @@ ProRtpInit()
     }
 
     char exeRoot[1024] = "";
-    ProGetExePath(exeRoot);
+    ProGetExePath(exeRoot, NULL);
     strncat(exeRoot, TRACE_EXT_NAME, sizeof(exeRoot) - 1);
     g_fileMonitor.Init(exeRoot);
     g_fileMonitor.UpdateFileExist();

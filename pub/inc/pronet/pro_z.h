@@ -98,10 +98,12 @@ snprintf_pro(char*       dest,
              ...);
 
 void
-ProGetExeDir_(char buf[1024]);
+ProGetExeDir_(char        buf[1024],
+              const char* argv0); /* = NULL */
 
 void
-ProGetExePath(char buf[1024]);
+ProGetExePath(char        buf[1024],
+              const char* argv0); /* = NULL */
 
 /////////////////////////////////////////////////////////////////////////////
 ////

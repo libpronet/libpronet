@@ -230,7 +230,7 @@ int main(int argc, char* argv[])
     ProGetLocalTimeString(timeString);
 
     char exeRoot[1024] = "";
-    ProGetExeDir_(exeRoot);
+    ProGetExeDir_(exeRoot, argv[0]);
 
     {
         logFileName    =  exeRoot;
