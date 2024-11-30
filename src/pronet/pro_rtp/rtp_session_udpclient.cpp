@@ -28,7 +28,7 @@
 ////
 
 #define MAX_TRY_TIMES      100
-#define MAX_BROKEN_SECONDS 30
+#define MAX_BROKEN_SECONDS 5
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -200,11 +200,7 @@ CRtpSessionUdpclient::SetRemoteIpAndPort(const char*    remoteIp,   /* = NULL */
         CProThreadMutexGuard mon(m_lock);
 
         m_remoteAddrConfig = remoteAddrConfig;
-
-        if (ProGetTickCount64() - m_peerAliveTick > MAX_BROKEN_SECONDS * 1000)
-        {
-            memset(&m_remoteAddr, 0, sizeof(pbsd_sockaddr_in));
-        }
+        memset(&m_remoteAddr, 0, sizeof(pbsd_sockaddr_in)); /* reset */
     }
 }
 
@@ -218,6 +214,8 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
     {
         return;
     }
+
+    int64_t tick = ProGetTickCount64();
 
     while (1)
     {
@@ -244,6 +242,11 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
             if (dataSize == 0)
             {
                 break;
+            }
+
+            if (tick - m_peerAliveTick > MAX_BROKEN_SECONDS * 1000)
+            {
+                memset(&m_remoteAddr, 0, sizeof(pbsd_sockaddr_in)); /* reset */
             }
 
             if (
@@ -289,7 +292,7 @@ CRtpSessionUdpclient::OnRecv(IProTransport*          trans,
                     break;
                 }
 
-                m_peerAliveTick = ProGetTickCount64();
+                m_peerAliveTick = tick;
                 m_remoteAddr    = *remoteAddr; /* rebind */
 
                 if (payloadBuffer == NULL || payloadSize == 0) /* h.460 */
