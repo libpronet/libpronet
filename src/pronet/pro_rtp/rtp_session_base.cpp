@@ -322,11 +322,15 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_observer == NULL || m_reactor == NULL || m_trans == NULL)
+        if (m_observer == NULL || m_reactor == NULL)
         {
             return false;
         }
 
+        /*
+         * At this point, the session handshake has not yet been completed,
+         * and perhaps not even 'm_trans' has been created.
+         */
         if (!m_onOkCalledPre)
         {
             if (tryAgain != NULL)
@@ -334,6 +338,11 @@ CRtpSessionBase::SendPacket(IRtpPacket* packet,
                 *tryAgain = true;
             }
 
+            return false;
+        }
+
+        if (m_trans == NULL)
+        {
             return false;
         }
 
