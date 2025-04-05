@@ -31,7 +31,7 @@
 #define INIT_SPAN_MS         3000
 #define DELTA_SPAN_MS        200 /* 100 ~ 500 */
 #define CALC_SPAN_MS         100
-#define MAX_POP_INTERVAL_MS  1000
+#define MAX_POP_INTERVAL_MS  1500
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -494,11 +494,9 @@ CProStatLossRate::CalcLossRate()
             for (int i = 0; i < REORDER_BITMAP_BYTES; ++i)
             {
                 m_reorder->Read8(seqs, tick);
-                if (seqs.size() > 0)
-                {
-                    break;
-                }
             }
+
+            m_reorder->Reset();
 
             int i = 0;
             int c = (int)seqs.size();
