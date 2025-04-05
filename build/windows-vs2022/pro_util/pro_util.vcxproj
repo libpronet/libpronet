@@ -34,64 +34,111 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_a.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_bsd_wrapper.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_buffer.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_channel_task_pool.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_config_file.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_config_stream.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_file_monitor.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_functor_command.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_functor_command_task.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_log_file.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_memory_pool.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_notify_pipe.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_ref_count.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_shaper.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_ssl_util.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_stat.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_stl.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_thread.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_thread_mutex.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_timer_factory.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_time_util.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_unicode.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_version.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_z.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_bsd_wrapper.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_buffer.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_channel_task_pool.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_config_file.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_config_stream.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_file_monitor.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_functor_command_task.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_log_file.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_memory_pool.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_notify_pipe.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_shaper.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_ssl_util.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_stat.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_thread.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_thread_mutex.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_timer_factory.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_time_util.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_unicode.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_z.cpp" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{07FCC4A3-889B-4767-9AE3-CA7066061E88}</ProjectGuid>
+    <ProjectGuid>{95667892-D4A4-41D9-985D-D5346EEDEB3B}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>pro_rtp</RootNamespace>
-    <ProjectName>05_pro_rtp</ProjectName>
+    <RootNamespace>pro_util</RootNamespace>
+    <ProjectName>03_pro_util</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|Win32'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|x64'" Label="Configuration">
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v140</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -122,68 +169,59 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)_debug32\</OutDir>
-    <GenerateManifest>false</GenerateManifest>
-    <TargetName>pro_rtp</TargetName>
+    <TargetName>pro_util_s</TargetName>
+    <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|Win32'">
-    <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)_debug32-md\</OutDir>
-    <GenerateManifest>false</GenerateManifest>
-    <TargetName>pro_rtp</TargetName>
+    <TargetName>pro_util_s-md</TargetName>
+    <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)_debug64\</OutDir>
-    <GenerateManifest>false</GenerateManifest>
-    <TargetName>pro_rtp</TargetName>
+    <TargetName>pro_util_s</TargetName>
+    <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|x64'">
-    <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)_debug64-md\</OutDir>
-    <GenerateManifest>false</GenerateManifest>
-    <TargetName>pro_rtp</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)_release32\</OutDir>
-    <GenerateManifest>false</GenerateManifest>
-    <TargetName>pro_rtp</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|Win32'">
-    <LinkIncremental>false</LinkIncremental>
-    <OutDir>$(SolutionDir)_release32-md\</OutDir>
-    <GenerateManifest>false</GenerateManifest>
-    <TargetName>pro_rtp</TargetName>
+    <TargetName>pro_util_s-md</TargetName>
+    <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)_release64\</OutDir>
-    <GenerateManifest>false</GenerateManifest>
-    <TargetName>pro_rtp</TargetName>
+    <TargetName>pro_util_s</TargetName>
+    <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|x64'">
-    <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)_release64-md\</OutDir>
-    <GenerateManifest>false</GenerateManifest>
-    <TargetName>pro_rtp</TargetName>
+    <TargetName>pro_util_s-md</TargetName>
+    <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(SolutionDir)_release32\</OutDir>
+    <TargetName>pro_util_s</TargetName>
+    <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|Win32'">
+    <OutDir>$(SolutionDir)_release32-md\</OutDir>
+    <TargetName>pro_util_s-md</TargetName>
+    <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x0501;_CRT_NONSTDC_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;PRO_RTP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_WIN32_WINNT=0x0501;_CRT_NONSTDC_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pronet/pro_util;../../../src/pronet/pro_net</AdditionalIncludeDirectories>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_shared;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ModuleDefinitionFile>../../../src/pronet/pro_rtp/pro_rtp.def</ModuleDefinitionFile>
-      <GenerateMapFile>true</GenerateMapFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|Win32'">
@@ -191,16 +229,15 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x0501;_CRT_NONSTDC_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;PRO_RTP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_WIN32_WINNT=0x0501;_CRT_NONSTDC_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pronet/pro_util;../../../src/pronet/pro_net</AdditionalIncludeDirectories>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_shared;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ModuleDefinitionFile>../../../src/pronet/pro_rtp/pro_rtp.def</ModuleDefinitionFile>
-      <GenerateMapFile>true</GenerateMapFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -208,16 +245,15 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x0501;_CRT_NONSTDC_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;PRO_RTP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_WIN32_WINNT=0x0501;_CRT_NONSTDC_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pronet/pro_util;../../../src/pronet/pro_net</AdditionalIncludeDirectories>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_shared;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ModuleDefinitionFile>../../../src/pronet/pro_rtp/pro_rtp.def</ModuleDefinitionFile>
-      <GenerateMapFile>true</GenerateMapFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-MD|x64'">
@@ -225,16 +261,15 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x0501;_CRT_NONSTDC_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;PRO_RTP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;_WIN32_WINNT=0x0501;_CRT_NONSTDC_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pronet/pro_util;../../../src/pronet/pro_net</AdditionalIncludeDirectories>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_shared;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ModuleDefinitionFile>../../../src/pronet/pro_rtp/pro_rtp.def</ModuleDefinitionFile>
-      <GenerateMapFile>true</GenerateMapFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -244,18 +279,17 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x0501;_CRT_NONSTDC_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;PRO_RTP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_WIN32_WINNT=0x0501;_CRT_NONSTDC_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pronet/pro_util;../../../src/pronet/pro_net</AdditionalIncludeDirectories>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_shared;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ModuleDefinitionFile>../../../src/pronet/pro_rtp/pro_rtp.def</ModuleDefinitionFile>
-      <GenerateMapFile>true</GenerateMapFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|Win32'">
@@ -265,18 +299,17 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x0501;_CRT_NONSTDC_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;PRO_RTP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_WIN32_WINNT=0x0501;_CRT_NONSTDC_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pronet/pro_util;../../../src/pronet/pro_net</AdditionalIncludeDirectories>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_shared;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ModuleDefinitionFile>../../../src/pronet/pro_rtp/pro_rtp.def</ModuleDefinitionFile>
-      <GenerateMapFile>true</GenerateMapFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -286,18 +319,17 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x0501;_CRT_NONSTDC_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;PRO_RTP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_WIN32_WINNT=0x0501;_CRT_NONSTDC_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pronet/pro_util;../../../src/pronet/pro_net</AdditionalIncludeDirectories>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_shared;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ModuleDefinitionFile>../../../src/pronet/pro_rtp/pro_rtp.def</ModuleDefinitionFile>
-      <GenerateMapFile>true</GenerateMapFile>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-MD|x64'">
@@ -307,99 +339,19 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x0501;_CRT_NONSTDC_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;PRO_RTP_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;_WIN32_WINNT=0x0501;_CRT_NONSTDC_NO_WARNINGS;_CRT_NONSTDC_NO_DEPRECATE;_CRT_SECURE_NO_WARNINGS;_CRT_SECURE_NO_DEPRECATE;STRSAFE_NO_DEPRECATE;_WINSOCK_DEPRECATED_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <BrowseInformation>true</BrowseInformation>
-      <AdditionalIncludeDirectories>../../../src/pronet/pro_util;../../../src/pronet/pro_net</AdditionalIncludeDirectories>
+      <ProgramDataBaseFileName>$(OutDir)$(TargetName).pdb</ProgramDataBaseFileName>
+      <AdditionalIncludeDirectories>../../../src/mbedtls/include;../../../src/pronet/pro_shared;../../../src/pronet/pro_util</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <ModuleDefinitionFile>../../../src/pronet/pro_rtp/pro_rtp.def</ModuleDefinitionFile>
-      <GenerateMapFile>true</GenerateMapFile>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <None Include="..\..\..\src\pronet\pro_rtp\manifest.bin" />
-    <None Include="..\..\..\src\pronet\pro_rtp\pro_rtp.def" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\resource.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_base.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_bucket.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_flow_stat.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_msg.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_msg_c2s.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_msg_client.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_msg_command.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_msg_server.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_packet.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_port_allocator.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_reorder.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_service.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_session_a.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_session_base.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_session_mcast.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_session_mcast_ex.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_session_sslclient_ex.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_session_sslserver_ex.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_session_tcpclient.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_session_tcpclient_ex.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_session_tcpserver.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_session_tcpserver_ex.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_session_udpclient.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_session_udpclient_ex.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_session_udpserver.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_session_udpserver_ex.h" />
-    <ClInclude Include="..\..\..\src\pronet\pro_rtp\rtp_session_wrapper.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="..\..\..\src\pronet\pro_rtp\pro_rtp.rc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_base.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_bucket.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_flow_stat.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_msg.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_msg_c2s.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_msg_client.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_msg_server.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_packet.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_port_allocator.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_reorder.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_service.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_session_a.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_session_base.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_session_mcast.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_session_mcast_ex.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_session_sslclient_ex.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_session_sslserver_ex.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_session_tcpclient.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_session_tcpclient_ex.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_session_tcpserver.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_session_tcpserver_ex.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_session_udpclient.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_session_udpclient_ex.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_session_udpserver.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_session_udpserver_ex.cpp" />
-    <ClCompile Include="..\..\..\src\pronet\pro_rtp\rtp_session_wrapper.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\mbedtls\mbedtls.vcxproj">
-      <Project>{a9acda62-8f78-42d2-a408-8671249ccc21}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\pro_net\pro_net.vcxproj">
-      <Project>{efd2c1e4-7454-49df-840b-5acdb0de2405}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\pro_shared\pro_shared.vcxproj">
-      <Project>{4f8bac59-c5d5-4fbe-b436-5c0096fb929e}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\pro_util\pro_util.vcxproj">
-      <Project>{95667892-d4a4-41d9-985d-d5346eedeb3b}</Project>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
