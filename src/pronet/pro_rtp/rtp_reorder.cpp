@@ -20,14 +20,10 @@
 #include "rtp_base.h"
 #include "rtp_packet.h"
 #include "../pro_util/pro_memory_pool.h"
+#include "../pro_util/pro_stat.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_time_util.h"
 #include "../pro_util/pro_z.h"
-
-/////////////////////////////////////////////////////////////////////////////
-////
-
-#define MAX_LOSS_COUNT 15000
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -143,58 +139,7 @@ CRtpReorder::PushBackAddRef(IRtpPacket* packet)
         return;
     }
 
-    int64_t seq64 = -1;
-
-    if (seq16 == (uint16_t)m_minSeq64)
-    {
-        seq64 = m_minSeq64;
-    }
-    else if (seq16 < (uint16_t)m_minSeq64)
-    {
-        uint16_t dist1 = (uint16_t)-1 - (uint16_t)m_minSeq64 + seq16 + 1;
-        uint16_t dist2 = (uint16_t)m_minSeq64 - seq16;
-
-        if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* go forward */
-        {
-            seq64 =   m_minSeq64 >> 16;
-            ++seq64;
-            seq64 <<= 16;
-            seq64 |=  seq16;
-        }
-        else if (dist2 < dist1 && dist2 < MAX_LOSS_COUNT) /* go back */
-        {
-            seq64 =   m_minSeq64 >> 16;
-            seq64 <<= 16;
-            seq64 |=  seq16;
-        }
-        else                                              /* reset */
-        {
-            seq64 = -1;
-        }
-    }
-    else
-    {
-        uint16_t dist1 = seq16 - (uint16_t)m_minSeq64;
-        uint16_t dist2 = (uint16_t)-1 - seq16 + (uint16_t)m_minSeq64 + 1;
-
-        if (dist1 < dist2 && dist1 < MAX_LOSS_COUNT)      /* go forward */
-        {
-            seq64 =   m_minSeq64 >> 16;
-            seq64 <<= 16;
-            seq64 |=  seq16;
-        }
-        else if (dist2 < dist1 && dist2 < MAX_LOSS_COUNT) /* go back */
-        {
-            seq64 =   m_minSeq64 >> 16;
-            --seq64;
-            seq64 <<= 16;
-            seq64 |=  seq16;
-        }
-        else                                              /* reset */
-        {
-            seq64 = -1;
-        }
-    }
+    int64_t seq64 = ProSeq16ToSeq64(seq16, m_minSeq64);
 
     if (seq64 < 0)
     {
