@@ -385,7 +385,7 @@ CProStatLossRate::PushData(uint16_t dataSeq)
         m_reorder->Push(dataSeq, tick);
     }
 
-    int64_t seq64 = ProSeq16ToSeq64(m_reorder->itrSeq, dataSeq);
+    int64_t seq64 = ProSeq16ToSeq64(dataSeq, m_nextSeq64);
 
     /*
      * reset
@@ -629,8 +629,8 @@ CProStatAvgValue::Update(int64_t tick)
 ////
 
 int64_t
-ProSeq16ToSeq64(int64_t  referenceSeq64,
-                uint16_t inputSeq)
+ProSeq16ToSeq64(uint16_t inputSeq,
+                int64_t  referenceSeq64)
 {
     int64_t seq64 = -1;
 

@@ -143,8 +143,8 @@ private:
 ////
 
 int64_t
-ProSeq16ToSeq64(int64_t  referenceSeq64,
-                uint16_t inputSeq);
+ProSeq16ToSeq64(uint16_t inputSeq,
+                int64_t  referenceSeq64);
 
 /////////////////////////////////////////////////////////////////////////////
 ////
