@@ -116,9 +116,12 @@ CRtpReorder::PushBackAddRef(IRtpPacket* packet)
         return;
     }
 
-    int64_t tick = ProGetTickCount64();
-
     uint16_t seq16 = packet->GetSequence();
+    int64_t  tick  = ProGetTickCount64();
+
+    /*
+     * first packet
+     */
     if (m_minSeq64 < 0)
     {
         m_minSeq64      = seq16;

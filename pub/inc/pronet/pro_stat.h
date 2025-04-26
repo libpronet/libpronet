@@ -104,6 +104,9 @@ private:
     double             m_lossRate;
     PRO_REORDER_BLOCK* m_reorder;
 
+    int64_t            m_prevSeq64; /* for debugging */
+    uint16_t           m_prevSeq16; /* for debugging */
+
     DECLARE_SGI_POOL(0)
 };
 

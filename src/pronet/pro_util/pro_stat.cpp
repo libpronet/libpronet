@@ -26,7 +26,7 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define REORDER_BITMAP_BYTES 16  /* 128 bits */
+#define REORDER_BITMAP_BYTES 40  /* 320 bits */
 #define MAX_LOSS_COUNT       15000
 #define INIT_SPAN_MS         3000
 #define DELTA_SPAN_MS        200 /* 100 ~ 500 */
@@ -313,6 +313,9 @@ CProStatLossRate::CProStatLossRate()
     m_maxBrokenDuration = 10;
     m_reorder           = new PRO_REORDER_BLOCK;
 
+    m_prevSeq64         = -1;
+    m_prevSeq16         = 0;
+
     Reset();
 }
 
@@ -403,6 +406,9 @@ CProStatLossRate::PushData(uint16_t dataSeq)
 
         Update(tick);
 
+        m_prevSeq64 = seq64;
+        m_prevSeq16 = dataSeq;
+
         return;
     }
 
@@ -448,6 +454,9 @@ CProStatLossRate::PushData(uint16_t dataSeq)
     }
 
     Update(tick);
+
+    m_prevSeq64 = seq64;
+    m_prevSeq16 = dataSeq;
 }
 
 void
