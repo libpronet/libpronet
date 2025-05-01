@@ -102,11 +102,11 @@ directory of "pub/inc/pronet" for more.
                 ______________________________
         ====>>in__________ o                  |__________
                           | o                  __________out====>>
-                          |..ooooooooooooooooo|       A
-                          |ooooooooooooooooooo|       |
-                          |ooooooooooooooooooo| WallHeight is 5
-                          |ooooooooooooooooooo|       |
-                          |ooooooooooooooooooo|       V
+                          |..ooooooooooooooooo|
+                          |ooooooooooooooooooo|
+                          |ooooooooooooooooooo|
+                          |ooooooooooooooooooo|
+                          |ooooooooooooooooooo|
                  Fig.4 structure diagram of RtpReorder
 
          ______________________________________________________

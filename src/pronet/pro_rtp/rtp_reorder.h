@@ -39,7 +39,7 @@ public:
 
     virtual void SetWallHeightInMilliseconds(size_t heightInMs); /* = 500 */
 
-    virtual void SetMaxBrokenDuration(size_t brokenDurationInSeconds); /* = 10 */
+    virtual void SetMaxBrokenDuration(size_t brokenDurationInSeconds); /* = 5 */
 
     virtual size_t GetTotalPackets() const;
 

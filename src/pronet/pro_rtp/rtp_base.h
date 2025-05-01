@@ -47,11 +47,11 @@
 /*               ______________________________
  *       ====>>in__________ o                  |__________
  *                         | o                  __________out====>>
- *                         |..ooooooooooooooooo|       A
- *                         |ooooooooooooooooooo|       |
- *                         |ooooooooooooooooooo| WallHeight is 5
- *                         |ooooooooooooooooooo|       |
- *                         |ooooooooooooooooooo|       V
+ *                         |..ooooooooooooooooo|
+ *                         |ooooooooooooooooooo|
+ *                         |ooooooooooooooooooo|
+ *                         |ooooooooooooooooooo|
+ *                         |ooooooooooooooooooo|
  *                Fig.3 structure diagram of RtpReorder
  */
 
@@ -656,7 +656,7 @@ public:
 
     virtual void SetWallHeightInMilliseconds(size_t heightInMs /* = 500 */) = 0;
 
-    virtual void SetMaxBrokenDuration(size_t brokenDurationInSeconds /* = 10 */) = 0;
+    virtual void SetMaxBrokenDuration(size_t brokenDurationInSeconds /* = 5 */) = 0;
 
     virtual size_t GetTotalPackets() const = 0;
 

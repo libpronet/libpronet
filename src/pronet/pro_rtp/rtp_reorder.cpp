@@ -32,7 +32,7 @@ CRtpReorder::CRtpReorder()
 {
     m_heightInPackets   = 100;
     m_heightInMs        = 500;
-    m_maxBrokenDuration = 10;
+    m_maxBrokenDuration = 5;
 
     Reset();
 }
@@ -90,7 +90,7 @@ CRtpReorder::SetWallHeightInMilliseconds(size_t heightInMs) /* = 500 */
 }
 
 void
-CRtpReorder::SetMaxBrokenDuration(size_t brokenDurationInSeconds) /* = 10 */
+CRtpReorder::SetMaxBrokenDuration(size_t brokenDurationInSeconds) /* = 5 */
 {
     assert(brokenDurationInSeconds > 0);
     if (brokenDurationInSeconds == 0)
