@@ -76,7 +76,10 @@ public:
 
     void SetMaxBrokenDuration(unsigned int brokenDurationInSeconds); /* = 5 */
 
-    void PushData(uint16_t dataSeq);
+    void PushData(
+        uint16_t seq,
+        uint32_t ssrc = 0
+        );
 
     double CalcLossRate();
 
@@ -86,7 +89,7 @@ public:
 
 private:
 
-    void Push(int64_t seq64);
+    void Process(int64_t seq64);
 
     void Update(int64_t tick);
 
@@ -97,15 +100,13 @@ private:
     int64_t            m_startTick;
     int64_t            m_calcTick;
     int64_t            m_lastValidTick;
+    uint32_t           m_lastSsrc;
     int64_t            m_nextSeq64;
     double             m_count;
     double             m_lossCount;
     double             m_lossCountAll;
     double             m_lossRate;
     PRO_REORDER_BLOCK* m_reorder;
-
-    int64_t            m_prevSeq64; /* for debugging */
-    uint16_t           m_prevSeq16; /* for debugging */
 
     DECLARE_SGI_POOL(0)
 };

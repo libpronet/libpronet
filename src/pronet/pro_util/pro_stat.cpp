@@ -31,7 +31,7 @@
 #define INIT_SPAN_MS         3000
 #define DELTA_SPAN_MS        200 /* 100 ~ 500 */
 #define CALC_SPAN_MS         100
-#define MAX_POP_INTERVAL_MS  1500
+#define MAX_POP_INTERVAL_MS  1000
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -128,10 +128,10 @@ struct PRO_REORDER_BLOCK
     void Reset()
     {
         baseSeq = -1;
-        itrSeq  = -1;
+        lastSeq = -1;
         popTick = 0;
 
-        memset(bitmap, 0, sizeof(bitmap));
+        memset(bitmap, 0, REORDER_BITMAP_BYTES);
     }
 
     int Push(
@@ -151,7 +151,7 @@ struct PRO_REORDER_BLOCK
         if (baseSeq < 0)
         {
             baseSeq   =  seq;
-            itrSeq    =  seq;
+            lastSeq   =  seq;
             popTick   =  tick;
             bitmap[0] |= 1;
 
@@ -161,7 +161,7 @@ struct PRO_REORDER_BLOCK
         /*
          * too low
          */
-        if (seq < itrSeq)
+        if (seq < baseSeq)
         {
             return -1;
         }
@@ -179,62 +179,80 @@ struct PRO_REORDER_BLOCK
 
         bitmap[i] |= 1 << j;
 
+        if (seq > lastSeq)
+        {
+            lastSeq = seq;
+        }
+
         return 0;
     }
 
-    void Read(
+    void Pop(
         CProStlVector<int64_t>& seqs,
         int64_t                 tick
         )
     {
-        if (baseSeq < 0)
+        if (baseSeq < 0 || lastSeq - baseSeq + 1 < 8)
         {
             return;
         }
 
-        int64_t endSeq = baseSeq + REORDER_BITMAP_BYTES * 8;
+        int size = 0;
 
-        for (; itrSeq < endSeq; ++itrSeq)
+        for (int i = 0; i < REORDER_BITMAP_BYTES; ++i)
         {
-            int i = (int)(itrSeq - baseSeq) / 8;
-            int j = (int)(itrSeq - baseSeq) % 8;
-
-            /*
-             * there is a gap
-             */
-            if ((bitmap[i] & (1 << j)) == 0)
+            if (bitmap[i] != 0xFF)
             {
                 break;
             }
 
-            seqs.push_back(itrSeq);
+            ++size;
+            seqs.push_back(baseSeq++);
+            seqs.push_back(baseSeq++);
+            seqs.push_back(baseSeq++);
+            seqs.push_back(baseSeq++);
+            seqs.push_back(baseSeq++);
+            seqs.push_back(baseSeq++);
+            seqs.push_back(baseSeq++);
+            seqs.push_back(baseSeq++);
         }
 
-        int i = 0;
-        int c = (int)(itrSeq - baseSeq) / 8;
-
-        for (; i < c; ++i)
-        {
-            Shift8();
-        }
-
-        if (seqs.size() > 0)
-        {
-            popTick = tick;
-        }
-    }
-
-    void Read8(
-        CProStlVector<int64_t>& seqs,
-        int64_t                 tick
-        )
-    {
-        if (baseSeq < 0)
+        if (size == 0)
         {
             return;
         }
 
-        int64_t endSeq = baseSeq + 8;
+        if (size == REORDER_BITMAP_BYTES)
+        {
+            memset(bitmap, 0, REORDER_BITMAP_BYTES);
+        }
+        else
+        {
+            memmove(bitmap, bitmap + size, REORDER_BITMAP_BYTES - size);
+            memset(bitmap + REORDER_BITMAP_BYTES - size, 0, size);
+        }
+
+        popTick = tick;
+    }
+
+    void PopLast(
+        CProStlVector<int64_t>& seqs,
+        int64_t                 tick
+        )
+    {
+        if (baseSeq < 0 || lastSeq - baseSeq + 1 < 8)
+        {
+            return;
+        }
+
+        int size = (int)((double)(lastSeq - baseSeq + 1) * 80 / 100 / 8); /* 80% */
+        if (size < 1)
+        {
+            return;
+        }
+
+        int64_t itrSeq = baseSeq;
+        int64_t endSeq = baseSeq + size * 8;
 
         for (; itrSeq < endSeq; ++itrSeq)
         {
@@ -247,13 +265,9 @@ struct PRO_REORDER_BLOCK
             }
         }
 
-        int i = 0;
-        int c = (int)(itrSeq - baseSeq) / 8;
-
-        for (; i < c; ++i)
-        {
-            Shift8();
-        }
+        baseSeq = endSeq;
+        memmove(bitmap, bitmap + size, REORDER_BITMAP_BYTES - size);
+        memset(bitmap + REORDER_BITMAP_BYTES - size, 0, size);
 
         if (seqs.size() > 0)
         {
@@ -261,60 +275,57 @@ struct PRO_REORDER_BLOCK
         }
     }
 
-    bool IsEmpty()
-    {
-        bool ret = true;
-
-        for (int i = 0; i < REORDER_BITMAP_BYTES; ++i)
-        {
-            if (bitmap[i] != 0)
-            {
-                ret = false;
-                break;
-            }
-        }
-
-        return ret;
-    }
-
-    int64_t       baseSeq;
-    int64_t       itrSeq;
-    int64_t       popTick;
-    unsigned char bitmap[REORDER_BITMAP_BYTES];
-
-private:
-
-    void Shift8()
+    void FlushHalf(
+        CProStlVector<int64_t>& seqs,
+        int64_t                 tick
+        )
     {
         if (baseSeq < 0)
         {
             return;
         }
 
-        baseSeq += 8;
-        if (itrSeq < baseSeq)
+        int halfSize = REORDER_BITMAP_BYTES / 2;
+
+        int64_t itrSeq = baseSeq;
+        int64_t endSeq = baseSeq + halfSize * 8;
+
+        for (; itrSeq < endSeq; ++itrSeq)
         {
-            itrSeq = baseSeq;
+            int i = (int)(itrSeq - baseSeq) / 8;
+            int j = (int)(itrSeq - baseSeq) % 8;
+
+            if ((bitmap[i] & (1 << j)) != 0)
+            {
+                seqs.push_back(itrSeq);
+            }
         }
 
-        for (int i = 0; i < REORDER_BITMAP_BYTES - 1; ++i)
+        baseSeq = endSeq;
+        memcpy(bitmap, bitmap + halfSize, halfSize);
+        memset(bitmap + halfSize, 0, halfSize);
+
+        if (seqs.size() > 0)
         {
-            bitmap[i]     =  bitmap[i + 1];
-            bitmap[i + 1] =  0;
+            popTick = tick;
         }
     }
+
+    int64_t       baseSeq;
+    int64_t       lastSeq;
+    int64_t       popTick;
+    unsigned char bitmap[REORDER_BITMAP_BYTES];
 
     DECLARE_SGI_POOL(0)
 };
 
+/*-------------------------------------------------------------------------*/
+
 CProStatLossRate::CProStatLossRate()
 {
     m_timeSpan          = 5;
-    m_maxBrokenDuration = 10;
+    m_maxBrokenDuration = 5;
     m_reorder           = new PRO_REORDER_BLOCK;
-
-    m_prevSeq64         = -1;
-    m_prevSeq16         = 0;
 
     Reset();
 }
@@ -331,6 +342,7 @@ CProStatLossRate::Reset()
     m_startTick     = 0;
     m_calcTick      = 0;
     m_lastValidTick = 0;
+    m_lastSsrc      = 0;
     m_nextSeq64     = -1;
     m_count         = 0;
     m_lossCount     = 0;
@@ -365,49 +377,50 @@ CProStatLossRate::SetMaxBrokenDuration(unsigned int brokenDurationInSeconds) /* 
 }
 
 void
-CProStatLossRate::PushData(uint16_t dataSeq)
+CProStatLossRate::PushData(uint16_t seq,
+                           uint32_t ssrc) /* = 0 */
 {
     int64_t tick = ProGetTickCount64();
 
     /*
-     * first packet
+     * reset
      */
-    if (m_startTick == 0)
+    if (m_startTick == 0 || tick - m_lastValidTick > m_maxBrokenDuration * 1000 ||
+        ssrc != m_lastSsrc)
     {
-        int64_t initSpan = m_timeSpan * 1000;
-        if (initSpan > INIT_SPAN_MS)
+        if (m_startTick == 0)
         {
-            initSpan = INIT_SPAN_MS;
+            int64_t initSpan = m_timeSpan * 1000;
+            if (initSpan > INIT_SPAN_MS)
+            {
+                initSpan = INIT_SPAN_MS;
+            }
+
+            m_startTick = tick - initSpan;
         }
 
-        m_startTick     = tick - initSpan;
         m_lastValidTick = tick;
+        m_lastSsrc      = ssrc;
         m_nextSeq64     = -1;
 
         m_reorder->Reset();
-        m_reorder->Push(dataSeq, tick);
-    }
+        m_reorder->Push(seq, tick);
 
-    int64_t seq64 = ProSeq16ToSeq64(dataSeq, m_nextSeq64);
+        return;
+    }
 
     /*
      * reset
      */
-    if (seq64 < 0 || tick - m_lastValidTick > m_maxBrokenDuration * 1000)
+    int64_t seq64 = ProSeq16ToSeq64(seq, m_nextSeq64);
+    if (seq64 < 0)
     {
         m_lastValidTick = tick;
+        m_lastSsrc      = ssrc;
         m_nextSeq64     = -1;
-        ++m_count;
-        ++m_lossCount;
-        ++m_lossCountAll;
 
         m_reorder->Reset();
-        m_reorder->Push(dataSeq, tick);
-
-        Update(tick);
-
-        m_prevSeq64 = seq64;
-        m_prevSeq16 = dataSeq;
+        m_reorder->Push(seq, tick);
 
         return;
     }
@@ -417,9 +430,9 @@ CProStatLossRate::PushData(uint16_t dataSeq)
     int ret = m_reorder->Push(seq64, tick);
     if (ret > 0)
     {
-        for (int i = 0; i < REORDER_BITMAP_BYTES; ++i)
+        for (int i = 0; i < 2; ++i)
         {
-            m_reorder->Read8(seqs, tick);
+            m_reorder->FlushHalf(seqs, tick);
 
             ret = m_reorder->Push(seq64, tick);
             if (ret <= 0)
@@ -431,7 +444,8 @@ CProStatLossRate::PushData(uint16_t dataSeq)
         if (ret > 0)
         {
             m_reorder->Reset();
-            ret = m_reorder->Push(seq64, tick);
+            m_reorder->Push(seq64, tick);
+            ret = 0;
         }
     }
 
@@ -443,27 +457,30 @@ CProStatLossRate::PushData(uint16_t dataSeq)
         m_lastValidTick = tick;
     }
 
-    m_reorder->Read(seqs, tick);
+    m_reorder->Pop(seqs, tick);
+    if (tick - m_reorder->popTick > MAX_POP_INTERVAL_MS)
+    {
+        m_reorder->PopLast(seqs, tick);
+    }
 
     int i = 0;
     int c = (int)seqs.size();
 
     for (; i < c; ++i)
     {
-        Push(seqs[i]);
+        Process(seqs[i]);
     }
 
-    Update(tick);
-
-    m_prevSeq64 = seq64;
-    m_prevSeq16 = dataSeq;
+    if (c > 0)
+    {
+        Update(tick);
+    }
 }
 
 void
-CProStatLossRate::Push(int64_t seq64)
+CProStatLossRate::Process(int64_t seq64)
 {
     assert(seq64 >= 0);
-    assert(seq64 >= m_nextSeq64);
     if (seq64 < 0 || seq64 < m_nextSeq64)
     {
         return;
@@ -481,42 +498,36 @@ CProStatLossRate::Push(int64_t seq64)
     }
     else
     {
-        int64_t dist = seq64 - m_nextSeq64;
+        int64_t lost = seq64 - m_nextSeq64;
 
         m_nextSeq64    =  seq64 + 1;
-        m_count        += dist + 1;
-        m_lossCount    += dist;
-        m_lossCountAll += dist;
+        m_count        += lost + 1;
+        m_lossCount    += lost;
+        m_lossCountAll += lost;
     }
 }
 
 double
 CProStatLossRate::CalcLossRate()
 {
-    if (m_startTick > 0 && !m_reorder->IsEmpty())
+    if (m_startTick > 0)
     {
         int64_t tick = ProGetTickCount64();
         if (tick - m_reorder->popTick > MAX_POP_INTERVAL_MS)
         {
             CProStlVector<int64_t> seqs;
-
-            for (int i = 0; i < REORDER_BITMAP_BYTES; ++i)
-            {
-                m_reorder->Read8(seqs, tick);
-            }
-
-            m_reorder->Reset();
+            m_reorder->PopLast(seqs, tick);
 
             int i = 0;
             int c = (int)seqs.size();
 
             for (; i < c; ++i)
             {
-                Push(seqs[i]);
+                Process(seqs[i]);
             }
-
-            Update(tick);
         }
+
+        Update(tick);
     }
 
     return m_lossRate;

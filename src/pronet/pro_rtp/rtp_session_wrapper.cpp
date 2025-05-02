@@ -951,7 +951,7 @@ CRtpSessionWrapper::DoSendPacket()
             m_statFrameRateOutput.PushDataBits(1);
         }
         m_statBitRateOutput.PushDataBytes(packet->GetPayloadSize());
-        m_statLossRateOutput.PushData(packet->GetSequence());
+        m_statLossRateOutput.PushData(packet->GetSequence(), packet->GetSsrc());
 
         m_bucket->PopFrontRelease(packet);
     }
@@ -1436,7 +1436,7 @@ CRtpSessionWrapper::OnRecvSession(IRtpSession* session,
             m_statFrameRateInput.PushDataBits(1);
         }
         m_statBitRateInput.PushDataBytes(packet->GetPayloadSize());
-        m_statLossRateInput.PushData(packet->GetSequence());
+        m_statLossRateInput.PushData(packet->GetSequence(), packet->GetSsrc());
 
         m_observer->AddRef();
         observer = m_observer;
