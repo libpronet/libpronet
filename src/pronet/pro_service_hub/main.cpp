@@ -19,6 +19,7 @@
 #include "../pro_net/pro_net.h"
 #include "../pro_util/pro_config_file.h"
 #include "../pro_util/pro_config_stream.h"
+#include "../pro_util/pro_log_file.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
@@ -29,7 +30,10 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-#define CONFIG_FILE_NAME "pro_service_hub.cfg"
+#define LOG_FILE_NAME          "pro_service_hub.log"
+#define CONFIG_FILE_NAME       "pro_service_hub.cfg"
+#define LOG_LOOP_BYTES         (50 * 1000 * 1000)
+#define LOG_HEARTBEAT_INTERVAL 60
 
 struct SERVICE_HUB_CONFIG_INFO
 {
@@ -265,7 +269,10 @@ int main(int argc, char* argv[])
 {
     ProNetInit();
 
+    CProLogFile*                   logFile = new CProLogFile;
     IProReactor*                   reactor = NULL;
+    CProStlString                  logFileName;
+    CProStlString                  configFileName;
     CProStlString                  portString;
     SERVICE_HUB_CONFIG_INFO        configInfo;
     CProStlVector<IProServiceHub*> hubs;
@@ -273,20 +280,34 @@ int main(int argc, char* argv[])
     CProStlString timeString;
     ProGetLocalTimeString(timeString);
 
-    char exeRoot[1024] = "";
-    ProGetExeDir_(exeRoot, argv[0]);
+    {
+        char exeRoot[1024] = "";
+        ProGetExeDir_(exeRoot, argv[0]);
+
+        logFileName    =  exeRoot;
+        logFileName    += LOG_FILE_NAME;
+        configFileName =  exeRoot;
+        configFileName += CONFIG_FILE_NAME;
+    }
+
+    static char s_traceInfo[4096] = "";
+
+    logFile->Reinit(logFileName.c_str(), true); /* append mode */
+    logFile->SetMaxSize(LOG_LOOP_BYTES);
+    if (logFile->GetSize() > 0)
+    {
+        logFile->Log("\n\n", PRO_LL_INFO, false);
+    }
 
     {
-        CProStlString configFileName = exeRoot;
-        configFileName += CONFIG_FILE_NAME;
-
         CProConfigFile configFile;
         configFile.Init(configFileName.c_str());
 
         CProStlVector<PRO_CONFIG_ITEM> configs;
         if (!configFile.Read(configs))
         {
-            printf(
+            sprintf(
+                s_traceInfo,
                 "\n"
                 "%s \n"
                 " pro_service_hub --- error! can't read the config file. \n"
@@ -295,7 +316,8 @@ int main(int argc, char* argv[])
                 timeString.c_str(),
                 configFileName.c_str()
                 );
-            fflush(stdout);
+            printf("%s", s_traceInfo);
+            logFile->Log(s_traceInfo, PRO_LL_INFO, false);
 
             goto EXIT;
         }
@@ -306,14 +328,16 @@ int main(int argc, char* argv[])
     reactor = ProCreateReactor(configInfo.hubs_thread_count);
     if (reactor == NULL)
     {
-        printf(
+        sprintf(
+            s_traceInfo,
             "\n"
             "%s \n"
             " pro_service_hub --- error! can't create reactor. \n"
             ,
             timeString.c_str()
             );
-        fflush(stdout);
+        printf("%s", s_traceInfo);
+        logFile->Log(s_traceInfo, PRO_LL_INFO, false);
 
         goto EXIT;
     }
@@ -374,7 +398,8 @@ int main(int argc, char* argv[])
 
             if (hub == NULL)
             {
-                printf(
+                sprintf(
+                    s_traceInfo,
                     "\n"
                     "%s \n"
                     " pro_service_hub --- error! can't create service hub on the port %u. \n"
@@ -385,7 +410,8 @@ int main(int argc, char* argv[])
                     (unsigned int)port,
                     (unsigned int)port
                     );
-                fflush(stdout);
+                printf("%s", s_traceInfo);
+                logFile->Log(s_traceInfo, PRO_LL_INFO, false);
 
                 goto EXIT;
             }
@@ -407,7 +433,8 @@ int main(int argc, char* argv[])
         } /* end of for () */
     }
 
-    printf(
+    sprintf(
+        s_traceInfo,
         "\n"
         "%s \n"
         " pro_service_hub [ver-%d.%d.%d] --- [ports : %s] --- ok! \n"
@@ -418,11 +445,44 @@ int main(int argc, char* argv[])
         PRO_VER_PATCH,
         portString.c_str()
         );
-    fflush(stdout);
+    printf("%s", s_traceInfo);
+    logFile->Log(s_traceInfo, PRO_LL_INFO, false);
 
-    g_s_lock.Lock();
-    g_s_cond.Wait(&g_s_lock);
-    g_s_lock.Unlock();
+    while (1)
+    {
+        {
+            CProThreadMutexGuard mon(g_s_lock);
+
+            if (g_s_cond.Wait(&g_s_lock, LOG_HEARTBEAT_INTERVAL * 1000))
+            {
+                break;
+            }
+        }
+
+        ProGetLocalTimeString(timeString);
+        sprintf(
+            s_traceInfo,
+            "\n"
+            "%s \n"
+            " pro_service_hub --- heartbeat. \n"
+            ,
+            timeString.c_str()
+            );
+        printf("%s", s_traceInfo);
+        logFile->Log(s_traceInfo, PRO_LL_INFO, false);
+    }
+
+    ProGetLocalTimeString(timeString);
+    sprintf(
+        s_traceInfo,
+        "\n"
+        "%s \n"
+        " pro_service_hub --- exiting... \n"
+        ,
+        timeString.c_str()
+        );
+    printf("%s", s_traceInfo);
+    logFile->Log(s_traceInfo, PRO_LL_INFO, false);
 
 EXIT:
 
@@ -437,6 +497,7 @@ EXIT:
     }
 
     ProDeleteReactor(reactor);
+    delete logFile;
 
     return 0;
 }
