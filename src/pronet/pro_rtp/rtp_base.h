@@ -105,28 +105,23 @@ class IRtpSessionObserver; /* rtp会话回调目标 */
 /*
  * [[[[ rtp媒体类型. 0无效, 1~127保留, 128~255自定义
  */
-#if !defined(____RTP_MM_TYPE____)
-#define ____RTP_MM_TYPE____
-
 typedef unsigned char RTP_MM_TYPE;
 
-static const RTP_MM_TYPE RTP_MMT_MSG       = 11; /* 消息[11 ~ 20] */
+static const RTP_MM_TYPE RTP_MMT_MSG       = 11; /* 消息[10 ~ 69] */
 static const RTP_MM_TYPE RTP_MMT_MSGII     = 12;
 static const RTP_MM_TYPE RTP_MMT_MSGIII    = 13;
-static const RTP_MM_TYPE RTP_MMT_MSG_MIN   = 11;
-static const RTP_MM_TYPE RTP_MMT_MSG_MAX   = 20;
-static const RTP_MM_TYPE RTP_MMT_AUDIO     = 21; /* 音频[21 ~ 30] */
-static const RTP_MM_TYPE RTP_MMT_AUDIO_MIN = 21;
-static const RTP_MM_TYPE RTP_MMT_AUDIO_MAX = 30;
-static const RTP_MM_TYPE RTP_MMT_VIDEO     = 31; /* 视频[31 ~ 40] */
-static const RTP_MM_TYPE RTP_MMT_VIDEOII   = 32;
-static const RTP_MM_TYPE RTP_MMT_VIDEO_MIN = 31;
-static const RTP_MM_TYPE RTP_MMT_VIDEO_MAX = 40;
-static const RTP_MM_TYPE RTP_MMT_CTRL      = 41; /* 控制[41 ~ 50] */
-static const RTP_MM_TYPE RTP_MMT_CTRL_MIN  = 41;
-static const RTP_MM_TYPE RTP_MMT_CTRL_MAX  = 50;
-
-#endif /* ____RTP_MM_TYPE____ */
+static const RTP_MM_TYPE RTP_MMT_MSG_MIN   = 10;
+static const RTP_MM_TYPE RTP_MMT_MSG_MAX   = 69;
+static const RTP_MM_TYPE RTP_MMT_AUDIO     = 71; /* 音频[70 ~ 79] */
+static const RTP_MM_TYPE RTP_MMT_AUDIO_MIN = 70;
+static const RTP_MM_TYPE RTP_MMT_AUDIO_MAX = 79;
+static const RTP_MM_TYPE RTP_MMT_VIDEO     = 81; /* 视频[80 ~ 89] */
+static const RTP_MM_TYPE RTP_MMT_VIDEOII   = 82;
+static const RTP_MM_TYPE RTP_MMT_VIDEO_MIN = 80;
+static const RTP_MM_TYPE RTP_MMT_VIDEO_MAX = 89;
+static const RTP_MM_TYPE RTP_MMT_CTRL      = 91; /* 控制[90 ~ 99] */
+static const RTP_MM_TYPE RTP_MMT_CTRL_MIN  = 90;
+static const RTP_MM_TYPE RTP_MMT_CTRL_MAX  = 99;
 /*
  * ]]]]
  */
@@ -134,16 +129,11 @@ static const RTP_MM_TYPE RTP_MMT_CTRL_MAX  = 50;
 /*
  * [[[[ rtp扩展打包模式
  */
-#if !defined(____RTP_EXT_PACK_MODE____)
-#define ____RTP_EXT_PACK_MODE____
-
 typedef unsigned char RTP_EXT_PACK_MODE;
 
 static const RTP_EXT_PACK_MODE RTP_EPM_DEFAULT = 0; /* ext8 + rfc12 + payload */
 static const RTP_EXT_PACK_MODE RTP_EPM_TCP2    = 2; /* len2 + payload */
 static const RTP_EXT_PACK_MODE RTP_EPM_TCP4    = 4; /* len4 + payload */
-
-#endif /* ____RTP_EXT_PACK_MODE____ */
 /*
  * ]]]]
  */
@@ -532,8 +522,6 @@ union RTP_INIT_ARGS
 /*
  * rtp包
  */
-#if !defined(____IRtpPacket____)
-#define ____IRtpPacket____
 class IRtpPacket
 {
 public:
@@ -594,7 +582,6 @@ public:
 
     virtual int64_t GetMagic() const = 0;
 };
-#endif /* ____IRtpPacket____ */
 
 /*
  * rtp流控桶
