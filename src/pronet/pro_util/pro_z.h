@@ -33,6 +33,7 @@
 #define __STDC_FORMAT_MACROS
 #endif
 #include <cinttypes>
+#include <climits>
 #include <clocale>
 #include <cmath>
 #include <csignal>
