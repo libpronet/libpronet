@@ -331,12 +331,49 @@ public:
         IProServiceHost* serviceHost,
         int64_t          sockId,     /* 套接字id */
         bool             unixSocket, /* 是否unix套接字 */
-        const char*      localIp,    /* 本地的ip地址.     != NULL */
-        const char*      remoteIp,   /* 远端的ip地址.     != NULL */
-        unsigned short   remotePort, /* 远端的端口号.     > 0 */
-        unsigned char    serviceId,  /* 远端请求的服务id. > 0 */
+        const char*      localIp,    /* 本地的ip地址. != NULL */
+        const char*      remoteIp,   /* 远端的ip地址. != NULL */
+        unsigned short   remotePort, /* 远端的端口号. > 0 */
+        unsigned char    serviceId,  /* 远端请求的服务id */
         unsigned char    serviceOpt, /* 远端请求的服务选项 */
-        const PRO_NONCE* nonce       /* 会话随机数.       != NULL */
+        const PRO_NONCE* nonce       /* 会话随机数. != NULL */
+        ) = 0;
+};
+
+/*
+ * 服务hub回调目标
+ *
+ * 使用者需要实现该接口
+ */
+class IProServiceHubObserver
+{
+public:
+
+    virtual ~IProServiceHubObserver() {}
+
+    virtual unsigned long AddRef() = 0;
+
+    virtual unsigned long Release() = 0;
+
+    /*
+     * 服务host上线时, 该函数将被回调
+     */
+    virtual void OnServiceHostConnected(
+        IProServiceHub* serviceHub,
+        unsigned short  servicePort,  /* 服务端口号. > 0 */
+        unsigned char   serviceId,    /* 服务id. > 0 */
+        unsigned int    hostProcessId /* 服务host的进程id */
+        ) = 0;
+
+    /*
+     * 服务host下线时, 该函数将被回调
+     */
+    virtual void OnServiceHostDisconnected(
+        IProServiceHub* serviceHub,
+        unsigned short  servicePort,   /* 服务端口号. > 0 */
+        unsigned char   serviceId,     /* 服务id. > 0 */
+        unsigned int    hostProcessId, /* 服务host的进程id */
+        bool            timeout        /* 是否超时 */
         ) = 0;
 };
 
@@ -1175,6 +1212,7 @@ ProDeleteTransport(IProTransport* trans);
  * 功能: 创建一个原始服务hub
  *
  * 参数:
+ * observer          : 回调目标
  * reactor           : 反应器
  * servicePort       : 服务端口号. 该端口工作在原始模式
  * enableLoadBalance : 该端口是否开启负载均衡. 如果开启, 该端口支持多个服务host
@@ -1189,14 +1227,16 @@ ProDeleteTransport(IProTransport* trans);
  */
 PRO_NET_API
 IProServiceHub*
-ProCreateServiceHub(IProReactor*   reactor,
-                    unsigned short servicePort,
-                    bool           enableLoadBalance = false);
+ProCreateServiceHub(IProServiceHubObserver* observer,
+                    IProReactor*            reactor,
+                    unsigned short          servicePort,
+                    bool                    enableLoadBalance = false);
 
 /*
  * 功能: 创建一个扩展协议的服务hub
  *
  * 参数:
+ * observer          : 回调目标
  * reactor           : 反应器
  * servicePort       : 服务端口号. 该端口工作在扩展协议模式
  * enableLoadBalance : 该端口是否开启负载均衡. 如果开启, 该端口支持多个服务host
@@ -1212,10 +1252,11 @@ ProCreateServiceHub(IProReactor*   reactor,
  */
 PRO_NET_API
 IProServiceHub*
-ProCreateServiceHubEx(IProReactor*   reactor,
-                      unsigned short servicePort,
-                      bool           enableLoadBalance = false,
-                      unsigned int   timeoutInSeconds  = 0);
+ProCreateServiceHubEx(IProServiceHubObserver* observer,
+                      IProReactor*            reactor,
+                      unsigned short          servicePort,
+                      bool                    enableLoadBalance = false,
+                      unsigned int            timeoutInSeconds  = 0);
 
 /*
  * 功能: 删除一个服务hub

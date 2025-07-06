@@ -21,6 +21,7 @@
 #include "../pro_util/pro_config_stream.h"
 #include "../pro_util/pro_log_file.h"
 #include "../pro_util/pro_memory_pool.h"
+#include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_stl.h"
 #include "../pro_util/pro_thread_mutex.h"
 #include "../pro_util/pro_time_util.h"
@@ -265,12 +266,113 @@ SetupSignalHandlers_i()
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+class CProServiceHubObserver : public IProServiceHubObserver, public CProRefCount
+{
+public:
+
+    CProServiceHubObserver(CProLogFile& logFile) : m_logFile(logFile)
+    {
+    }
+
+    virtual ~CProServiceHubObserver()
+    {
+    }
+
+    virtual unsigned long AddRef()
+    {
+        return 1;
+    }
+
+    virtual unsigned long Release()
+    {
+        return 1;
+    }
+
+    virtual void OnServiceHostConnected(
+        IProServiceHub* serviceHub,
+        unsigned short  servicePort,
+        unsigned char   serviceId,
+        unsigned int    hostProcessId
+        )
+    {
+        assert(serviceHub != NULL);
+        if (serviceHub == NULL)
+        {
+            return;
+        }
+
+        CProStlString timeString;
+        ProGetLocalTimeString(timeString);
+
+        char traceInfo[1024] = "";
+        sprintf(
+            traceInfo,
+            "\n"
+            "%s \n"
+            " CProServiceHubObserver::OnServiceHostConnected(servicePort : %u, serviceId : %u,"
+            " processId : %u/0x%X) \n"
+            ,
+            timeString.c_str(),
+            (unsigned int)servicePort,
+            (unsigned int)serviceId,
+            hostProcessId,
+            hostProcessId
+            );
+        printf("%s", traceInfo);
+        m_logFile.Log(traceInfo, PRO_LL_INFO, false);
+    }
+
+    virtual void OnServiceHostDisconnected(
+        IProServiceHub* serviceHub,
+        unsigned short  servicePort,
+        unsigned char   serviceId,
+        unsigned int    hostProcessId,
+        bool            timeout
+        )
+    {
+        assert(serviceHub != NULL);
+        if (serviceHub == NULL)
+        {
+            return;
+        }
+
+        CProStlString timeString;
+        ProGetLocalTimeString(timeString);
+
+        char traceInfo[1024] = "";
+        sprintf(
+            traceInfo,
+            "\n"
+            "%s \n"
+            " CProServiceHubObserver::OnServiceHostDisconnected(servicePort : %u, serviceId : %u,"
+            " processId : %u/0x%X, timeout : %d) \n"
+            ,
+            timeString.c_str(),
+            (unsigned int)servicePort,
+            (unsigned int)serviceId,
+            hostProcessId,
+            hostProcessId,
+            (int)timeout
+            );
+        printf("%s", traceInfo);
+        m_logFile.Log(traceInfo, PRO_LL_INFO, false);
+    }
+
+private:
+
+    CProLogFile& m_logFile;
+};
+
+/////////////////////////////////////////////////////////////////////////////
+////
+
 int main(int argc, char* argv[])
 {
     ProNetInit();
 
     CProLogFile*                   logFile = new CProLogFile;
     IProReactor*                   reactor = NULL;
+    CProServiceHubObserver         observer(*logFile);
     CProStlString                  logFileName;
     CProStlString                  configFileName;
     CProStlString                  portString;
@@ -381,6 +483,7 @@ int main(int argc, char* argv[])
             if (i == 1 || i == 2)
             {
                 hub = ProCreateServiceHubEx(
+                    &observer,
                     reactor,
                     port,
                     i == 2, /* enableLoadBalance */
@@ -390,6 +493,7 @@ int main(int argc, char* argv[])
             else
             {
                 hub = ProCreateServiceHub(
+                    &observer,
                     reactor,
                     port,
                     i == 4  /* enableLoadBalance */

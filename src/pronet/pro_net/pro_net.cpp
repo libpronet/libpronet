@@ -524,9 +524,10 @@ ProDeleteTransport(IProTransport* trans)
 
 PRO_NET_API
 IProServiceHub*
-ProCreateServiceHub(IProReactor*   reactor,
-                    unsigned short servicePort,
-                    bool           enableLoadBalance) /* = false */
+ProCreateServiceHub(IProServiceHubObserver* observer,
+                    IProReactor*            reactor,
+                    unsigned short          servicePort,
+                    bool                    enableLoadBalance) /* = false */
 {
     ProNetInit();
 
@@ -539,7 +540,7 @@ ProCreateServiceHub(IProReactor*   reactor,
         return NULL;
     }
 
-    if (!hub->Init(reactor, servicePort, 0))
+    if (!hub->Init(observer, reactor, servicePort, 0))
     {
         hub->Release();
 
@@ -551,10 +552,11 @@ ProCreateServiceHub(IProReactor*   reactor,
 
 PRO_NET_API
 IProServiceHub*
-ProCreateServiceHubEx(IProReactor*   reactor,
-                      unsigned short servicePort,
-                      bool           enableLoadBalance, /* = false */
-                      unsigned int   timeoutInSeconds)  /* = 0 */
+ProCreateServiceHubEx(IProServiceHubObserver* observer,
+                      IProReactor*            reactor,
+                      unsigned short          servicePort,
+                      bool                    enableLoadBalance, /* = false */
+                      unsigned int            timeoutInSeconds)  /* = 0 */
 {
     ProNetInit();
 
@@ -567,7 +569,7 @@ ProCreateServiceHubEx(IProReactor*   reactor,
         return NULL;
     }
 
-    if (!hub->Init(reactor, servicePort, timeoutInSeconds))
+    if (!hub->Init(observer, reactor, servicePort, timeoutInSeconds))
     {
         hub->Release();
 

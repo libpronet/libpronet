@@ -57,6 +57,7 @@ CProServiceHub::CProServiceHub(bool enableServiceExt,
 m_enableServiceExt(enableServiceExt),
 m_enableLoadBalance(enableLoadBalance)
 {
+    m_observer = NULL;
     m_reactor  = NULL;
     m_acceptor = NULL;
     m_timerId  = 0;
@@ -68,13 +69,15 @@ CProServiceHub::~CProServiceHub()
 }
 
 bool
-CProServiceHub::Init(IProReactor*   reactor,
-                     unsigned short servicePort,
-                     unsigned int   timeoutInSeconds) /* = 0 */
+CProServiceHub::Init(IProServiceHubObserver* observer,
+                     IProReactor*            reactor,
+                     unsigned short          servicePort,
+                     unsigned int            timeoutInSeconds) /* = 0 */
 {
+    assert(observer != NULL);
     assert(reactor != NULL);
     assert(servicePort > 0);
-    if (reactor == NULL || servicePort == 0)
+    if (observer == NULL || reactor == NULL || servicePort == 0)
     {
         return false;
     }
@@ -82,9 +85,10 @@ CProServiceHub::Init(IProReactor*   reactor,
     {
         CProThreadMutexGuard mon(m_lock);
 
+        assert(m_observer == NULL);
         assert(m_reactor == NULL);
         assert(m_acceptor == NULL);
-        if (m_reactor != NULL || m_acceptor != NULL)
+        if (m_observer != NULL || m_reactor != NULL || m_acceptor != NULL)
         {
             return false;
         }
@@ -115,8 +119,10 @@ CProServiceHub::Init(IProReactor*   reactor,
             return false;
         }
 
-        m_reactor = reactor;
-        m_timerId = reactor->SetupTimer(this, HEARTBEAT_INTERVAL * 1000, HEARTBEAT_INTERVAL * 1000);
+        observer->AddRef();
+        m_observer = observer;
+        m_reactor  = reactor;
+        m_timerId  = reactor->SetupTimer(this, HEARTBEAT_INTERVAL * 1000, HEARTBEAT_INTERVAL * 1000);
     }
 
     return true;
@@ -125,6 +131,7 @@ CProServiceHub::Init(IProReactor*   reactor,
 void
 CProServiceHub::Fini()
 {
+    IProServiceHubObserver*                     observer = NULL;
     IProAcceptor*                               acceptor = NULL;
     CProStlMap<PRO_SERVICE_PIPE, unsigned char> pipe2ServiceId;
     CProStlSet<PRO_SERVICE_SOCK>                expireSocks;
@@ -132,7 +139,7 @@ CProServiceHub::Fini()
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_reactor == NULL || m_acceptor == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_acceptor == NULL)
         {
             return;
         }
@@ -152,6 +159,8 @@ CProServiceHub::Fini()
         acceptor = m_acceptor;
         m_acceptor = NULL;
         m_reactor = NULL;
+        observer = m_observer;
+        m_observer = NULL;
     }
 
     {
@@ -175,6 +184,7 @@ CProServiceHub::Fini()
     }
 
     ProDeleteAcceptor(acceptor);
+    observer->Release();
 }
 
 unsigned long
@@ -283,7 +293,7 @@ CProServiceHub::AcceptIpc(IProAcceptor* acceptor,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_reactor == NULL || m_acceptor == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_acceptor == NULL)
         {
             ProCloseSockId(sockId);
 
@@ -331,7 +341,7 @@ CProServiceHub::AcceptApp(IProAcceptor*    acceptor,
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_reactor == NULL || m_acceptor == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_acceptor == NULL)
         {
             ProCloseSockId(sockId);
 
@@ -430,10 +440,15 @@ CProServiceHub::OnRecv(CProServicePipe*          pipe,
         }
     }
 
+    IProServiceHubObserver* observer    = NULL;
+    unsigned short          servicePort = 0;
+    unsigned char           serviceId   = 0;
+    unsigned int            processId   = 0;
+
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_reactor == NULL || m_acceptor == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_acceptor == NULL)
         {
             return;
         }
@@ -466,23 +481,12 @@ CProServiceHub::OnRecv(CProServicePipe*          pipe,
             itr->second                                   = packet.c2s.serviceId;
             m_readyPipe2Socks[packet.c2s.serviceId][pipe] = 0;
 
-            {{{
-                CProStlString timeString;
-                ProGetLocalTimeString(timeString);
+            servicePort = ProGetAcceptorPort(m_acceptor);
+            serviceId   = packet.c2s.serviceId;
+            processId   = packet.c2s.processId;
 
-                printf(
-                    "\n"
-                    "%s \n"
-                    " CProServiceHub::OnRecv(port : %u,"
-                    " serviceId : %u, processId : %u/0x%X) [ok] \n"
-                    ,
-                    timeString.c_str(),
-                    (unsigned int)ProGetAcceptorPort(m_acceptor),
-                    (unsigned int)packet.c2s.serviceId,
-                    (unsigned int)packet.c2s.processId,
-                    (unsigned int)packet.c2s.processId
-                    );
-            }}}
+            m_observer->AddRef();
+            observer = m_observer;
         }
         else
         {
@@ -505,6 +509,12 @@ CProServiceHub::OnRecv(CProServicePipe*          pipe,
             }
         }
     }
+
+    if (observer != NULL)
+    {
+        observer->OnServiceHostConnected((IProServiceHub*)this, servicePort, serviceId, processId);
+        observer->Release();
+    }
 }
 
 void
@@ -516,10 +526,15 @@ CProServiceHub::OnClose(CProServicePipe* pipe)
         return;
     }
 
+    IProServiceHubObserver* observer    = NULL;
+    unsigned short          servicePort = 0;
+    unsigned char           serviceId   = 0;
+    unsigned int            processId   = 0;
+
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_reactor == NULL || m_acceptor == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_acceptor == NULL)
         {
             return;
         }
@@ -540,24 +555,20 @@ CProServiceHub::OnClose(CProServicePipe* pipe)
         {
             m_readyPipe2Socks[id].erase(itr2);
 
-            {{{
-                CProStlString timeString;
-                ProGetLocalTimeString(timeString);
+            servicePort = ProGetAcceptorPort(m_acceptor);
+            serviceId   = id;
+            processId   = sp.processId;
 
-                printf(
-                    "\n"
-                    "%s \n"
-                    " CProServiceHub::OnClose(port : %u,"
-                    " serviceId : %u, processId : %u/0x%X) [broken] \n"
-                    ,
-                    timeString.c_str(),
-                    (unsigned int)ProGetAcceptorPort(m_acceptor),
-                    (unsigned int)id,
-                    (unsigned int)sp.processId,
-                    (unsigned int)sp.processId
-                    );
-            }}}
+            m_observer->AddRef();
+            observer = m_observer;
         }
+    }
+
+    if (observer != NULL)
+    {
+        observer->OnServiceHostDisconnected(
+            (IProServiceHub*)this, servicePort, serviceId, processId, false); /* timeout is false */
+        observer->Release();
     }
 
     ProDeleteServicePipe(pipe);
@@ -576,12 +587,15 @@ CProServiceHub::OnTimer(void*    factory,
         return;
     }
 
-    CProStlSet<CProServicePipe*> pipes;
+    IProServiceHubObserver*                     observer    = NULL;
+    unsigned short                              servicePort = 0;
+    CProStlSet<CProServicePipe*>                pipes;
+    CProStlMap<PRO_SERVICE_PIPE, unsigned char> pipe2ServiceId;
 
     {
         CProThreadMutexGuard mon(m_lock);
 
-        if (m_reactor == NULL || m_acceptor == NULL)
+        if (m_observer == NULL || m_reactor == NULL || m_acceptor == NULL)
         {
             return;
         }
@@ -608,6 +622,8 @@ CProServiceHub::OnTimer(void*    factory,
             }
         }
 
+        servicePort = ProGetAcceptorPort(m_acceptor);
+
         {
             auto itr = m_pipe2ServiceId.begin();
             auto end = m_pipe2ServiceId.end();
@@ -633,34 +649,37 @@ CProServiceHub::OnTimer(void*    factory,
                 }
 
                 m_readyPipe2Socks[id].erase(itr2);
+                pipe2ServiceId[sp] = id;
+            }
+        }
 
-                {{{
-                    CProStlString timeString;
-                    ProGetLocalTimeString(timeString);
+        m_observer->AddRef();
+        observer = m_observer;
+    }
 
-                    printf(
-                        "\n"
-                        "%s \n"
-                        " CProServiceHub::OnTimer(port : %u,"
-                        " serviceId : %u, processId : %u/0x%X)"
-                        " [timeout] \n"
-                        ,
-                        timeString.c_str(),
-                        (unsigned int)ProGetAcceptorPort(m_acceptor),
-                        (unsigned int)id,
-                        (unsigned int)sp.processId,
-                        (unsigned int)sp.processId
-                        );
-                }}}
-            } /* end of while () */
+    {
+        auto itr = pipes.begin();
+        auto end = pipes.end();
+
+        for (; itr != end; ++itr)
+        {
+            ProDeleteServicePipe(*itr);
         }
     }
 
-    auto itr = pipes.begin();
-    auto end = pipes.end();
-
-    for (; itr != end; ++itr)
     {
-        ProDeleteServicePipe(*itr);
+        auto itr = pipe2ServiceId.begin();
+        auto end = pipe2ServiceId.end();
+
+        for (; itr != end; ++itr)
+        {
+            const PRO_SERVICE_PIPE& sp = itr->first;
+            unsigned char           id = itr->second;
+
+            observer->OnServiceHostDisconnected(
+                (IProServiceHub*)this, servicePort, id, sp.processId, true); /* timeout is true */
+        }
     }
+
+    observer->Release();
 }

@@ -46,9 +46,10 @@ public:
         );
 
     bool Init(
-        IProReactor*   reactor,
-        unsigned short servicePort,
-        unsigned int   timeoutInSeconds /* = 0 */
+        IProServiceHubObserver* observer,
+        IProReactor*            reactor,
+        unsigned short          servicePort,
+        unsigned int            timeoutInSeconds /* = 0 */
         );
 
     void Fini();
@@ -130,6 +131,7 @@ private:
 
     const bool                                  m_enableServiceExt;
     const bool                                  m_enableLoadBalance;
+    IProServiceHubObserver*                     m_observer;
     IProReactor*                                m_reactor;
     IProAcceptor*                               m_acceptor;
     uint64_t                                    m_timerId;
