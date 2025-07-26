@@ -292,7 +292,7 @@ public:
         IProServiceHub* serviceHub,
         unsigned short  servicePort,
         unsigned char   serviceId,
-        unsigned int    hostProcessId
+        uint64_t        hostProcessId
         )
     {
         assert(serviceHub != NULL);
@@ -315,8 +315,8 @@ public:
             timeString.c_str(),
             (unsigned int)servicePort,
             (unsigned int)serviceId,
-            hostProcessId,
-            hostProcessId
+            (unsigned int)hostProcessId,
+            (unsigned int)hostProcessId
             );
         printf("%s", traceInfo);
         m_logFile.Log(traceInfo, PRO_LL_INFO, false);
@@ -326,7 +326,7 @@ public:
         IProServiceHub* serviceHub,
         unsigned short  servicePort,
         unsigned char   serviceId,
-        unsigned int    hostProcessId,
+        uint64_t        hostProcessId,
         bool            timeout
         )
     {
@@ -350,8 +350,8 @@ public:
             timeString.c_str(),
             (unsigned int)servicePort,
             (unsigned int)serviceId,
-            hostProcessId,
-            hostProcessId,
+            (unsigned int)hostProcessId,
+            (unsigned int)hostProcessId,
             (int)timeout
             );
         printf("%s", traceInfo);

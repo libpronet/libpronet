@@ -27,41 +27,34 @@
  * {
  * public:
  *
- *     void Action(int64_t* args)
+ *     void Action(int arg1, void* arg2, std::string arg3)
  *     {
  *     }
  * };
  *
- * typedef void (CTest::* ACTION)(int64_t*);
- *
  * CTest test;
  *
- * IProFunctorCommand* command =
- *     CProFunctorCommand_cpp<CTest, ACTION>::CreateInstance(
- *         test,
- *         &CTest::Action,
- *         0,
- *         1,
- *         2
- *         );
+ * IProFunctorCommand* command = CProFunctorCommand::Create(
+ *     test,
+ *     &CTest::Action,
+ *     1,
+ *     (void*)&test,
+ *     std::string("test")
+ *     );
  */
 
 /*
  * Usage2:
  *
- * void Action(int64_t* args)
+ * void Action(int arg1, std::string arg2)
  * {
  * }
  *
- * typedef void (* ACTION)(int64_t*);
- *
- * IProFunctorCommand* command =
- *     CProFunctorCommand_c<ACTION>::CreateInstance(
- *         &Action,
- *         0,
- *         1,
- *         2
- *         );
+ * IProFunctorCommand* command = CProFunctorCommand::Create(
+ *     &Action,
+ *     1,
+ *     std::string("test")
+ *     );
  */
 
 #ifndef ____PRO_FUNCTOR_COMMAND_H____
@@ -69,6 +62,7 @@
 
 #include "pro_a.h"
 #include "pro_memory_pool.h"
+#include "pro_stl.h"
 #include "pro_z.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -96,24 +90,18 @@ public:
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-template<typename RECEIVER, typename ACTION>
-class CProFunctorCommand_cpp : public IProFunctorCommand
+class CProFunctorCommand : public IProFunctorCommand
 {
 public:
 
-    static CProFunctorCommand_cpp* CreateInstance(
-        RECEIVER& receiver,
-        ACTION    action,
-        int64_t   arg0 = 0,
-        int64_t   arg1 = 0,
-        int64_t   arg2 = 0,
-        int64_t   arg3 = 0,
-        int64_t   arg4 = 0,
-        int64_t   arg5 = 0,
-        int64_t   arg6 = 0,
-        int64_t   arg7 = 0,
-        int64_t   arg8 = 0,
-        int64_t   arg9 = 0
+    /*
+     * 'action' is a non-const member function
+     */
+    template<typename RECEIVER, typename... ARGS>
+    static CProFunctorCommand* Create(
+        RECEIVER&         receiver,
+        void (RECEIVER::* action)(ARGS...),
+        ARGS...           args
         )
     {
         assert(action != NULL);
@@ -122,40 +110,76 @@ public:
             return NULL;
         }
 
-        return new CProFunctorCommand_cpp(
-            receiver, action, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
+        CProFunctorCommand* command = new CProFunctorCommand;
+
+        command->m_func = [=, &receiver]() -> void
+        {
+            (receiver.*action)(args...);
+        };
+
+        return command;
+    }
+
+    /*
+     * 'action' is a const member function
+     */
+    template<typename RECEIVER, typename... ARGS>
+    static CProFunctorCommand* Create(
+        RECEIVER&         receiver,
+        void (RECEIVER::* action)(ARGS...) const,
+        ARGS...           args
+        )
+    {
+        assert(action != NULL);
+        if (action == NULL)
+        {
+            return NULL;
+        }
+
+        CProFunctorCommand* command = new CProFunctorCommand;
+
+        command->m_func = [=, &receiver]() -> void
+        {
+            (receiver.*action)(args...);
+        };
+
+        return command;
+    }
+
+    /*
+     * 'action' is a static member function or a non-member function
+     */
+    template<typename... ARGS>
+    static CProFunctorCommand* Create(
+        void (* action)(ARGS...),
+        ARGS... args
+        )
+    {
+        assert(action != NULL);
+        if (action == NULL)
+        {
+            return NULL;
+        }
+
+        CProFunctorCommand* command = new CProFunctorCommand;
+
+        command->m_func = [=]() -> void
+        {
+            (*action)(args...);
+        };
+
+        return command;
     }
 
 private:
 
-    CProFunctorCommand_cpp(
-        RECEIVER& receiver,
-        ACTION    action,
-        int64_t   arg0,
-        int64_t   arg1,
-        int64_t   arg2,
-        int64_t   arg3,
-        int64_t   arg4,
-        int64_t   arg5,
-        int64_t   arg6,
-        int64_t   arg7,
-        int64_t   arg8,
-        int64_t   arg9
-        ) : m_receiver(receiver)
+    CProFunctorCommand()
     {
         m_userData1 = NULL;
         m_userData2 = NULL;
-        m_action    = action;
-
-        int64_t args[10] = { arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 };
-
-        for (int i = 0; i < 10; ++i)
-        {
-            m_args[i] = args[i];
-        }
     }
 
-    virtual ~CProFunctorCommand_cpp()
+    virtual ~CProFunctorCommand()
     {
     }
 
@@ -166,7 +190,7 @@ private:
 
     virtual void Execute()
     {
-        (m_receiver.*m_action)((int64_t*)m_args);
+        m_func();
     }
 
     virtual void SetUserData1(const void* userData1)
@@ -191,115 +215,9 @@ private:
 
 private:
 
-    const void* m_userData1;
-    const void* m_userData2;
-    RECEIVER&   m_receiver;
-    ACTION      m_action;
-    int64_t     m_args[10];
-
-    DECLARE_SGI_POOL(0)
-};
-
-/////////////////////////////////////////////////////////////////////////////
-////
-
-template<typename ACTION>
-class CProFunctorCommand_c : public IProFunctorCommand
-{
-public:
-
-    static CProFunctorCommand_c* CreateInstance(
-        ACTION  action,
-        int64_t arg0 = 0,
-        int64_t arg1 = 0,
-        int64_t arg2 = 0,
-        int64_t arg3 = 0,
-        int64_t arg4 = 0,
-        int64_t arg5 = 0,
-        int64_t arg6 = 0,
-        int64_t arg7 = 0,
-        int64_t arg8 = 0,
-        int64_t arg9 = 0
-        )
-    {
-        assert(action != NULL);
-        if (action == NULL)
-        {
-            return NULL;
-        }
-
-        return new CProFunctorCommand_c(
-            action, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9);
-    }
-
-private:
-
-    CProFunctorCommand_c(
-        ACTION  action,
-        int64_t arg0,
-        int64_t arg1,
-        int64_t arg2,
-        int64_t arg3,
-        int64_t arg4,
-        int64_t arg5,
-        int64_t arg6,
-        int64_t arg7,
-        int64_t arg8,
-        int64_t arg9
-        )
-    {
-        m_userData1 = NULL;
-        m_userData2 = NULL;
-        m_action    = action;
-
-        int64_t args[10] = { arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9 };
-
-        for (int i = 0; i < 10; ++i)
-        {
-            m_args[i] = args[i];
-        }
-    }
-
-    virtual ~CProFunctorCommand_c()
-    {
-    }
-
-    virtual void Destroy()
-    {
-        delete this;
-    }
-
-    virtual void Execute()
-    {
-        (*m_action)((int64_t*)m_args);
-    }
-
-    virtual void SetUserData1(const void* userData1)
-    {
-        m_userData1 = userData1;
-    }
-
-    virtual const void* GetUserData1() const
-    {
-        return m_userData1;
-    }
-
-    virtual void SetUserData2(const void* userData2)
-    {
-        m_userData2 = userData2;
-    }
-
-    virtual const void* GetUserData2() const
-    {
-        return m_userData2;
-    }
-
-private:
-
-    const void* m_userData1;
-    const void* m_userData2;
-    ACTION      m_action;
-    int64_t     m_args[10];
+    std::function<void()> m_func;
+    const void*           m_userData1;
+    const void*           m_userData2;
 
     DECLARE_SGI_POOL(0)
 };

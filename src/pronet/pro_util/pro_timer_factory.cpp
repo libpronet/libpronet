@@ -41,8 +41,6 @@
 
 #define DEFAULT_HEARTBEAT_INTERVAL 20
 
-typedef void (CProTimerFactory::* ACTION)(int64_t*);
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -108,11 +106,10 @@ CProTimerFactory::Start(bool mmTimer)
             m_htbtTimerCounts[i] = 0; /* clean all slots */
         }
 
-        IProFunctorCommand* command =
-            CProFunctorCommand_cpp<CProTimerFactory, ACTION>::CreateInstance(
-                *this,
-                &CProTimerFactory::WorkerRun
-                );
+        IProFunctorCommand* command = CProFunctorCommand::Create(
+            *this,
+            &CProTimerFactory::WorkerRun
+            );
         m_task->Put(command);
     }
 
@@ -458,7 +455,7 @@ CProTimerFactory::GetHeartbeatInterval() const
 }
 
 void
-CProTimerFactory::WorkerRun(int64_t* args)
+CProTimerFactory::WorkerRun()
 {
     while (Process())
     {

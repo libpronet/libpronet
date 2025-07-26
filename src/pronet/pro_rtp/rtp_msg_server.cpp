@@ -45,8 +45,6 @@ static const RTP_MSG_USER  ROOT_ID        (1, 1, 0);     /* 1-1 */
 static const RTP_MSG_USER  ROOT_ID_C2SPORT(1, 1, 65535); /* 1-1-65535 */
 static const uint64_t      NODE_UID_MAXX = 0xFFFFFFFFFFULL;
 
-typedef void (CRtpMsgServer::* ACTION)(int64_t*);
-
 static uint64_t g_s_nextUserId[256] = { 0 }; /* cid0 ~ cid255, [0xF000000000, 0xFFFFFFFFFF] */
 
 /////////////////////////////////////////////////////////////////////////////
@@ -317,24 +315,26 @@ CRtpMsgServer::KickoutUser(const RTP_MSG_USER* user)
             return;
         }
 
-        IProFunctorCommand* command =
-            CProFunctorCommand_cpp<CRtpMsgServer, ACTION>::CreateInstance(
-                *this,
-                &CRtpMsgServer::AsyncKickoutUser,
-                (int64_t)user->classId,
-                (int64_t)user->UserId(),
-                (int64_t)user->instId
-                );
+        IProFunctorCommand* command = CProFunctorCommand::Create(
+            *this,
+            &CRtpMsgServer::AsyncKickoutUser,
+            user->classId,
+            user->UserId(),
+            user->instId
+            );
         m_task->Put(command);
     }
 }
 
 void
-CRtpMsgServer::AsyncKickoutUser(int64_t* args)
+CRtpMsgServer::AsyncKickoutUser(unsigned char classId,
+                                uint64_t      userId,
+                                uint16_t      instId)
 {
-    RTP_MSG_USER user((unsigned char)args[0], args[1], (uint16_t)args[2]);
-    assert(user.classId > 0);
-    assert(user.UserId() > 0);
+    assert(classId > 0);
+    assert(userId > 0);
+
+    RTP_MSG_USER user(classId, userId, instId);
 
     IRtpMsgServerObserver*   observer   = NULL;
     IRtpSession*             oldSession = NULL;
@@ -663,20 +663,19 @@ CRtpMsgServer::OnAcceptSession(IRtpService*            service,
             goto EXIT;
         }
 
-        RTP_MSG_AsyncOnAcceptSession* arg = new RTP_MSG_AsyncOnAcceptSession;
-        arg->sockId     = sockId;
-        arg->unixSocket = unixSocket;
-        arg->remoteIp   = remoteIp;
-        arg->remotePort = remotePort;
-        arg->remoteInfo = *remoteInfo;
-        arg->nonce      = *nonce;
+        RTP_MSG_AsyncOnAcceptSession* msg = new RTP_MSG_AsyncOnAcceptSession;
+        msg->sockId     = sockId;
+        msg->unixSocket = unixSocket;
+        msg->remoteIp   = remoteIp;
+        msg->remotePort = remotePort;
+        msg->remoteInfo = *remoteInfo;
+        msg->nonce      = *nonce;
 
-        IProFunctorCommand* command =
-            CProFunctorCommand_cpp<CRtpMsgServer, ACTION>::CreateInstance(
-                *this,
-                &CRtpMsgServer::AsyncOnAcceptSession,
-                (int64_t)arg
-                );
+        IProFunctorCommand* command = CProFunctorCommand::Create(
+            *this,
+            &CRtpMsgServer::AsyncOnAcceptSession,
+            msg
+            );
         m_task->Put(command);
     }
 
@@ -736,21 +735,20 @@ CRtpMsgServer::OnAcceptSession(IRtpService*            service,
             goto EXIT;
         }
 
-        RTP_MSG_AsyncOnAcceptSession* arg = new RTP_MSG_AsyncOnAcceptSession;
-        arg->sslCtx     = sslCtx;
-        arg->sockId     = sockId;
-        arg->unixSocket = unixSocket;
-        arg->remoteIp   = remoteIp;
-        arg->remotePort = remotePort;
-        arg->remoteInfo = *remoteInfo;
-        arg->nonce      = *nonce;
+        RTP_MSG_AsyncOnAcceptSession* msg = new RTP_MSG_AsyncOnAcceptSession;
+        msg->sslCtx     = sslCtx;
+        msg->sockId     = sockId;
+        msg->unixSocket = unixSocket;
+        msg->remoteIp   = remoteIp;
+        msg->remotePort = remotePort;
+        msg->remoteInfo = *remoteInfo;
+        msg->nonce      = *nonce;
 
-        IProFunctorCommand* command =
-            CProFunctorCommand_cpp<CRtpMsgServer, ACTION>::CreateInstance(
-                *this,
-                &CRtpMsgServer::AsyncOnAcceptSession,
-                (int64_t)arg
-                );
+        IProFunctorCommand* command = CProFunctorCommand::Create(
+            *this,
+            &CRtpMsgServer::AsyncOnAcceptSession,
+            msg
+            );
         m_task->Put(command);
     }
 
@@ -763,17 +761,15 @@ EXIT:
 }
 
 void
-CRtpMsgServer::AsyncOnAcceptSession(int64_t* args)
+CRtpMsgServer::AsyncOnAcceptSession(RTP_MSG_AsyncOnAcceptSession* msg)
 {
-    RTP_MSG_AsyncOnAcceptSession* arg = (RTP_MSG_AsyncOnAcceptSession*)args[0];
-
-    assert(arg->sockId != -1);
+    assert(msg->sockId != -1);
     assert(
-        arg->remoteInfo.sessionType == RTP_ST_TCPCLIENT_EX ||
-        arg->remoteInfo.sessionType == RTP_ST_SSLCLIENT_EX
+        msg->remoteInfo.sessionType == RTP_ST_TCPCLIENT_EX ||
+        msg->remoteInfo.sessionType == RTP_ST_SSLCLIENT_EX
         );
-    assert(arg->remoteInfo.mmType == m_mmType);
-    assert(arg->remoteInfo.packMode == RTP_MSG_PACK_MODE);
+    assert(msg->remoteInfo.mmType == m_mmType);
+    assert(msg->remoteInfo.packMode == RTP_MSG_PACK_MODE);
 
     bool                   ret      = false;
     IRtpMsgServerObserver* observer = NULL;
@@ -786,14 +782,14 @@ CRtpMsgServer::AsyncOnAcceptSession(int64_t* args)
 
     if (m_sslConfig == NULL)
     {
-        if (arg->remoteInfo.sessionType != RTP_ST_TCPCLIENT_EX)
+        if (msg->remoteInfo.sessionType != RTP_ST_TCPCLIENT_EX)
         {
             goto EXIT;
         }
     }
     else if (m_sslForced)
     {
-        if (arg->remoteInfo.sessionType != RTP_ST_SSLCLIENT_EX)
+        if (msg->remoteInfo.sessionType != RTP_ST_SSLCLIENT_EX)
         {
             goto EXIT;
         }
@@ -802,7 +798,7 @@ CRtpMsgServer::AsyncOnAcceptSession(int64_t* args)
     {
     }
 
-    memcpy(&hdr0, arg->remoteInfo.userData, sizeof(RTP_MSG_HEADER0));
+    memcpy(&hdr0, msg->remoteInfo.userData, sizeof(RTP_MSG_HEADER0));
     hdr0.version = pbsd_ntoh16(hdr0.version);
 
     baseUser        = hdr0.user;
@@ -842,10 +838,10 @@ CRtpMsgServer::AsyncOnAcceptSession(int64_t* args)
     ret = observer->OnCheckUser(
         this,
         &baseUser,
-        arg->remoteIp.c_str(),
+        msg->remoteIp.c_str(),
         NULL,
-        arg->remoteInfo.passwordHash,
-        arg->nonce.nonce,
+        msg->remoteInfo.passwordHash,
+        msg->nonce.nonce,
         &userId,
         &instId,
         &appData,
@@ -874,54 +870,54 @@ CRtpMsgServer::AsyncOnAcceptSession(int64_t* args)
     hdr0.version     = pbsd_hton16(RTP_MSG_PROTOCOL_VERSION);
     hdr0.user        = baseUser;
     hdr0.user.instId = pbsd_hton16(hdr0.user.instId);
-    hdr0.publicIp    = pbsd_inet_aton(arg->remoteIp.c_str());
+    hdr0.publicIp    = pbsd_inet_aton(msg->remoteIp.c_str());
 
     RTP_SESSION_INFO localInfo;
     memset(&localInfo, 0, sizeof(RTP_SESSION_INFO));
-    localInfo.remoteVersion = arg->remoteInfo.localVersion;
+    localInfo.remoteVersion = msg->remoteInfo.localVersion;
     localInfo.mmType        = m_mmType;
-    localInfo.packMode      = arg->remoteInfo.packMode;
+    localInfo.packMode      = msg->remoteInfo.packMode;
 
     RTP_INIT_ARGS initArgs;
     memset(&initArgs, 0, sizeof(RTP_INIT_ARGS));
 
-    if (arg->remoteInfo.sessionType == RTP_ST_SSLCLIENT_EX)
+    if (msg->remoteInfo.sessionType == RTP_ST_SSLCLIENT_EX)
     {
         initArgs.sslserverEx.observer    = this;
         initArgs.sslserverEx.reactor     = m_reactor;
-        initArgs.sslserverEx.sslCtx      = arg->sslCtx;
-        initArgs.sslserverEx.sockId      = arg->sockId;
-        initArgs.sslserverEx.unixSocket  = arg->unixSocket;
+        initArgs.sslserverEx.sslCtx      = msg->sslCtx;
+        initArgs.sslserverEx.sockId      = msg->sockId;
+        initArgs.sslserverEx.unixSocket  = msg->unixSocket;
         initArgs.sslserverEx.suspendRecv = true; /* !!! */
         initArgs.sslserverEx.useAckData  = true;
         memcpy(initArgs.sslserverEx.ackData, &hdr0, sizeof(RTP_MSG_HEADER0));
 
         ret = AddBaseUser(RTP_ST_SSLSERVER_EX, initArgs, localInfo, baseUser,
-            arg->remoteIp, appData, isC2s);
+            msg->remoteIp, appData, isC2s);
     }
     else
     {
         initArgs.tcpserverEx.observer    = this;
         initArgs.tcpserverEx.reactor     = m_reactor;
-        initArgs.tcpserverEx.sockId      = arg->sockId;
-        initArgs.tcpserverEx.unixSocket  = arg->unixSocket;
+        initArgs.tcpserverEx.sockId      = msg->sockId;
+        initArgs.tcpserverEx.unixSocket  = msg->unixSocket;
         initArgs.tcpserverEx.suspendRecv = true; /* !!! */
         initArgs.tcpserverEx.useAckData  = true;
         memcpy(initArgs.tcpserverEx.ackData, &hdr0, sizeof(RTP_MSG_HEADER0));
 
         ret = AddBaseUser(RTP_ST_TCPSERVER_EX, initArgs, localInfo, baseUser,
-            arg->remoteIp, appData, isC2s);
+            msg->remoteIp, appData, isC2s);
     }
 
 EXIT:
 
     if (!ret)
     {
-        ProSslCtx_Delete(arg->sslCtx);
-        ProCloseSockId(arg->sockId);
+        ProSslCtx_Delete(msg->sslCtx);
+        ProCloseSockId(msg->sockId);
     }
 
-    delete arg;
+    delete msg;
 }
 
 void
@@ -1071,19 +1067,19 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
                 break;
             }
 
-            RTP_MSG_AsyncOnRecvSession* arg = new RTP_MSG_AsyncOnRecvSession;
-            arg->session = session;
-            arg->c2sUser = srcUser;
-            arg->msgStream.Add(theConfigs);
+            RTP_MSG_AsyncOnRecvSession* msg = new RTP_MSG_AsyncOnRecvSession;
+            msg->session = session;
+            msg->c2sUser = srcUser;
+            msg->msgStream.Add(theConfigs);
 
             CProStlString msgName;
-            arg->msgStream.Get(TAG_msg_name, msgName);
+            msg->msgStream.Get(TAG_msg_name, msgName);
 
             if (stricmp(msgName.c_str(), MSG_client_login) == 0)
             {
                 if (m_task->GetSize() >= MAX_PENDING_COUNT)
                 {
-                    delete arg;
+                    delete msg;
                     break;
                 }
             }
@@ -1092,17 +1088,16 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
             }
             else
             {
-                delete arg;
+                delete msg;
                 break;
             }
 
-            arg->session->AddRef();
-            IProFunctorCommand* command =
-                CProFunctorCommand_cpp<CRtpMsgServer, ACTION>::CreateInstance(
-                    *this,
-                    &CRtpMsgServer::AsyncOnRecvSession,
-                    (int64_t)arg
-                    );
+            msg->session->AddRef();
+            IProFunctorCommand* command = CProFunctorCommand::Create(
+                *this,
+                &CRtpMsgServer::AsyncOnRecvSession,
+                msg
+                );
             m_task->Put(command);
         }
         while (0);
@@ -1168,27 +1163,25 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
 }
 
 void
-CRtpMsgServer::AsyncOnRecvSession(int64_t* args)
+CRtpMsgServer::AsyncOnRecvSession(RTP_MSG_AsyncOnRecvSession* msg)
 {
-    RTP_MSG_AsyncOnRecvSession* arg = (RTP_MSG_AsyncOnRecvSession*)args[0];
-
     CProStlString msgName;
-    arg->msgStream.Get(TAG_msg_name, msgName);
+    msg->msgStream.Get(TAG_msg_name, msgName);
 
     if (stricmp(msgName.c_str(), MSG_client_login) == 0)
     {
-        ProcessMsg_client_login(arg->session, arg->msgStream, arg->c2sUser);
+        ProcessMsg_client_login(msg->session, msg->msgStream, msg->c2sUser);
     }
     else if (stricmp(msgName.c_str(), MSG_client_logout) == 0)
     {
-        ProcessMsg_client_logout(arg->session, arg->msgStream, arg->c2sUser);
+        ProcessMsg_client_logout(msg->session, msg->msgStream, msg->c2sUser);
     }
     else
     {
     }
 
-    arg->session->Release();
-    delete arg;
+    msg->session->Release();
+    delete msg;
 }
 
 void
@@ -1407,25 +1400,22 @@ CRtpMsgServer::OnCloseSession(IRtpSession* session,
         }
 
         session->AddRef();
-        IProFunctorCommand* command =
-            CProFunctorCommand_cpp<CRtpMsgServer, ACTION>::CreateInstance(
-                *this,
-                &CRtpMsgServer::AsyncOnCloseSession,
-                (int64_t)session,
-                (int64_t)errorCode,
-                (int64_t)sslCode
-                );
+        IProFunctorCommand* command = CProFunctorCommand::Create(
+            *this,
+            &CRtpMsgServer::AsyncOnCloseSession,
+            session,
+            errorCode,
+            sslCode
+            );
         m_task->Put(command);
     }
 }
 
 void
-CRtpMsgServer::AsyncOnCloseSession(int64_t* args)
+CRtpMsgServer::AsyncOnCloseSession(IRtpSession* session,
+                                   int          errorCode,
+                                   int          sslCode)
 {
-    IRtpSession* session   = (IRtpSession*)args[0];
-    int          errorCode = (int)         args[1];
-    int          sslCode   = (int)         args[2];
-
     IRtpMsgServerObserver*   observer = NULL;
     CProStlSet<RTP_MSG_USER> oldUsers;
 

@@ -443,7 +443,7 @@ CProServiceHub::OnRecv(CProServicePipe*          pipe,
     IProServiceHubObserver* observer    = NULL;
     unsigned short          servicePort = 0;
     unsigned char           serviceId   = 0;
-    unsigned int            processId   = 0;
+    uint64_t                processId   = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -529,7 +529,7 @@ CProServiceHub::OnClose(CProServicePipe* pipe)
     IProServiceHubObserver* observer    = NULL;
     unsigned short          servicePort = 0;
     unsigned char           serviceId   = 0;
-    unsigned int            processId   = 0;
+    uint64_t                processId   = 0;
 
     {
         CProThreadMutexGuard mon(m_lock);

@@ -362,7 +362,7 @@ public:
         IProServiceHub* serviceHub,
         unsigned short  servicePort,  /* 服务端口号. > 0 */
         unsigned char   serviceId,    /* 服务id. > 0 */
-        unsigned int    hostProcessId /* 服务host的进程id */
+        uint64_t        hostProcessId /* 服务host的进程id */
         ) = 0;
 
     /*
@@ -372,7 +372,7 @@ public:
         IProServiceHub* serviceHub,
         unsigned short  servicePort,   /* 服务端口号. > 0 */
         unsigned char   serviceId,     /* 服务id. > 0 */
-        unsigned int    hostProcessId, /* 服务host的进程id */
+        uint64_t        hostProcessId, /* 服务host的进程id */
         bool            timeout        /* 是否超时 */
         ) = 0;
 };

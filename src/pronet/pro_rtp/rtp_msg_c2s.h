@@ -265,7 +265,11 @@ private:
         const CProConfigStream& msgStream
         );
 
-    void AsyncKickoutLocalUser(int64_t* args);
+    void AsyncKickoutLocalUser(
+        unsigned char classId,
+        uint64_t      userId,
+        uint16_t      instId
+        );
 
 private:
 

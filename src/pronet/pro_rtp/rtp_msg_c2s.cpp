@@ -49,8 +49,6 @@
 static const RTP_MSG_USER  ROOT_ID_C2SPORT(1, 1, 65535); /* 1-1-65535 */
 static const uint64_t      NODE_UID_MAXX = 0xFFFFFFFFFFULL;
 
-typedef void (CRtpMsgC2s::* ACTION)(int64_t*);
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -563,24 +561,26 @@ CRtpMsgC2s::KickoutLocalUser(const RTP_MSG_USER* user)
             return;
         }
 
-        IProFunctorCommand* command =
-            CProFunctorCommand_cpp<CRtpMsgC2s, ACTION>::CreateInstance(
+        IProFunctorCommand* command = CProFunctorCommand::Create(
                 *this,
                 &CRtpMsgC2s::AsyncKickoutLocalUser,
-                (int64_t)user->classId,
-                (int64_t)user->UserId(),
-                (int64_t)user->instId
+                user->classId,
+                user->UserId(),
+                user->instId
                 );
         m_task->Put(command);
     }
 }
 
 void
-CRtpMsgC2s::AsyncKickoutLocalUser(int64_t* args)
+CRtpMsgC2s::AsyncKickoutLocalUser(unsigned char classId,
+                                  uint64_t      userId,
+                                  uint16_t      instId)
 {
-    RTP_MSG_USER user((unsigned char)args[0], args[1], (uint16_t)args[2]);
-    assert(user.classId > 0);
-    assert(user.UserId() > 0);
+    assert(classId > 0);
+    assert(userId > 0);
+
+    RTP_MSG_USER user(classId, userId, instId);
 
     IRtpMsgC2sObserver* observer   = NULL;
     IRtpSession*        oldSession = NULL;

@@ -135,7 +135,7 @@ public:
 
 private:
 
-    void WorkerRun(int64_t* args);
+    void WorkerRun();
 
     bool Process();
 
