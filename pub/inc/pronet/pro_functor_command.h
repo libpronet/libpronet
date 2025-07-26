@@ -34,13 +34,16 @@
  *
  * CTest test;
  *
- * IProFunctorCommand* command = CProFunctorCommand::Create(
+ * CProFunctorCommand* command = CProFunctorCommand::Create(
  *     test,
  *     &CTest::Action,
  *     1,
  *     (void*)&test,
  *     std::string("test")
  *     );
+ * ... ...
+ * command->Execute();
+ * command->Destroy();
  */
 
 /*
@@ -50,11 +53,14 @@
  * {
  * }
  *
- * IProFunctorCommand* command = CProFunctorCommand::Create(
+ * CProFunctorCommand* command = CProFunctorCommand::Create(
  *     &Action,
  *     1,
  *     std::string("test")
  *     );
+ * ... ...
+ * command->Execute();
+ * command->Destroy();
  */
 
 #ifndef ____PRO_FUNCTOR_COMMAND_H____
@@ -68,29 +74,7 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-class IProFunctorCommand
-{
-public:
-
-    virtual ~IProFunctorCommand() {}
-
-    virtual void Destroy() = 0;
-
-    virtual void Execute() = 0;
-
-    virtual void SetUserData1(const void* userData1) = 0;
-
-    virtual const void* GetUserData1() const = 0;
-
-    virtual void SetUserData2(const void* userData2) = 0;
-
-    virtual const void* GetUserData2() const = 0;
-};
-
-/////////////////////////////////////////////////////////////////////////////
-////
-
-class CProFunctorCommand : public IProFunctorCommand
+class CProFunctorCommand
 {
 public:
 
@@ -171,46 +155,42 @@ public:
         return command;
     }
 
+    void Destroy()
+    {
+        delete this;
+    }
+
+    void Execute()
+    {
+        m_func();
+    }
+
+    void SetUserData1(const void* userData1)
+    {
+        m_userData1 = userData1;
+    }
+
+    const void* GetUserData1() const
+    {
+        return m_userData1;
+    }
+
+    void SetUserData2(const void* userData2)
+    {
+        m_userData2 = userData2;
+    }
+
+    const void* GetUserData2() const
+    {
+        return m_userData2;
+    }
+
 private:
 
     CProFunctorCommand()
     {
         m_userData1 = NULL;
         m_userData2 = NULL;
-    }
-
-    virtual ~CProFunctorCommand()
-    {
-    }
-
-    virtual void Destroy()
-    {
-        delete this;
-    }
-
-    virtual void Execute()
-    {
-        m_func();
-    }
-
-    virtual void SetUserData1(const void* userData1)
-    {
-        m_userData1 = userData1;
-    }
-
-    virtual const void* GetUserData1() const
-    {
-        return m_userData1;
-    }
-
-    virtual void SetUserData2(const void* userData2)
-    {
-        m_userData2 = userData2;
-    }
-
-    virtual const void* GetUserData2() const
-    {
-        return m_userData2;
     }
 
 private:

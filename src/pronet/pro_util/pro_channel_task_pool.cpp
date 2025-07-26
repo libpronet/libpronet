@@ -165,7 +165,7 @@ CProChannelTaskPool::RemoveChannel(uint64_t channelId)
 
 bool
 CProChannelTaskPool::Put(uint64_t            channelId,
-                         IProFunctorCommand* command)
+                         CProFunctorCommand* command)
 {
     assert(command != NULL);
     if (command == NULL)

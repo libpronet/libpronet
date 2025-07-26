@@ -126,7 +126,7 @@ CProFunctorCommandTask::StopMe()
 }
 
 bool
-CProFunctorCommandTask::Put(IProFunctorCommand* command,
+CProFunctorCommandTask::Put(CProFunctorCommand* command,
                             bool                blocking) /* = false */
 {
     assert(command != NULL);
@@ -183,6 +183,24 @@ CProFunctorCommandTask::GetSize() const
     return size;
 }
 
+bool
+CProFunctorCommandTask::IsCurrentThread() const
+{
+    CProThreadMutexGuard mon(m_lock);
+
+    if (m_threadCount == 0 || m_curThreadCount == 0 || m_threadIds.size() == 0)
+    {
+        return false;
+    }
+
+    assert(m_threadCount == 1);
+
+    uint64_t taskThreadId = *m_threadIds.begin();
+    uint64_t currThreadId = ProGetThreadId();
+
+    return taskThreadId == currThreadId;
+}
+
 void
 CProFunctorCommandTask::SetUserData(const void* userData)
 {
@@ -218,11 +236,11 @@ CProFunctorCommandTask::Svc()
         m_initCond.Signal();
     }
 
-    CProStlDeque<IProFunctorCommand*> commands;
+    CProStlDeque<CProFunctorCommand*> commands;
 
     while (1)
     {
-        IProFunctorCommand* command = NULL;
+        CProFunctorCommand* command = NULL;
 
         {
             CProThreadMutexGuard mon(m_lock);
@@ -267,7 +285,7 @@ CProFunctorCommandTask::Svc()
 
     for (; i < c; ++i)
     {
-        IProFunctorCommand* command = commands[i];
+        CProFunctorCommand* command = commands[i];
         command->Execute();
 
         CProThreadMutexCondition* cond = (CProThreadMutexCondition*)command->GetUserData1();

@@ -561,14 +561,13 @@ CRtpMsgC2s::KickoutLocalUser(const RTP_MSG_USER* user)
             return;
         }
 
-        IProFunctorCommand* command = CProFunctorCommand::Create(
-                *this,
-                &CRtpMsgC2s::AsyncKickoutLocalUser,
-                user->classId,
-                user->UserId(),
-                user->instId
-                );
-        m_task->Put(command);
+        m_task->PostCall(
+            *this,
+            &CRtpMsgC2s::AsyncKickoutLocalUser,
+            user->classId,
+            user->UserId(),
+            user->instId
+            );
     }
 }
 

@@ -28,8 +28,8 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+class CProFunctorCommand;
 class CProFunctorCommandTask;
-class IProFunctorCommand;
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -57,7 +57,7 @@ public:
 
     bool Put(
         uint64_t            channelId,
-        IProFunctorCommand* command
+        CProFunctorCommand* command
         );
 
     size_t GetSize() const;

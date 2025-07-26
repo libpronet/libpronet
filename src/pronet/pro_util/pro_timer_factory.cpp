@@ -106,11 +106,7 @@ CProTimerFactory::Start(bool mmTimer)
             m_htbtTimerCounts[i] = 0; /* clean all slots */
         }
 
-        IProFunctorCommand* command = CProFunctorCommand::Create(
-            *this,
-            &CProTimerFactory::WorkerRun
-            );
-        m_task->Put(command);
+        m_task->PostCall(*this, &CProTimerFactory::WorkerRun);
     }
 
     return true;

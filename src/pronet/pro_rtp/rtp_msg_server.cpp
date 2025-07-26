@@ -315,14 +315,13 @@ CRtpMsgServer::KickoutUser(const RTP_MSG_USER* user)
             return;
         }
 
-        IProFunctorCommand* command = CProFunctorCommand::Create(
+        m_task->PostCall(
             *this,
             &CRtpMsgServer::AsyncKickoutUser,
             user->classId,
             user->UserId(),
             user->instId
             );
-        m_task->Put(command);
     }
 }
 
@@ -671,12 +670,7 @@ CRtpMsgServer::OnAcceptSession(IRtpService*            service,
         msg->remoteInfo = *remoteInfo;
         msg->nonce      = *nonce;
 
-        IProFunctorCommand* command = CProFunctorCommand::Create(
-            *this,
-            &CRtpMsgServer::AsyncOnAcceptSession,
-            msg
-            );
-        m_task->Put(command);
+        m_task->PostCall(*this, &CRtpMsgServer::AsyncOnAcceptSession, msg);
     }
 
     return;
@@ -744,12 +738,7 @@ CRtpMsgServer::OnAcceptSession(IRtpService*            service,
         msg->remoteInfo = *remoteInfo;
         msg->nonce      = *nonce;
 
-        IProFunctorCommand* command = CProFunctorCommand::Create(
-            *this,
-            &CRtpMsgServer::AsyncOnAcceptSession,
-            msg
-            );
-        m_task->Put(command);
+        m_task->PostCall(*this, &CRtpMsgServer::AsyncOnAcceptSession, msg);
     }
 
     return;
@@ -1093,12 +1082,7 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
             }
 
             msg->session->AddRef();
-            IProFunctorCommand* command = CProFunctorCommand::Create(
-                *this,
-                &CRtpMsgServer::AsyncOnRecvSession,
-                msg
-                );
-            m_task->Put(command);
+            m_task->PostCall(*this, &CRtpMsgServer::AsyncOnRecvSession, msg);
         }
         while (0);
 
@@ -1400,14 +1384,13 @@ CRtpMsgServer::OnCloseSession(IRtpSession* session,
         }
 
         session->AddRef();
-        IProFunctorCommand* command = CProFunctorCommand::Create(
+        m_task->PostCall(
             *this,
             &CRtpMsgServer::AsyncOnCloseSession,
             session,
             errorCode,
             sslCode
             );
-        m_task->Put(command);
     }
 }
 

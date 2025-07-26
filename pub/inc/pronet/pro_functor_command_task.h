@@ -24,6 +24,7 @@
 #define ____PRO_FUNCTOR_COMMAND_TASK_H____
 
 #include "pro_a.h"
+#include "pro_functor_command.h"
 #include "pro_memory_pool.h"
 #include "pro_stl.h"
 #include "pro_thread.h"
@@ -33,13 +34,15 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-class IProFunctorCommand;
+class CProChannelTaskPool;
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
 class CProFunctorCommandTask : public CProThreadBase
 {
+    friend class CProChannelTaskPool;
+
 public:
 
     CProFunctorCommandTask();
@@ -53,12 +56,85 @@ public:
 
     void Stop();
 
-    bool Put(
-        IProFunctorCommand* command,
-        bool                blocking = false
-        );
+    /*
+     * 'action' is a non-const member function
+     */
+    template<typename RECEIVER, typename... ARGS>
+    bool PostCall(
+        RECEIVER&         receiver,
+        void (RECEIVER::* action)(ARGS...),
+        ARGS...           args
+        )
+    {
+        return DoCall(false, receiver, action, args...); /* blocking is false */
+    }
+
+    /*
+     * 'action' is a const member function
+     */
+    template<typename RECEIVER, typename... ARGS>
+    bool PostCall(
+        RECEIVER&         receiver,
+        void (RECEIVER::* action)(ARGS...) const,
+        ARGS...           args
+        )
+    {
+        return DoCall(false, receiver, action, args...); /* blocking is false */
+    }
+
+    /*
+     * 'action' is a static member function or a non-member function
+     */
+    template<typename... ARGS>
+    bool PostCall(
+        void (* action)(ARGS...),
+        ARGS... args
+        )
+    {
+        return DoCall(false, action, args...); /* blocking is false */
+    }
+
+    /*
+     * 'action' is a non-const member function
+     */
+    template<typename RECEIVER, typename... ARGS>
+    bool SendCall(
+        RECEIVER&         receiver,
+        void (RECEIVER::* action)(ARGS...),
+        ARGS...           args
+        )
+    {
+        return DoCall(true, receiver, action, args...); /* blocking is true */
+    }
+
+    /*
+     * 'action' is a const member function
+     */
+    template<typename RECEIVER, typename... ARGS>
+    bool SendCall(
+        RECEIVER&         receiver,
+        void (RECEIVER::* action)(ARGS...) const,
+        ARGS...           args
+        )
+    {
+        return DoCall(true, receiver, action, args...); /* blocking is true */
+    }
+
+    /*
+     * 'action' is a static member function or a non-member function
+     */
+    template<typename... ARGS>
+    bool SendCall(
+        void (* action)(ARGS...),
+        ARGS... args
+        )
+    {
+        return DoCall(true, action, args...); /* blocking is true */
+    }
 
     size_t GetSize() const;
+
+    bool IsCurrentThread() const;
 
     void SetUserData(const void* userData);
 
@@ -67,6 +143,82 @@ public:
 private:
 
     void StopMe();
+
+    template<typename RECEIVER, typename... ARGS>
+    bool DoCall(
+        bool              blocking,
+        RECEIVER&         receiver,
+        void (RECEIVER::* action)(ARGS...),
+        ARGS...           args
+        )
+    {
+        CProFunctorCommand* command = CProFunctorCommand::Create(receiver, action, args...);
+        if (command == NULL)
+        {
+            return false;
+        }
+
+        if (!Put(command, blocking))
+        {
+            command->Destroy();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    template<typename RECEIVER, typename... ARGS>
+    bool DoCall(
+        bool              blocking,
+        RECEIVER&         receiver,
+        void (RECEIVER::* action)(ARGS...) const,
+        ARGS...           args
+        )
+    {
+        CProFunctorCommand* command = CProFunctorCommand::Create(receiver, action, args...);
+        if (command == NULL)
+        {
+            return false;
+        }
+
+        if (!Put(command, blocking))
+        {
+            command->Destroy();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    template<typename... ARGS>
+    bool DoCall(
+        bool    blocking,
+        void (* action)(ARGS...),
+        ARGS... args
+        )
+    {
+        CProFunctorCommand* command = CProFunctorCommand::Create(action, args...);
+        if (command == NULL)
+        {
+            return false;
+        }
+
+        if (!Put(command, blocking))
+        {
+            command->Destroy();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    bool Put(
+        CProFunctorCommand* command,
+        bool                blocking = false
+        );
 
     virtual void Svc();
 
@@ -77,7 +229,7 @@ private:
     unsigned int                      m_curThreadCount;
     bool                              m_wantExit;
     CProStlSet<uint64_t>              m_threadIds;
-    CProStlDeque<IProFunctorCommand*> m_commands;
+    CProStlDeque<CProFunctorCommand*> m_commands;
     CProThreadMutexCondition          m_commandCond;
     CProThreadMutexCondition          m_initCond;
     mutable CProThreadMutex           m_lock;
