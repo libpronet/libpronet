@@ -134,6 +134,9 @@ public:
 
     size_t GetSize() const;
 
+    /*
+     * This is only relevant in single-threaded scenarios.
+     */
     bool IsCurrentThread() const;
 
     void SetUserData(const void* userData);
