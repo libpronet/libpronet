@@ -23,6 +23,30 @@
 ////
 
 /*
+ * definitions for Windows, see the "build/DEFINE.txt"
+ */
+#if defined(_WIN32)
+#if !defined(_CRT_NONSTDC_NO_WARNINGS)
+#define _CRT_NONSTDC_NO_WARNINGS
+#endif
+#if !defined(_CRT_NONSTDC_NO_DEPRECATE)
+#define _CRT_NONSTDC_NO_DEPRECATE
+#endif
+#if !defined(_CRT_SECURE_NO_WARNINGS)
+#define _CRT_SECURE_NO_WARNINGS
+#endif
+#if !defined(_CRT_SECURE_NO_DEPRECATE)
+#define _CRT_SECURE_NO_DEPRECATE
+#endif
+#if !defined(STRSAFE_NO_DEPRECATE)
+#define STRSAFE_NO_DEPRECATE
+#endif
+#if !defined(_WINSOCK_DEPRECATED_NO_WARNINGS)
+#define _WINSOCK_DEPRECATED_NO_WARNINGS
+#endif
+#endif
+
+/*
  * definitions for Linux, see the "build/DEFINE.txt"
  */
 #if defined(__linux__) && !defined(ANDROID)

@@ -31,10 +31,17 @@
 #include <bitset>
 #include <deque>
 #include <functional>
+#include <initializer_list>
+#if 0
+#include <iostream>
+#endif
 #include <list>
 #include <map>
 #include <queue>
 #include <set>
+#if 0
+#include <sstream>
+#endif
 #include <stack>
 #include <string>
 #include <tuple>
