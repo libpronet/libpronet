@@ -147,7 +147,7 @@ public:
 
         CProFunctorCommand* command = new CProFunctorCommand;
 
-        command->m_func = [action, args]() -> void
+        command->m_func = [action, args...]() -> void
         {
             (*action)(args...);
         };

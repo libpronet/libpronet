@@ -190,7 +190,7 @@ private:
     template<typename RECEIVER, typename... ARGS>
     bool DoCall(
         bool              blocking,
-        RECEIVER&         receiver,
+        const RECEIVER&   receiver,
         void (RECEIVER::* action)(ARGS...) const,
         ARGS...           args
         )
