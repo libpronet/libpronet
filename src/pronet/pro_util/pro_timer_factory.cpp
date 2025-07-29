@@ -18,7 +18,6 @@
 
 #include "pro_a.h"
 #include "pro_timer_factory.h"
-#include "pro_functor_command.h"
 #include "pro_functor_command_task.h"
 #include "pro_memory_pool.h"
 #include "pro_shared.h"

@@ -20,6 +20,7 @@
 #define ____PRO_CHANNEL_TASK_POOL_H____
 
 #include "pro_a.h"
+#include "pro_functor_command.h"
 #include "pro_memory_pool.h"
 #include "pro_stl.h"
 #include "pro_thread_mutex.h"
@@ -28,7 +29,6 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-class CProFunctorCommand;
 class CProFunctorCommandTask;
 
 /////////////////////////////////////////////////////////////////////////////
@@ -55,12 +55,120 @@ public:
 
     void RemoveChannel(uint64_t channelId);
 
+    /*
+     * The 'action' is a non-const member function.
+     */
+    template<typename RECEIVER, typename... ARGS>
+    bool PostCall(
+        uint64_t          channelId,
+        RECEIVER&         receiver,
+        void (RECEIVER::* action)(ARGS...),
+        ARGS...           args
+        )
+    {
+        CProFunctorCommand* command = CProFunctorCommand::Create(receiver, action, args...);
+        if (command == NULL)
+        {
+            return false;
+        }
+
+        if (!Put(channelId, command))
+        {
+            command->Destroy();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /*
+     * The 'action' is a const member function.
+     */
+    template<typename RECEIVER, typename... ARGS>
+    bool PostCall(
+        uint64_t          channelId,
+        const RECEIVER&   receiver,
+        void (RECEIVER::* action)(ARGS...) const,
+        ARGS...           args
+        )
+    {
+        CProFunctorCommand* command = CProFunctorCommand::Create(receiver, action, args...);
+        if (command == NULL)
+        {
+            return false;
+        }
+
+        if (!Put(channelId, command))
+        {
+            command->Destroy();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /*
+     * The 'action' is a static member function or a non-member function.
+     */
+    template<typename... ARGS>
+    bool PostCall(
+        uint64_t channelId,
+        void (*  action)(ARGS...),
+        ARGS...  args
+        )
+    {
+        CProFunctorCommand* command = CProFunctorCommand::Create(action, args...);
+        if (command == NULL)
+        {
+            return false;
+        }
+
+        if (!Put(channelId, command))
+        {
+            command->Destroy();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /*
+     * Its main purpose is to encapsulate lambda expressions.
+     */
+    bool PostCall(
+        uint64_t                     channelId,
+        const std::function<void()>& func
+        )
+    {
+        CProFunctorCommand* command = CProFunctorCommand::Create(func);
+        if (command == NULL)
+        {
+            return false;
+        }
+
+        if (!Put(channelId, command))
+        {
+            command->Destroy();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    size_t GetChannelSize(uint64_t channelId) const;
+
+    size_t GetSize() const;
+
+private:
+
     bool Put(
         uint64_t            channelId,
         CProFunctorCommand* command
         );
-
-    size_t GetSize() const;
 
 private:
 

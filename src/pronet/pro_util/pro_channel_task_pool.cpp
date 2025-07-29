@@ -18,6 +18,7 @@
 
 #include "pro_a.h"
 #include "pro_channel_task_pool.h"
+#include "pro_functor_command.h"
 #include "pro_functor_command_task.h"
 #include "pro_memory_pool.h"
 #include "pro_stl.h"
@@ -193,6 +194,24 @@ CProChannelTaskPool::Put(uint64_t            channelId,
     }
 
     return ret;
+}
+
+size_t
+CProChannelTaskPool::GetChannelSize(uint64_t channelId) const
+{
+    size_t size = 0;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        auto itr = m_channelId2Task.find(channelId);
+        if (itr != m_channelId2Task.end())
+        {
+            size = itr->second->GetSize();
+        }
+    }
+
+    return size;
 }
 
 size_t
