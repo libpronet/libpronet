@@ -79,7 +79,7 @@ class CProFunctorCommand
 public:
 
     /*
-     * 'action' is a non-const member function
+     * The 'action' is a non-const member function.
      */
     template<typename RECEIVER, typename... ARGS>
     static CProFunctorCommand* Create(
@@ -96,7 +96,7 @@ public:
 
         CProFunctorCommand* command = new CProFunctorCommand;
 
-        command->m_func = [=, &receiver]() -> void
+        command->m_func = [&receiver, action, args...]() -> void
         {
             (receiver.*action)(args...);
         };
@@ -105,11 +105,11 @@ public:
     }
 
     /*
-     * 'action' is a const member function
+     * The 'action' is a const member function.
      */
     template<typename RECEIVER, typename... ARGS>
     static CProFunctorCommand* Create(
-        RECEIVER&         receiver,
+        const RECEIVER&   receiver,
         void (RECEIVER::* action)(ARGS...) const,
         ARGS...           args
         )
@@ -122,7 +122,7 @@ public:
 
         CProFunctorCommand* command = new CProFunctorCommand;
 
-        command->m_func = [=, &receiver]() -> void
+        command->m_func = [&receiver, action, args...]() -> void
         {
             (receiver.*action)(args...);
         };
@@ -131,7 +131,7 @@ public:
     }
 
     /*
-     * 'action' is a static member function or a non-member function
+     * The 'action' is a static member function or a non-member function.
      */
     template<typename... ARGS>
     static CProFunctorCommand* Create(
@@ -147,10 +147,27 @@ public:
 
         CProFunctorCommand* command = new CProFunctorCommand;
 
-        command->m_func = [=]() -> void
+        command->m_func = [action, args]() -> void
         {
             (*action)(args...);
         };
+
+        return command;
+    }
+
+    /*
+     * Its main purpose is to encapsulate lambda expressions.
+     */
+    static CProFunctorCommand* Create(const std::function<void()>& func)
+    {
+        assert(func);
+        if (!func)
+        {
+            return NULL;
+        }
+
+        CProFunctorCommand* command = new CProFunctorCommand;
+        command->m_func             = func;
 
         return command;
     }

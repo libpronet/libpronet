@@ -57,7 +57,7 @@ public:
     void Stop();
 
     /*
-     * 'action' is a non-const member function
+     * The 'action' is a non-const member function.
      */
     template<typename RECEIVER, typename... ARGS>
     bool PostCall(
@@ -70,11 +70,11 @@ public:
     }
 
     /*
-     * 'action' is a const member function
+     * The 'action' is a const member function.
      */
     template<typename RECEIVER, typename... ARGS>
     bool PostCall(
-        RECEIVER&         receiver,
+        const RECEIVER&   receiver,
         void (RECEIVER::* action)(ARGS...) const,
         ARGS...           args
         )
@@ -83,7 +83,7 @@ public:
     }
 
     /*
-     * 'action' is a static member function or a non-member function
+     * The 'action' is a static member function or a non-member function.
      */
     template<typename... ARGS>
     bool PostCall(
@@ -95,7 +95,15 @@ public:
     }
 
     /*
-     * 'action' is a non-const member function
+     * Its main purpose is to encapsulate lambda expressions.
+     */
+    bool PostCall(const std::function<void()>& func)
+    {
+        return DoCall(false, func); /* blocking is false */
+    }
+
+    /*
+     * The 'action' is a non-const member function.
      */
     template<typename RECEIVER, typename... ARGS>
     bool SendCall(
@@ -108,11 +116,11 @@ public:
     }
 
     /*
-     * 'action' is a const member function
+     * The 'action' is a const member function.
      */
     template<typename RECEIVER, typename... ARGS>
     bool SendCall(
-        RECEIVER&         receiver,
+        const RECEIVER&   receiver,
         void (RECEIVER::* action)(ARGS...) const,
         ARGS...           args
         )
@@ -121,7 +129,7 @@ public:
     }
 
     /*
-     * 'action' is a static member function or a non-member function
+     * The 'action' is a static member function or a non-member function.
      */
     template<typename... ARGS>
     bool SendCall(
@@ -130,6 +138,14 @@ public:
         )
     {
         return DoCall(true, action, args...); /* blocking is true */
+    }
+
+    /*
+     * Its main purpose is to encapsulate lambda expressions.
+     */
+    bool SendCall(const std::function<void()>& func)
+    {
+        return DoCall(true, func); /* blocking is true */
     }
 
     size_t GetSize() const;
@@ -203,6 +219,27 @@ private:
         )
     {
         CProFunctorCommand* command = CProFunctorCommand::Create(action, args...);
+        if (command == NULL)
+        {
+            return false;
+        }
+
+        if (!Put(command, blocking))
+        {
+            command->Destroy();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    bool DoCall(
+        bool                         blocking,
+        const std::function<void()>& func
+        )
+    {
+        CProFunctorCommand* command = CProFunctorCommand::Create(func);
         if (command == NULL)
         {
             return false;
