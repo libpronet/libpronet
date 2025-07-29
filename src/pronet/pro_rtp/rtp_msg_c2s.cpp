@@ -561,26 +561,13 @@ CRtpMsgC2s::KickoutLocalUser(const RTP_MSG_USER* user)
             return;
         }
 
-        m_task->PostCall(
-            *this,
-            &CRtpMsgC2s::AsyncKickoutLocalUser,
-            user->classId,
-            user->UserId(),
-            user->instId
-            );
+        m_task->PostCall(*this, &CRtpMsgC2s::AsyncKickoutLocalUser, *user);
     }
 }
 
 void
-CRtpMsgC2s::AsyncKickoutLocalUser(unsigned char classId,
-                                  uint64_t      userId,
-                                  uint16_t      instId)
+CRtpMsgC2s::AsyncKickoutLocalUser(RTP_MSG_USER user)
 {
-    assert(classId > 0);
-    assert(userId > 0);
-
-    RTP_MSG_USER user(classId, userId, instId);
-
     IRtpMsgC2sObserver* observer   = NULL;
     IRtpSession*        oldSession = NULL;
 

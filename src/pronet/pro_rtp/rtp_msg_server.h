@@ -279,11 +279,7 @@ private:
         const RTP_MSG_USER&     c2sUser
         );
 
-    void AsyncKickoutUser(
-        unsigned char classId,
-        uint64_t      userId,
-        uint16_t      instId
-        );
+    void AsyncKickoutUser(RTP_MSG_USER user);
 
     void AsyncOnAcceptSession(RTP_MSG_AsyncOnAcceptSession* msg);
 

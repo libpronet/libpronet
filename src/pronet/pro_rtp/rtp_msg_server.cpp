@@ -315,26 +315,13 @@ CRtpMsgServer::KickoutUser(const RTP_MSG_USER* user)
             return;
         }
 
-        m_task->PostCall(
-            *this,
-            &CRtpMsgServer::AsyncKickoutUser,
-            user->classId,
-            user->UserId(),
-            user->instId
-            );
+        m_task->PostCall(*this, &CRtpMsgServer::AsyncKickoutUser, *user);
     }
 }
 
 void
-CRtpMsgServer::AsyncKickoutUser(unsigned char classId,
-                                uint64_t      userId,
-                                uint16_t      instId)
+CRtpMsgServer::AsyncKickoutUser(RTP_MSG_USER user)
 {
-    assert(classId > 0);
-    assert(userId > 0);
-
-    RTP_MSG_USER user(classId, userId, instId);
-
     IRtpMsgServerObserver*   observer   = NULL;
     IRtpSession*             oldSession = NULL;
     CProStlSet<RTP_MSG_USER> oldUsers;
