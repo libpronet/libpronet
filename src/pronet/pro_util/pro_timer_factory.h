@@ -75,7 +75,7 @@ struct PRO_TIMER_NODE
 ////
 
 /*
- * please refer to "pro_net/pro_net.h"
+ * Please refer to "pro_net/pro_net.h"
  */
 #if !defined(____IProOnTimer____)
 #define ____IProOnTimer____

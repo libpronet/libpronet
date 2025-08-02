@@ -49,14 +49,14 @@ public:
     void Stop();
 
     /*
-     * the 'channelId' can be 0
+     * The 'channelId' can be 0
      */
     bool AddChannel(uint64_t channelId);
 
     void RemoveChannel(uint64_t channelId);
 
     /*
-     * The 'action' is a non-const member function.
+     * The 'action' is a non-const member function
      */
     template<typename RECEIVER, typename... ARGS>
     bool PostCall(
@@ -83,7 +83,7 @@ public:
     }
 
     /*
-     * The 'action' is a const member function.
+     * The 'action' is a const member function
      */
     template<typename RECEIVER, typename... ARGS>
     bool PostCall(
@@ -110,7 +110,7 @@ public:
     }
 
     /*
-     * The 'action' is a static member function or a non-member function.
+     * The 'action' is a static member function or a non-member function
      */
     template<typename... ARGS>
     bool PostCall(
@@ -136,7 +136,7 @@ public:
     }
 
     /*
-     * Its main purpose is to encapsulate lambda expressions.
+     * Its main purpose is to encapsulate lambda expressions
      */
     bool PostCall(
         uint64_t                     channelId,

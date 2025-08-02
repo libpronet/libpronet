@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (C) 2018-2019 Eric Tung <libpronet@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License"),
@@ -209,16 +209,16 @@ ProHexDecodeStr(const char*                   inputString,
 /*-------------------------------------------------------------------------*/
 
 /*
- * 功能: 计算(会话随机数+口令)组合的HASH(SHA-256)值
+ * Function: Calculate the SHA-256 hash value of (session nonce + password)
  *
- * 参数:
- * nonce        : 会话随机数
- * password     : 口令
- * passwordHash : 输出结果
+ * Parameters:
+ * nonce        : Session nonce
+ * password     : Password
+ * passwordHash : Output result
  *
- * 返回值: 无
+ * Return: None
  *
- * 说明: 无
+ * Note: None
  */
 void
 ProCalcPasswordHash(const unsigned char nonce[32],
@@ -226,15 +226,16 @@ ProCalcPasswordHash(const unsigned char nonce[32],
                     unsigned char       passwordHash[32]);
 
 /*
- * 功能: 安全清零
+ * Function: Secure memory zeroing
  *
- * 参数:
- * buf  : 缓冲区地址
- * size : 缓冲区长度
+ * Parameters:
+ * buf  : Buffer address
+ * size : Buffer length
  *
- * 返回值: 无
+ * Return: None
  *
- * 说明: 该函数速度较慢, 只用于口令等敏感数据的擦除
+ * Note: This function is relatively slow and should only be used for wiping
+ *       sensitive data like passwords
  */
 void
 ProZeroMemory(void*  buf,

@@ -23,7 +23,7 @@
 ////
 
 /*
- * definitions for Windows, see the "build/DEFINE.txt"
+ * Definitions for Windows, see the "build/DEFINE.txt"
  */
 #if defined(_WIN32)
 #if !defined(_CRT_NONSTDC_NO_WARNINGS)
@@ -47,7 +47,7 @@
 #endif
 
 /*
- * definitions for Linux, see the "build/DEFINE.txt"
+ * Definitions for Linux, see the "build/DEFINE.txt"
  */
 #if defined(__linux__) && !defined(ANDROID)
 #if !defined(PRO_HAS_ACCEPT4)
@@ -68,7 +68,7 @@
 #endif
 
 /*
- * definitions for Android, see the "build/DEFINE.txt"
+ * Definitions for Android, see the "build/DEFINE.txt"
  */
 #if defined(ANDROID)
 #if !defined(PRO_HAS_PTHREAD_CONDATTR_SETCLOCK)
@@ -80,7 +80,7 @@
 #endif
 
 /*
- * definitions for MacOS/iOS, see the "build/DEFINE.txt"
+ * Definitions for MacOS/iOS, see the "build/DEFINE.txt"
  */
 #if defined(__APPLE__)
 #if !defined(PRO_HAS_MACH_ABSOLUTE_TIME)
@@ -95,7 +95,7 @@
 #endif
 
 /*
- * optional definitions, see the "build/DEFINE.txt"
+ * Optional definitions, see the "build/DEFINE.txt"
  */
 #if !defined(PRO_FD_SETSIZE)
 #define PRO_FD_SETSIZE         1024

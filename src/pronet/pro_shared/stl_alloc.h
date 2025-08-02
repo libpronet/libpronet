@@ -127,8 +127,9 @@ private:
 namespace std {
 
 /*
- * buf_obj = hdr + app_level_obj = 8 + app_level_obj,
- * please refer to "../pro_shared.cpp"
+ * buf_obj = hdr + app_level_obj = 8 + app_level_obj
+ *
+ * Please refer to "../pro_shared.cpp"
  */
 enum { __MAX_OBJ_BYTES = 8 + 1024 * 128  }; /* sizeof(app_level_obj) <= 128K */
 enum { __BIG_OBJ_BYTES = 8 + 4096        }; /* sizeof(app_level_big_obj) >= 4096 */
@@ -385,7 +386,7 @@ template<int __inst>
 __Obj* __default_alloc_template<__inst>::_S_free_list[__NFREELISTS] = { 0 };
 
 /*
- * refer to the "jemalloc/tcmalloc"
+ * Refer to the jemalloc & tcmalloc projects
  */
 template<int __inst>
 size_t __default_alloc_template<__inst>::_S_obj_size[__NFREELISTS] =

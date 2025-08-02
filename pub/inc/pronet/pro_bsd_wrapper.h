@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (C) 2018-2019 Eric Tung <libpronet@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License"),
@@ -370,42 +370,43 @@ pbsd_closesocket(int64_t fd,
 ////
 
 /*
- * 功能: 校验给定的ip字符串是否有效
+ * Function: Validate whether the given IP string is valid
  *
- * 参数:
- * ipString : 待校验的ip字符串
+ * Parameters:
+ * ipString : The IP string to validate
  *
- * 返回值: true有效, false无效
+ * Return: true if valid, false otherwise
  *
- * 说明: "0.0.0.0"是有效的
+ * Note: "0.0.0.0" is considered valid
  */
 bool
 ProCheckIpString(const char* ipString);
 
 /*
- * 功能: 获取本地的首选ip地址
+ * Function: Retrieve the preferred local IP address
  *
- * 参数:
- * localFirstIp : 输出结果
- * peerIpOrName : 参考的远端地址或域名
+ * Parameters:
+ * localFirstIp : Output buffer for the IP address
+ * peerIpOrName : Reference remote address or domain name
  *
- * 返回值: localFirstIp参数本身
+ * Return: The localFirstIp parameter itself
  *
- * 说明: 参考地址用于本地多ip的情况下选择最匹配的一个
+ * Note: The reference address helps select the most appropriate IP
+ *       when multiple local IPs exist
  */
 const char*
 ProGetLocalFirstIp(char        localFirstIp[64],
                    const char* peerIpOrName = NULL);
 
 /*
- * 功能: 获取本地的ip地址列表
+ * Function: Retrieve the list of local IP addresses
  *
- * 参数:
- * localIpList : 输出结果
+ * Parameters:
+ * localIpList : Output result
  *
- * 返回值: 无
+ * Return: None
  *
- * 说明: 不包括本地回环地址
+ * Note: The local loopback address are excluded
  */
 void
 ProGetLocalIpList(CProStlVector<CProStlString>& localIpList);

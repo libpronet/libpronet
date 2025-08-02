@@ -79,7 +79,7 @@ class CProFunctorCommand
 public:
 
     /*
-     * The 'action' is a non-const member function.
+     * The 'action' is a non-const member function
      */
     template<typename RECEIVER, typename... ARGS>
     static CProFunctorCommand* Create(
@@ -105,7 +105,7 @@ public:
     }
 
     /*
-     * The 'action' is a const member function.
+     * The 'action' is a const member function
      */
     template<typename RECEIVER, typename... ARGS>
     static CProFunctorCommand* Create(
@@ -131,7 +131,7 @@ public:
     }
 
     /*
-     * The 'action' is a static member function or a non-member function.
+     * The 'action' is a static member function or a non-member function
      */
     template<typename... ARGS>
     static CProFunctorCommand* Create(
@@ -156,7 +156,7 @@ public:
     }
 
     /*
-     * Its main purpose is to encapsulate lambda expressions.
+     * Its main purpose is to encapsulate lambda expressions
      */
     static CProFunctorCommand* Create(const std::function<void()>& func)
     {

@@ -38,8 +38,8 @@ struct RTP_UDPX_SYNC
         return ret;
     }
 
-    uint16_t      version;      /* the current protocol version is 02 */
-    char          reserved[14]; /* zero value */
+    uint16_t      version;      /* The current protocol version is 02 */
+    char          reserved[14]; /* Zero value */
     unsigned char nonce[14];
     uint16_t      checksum;
 

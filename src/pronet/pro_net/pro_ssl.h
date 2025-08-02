@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (C) 2018-2019 Eric Tung <libpronet@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License"),
@@ -30,13 +30,13 @@ extern "C" {
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-struct PRO_NONCE;             /* a big random number */
-struct PRO_SSL_CLIENT_CONFIG; /* derived from mbedtls_ssl_config */
-struct PRO_SSL_CTX;           /* derived from mbedtls_ssl_context */
-struct PRO_SSL_SERVER_CONFIG; /* derived from mbedtls_ssl_config */
+struct PRO_NONCE;             /* Big random number */
+struct PRO_SSL_CLIENT_CONFIG; /* Derived from mbedtls_ssl_config */
+struct PRO_SSL_CTX;           /* Derived from mbedtls_ssl_context */
+struct PRO_SSL_SERVER_CONFIG; /* Derived from mbedtls_ssl_config */
 
 /*
- * [[[[ authentication levels
+ * [[[[ Authentication levels
  */
 typedef unsigned char PRO_SSL_AUTH_LEVEL;
 
@@ -50,10 +50,12 @@ static const PRO_SSL_AUTH_LEVEL PRO_SSL_AUTHLV_REQUIRED = 2;
 /*
  * [[[[ SSL/TLS suites
  *
- * 这里都是基于证书的AEAD加密套件, 并且, 我们只推荐前向安全(PFS)的加密套件. 如果需要预共享
- * 密钥(PSK)机制或更加丰富的加密套件, 使用者可以直接引用mbedtls库的定义
+ * These are all certificate-based AEAD cipher suites, and we only recommend
+ * Perfect Forward Secrecy (PFS) cipher suites. If Pre-Shared Key (PSK) mechanism
+ * or richer cipher suites are needed, users can directly reference mbedtls
+ * library definitions
  *
- * please refer to "mbedtls/ssl_ciphersuites.h"
+ * Please refer to "mbedtls/ssl_ciphersuites.h"
  */
 typedef unsigned short PRO_SSL_SUITE_ID;
 
@@ -85,44 +87,44 @@ static const PRO_SSL_SUITE_ID PRO_SSL_DHE_RSA_WITH_CHACHA20_POLY1305_SHA256     
 ////
 
 /*
- * 功能: 创建一个服务端SSL配置
+ * Function: Create a server SSL configuration
  *
- * 参数: 无
+ * Parameters: None
  *
- * 返回值: SSL配置对象或NULL
+ * Return: SSL configuration object or NULL
  *
- * 说明: PRO_SSL_SERVER_CONFIG继承自mbedtls_ssl_config. 如果有必要, 可以通过mbedtls
- *      库操纵该对象
+ * Note: PRO_SSL_SERVER_CONFIG inherits from mbedtls_ssl_config. If necessary,
+ *       the object can be manipulated using mbedtls library functions
  */
 PRO_NET_API
 PRO_SSL_SERVER_CONFIG*
 ProSslServerConfig_Create();
 
 /*
- * 功能: 删除一个服务端SSL配置
+ * Function: Delete a server SSL configuration
  *
- * 参数:
- * config : SSL配置对象
+ * Parameters:
+ * config : SSL configuration object
  *
- * 返回值: 无
+ * Return: None
  *
- * 说明: 无
+ * Note: None
  */
 PRO_NET_API
 void
 ProSslServerConfig_Delete(PRO_SSL_SERVER_CONFIG* config);
 
 /*
- * 功能: 设置加密套件
+ * Function: Set cipher suites
  *
- * 参数:
- * config     : SSL配置对象
- * suites     : 加密套件列表. 客户端的套件列表顺序优先
- * suiteCount : 列表长度
+ * Parameters:
+ * config     : SSL configuration object
+ * suites     : Cipher suite list (client's suite list order has priority)
+ * suiteCount : List length
  *
- * 返回值: true成功, false失败
+ * Return: true on success, false on failure
  *
- * 说明: 如果有必要, 可以通过mbedtls库设置更加丰富的加密套件
+ * Note: If necessary, richer cipher suites can be set using mbedtls library
  */
 PRO_NET_API
 bool
@@ -131,16 +133,16 @@ ProSslServerConfig_SetSuiteList(PRO_SSL_SERVER_CONFIG*  config,
                                 size_t                  suiteCount);
 
 /*
- * 功能: 设置ALPN
+ * Function: Set ALPN
  *
- * 参数:
- * config    : SSL配置对象
- * alpns     : ALPN列表. 客户端的列表顺序优先
- * alpnCount : 列表长度
+ * Parameters:
+ * config    : SSL configuration object
+ * alpns     : ALPN list (client's list order has priority)
+ * alpnCount : List length
  *
- * 返回值: true成功, false失败
+ * Return: true on success, false on failure
  *
- * 说明: 无
+ * Note: None
  */
 PRO_NET_API
 bool
@@ -149,15 +151,15 @@ ProSslServerConfig_SetAlpnList(PRO_SSL_SERVER_CONFIG* config,
                                size_t                 alpnCount); /* = 0 */
 
 /*
- * 功能: 是否支持SHA-1证书
+ * Function: Enable or disable SHA-1 certificate support
  *
- * 参数:
- * config : SSL配置对象
- * enable : true支持, false不支持
+ * Parameters:
+ * config : SSL configuration object
+ * enable : true to enable, false to disable
  *
- * 返回值: 无
+ * Return: None
  *
- * 说明: 默认不支持SHA-1证书
+ * Note: SHA-1 certificates are not supported by default
  */
 PRO_NET_API
 void
@@ -165,20 +167,20 @@ ProSslServerConfig_EnableSha1Cert(PRO_SSL_SERVER_CONFIG* config,
                                   bool                   enable);
 
 /*
- * 功能: 设置CA证书列表
+ * Function: Set CA certificate list
  *
- * 参数:
- * config       : SSL配置对象
- * caFiles      : CA文件列表
- * caFileCount  : CA列表长度
- * crlFiles     : CRL文件列表
- * crlFileCount : CRL列表长度
+ * Parameters:
+ * config       : SSL configuration object
+ * caFiles      : CA file list
+ * caFileCount  : CA list length
+ * crlFiles     : CRL file list
+ * crlFileCount : CRL list length
  *
- * 返回值: true成功, false失败
+ * Return: true on success, false on failure
  *
- * 说明: caFiles可以包含两类证书,
- *       1)可信的CA证书;
- *       2)可信的自签名终端用户证书. 此时, 证书的CA标志位可以不设置
+ * Note: caFiles can contain two types of certificates:
+ *       1) Trusted CA certificates
+ *       2) Trusted self-signed end-entity certificates (CA flag may be unset)
  */
 PRO_NET_API
 bool
@@ -189,18 +191,18 @@ ProSslServerConfig_SetCaList(PRO_SSL_SERVER_CONFIG* config,
                              size_t                 crlFileCount); /* = 0 */
 
 /*
- * 功能: 追加一条证书链
+ * Function: Append a certificate chain
  *
- * 参数:
- * config        : SSL配置对象
- * certFiles     : 证书文件列表
- * certFileCount : 列表长度
- * keyFile       : 私钥文件. 与certFiles[0]对应
- * password      : 私钥文件口令
+ * Parameters:
+ * config        : SSL configuration object
+ * certFiles     : Certificate file list
+ * certFileCount : List length
+ * keyFile       : Private key file (corresponds to certFiles[0])
+ * password      : Private key password
  *
- * 返回值: true成功, false失败
+ * Return: true on success, false on failure
  *
- * 说明: 无
+ * Note: None
  */
 PRO_NET_API
 bool
@@ -211,15 +213,15 @@ ProSslServerConfig_AppendCertChain(PRO_SSL_SERVER_CONFIG* config,
                                    const char*            password); /* = NULL */
 
 /*
- * 功能: 设置认证级别
+ * Function: Set authentication level
  *
- * 参数:
- * config : SSL配置对象
- * level  : 认证级别
+ * Parameters:
+ * config : SSL configuration object
+ * level  : Authentication level
  *
- * 返回值: true成功, false失败
+ * Return: true on success, false on failure
  *
- * 说明: 默认情况下, server不认证client
+ * Note: By default, server does not authenticate client
  */
 PRO_NET_API
 bool
@@ -227,15 +229,15 @@ ProSslServerConfig_SetAuthLevel(PRO_SSL_SERVER_CONFIG* config,
                                 PRO_SSL_AUTH_LEVEL     level);
 
 /*
- * 功能: 添加一个SNI条目
+ * Function: Add an SNI entry
  *
- * 参数:
- * config  : SSL配置对象
- * sniName : SNI服务名
+ * Parameters:
+ * config  : SSL configuration object
+ * sniName : SNI service name
  *
- * 返回值: true成功, false失败
+ * Return: true on success, false on failure
  *
- * 说明: 无
+ * Note: None
  */
 PRO_NET_API
 bool
@@ -243,15 +245,15 @@ ProSslServerConfig_AddSni(PRO_SSL_SERVER_CONFIG* config,
                           const char*            sniName);
 
 /*
- * 功能: 删除一个SNI条目
+ * Function: Remove an SNI entry
  *
- * 参数:
- * config  : SSL配置对象
- * sniName : SNI服务名
+ * Parameters:
+ * config  : SSL configuration object
+ * sniName : SNI service name
  *
- * 返回值: 无
+ * Return: None
  *
- * 说明: 无
+ * Note: None
  */
 PRO_NET_API
 void
@@ -259,21 +261,21 @@ ProSslServerConfig_RemoveSni(PRO_SSL_SERVER_CONFIG* config,
                              const char*            sniName);
 
 /*
- * 功能: 设置特定SNI条目的CA证书列表
+ * Function: Set CA certificate list for a specific SNI entry
  *
- * 参数:
- * config       : SSL配置对象
- * sniName      : SNI服务名
- * caFiles      : CA文件列表
- * caFileCount  : CA列表长度
- * crlFiles     : CRL文件列表
- * crlFileCount : CRL列表长度
+ * Parameters:
+ * config       : SSL configuration object
+ * sniName      : SNI service name
+ * caFiles      : CA file list
+ * caFileCount  : CA list length
+ * crlFiles     : CRL file list
+ * crlFileCount : CRL list length
  *
- * 返回值: true成功, false失败
+ * Return: true on success, false on failure
  *
- * 说明: caFiles可以包含两类证书,
- *       1)可信的CA证书;
- *       2)可信的自签名终端用户证书. 此时, 证书的CA标志位可以不设置
+ * Note: caFiles can contain two types of certificates:
+ *       1) Trusted CA certificates
+ *       2) Trusted self-signed end-entity certificates (CA flag may be unset)
  */
 PRO_NET_API
 bool
@@ -285,19 +287,19 @@ ProSslServerConfig_SetSniCaList(PRO_SSL_SERVER_CONFIG* config,
                                 size_t                 crlFileCount); /* = 0 */
 
 /*
- * 功能: 追加特定SNI条目的一条证书链
+ * Function: Append a certificate chain for a specific SNI entry
  *
- * 参数:
- * config        : SSL配置对象
- * sniName       : SNI服务名
- * certFiles     : 证书文件列表
- * certFileCount : 列表长度
- * keyFile       : 私钥文件. 与certFiles[0]对应
- * password      : 私钥文件口令
+ * Parameters:
+ * config        : SSL configuration object
+ * sniName       : SNI service name
+ * certFiles     : Certificate file list
+ * certFileCount : List length
+ * keyFile       : Private key file (corresponds to certFiles[0])
+ * password      : Private key password
  *
- * 返回值: true成功, false失败
+ * Return: true on success, false on failure
  *
- * 说明: 无
+ * Note: None
  */
 PRO_NET_API
 bool
@@ -309,15 +311,15 @@ ProSslServerConfig_AppendSniCertChain(PRO_SSL_SERVER_CONFIG* config,
                                       const char*            password); /* = NULL */
 
 /*
- * 功能: 设置特定SNI条目的认证级别
+ * Function: Set authentication level for a specific SNI entry
  *
- * 参数:
- * config : SSL配置对象
- * level  : 认证级别
+ * Parameters:
+ * config : SSL configuration object
+ * level  : Authentication level
  *
- * 返回值: true成功, false失败
+ * Return: true on success, false on failure
  *
- * 说明: 默认情况下, server不认证client
+ * Note: By default, server does not authenticate client
  */
 PRO_NET_API
 bool
@@ -328,44 +330,44 @@ ProSslServerConfig_SetSniAuthLevel(PRO_SSL_SERVER_CONFIG* config,
 /*-------------------------------------------------------------------------*/
 
 /*
- * 功能: 创建一个客户端SSL配置
+ * Function: Create a client SSL configuration
  *
- * 参数: 无
+ * Parameters: None
  *
- * 返回值: SSL配置对象或NULL
+ * Return: SSL configuration object or NULL
  *
- * 说明: PRO_SSL_CLIENT_CONFIG继承自mbedtls_ssl_config. 如果有必要, 可以通过mbedtls
- *      库操纵该对象
+ * Note: PRO_SSL_CLIENT_CONFIG inherits from mbedtls_ssl_config. If necessary,
+ *       the object can be manipulated using mbedtls library functions
  */
 PRO_NET_API
 PRO_SSL_CLIENT_CONFIG*
 ProSslClientConfig_Create();
 
 /*
- * 功能: 删除一个客户端SSL配置
+ * Function: Delete a client SSL configuration
  *
- * 参数:
- * config : SSL配置对象
+ * Parameters:
+ * config : SSL configuration object
  *
- * 返回值: 无
+ * Return: None
  *
- * 说明: 无
+ * Note: None
  */
 PRO_NET_API
 void
 ProSslClientConfig_Delete(PRO_SSL_CLIENT_CONFIG* config);
 
 /*
- * 功能: 设置加密套件
+ * Function: Set cipher suites
  *
- * 参数:
- * config     : SSL配置对象
- * suites     : 加密套件列表
- * suiteCount : 列表长度
+ * Parameters:
+ * config     : SSL configuration object
+ * suites     : Cipher suite list
+ * suiteCount : List length
  *
- * 返回值: true成功, false失败
+ * Return: true on success, false on failure
  *
- * 说明: 如果有必要, 可以通过mbedtls库设置更加丰富的加密套件
+ * Note: If necessary, richer cipher suites can be set using mbedtls library
  */
 PRO_NET_API
 bool
@@ -374,16 +376,16 @@ ProSslClientConfig_SetSuiteList(PRO_SSL_CLIENT_CONFIG*  config,
                                 size_t                  suiteCount);
 
 /*
- * 功能: 设置ALPN
+ * Function: Set ALPN
  *
- * 参数:
- * config    : SSL配置对象
- * alpns     : ALPN列表
- * alpnCount : 列表长度
+ * Parameters:
+ * config    : SSL configuration object
+ * alpns     : ALPN list
+ * alpnCount : List length
  *
- * 返回值: true成功, false失败
+ * Return: true on success, false on failure
  *
- * 说明: 无
+ * Note: None
  */
 PRO_NET_API
 bool
@@ -392,15 +394,15 @@ ProSslClientConfig_SetAlpnList(PRO_SSL_CLIENT_CONFIG* config,
                                size_t                 alpnCount); /* = 0 */
 
 /*
- * 功能: 是否支持SHA-1证书
+ * Function: Enable or disable SHA-1 certificate support
  *
- * 参数:
- * config : SSL配置对象
- * enable : true支持, false不支持
+ * Parameters:
+ * config : SSL configuration object
+ * enable : true to enable, false to disable
  *
- * 返回值: 无
+ * Return: None
  *
- * 说明: 默认不支持SHA-1证书
+ * Note: SHA-1 certificates are not supported by default
  */
 PRO_NET_API
 void
@@ -408,20 +410,20 @@ ProSslClientConfig_EnableSha1Cert(PRO_SSL_CLIENT_CONFIG* config,
                                   bool                   enable);
 
 /*
- * 功能: 设置CA证书列表
+ * Function: Set CA certificate list
  *
- * 参数:
- * config       : SSL配置对象
- * caFiles      : CA文件列表
- * caFileCount  : CA列表长度
- * crlFiles     : CRL文件列表
- * crlFileCount : CRL列表长度
+ * Parameters:
+ * config       : SSL configuration object
+ * caFiles      : CA file list
+ * caFileCount  : CA list length
+ * crlFiles     : CRL file list
+ * crlFileCount : CRL list length
  *
- * 返回值: true成功, false失败
+ * Return: true on success, false on failure
  *
- * 说明: caFiles可以包含两类证书,
- *       1)可信的CA证书;
- *       2)可信的自签名终端用户证书. 此时, 证书的CA标志位可以不设置
+ * Note: caFiles can contain two types of certificates:
+ *       1) Trusted CA certificates
+ *       2) Trusted self-signed end-entity certificates (CA flag may be unset)
  */
 PRO_NET_API
 bool
@@ -432,18 +434,18 @@ ProSslClientConfig_SetCaList(PRO_SSL_CLIENT_CONFIG* config,
                              size_t                 crlFileCount); /* = 0 */
 
 /*
- * 功能: 设置证书链
+ * Function: Set certificate chain
  *
- * 参数:
- * config        : SSL配置对象
- * certFiles     : 证书文件列表
- * certFileCount : 列表长度
- * keyFile       : 私钥文件. 与certFiles[0]对应
- * password      : 私钥文件口令
+ * Parameters:
+ * config        : SSL configuration object
+ * certFiles     : Certificate file list
+ * certFileCount : List length
+ * keyFile       : Private key file (corresponds to certFiles[0])
+ * password      : Private key password
  *
- * 返回值: true成功, false失败
+ * Return: true on success, false on failure
  *
- * 说明: 该函数只能成功调用一次
+ * Note: This function can only be successfully called once
  */
 PRO_NET_API
 bool
@@ -454,15 +456,15 @@ ProSslClientConfig_SetCertChain(PRO_SSL_CLIENT_CONFIG* config,
                                 const char*            password); /* = NULL */
 
 /*
- * 功能: 设置认证级别
+ * Function: Set authentication level
  *
- * 参数:
- * config : SSL配置对象
- * level  : 认证级别
+ * Parameters:
+ * config : SSL configuration object
+ * level  : Authentication level
  *
- * 返回值: true成功, false失败
+ * Return: true on success, false on failure
  *
- * 说明: 默认情况下, client要求认证server
+ * Note: By default, the client requires server certificate verification
  */
 PRO_NET_API
 bool
@@ -472,19 +474,22 @@ ProSslClientConfig_SetAuthLevel(PRO_SSL_CLIENT_CONFIG* config,
 /*-------------------------------------------------------------------------*/
 
 /*
- * 功能: 创建一个服务端SSL上下文
+ * Function: Create a server SSL context
  *
- * 参数:
- * config : SSL配置对象
- * sockId : 套接字id
- * nonce  : 扰动随机数. NULL表示无扰动
+ * Parameters:
+ * config : SSL configuration object
+ * sockId : Socket ID
+ * nonce  : Perturbation random number. NULL means no perturbation
  *
- * 返回值: SSL上下文对象或NULL
+ * Return: SSL context object or NULL
  *
- * 说明: PRO_SSL_CTX继承自mbedtls_ssl_context. 如果有必要, 可以通过mbedtls库操纵该对象
+ * Note: PRO_SSL_CTX inherits from mbedtls_ssl_context. If necessary,
+ *       the object can be manipulated using mbedtls library functions
  *
- *      nonce用于为初期握手流量添加扰动, 主要用于防止握手的明文证书被过滤拦截. c/s两端必须
- *      一致, 一般来源于OnAccept()或OnConnectOk()
+ *       The nonce is used to add perturbation to initial handshake traffic,
+ *       mainly to prevent plaintext certificates from being intercepted/filtered.
+ *       Both client and server must use the same nonce, typically obtained
+ *       from OnAccept() or OnConnectOk()
  */
 PRO_NET_API
 PRO_SSL_CTX*
@@ -493,20 +498,24 @@ ProSslCtx_CreateS(const PRO_SSL_SERVER_CONFIG* config,
                   const PRO_NONCE*             nonce); /* = NULL */
 
 /*
- * 功能: 创建一个客户端SSL上下文
+ * Function: Create a client SSL context
  *
- * 参数:
- * config         : SSL配置对象
- * serverHostName : server主机名. 如果有效, 则参与认证server证书
- * sockId         : 套接字id
- * nonce          : 扰动随机数. NULL表示无扰动
+ * Parameters:
+ * config         : SSL configuration object
+ * serverHostName : Server hostname.
+ *                  If valid, participates in server certificate verification
+ * sockId         : Socket ID
+ * nonce          : Perturbation random number. NULL means no perturbation
  *
- * 返回值: SSL上下文对象或NULL
+ * Return: SSL context object or NULL
  *
- * 说明: PRO_SSL_CTX继承自mbedtls_ssl_context. 如果有必要, 可以通过mbedtls库操纵该对象
+ * Note: PRO_SSL_CTX inherits from mbedtls_ssl_context. If necessary,
+ *       the object can be manipulated using mbedtls library functions
  *
- *      nonce用于为初期握手流量添加扰动, 主要用于防止握手的明文证书被过滤拦截. c/s两端必须
- *      一致, 一般来源于OnAccept()或OnConnectOk()
+ *       The nonce is used to add perturbation to initial handshake traffic,
+ *       mainly to prevent plaintext certificates from being intercepted/filtered.
+ *       Both client and server must use the same nonce, typically obtained
+ *       from OnAccept() or OnConnectOk()
  */
 PRO_NET_API
 PRO_SSL_CTX*
@@ -516,29 +525,29 @@ ProSslCtx_CreateC(const PRO_SSL_CLIENT_CONFIG* config,
                   const PRO_NONCE*             nonce);         /* = NULL */
 
 /*
- * 功能: 删除一个SSL上下文
+ * Function: Delete an SSL context
  *
- * 参数:
- * ctx : SSL上下文对象
+ * Parameters:
+ * ctx : SSL context object
  *
- * 返回值: 无
+ * Return: None
  *
- * 说明: 无
+ * Note: None
  */
 PRO_NET_API
 void
 ProSslCtx_Delete(PRO_SSL_CTX* ctx);
 
 /*
- * 功能: 获取c/s协商的会话加密套件
+ * Function: Get negotiated cipher suite between client and server
  *
- * 参数:
- * ctx       : SSL上下文对象
- * suiteName : 返回的加密套件名
+ * Parameters:
+ * ctx       : SSL context object
+ * suiteName : Returned cipher suite name
  *
- * 返回值: 加密套件id
+ * Return: Cipher suite ID
  *
- * 说明: SSL/TLS握手完成后才有意义
+ * Note: Only meaningful after SSL/TLS handshake completes
  */
 PRO_NET_API
 PRO_SSL_SUITE_ID
@@ -546,14 +555,14 @@ ProSslCtx_GetSuite(PRO_SSL_CTX* ctx,
                    char         suiteName[64]);
 
 /*
- * 功能: 获取c/s协商的ALPN协议名
+ * Function: Get negotiated ALPN protocol name between client and server
  *
- * 参数:
- * ctx : SSL上下文对象
+ * Parameters:
+ * ctx : SSL context object
  *
- * 返回值: ALPN协议名. 可以是NULL
+ * Return: ALPN protocol name (can be NULL)
  *
- * 说明: SSL/TLS握手完成后才有意义
+ * Note: Only meaningful after SSL/TLS handshake completes
  */
 PRO_NET_API
 const char*

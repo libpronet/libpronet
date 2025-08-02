@@ -57,7 +57,7 @@ public:
     void Stop();
 
     /*
-     * The 'action' is a non-const member function.
+     * The 'action' is a non-const member function
      */
     template<typename RECEIVER, typename... ARGS>
     bool PostCall(
@@ -70,7 +70,7 @@ public:
     }
 
     /*
-     * The 'action' is a const member function.
+     * The 'action' is a const member function
      */
     template<typename RECEIVER, typename... ARGS>
     bool PostCall(
@@ -83,7 +83,7 @@ public:
     }
 
     /*
-     * The 'action' is a static member function or a non-member function.
+     * The 'action' is a static member function or a non-member function
      */
     template<typename... ARGS>
     bool PostCall(
@@ -95,7 +95,7 @@ public:
     }
 
     /*
-     * Its main purpose is to encapsulate lambda expressions.
+     * Its main purpose is to encapsulate lambda expressions
      */
     bool PostCall(const std::function<void()>& func)
     {
@@ -103,7 +103,7 @@ public:
     }
 
     /*
-     * The 'action' is a non-const member function.
+     * The 'action' is a non-const member function
      */
     template<typename RECEIVER, typename... ARGS>
     bool SendCall(
@@ -116,7 +116,7 @@ public:
     }
 
     /*
-     * The 'action' is a const member function.
+     * The 'action' is a const member function
      */
     template<typename RECEIVER, typename... ARGS>
     bool SendCall(
@@ -129,7 +129,7 @@ public:
     }
 
     /*
-     * The 'action' is a static member function or a non-member function.
+     * The 'action' is a static member function or a non-member function
      */
     template<typename... ARGS>
     bool SendCall(
@@ -141,7 +141,7 @@ public:
     }
 
     /*
-     * Its main purpose is to encapsulate lambda expressions.
+     * Its main purpose is to encapsulate lambda expressions
      */
     bool SendCall(const std::function<void()>& func)
     {
@@ -151,7 +151,7 @@ public:
     size_t GetSize() const;
 
     /*
-     * This is only relevant in single-threaded scenarios.
+     * This is only relevant in single-threaded scenarios
      */
     bool IsCurrentThread() const;
 

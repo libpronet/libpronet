@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright (C) 2018-2019 Eric Tung <libpronet@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License"),
@@ -18,21 +18,21 @@
 
 /*         ______________________________________________________
  *        |                                                      |
- *        |                      msg server                      |
+ *        |                      Msg server                      |
  *        |______________________________________________________|
  *                 |             |        |              |
  *                 | ...         |        |          ... |
  *         ________|_______      |        |      ________|_______
  *        |                |     |        |     |                |
- *        |     msg c2s    |     |        |     |     msg c2s    |
+ *        |     Msg C2S    |     |        |     |     Msg C2S    |
  *        |________________|     |        |     |________________|
  *            |        |         |        |         |        |
  *            |  ...   |         |  ...   |         |  ...   |
  *         ___|___  ___|___   ___|___  ___|___   ___|___  ___|___
- *        |  msg  ||  msg  | |  msg  ||  msg  | |  msg  ||  msg  |
+ *        |  Msg  ||  Msg  | |  Msg  ||  Msg  | |  Msg  ||  Msg  |
  *        | client|| client| | client|| client| | client|| client|
  *        |_______||_______| |_______||_______| |_______||_______|
- *                 Fig.1 structure diagram of msg system
+ *                 Fig.1 Structure diagram of msg system
  */
 
 /*
@@ -40,13 +40,13 @@
  * 2)  client <-----                  accept()                  <----- server
  * 3a) client <-----                 PRO_NONCE                  <----- server
  * 3b) client ----->    serviceId + serviceOpt + (r) + (r+1)    -----> server
- * 4]  client <<====              [ssl handshake]               ====>> server
+ * 4]  client <<====              [SSL handshake]               ====>> server
  *     client::passwordHash
- * 5)  client -----> rtp(RTP_SESSION_INFO with RTP_MSG_HEADER0) -----> server
+ * 5)  client -----> RTP(RTP_SESSION_INFO with RTP_MSG_HEADER0) -----> server
  *                                                       passwordHash::server
- * 6)  client <----- rtp(RTP_SESSION_ACK with RTP_MSG_HEADER0)  <----- server
- * 7)  client <<====        tcp4(RTP_MSG_HEADER + data)         ====>> server
- *                 Fig.2 msg system handshake protocol flow chart
+ * 6)  client <----- RTP(RTP_SESSION_ACK with RTP_MSG_HEADER0)  <----- server
+ * 7)  client <<====        TCP4(RTP_MSG_HEADER + data)         ====>> server
+ *                 Fig.2 Msg system handshake protocol flow chart
  */
 
 /*
@@ -66,22 +66,22 @@ extern "C" {
 ////
 
 /*
- * 消息用户号. 1-2-*, 1-3-*, ...; 2-1-*, 2-2-*, 2-3-*, ...; ...
+ * Message user ID. Format: 1-2-*, 1-3-*, ...; 2-1-*, 2-2-*, 2-3-*, ...; ...
  *
- * classId : 8bits. 该字段用于标识用户类别, 以便于应用程序识别和管理.
- * (cid)     0无效, 1应用服务器节点, 2~254应用客户端节点, 255消息c2s节点
+ * classId : 8 bits. Identifies user category for application management.
+ * (cid)     0=Invalid, 1=Application server node, 2~254=Application client node, 255=C2S node
  *
- * userId  : 40bits. 该字段用于标识用户id(如电话号码), 由消息服务器分配或许可.
- * (uid)     0动态分配, 有效范围为[0xF000000000 ~ 0xFFFFFFFFFF]; 否则静态分配, 有效范围为
- *           [1 ~ 0xEFFFFFFFFF]
+ * userId  : 40 bits. Identifies user ID (e.g. phone number), allocated/permitted by msg server.
+ * (uid)     0=Dynamically allocated, valid range [0xF000000000 ~ 0xFFFFFFFFFF];
+ *           Otherwise statically allocated, valid range [1 ~ 0xEFFFFFFFFF]
  *
- * instId  : 16bits. 该字段用于标识用户实例id(如电话分机号), 由消息服务器分配或许可. 有效范围为
- * (iid)     [0 ~ 65535]
+ * instId  : 16 bits. Identifies user instance ID (e.g. extension number),
+ * (iid)     allocated/permitted by msg server. Valid range [0 ~ 65535]
  *
- * 说明:
- * 1) cid-uid-iid 之 1-1-* 保留, 用于标识消息服务器本身(root)
- * 2) cid-uid-iid 之 255-*-* 保留, 用于标识消息c2s节点
- * 3) cid-uid-* 之间共享同一个密码
+ * Note:
+ * 1) cid-uid-iid 1-1-* are reserved for identifying the message server itself (ROOT)
+ * 2) cid-uid-iid 255-*-* are reserved for identifying message C2S nodes
+ * 3) cid-uid-* share the same password
  */
 struct RTP_MSG_USER
 {
@@ -238,11 +238,11 @@ struct RTP_MSG_USER
 };
 
 /*
- * 消息握手头
+ * Message handshake header
  */
 struct RTP_MSG_HEADER0
 {
-    uint16_t     version; /* the current protocol version is 02 */
+    uint16_t     version; /* The current protocol version is 02 */
     RTP_MSG_USER user;
     char         reserved1[2];
     union
@@ -253,22 +253,22 @@ struct RTP_MSG_HEADER0
 };
 
 /*
- * 消息数据头
+ * Message data header
  */
 struct RTP_MSG_HEADER
 {
     uint16_t       charset;      /* ANSI, UTF-8, ... */
     RTP_MSG_USER   srcUser;
     char           reserved;
-    unsigned char  dstUserCount; /* to 255 users at most */
-    RTP_MSG_USER   dstUsers[1];  /* a variable-length array */
+    unsigned char  dstUserCount; /* Up to 255 users */
+    RTP_MSG_USER   dstUsers[1];  /* Variable-length array */
 };
 
 /////////////////////////////////////////////////////////////////////////////
 ////
 
 /*
- * 消息客户端
+ * Message client
  */
 class IRtpMsgClient
 {
@@ -281,90 +281,90 @@ public:
     virtual unsigned long Release() = 0;
 
     /*
-     * 获取媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
+     * Get media type. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
      */
     virtual RTP_MM_TYPE GetMmType() const = 0;
 
     /*
-     * 获取用户号
+     * Get user information
      */
     virtual void GetUser(RTP_MSG_USER* myUser) const = 0;
 
     /*
-     * 获取加密套件
+     * Get SSL cipher suite
      */
     virtual PRO_SSL_SUITE_ID GetSslSuite(char suiteName[64]) const = 0;
 
     /*
-     * 获取本地ip地址
+     * Get local IP address
      */
     virtual const char* GetLocalIp(char localIp[64]) const = 0;
 
     /*
-     * 获取本地端口号
+     * Get local port number
      */
     virtual unsigned short GetLocalPort() const = 0;
 
     /*
-     * 获取远端ip地址
+     * Get remote IP address
      */
     virtual const char* GetRemoteIp(char remoteIp[64]) const = 0;
 
     /*
-     * 获取远端端口号
+     * Get remote port number
      */
     virtual unsigned short GetRemotePort() const = 0;
 
     /*
-     * 发送消息
+     * Send message
      *
-     * 系统内部有消息发送队列
+     * The system maintains an internal message queue
      */
     virtual bool SendMsg(
-        const void*         buf,         /* 消息内容 */
-        size_t              size,        /* 消息长度 */
-        uint16_t            charset,     /* 用户自定义的消息字符集代码 */
-        const RTP_MSG_USER* dstUsers,    /* 消息接收者 */
-        unsigned char       dstUserCount /* 最多255个目标 */
+        const void*         buf,         /* Message content */
+        size_t              size,        /* Message length */
+        uint16_t            charset,     /* User-defined charset code */
+        const RTP_MSG_USER* dstUsers,    /* Message recipients */
+        unsigned char       dstUserCount /* Max 255 recipients */
         ) = 0;
 
     /*
-     * 发送消息(buf1 + buf2)
+     * Send message (buf1 + buf2)
      *
-     * 系统内部有消息发送队列
+     * The system maintains an internal message queue
      */
     virtual bool SendMsg2(
-        const void*         buf1,        /* 消息内容1 */
-        size_t              size1,       /* 消息长度1 */
-        const void*         buf2,        /* 消息内容2. 可以是NULL */
-        size_t              size2,       /* 消息长度2. 可以是0 */
-        uint16_t            charset,     /* 用户自定义的消息字符集代码 */
-        const RTP_MSG_USER* dstUsers,    /* 消息接收者 */
-        unsigned char       dstUserCount /* 最多255个目标 */
+        const void*         buf1,        /* Message content 1 */
+        size_t              size1,       /* Message length 1 */
+        const void*         buf2,        /* Message content 2 (can be NULL) */
+        size_t              size2,       /* Message length 2 (can be 0) */
+        uint16_t            charset,     /* User-defined message charset code */
+        const RTP_MSG_USER* dstUsers,    /* Message recipients */
+        unsigned char       dstUserCount /* Max 255 recipients */
         ) = 0;
 
     /*
-     * 设置链路发送红线. 默认(1024 * 1024)字节
+     * Set output redline. Default (1024 * 1024) bytes
      *
-     * 如果redlineBytes为0, 则直接返回, 什么都不做
+     * Do nothing if redlineBytes is 0
      */
     virtual void SetOutputRedline(size_t redlineBytes) = 0;
 
     /*
-     * 获取链路发送红线. 默认(1024 * 1024)字节
+     * Get output redline. Default (1024 * 1024) bytes
      */
     virtual size_t GetOutputRedline() const = 0;
 
     /*
-     * 获取链路缓存的尚未发送的字节数
+     * Get unsent bytes in the queue
      */
     virtual size_t GetSendingBytes() const = 0;
 };
 
 /*
- * 消息客户端回调目标
+ * Message client callback target
  *
- * 使用者需要实现该接口
+ * Users need implement this interface
  */
 class IRtpMsgClientObserver
 {
@@ -377,7 +377,7 @@ public:
     virtual unsigned long Release() = 0;
 
     /*
-     * 登录成功时, 该函数将被回调
+     * Called when login is successful
      */
     virtual void OnOkMsg(
         IRtpMsgClient*      msgClient,
@@ -386,7 +386,7 @@ public:
         ) = 0;
 
     /*
-     * 消息到来时, 该函数将被回调
+     * Called when a message arrives
      */
     virtual void OnRecvMsg(
         IRtpMsgClient*      msgClient,
@@ -397,19 +397,19 @@ public:
         ) = 0;
 
     /*
-     * 网络错误或超时时, 该函数将被回调
+     * Called on network error or timeout
      */
     virtual void OnCloseMsg(
         IRtpMsgClient* msgClient,
-        int            errorCode,   /* 系统错误码 */
-        int            sslCode,     /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
-        bool           tcpConnected /* tcp连接是否已经建立 */
+        int            errorCode,   /* System error code */
+        int            sslCode,     /* SSL error code. See "mbedtls/error.h, ssl.h, x509.h, ..." */
+        bool           tcpConnected /* Whether TCP connection is established */
         ) = 0;
 
     /*
-     * 心跳发生时, 该函数将被回调
+     * Called on heartbeat occurrence
      *
-     * 主要用于调试
+     * Mainly for debugging
      */
     virtual void OnHeartbeatMsg(
         IRtpMsgClient* msgClient,
@@ -421,7 +421,7 @@ public:
 ////
 
 /*
- * 消息服务器
+ * Message server
  */
 class IRtpMsgServer
 {
@@ -434,17 +434,17 @@ public:
     virtual unsigned long Release() = 0;
 
     /*
-     * 获取媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
+     * Get media type. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
      */
     virtual RTP_MM_TYPE GetMmType() const = 0;
 
     /*
-     * 获取服务端口号
+     * Get service port number
      */
     virtual unsigned short GetServicePort() const = 0;
 
     /*
-     * 获取链路加密套件
+     * Get SSL cipher suite
      */
     virtual PRO_SSL_SUITE_ID GetSslSuite(
         const RTP_MSG_USER* user,
@@ -452,7 +452,7 @@ public:
         ) const = 0;
 
     /*
-     * 获取用户数
+     * Get user count statistics
      */
     virtual void GetUserCount(
         size_t* pendingUserCount, /* = NULL */
@@ -461,72 +461,72 @@ public:
         ) const = 0;
 
     /*
-     * 踢出用户
+     * Kick out a user
      */
     virtual void KickoutUser(const RTP_MSG_USER* user) = 0;
 
     /*
-     * 发送消息
+     * Send message
      *
-     * 系统内部有消息发送队列
+     * The system maintains an internal message queue
      */
     virtual bool SendMsg(
-        const void*         buf,         /* 消息内容 */
-        size_t              size,        /* 消息长度 */
-        uint16_t            charset,     /* 用户自定义的消息字符集代码 */
-        const RTP_MSG_USER* dstUsers,    /* 消息接收者 */
-        unsigned char       dstUserCount /* 最多255个目标 */
+        const void*         buf,         /* Message content */
+        size_t              size,        /* Message length */
+        uint16_t            charset,     /* User-defined message charset code */
+        const RTP_MSG_USER* dstUsers,    /* Message recipients */
+        unsigned char       dstUserCount /* Max 255 recipients */
         ) = 0;
 
     /*
-     * 发送消息(buf1 + buf2)
+     * Send message (buf1 + buf2)
      *
-     * 系统内部有消息发送队列
+     * The system maintains an internal message queue
      */
     virtual bool SendMsg2(
-        const void*         buf1,        /* 消息内容1 */
-        size_t              size1,       /* 消息长度1 */
-        const void*         buf2,        /* 消息内容2. 可以是NULL */
-        size_t              size2,       /* 消息长度2. 可以是0 */
-        uint16_t            charset,     /* 用户自定义的消息字符集代码 */
-        const RTP_MSG_USER* dstUsers,    /* 消息接收者 */
-        unsigned char       dstUserCount /* 最多255个目标 */
+        const void*         buf1,        /* Message content 1 */
+        size_t              size1,       /* Message length 1 */
+        const void*         buf2,        /* Message content 2 (can be NULL) */
+        size_t              size2,       /* Message length 2 (can be 0) */
+        uint16_t            charset,     /* User-defined message charset code */
+        const RTP_MSG_USER* dstUsers,    /* Message recipients */
+        unsigned char       dstUserCount /* Max 255 recipients */
         ) = 0;
 
     /*
-     * 设置server->c2s链路的发送红线. 默认(1024 * 1024 * 8)字节
+     * Set output redline for server->c2s link. Default (1024 * 1024 * 8) bytes
      *
-     * 如果redlineBytes为0, 则直接返回, 什么都不做
+     * Do nothing if redlineBytes is 0
      */
     virtual void SetOutputRedlineToC2s(size_t redlineBytes) = 0;
 
     /*
-     * 获取server->c2s链路的发送红线. 默认(1024 * 1024 * 8)字节
+     * Get output redline for server->c2s link. Default (1024 * 1024 * 8) bytes
      */
     virtual size_t GetOutputRedlineToC2s() const = 0;
 
     /*
-     * 设置server->user链路的发送红线. 默认(1024 * 1024)字节
+     * Set output redline for server->user link. Default (1024 * 1024) bytes
      *
-     * 如果redlineBytes为0, 则直接返回, 什么都不做
+     * Do nothing if redlineBytes is 0
      */
     virtual void SetOutputRedlineToUsr(size_t redlineBytes) = 0;
 
     /*
-     * 获取server->user链路的发送红线. 默认(1024 * 1024)字节
+     * Get output redline for server->user link. Default (1024 * 1024) bytes
      */
     virtual size_t GetOutputRedlineToUsr() const = 0;
 
     /*
-     * 获取链路缓存的尚未发送的字节数
+     * Get unsent bytes in the queue for the user
      */
     virtual size_t GetSendingBytes(const RTP_MSG_USER* user) const = 0;
 };
 
 /*
- * 消息服务器回调目标
+ * Message server callback target
  *
- * 使用者需要实现该接口
+ * Users need implement this interface
  */
 class IRtpMsgServerObserver
 {
@@ -539,50 +539,53 @@ public:
     virtual unsigned long Release() = 0;
 
     /*
-     * 用户请求登录时, 该函数将被回调
+     * Called when a user requests login
      *
-     * 上层应该根据用户号, 找到匹配的用户口令, 然后调用CheckRtpServiceData()进行校验
+     * The implementation should find matching password based on user info,
+     * then call CheckRtpServiceData() for verification
      *
-     * 返回值表示是否允许该用户登录
+     * Return value indicates whether to allow login
      */
     virtual bool OnCheckUser(
         IRtpMsgServer*      msgServer,
-        const RTP_MSG_USER* user,         /* 用户发来的登录用户号 */
-        const char*         userPublicIp, /* 用户的ip地址 */
-        const RTP_MSG_USER* c2sUser,      /* 经由哪个c2s而来. 可以是NULL */
-        const unsigned char hash[32],     /* 用户发来的口令hash值 */
-        const unsigned char nonce[32],    /* 会话随机数. 用于CheckRtpServiceData()校验口令hash值 */
-        uint64_t*           userId,       /* 上层分配或许可的uid */
-        uint16_t*           instId,       /* 上层分配或许可的iid */
-        int64_t*            appData,      /* 上层设置的标识数据. 后续的OnOkUser()会带回来 */
-        bool*               isC2s         /* 上层设置的是否该节点为c2s */
+        const RTP_MSG_USER* user,         /* Login user info from client */
+        const char*         userPublicIp, /* User's IP address */
+        const RTP_MSG_USER* c2sUser,      /* Via which C2S (can be NULL) */
+        const unsigned char hash[32],     /* Password hash from client */
+        const unsigned char nonce[32],    /* Session nonce. Used for CheckRtpServiceData()
+                                             to verify password hash */
+        uint64_t*           userId,       /* UID allocated/permitted by upper layer */
+        uint16_t*           instId,       /* IID allocated/permitted by upper layer */
+        int64_t*            appData,      /* Application-specific data by upper layer.
+                                             Returned in subsequent OnOkUser() */
+        bool*               isC2s         /* Whether this node is a C2S, set by upper layer */
         ) = 0;
 
     /*
-     * 用户登录成功时, 该函数将被回调
+     * Called when user login is successful
      */
     virtual void OnOkUser(
         IRtpMsgServer*      msgServer,
-        const RTP_MSG_USER* user,         /* 上层分配或许可的用户号 */
-        const char*         userPublicIp, /* 用户的ip地址 */
-        const RTP_MSG_USER* c2sUser,      /* 经由哪个c2s而来. 可以是NULL */
-        int64_t             appData       /* OnCheckUser()时上层设置的标识数据 */
+        const RTP_MSG_USER* user,         /* User info allocated/permitted by upper layer */
+        const char*         userPublicIp, /* User's IP address */
+        const RTP_MSG_USER* c2sUser,      /* Via which C2S (can be NULL) */
+        int64_t             appData       /* Application-specific data from OnCheckUser() */
         ) = 0;
 
     /*
-     * 用户网络错误或超时时, 该函数将被回调
+     * Called on network error or timeout
      */
     virtual void OnCloseUser(
         IRtpMsgServer*      msgServer,
         const RTP_MSG_USER* user,
-        int                 errorCode, /* 系统错误码 */
-        int                 sslCode    /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
+        int                 errorCode, /* System error code */
+        int                 sslCode    /* SSL error code. See "mbedtls/error.h, ssl.h, x509.h, ..." */
         ) = 0;
 
     /*
-     * 用户心跳发生时, 该函数将被回调
+     * Called on user heartbeat occurrence
      *
-     * 主要用于调试
+     * Mainly for debugging
      */
     virtual void OnHeartbeatUser(
         IRtpMsgServer*      msgServer,
@@ -591,7 +594,7 @@ public:
         ) = 0;
 
     /*
-     * 消息到来时, 该函数将被回调
+     * Called when a message arrives
      */
     virtual void OnRecvMsg(
         IRtpMsgServer*      msgServer,
@@ -606,12 +609,13 @@ public:
 ////
 
 /*
- * 消息c2s
+ * Message C2S (Client-to-Server proxy)
  *
- * c2s位于client与server之间, 它可以分散server的负载, 还可以隐藏server的位置.
- * 对于client而言, c2s是透明的, client无法区分它连接的是server还是c2s
+ * C2S sits between client and server. It can distribute server load and hide server location.
+ * To the client, C2S is transparent - the client cannot distinguish whether it's connected to
+ * the server or a C2S
  *
- * 目前, 尚不支持多层c2s级联部署
+ * Currently, multi-level C2S cascading is not supported
  */
 class IRtpMsgC2s
 {
@@ -624,64 +628,64 @@ public:
     virtual unsigned long Release() = 0;
 
     /*
-     * 获取媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
+     * Get media type. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
      */
     virtual RTP_MM_TYPE GetMmType() const = 0;
 
     /*
-     * 获取c2s<->server链路的用户号
+     * Get user information for the c2s<->server link
      */
     virtual void GetUplinkUser(RTP_MSG_USER* myUser) const = 0;
 
     /*
-     * 获取c2s<->server链路的加密套件
+     * Get encryption suite for the c2s<->server link
      */
     virtual PRO_SSL_SUITE_ID GetUplinkSslSuite(char suiteName[64]) const = 0;
 
     /*
-     * 获取c2s<->server链路的本地ip地址
+     * Get local IP address for the c2s<->server link
      */
     virtual const char* GetUplinkLocalIp(char localIp[64]) const = 0;
 
     /*
-     * 获取c2s<->server链路的本地端口号
+     * Get local port number for the c2s<->server link
      */
     virtual unsigned short GetUplinkLocalPort() const = 0;
 
     /*
-     * 获取c2s<->server链路的远端ip地址
+     * Get remote IP address for the c2s<->server link
      */
     virtual const char* GetUplinkRemoteIp(char remoteIp[64]) const = 0;
 
     /*
-     * 获取c2s<->server链路的远端端口号
+     * Get remote port number for the c2s<->server link
      */
     virtual unsigned short GetUplinkRemotePort() const = 0;
 
     /*
-     * 设置c2s->server链路的发送红线. 默认(1024 * 1024 * 8)字节
+     * Set output redline for c2s->server link. Default (1024 * 1024 * 8) bytes
      *
-     * 如果redlineBytes为0, 则直接返回, 什么都不做
+     * Do nothing if redlineBytes is 0
      */
     virtual void SetUplinkOutputRedline(size_t redlineBytes) = 0;
 
     /*
-     * 获取c2s->server链路的发送红线. 默认(1024 * 1024 * 8)字节
+     * Get output redline for c2s->server link. Default (1024 * 1024 * 8) bytes
      */
     virtual size_t GetUplinkOutputRedline() const = 0;
 
     /*
-     * 获取c2s->server链路缓存的尚未发送的字节数
+     * Get unsent bytes in uplink queue
      */
     virtual size_t GetUplinkSendingBytes() const = 0;
 
     /*
-     * 获取本地服务端口号
+     * Get local service port number
      */
     virtual unsigned short GetLocalServicePort() const = 0;
 
     /*
-     * 获取本地链路加密套件
+     * Get local SSL cipher suite
      */
     virtual PRO_SSL_SUITE_ID GetLocalSslSuite(
         const RTP_MSG_USER* user,
@@ -689,7 +693,7 @@ public:
         ) const = 0;
 
     /*
-     * 获取本地用户数
+     * Get local user count statistics
      */
     virtual void GetLocalUserCount(
         size_t* pendingUserCount, /* = NULL */
@@ -697,32 +701,32 @@ public:
         ) const = 0;
 
     /*
-     * 踢出本地用户
+     * Kick out a local user
      */
     virtual void KickoutLocalUser(const RTP_MSG_USER* user) = 0;
 
     /*
-     * 设置c2s->user链路的发送红线. 默认(1024 * 1024)字节
+     * Set output redline for c2s->user link. Default (1024 * 1024) bytes
      *
-     * 如果redlineBytes为0, 则直接返回, 什么都不做
+     * Do nothing if redlineBytes is 0
      */
     virtual void SetLocalOutputRedline(size_t redlineBytes) = 0;
 
     /*
-     * 获取c2s->user链路的发送红线. 默认(1024 * 1024)字节
+     * Get output redline for c2s->user link. Default (1024 * 1024) bytes
      */
     virtual size_t GetLocalOutputRedline() const = 0;
 
     /*
-     * 获取c2s->user链路缓存的尚未发送的字节数
+     * Get unsent bytes in local queue for the user
      */
     virtual size_t GetLocalSendingBytes(const RTP_MSG_USER* user) const = 0;
 };
 
 /*
- * 消息c2s回调目标
+ * Message C2S callback target
  *
- * 使用者需要实现该接口
+ * Users need implement this interface
  */
 class IRtpMsgC2sObserver
 {
@@ -735,7 +739,7 @@ public:
     virtual unsigned long Release() = 0;
 
     /*
-     * c2s登录成功时, 该函数将被回调
+     * Called when C2S login is successful
      */
     virtual void OnOkC2s(
         IRtpMsgC2s*         msgC2s,
@@ -744,19 +748,19 @@ public:
         ) = 0;
 
     /*
-     * c2s网络错误或超时时, 该函数将被回调
+     * Called on C2S network error or timeout
      */
     virtual void OnCloseC2s(
         IRtpMsgC2s* msgC2s,
-        int         errorCode,   /* 系统错误码 */
-        int         sslCode,     /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
-        bool        tcpConnected /* tcp连接是否已经建立 */
+        int         errorCode,   /* System error code */
+        int         sslCode,     /* SSL error code. See "mbedtls/error.h, ssl.h, x509.h, ..." */
+        bool        tcpConnected /* Whether TCP connection is established */
         ) = 0;
 
     /*
-     * c2s心跳发生时, 该函数将被回调
+     * Called on C2S heartbeat occurrence
      *
-     * 主要用于调试
+     * Mainly for debugging
      */
     virtual void OnHeartbeatC2s(
         IRtpMsgC2s* msgC2s,
@@ -764,7 +768,7 @@ public:
         ) = 0;
 
     /*
-     * 用户登录成功时, 该函数将被回调
+     * Called when a user login is successful
      */
     virtual void OnOkUser(
         IRtpMsgC2s*         msgC2s,
@@ -773,19 +777,19 @@ public:
         ) = 0;
 
     /*
-     * 用户网络错误或超时时, 该函数将被回调
+     * Called on user network error or timeout
      */
     virtual void OnCloseUser(
         IRtpMsgC2s*         msgC2s,
         const RTP_MSG_USER* user,
-        int                 errorCode, /* 系统错误码 */
-        int                 sslCode    /* ssl错误码. 参见"mbedtls/error.h, ssl.h, x509.h, ..." */
+        int                 errorCode, /* System error code */
+        int                 sslCode    /* SSL error code. See "mbedtls/error.h, ssl.h, x509.h, ..." */
         ) = 0;
 
     /*
-     * 用户心跳发生时, 该函数将被回调
+     * Called on user heartbeat occurrence
      *
-     * 主要用于调试
+     * Mainly for debugging
      */
     virtual void OnHeartbeatUser(
         IRtpMsgC2s*         msgC2s,
@@ -798,24 +802,26 @@ public:
 ////
 
 /*
- * 功能: 创建一个消息客户端
+ * Function: Create a message client
  *
- * 参数:
- * observer         : 回调目标
- * reactor          : 反应器
- * mmType           : 媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
- * sslConfig        : ssl配置. NULL表示明文传输
- * sslSni           : ssl服务名. 如果有效, 则参与认证服务端证书
- * remoteIp         : 服务器的ip地址或域名
- * remotePort       : 服务器的端口号
- * user             : 用户号
- * password         : 用户口令
- * localIp          : 要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
- * timeoutInSeconds : 握手超时. 默认20秒
+ * Parameters:
+ * observer         : Callback target
+ * reactor          : Reactor
+ * mmType           : Media type. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
+ * sslConfig        : SSL configuration. NULL for plaintext transmission
+ * sslSni           : SSL server name.
+ *                    If valid, participates in server certificate verification
+ * remoteIp         : Server IP address or domain name
+ * remotePort       : Server port number
+ * user             : User information
+ * password         : User password
+ * localIp          : Local IP address to bind. If NULL, system uses 0.0.0.0
+ * timeoutInSeconds : Handshake timeout. Default 20 seconds
  *
- * 返回值: 消息客户端对象或NULL
+ * Return: Message client object or NULL
  *
- * 说明: sslConfig指定的对象必须在消息客户端的生命周期内一直有效
+ * Note: The object specified by sslConfig must remain valid throughout
+ *       the message client's lifetime
  */
 PRO_RTP_API
 IRtpMsgClient*
@@ -832,34 +838,35 @@ CreateRtpMsgClient(IRtpMsgClientObserver*       observer,
                    unsigned int                 timeoutInSeconds); /* = 0 */
 
 /*
- * 功能: 删除一个消息客户端
+ * Function: Delete a message client
  *
- * 参数:
- * msgClient : 消息客户端对象
+ * Parameters:
+ * msgClient : Message client object
  *
- * 返回值: 无
+ * Return: None
  *
- * 说明: 无
+ * Note: None
  */
 PRO_RTP_API
 void
 DeleteRtpMsgClient(IRtpMsgClient* msgClient);
 
 /*
- * 功能: 创建一个消息服务器
+ * Function: Create a message server
  *
- * 参数:
- * observer         : 回调目标
- * reactor          : 反应器
- * mmType           : 媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
- * sslConfig        : ssl配置. NULL表示明文传输
- * sslForced        : 是否强制使用ssl传输. sslConfig为NULL时该参数忽略
- * serviceHubPort   : 服务hub的端口号
- * timeoutInSeconds : 握手超时. 默认20秒
+ * Parameters:
+ * observer         : Callback target
+ * reactor          : Reactor
+ * mmType           : Media type. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
+ * sslConfig        : SSL configuration. NULL for plaintext transmission
+ * sslForced        : Whether to enforce SSL transmission. Ignored if sslConfig is NULL
+ * serviceHubPort   : Service hub port number
+ * timeoutInSeconds : Handshake timeout. Default 20 seconds
  *
- * 返回值: 消息服务器对象或NULL
+ * Return: Message server object or NULL
  *
- * 说明: sslConfig指定的对象必须在消息服务器的生命周期内一直有效
+ * Note: The object specified by sslConfig must remain valid throughout
+ *       the message server's lifetime
  */
 PRO_RTP_API
 IRtpMsgServer*
@@ -872,42 +879,44 @@ CreateRtpMsgServer(IRtpMsgServerObserver*       observer,
                    unsigned int                 timeoutInSeconds); /* = 0 */
 
 /*
- * 功能: 删除一个消息服务器
+ * Function: Delete a message server
  *
- * 参数:
- * msgServer : 消息服务器对象
+ * Parameters:
+ * msgServer : Message server object
  *
- * 返回值: 无
+ * Return: None
  *
- * 说明: 无
+ * Note: None
  */
 PRO_RTP_API
 void
 DeleteRtpMsgServer(IRtpMsgServer* msgServer);
 
 /*
- * 功能: 创建一个消息c2s
+ * Function: Create a message C2S
  *
- * 参数:
- * observer               : 回调目标
- * reactor                : 反应器
- * mmType                 : 媒体类型. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
- * uplinkSslConfig        : 级联的ssl配置. NULL表示c2s<->server之间明文传输
- * uplinkSslSni           : 级联的ssl服务名. 如果有效, 则参与认证服务端证书
- * uplinkIp               : 服务器的ip地址或域名
- * uplinkPort             : 服务器的端口号
- * uplinkUser             : c2s的用户号
- * uplinkPassword         : c2s的用户口令
- * uplinkLocalIp          : 级联时要绑定的本地ip地址. 如果为NULL, 系统将使用0.0.0.0
- * uplinkTimeoutInSeconds : 级联的握手超时. 默认20秒
- * localSslConfig         : 近端的ssl配置. NULL表示明文传输
- * localSslForced         : 近端是否强制使用ssl传输. localSslConfig为NULL时该参数忽略
- * localServiceHubPort    : 近端的服务hub的端口号
- * localTimeoutInSeconds  : 近端的握手超时. 默认20秒
+ * Parameters:
+ * observer               : Callback target
+ * reactor                : Reactor
+ * mmType                 : Media type. [RTP_MMT_MSG_MIN ~ RTP_MMT_MSG_MAX]
+ * uplinkSslConfig        : Cascaded SSL configuration. NULL for plaintext between c2s<->server
+ * uplinkSslSni           : Cascaded SSL server name.
+ *                          If valid, participates in server certificate verification
+ * uplinkIp               : Server IP address or domain name
+ * uplinkPort             : Server port number
+ * uplinkUser             : C2S user information
+ * uplinkPassword         : C2S password
+ * uplinkLocalIp          : Local IP address to bind for cascading. If NULL, system uses 0.0.0.0
+ * uplinkTimeoutInSeconds : Cascaded handshake timeout. Default 20 seconds
+ * localSslConfig         : Local SSL configuration. NULL for plaintext transmission
+ * localSslForced         : Whether to enforce SSL locally. Ignored if localSslConfig is NULL
+ * localServiceHubPort    : Local service hub port number
+ * localTimeoutInSeconds  : Local handshake timeout. Default 20 seconds
  *
- * 返回值: 消息c2s对象或NULL
+ * Return: Message C2S object or NULL
  *
- * 说明: localSslConfig指定的对象必须在消息c2s的生命周期内一直有效
+ * Note: The object specified by localSslConfig must remain valid throughout
+ *       the message C2S's lifetime
  */
 PRO_RTP_API
 IRtpMsgC2s*
@@ -928,29 +937,29 @@ CreateRtpMsgC2s(IRtpMsgC2sObserver*          observer,
                 unsigned int                 localTimeoutInSeconds); /* = 0 */
 
 /*
- * 功能: 删除一个消息c2s
+ * Function: Delete a message C2S
  *
- * 参数:
- * msgC2s : 消息c2s对象
+ * Parameters:
+ * msgC2s : Message C2S object
  *
- * 返回值: 无
+ * Return: None
  *
- * 说明: 无
+ * Note: None
  */
 PRO_RTP_API
 void
 DeleteRtpMsgC2s(IRtpMsgC2s* msgC2s);
 
 /*
- * 功能: 将RTP_MSG_USER结构转换为"cid-uid-iid"格式的串
+ * Function: Convert RTP_MSG_USER structure to "cid-uid-iid" format string
  *
- * 参数:
- * user     : 输入数据
- * idString : 输出结果
+ * Parameters:
+ * user     : Input data
+ * idString : Output result
  *
- * 返回值: 无
+ * Return: None
  *
- * 说明: 无
+ * Note: None
  */
 PRO_RTP_API
 void
@@ -958,15 +967,15 @@ RtpMsgUser2String(const RTP_MSG_USER* user,
                   char                idString[64]);
 
 /*
- * 功能: 将"cid-uid"或"cid-uid-iid"格式的串转换为RTP_MSG_USER结构
+ * Function: Convert "cid-uid" or "cid-uid-iid" format string to RTP_MSG_USER structure
  *
- * 参数:
- * idString : 输入数据
- * user     : 输出结果
+ * Parameters:
+ * idString : Input data
+ * user     : Output result
  *
- * 返回值: 无
+ * Return: None
  *
- * 说明: 无
+ * Note: None
  */
 PRO_RTP_API
 void

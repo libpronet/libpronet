@@ -45,7 +45,7 @@ directory of "pub/inc/pronet" for more.
         |      MbedTLS                 |                       |
         |                              |       ProShared       |
         |______________________________|_______________________|
-                     Fig.1 module hierarchy diagram
+                     Fig.1 Module hierarchy diagram
 
          ________________   ________________   ________________
         |    Acceptor    | |   Connector    | |   Handshaker   |
@@ -75,7 +75,7 @@ directory of "pub/inc/pronet" for more.
         |   Transport    | |   ServiceHub   | |  ServiceHost   |
         | (EventHandler) | | (EventHandler) | | (EventHandler) |
         |________________| |________________| |________________|
-                   Fig.2 structure diagram of Reactor
+                   Fig.2 Structure diagram of Reactor
 
         __________________                     _________________
        |    ServiceHub    |<----------------->|   ServiceHost   |
@@ -86,7 +86,7 @@ directory of "pub/inc/pronet" for more.
        |                  |    ServicePipe    |(Acceptor Shadow)| Video-Process
        |__________________|<----------------->|_________________|
             Hub-Process
-                Fig.3-1 structure diagram of ServiceHub
+                Fig.3-1 Structure diagram of ServiceHub
 
         __________________                     _________________
        |    ServiceHub    |<----------------->|   RtpService    |
@@ -97,7 +97,7 @@ directory of "pub/inc/pronet" for more.
        |                  |    ServicePipe    |(Acceptor Shadow)| Video-Process
        |__________________|<----------------->|_________________|
             Hub-Process
-                Fig.3-2 structure diagram of RtpService
+                Fig.3-2 Structure diagram of RtpService
 
                 ______________________________
         ====>>in__________ o                  |__________
@@ -107,25 +107,25 @@ directory of "pub/inc/pronet" for more.
                           |ooooooooooooooooooo|
                           |ooooooooooooooooooo|
                           |ooooooooooooooooooo|
-                 Fig.4 structure diagram of RtpReorder
+                 Fig.4 Structure diagram of RtpReorder
 
          ______________________________________________________
         |                                                      |
-        |                      msg server                      |
+        |                      Msg server                      |
         |______________________________________________________|
                  |             |        |              |
                  | ...         |        |          ... |
          ________|_______      |        |      ________|_______
         |                |     |        |     |                |
-        |     msg c2s    |     |        |     |     msg c2s    |
+        |     Msg c2s    |     |        |     |     Msg c2s    |
         |________________|     |        |     |________________|
             |        |         |        |         |        |
             |  ...   |         |  ...   |         |  ...   |
          ___|___  ___|___   ___|___  ___|___   ___|___  ___|___
-        |  msg  ||  msg  | |  msg  ||  msg  | |  msg  ||  msg  |
+        |  Msg  ||  Msg  | |  Msg  ||  Msg  | |  Msg  ||  Msg  |
         | client|| client| | client|| client| | client|| client|
         |_______||_______| |_______||_______| |_______||_______|
-                 Fig.5 structure diagram of msg system
+                 Fig.5 Structure diagram of msg system
 
 
 How to compile LibProNet?
