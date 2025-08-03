@@ -273,7 +273,7 @@ CProServiceHub::AcceptIpc(IProAcceptor* acceptor,
     assert(localIp != NULL);
 
 #if !defined(_WIN32)
-    assert(unixSocket);
+ /* assert(unixSocket); */
     if (!unixSocket)
     {
         ProCloseSockId(sockId);

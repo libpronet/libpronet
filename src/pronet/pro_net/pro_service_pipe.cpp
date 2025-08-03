@@ -238,7 +238,7 @@ CProServicePipe::OnRecv(IProTransport*          trans,
             recvPool.PeekData(&packet, sizeof(PRO_SERVICE_PACKET));
             recvPool.Flush(sizeof(PRO_SERVICE_PACKET));
 
-            assert(packet.CheckMagic());
+         /* assert(packet.CheckMagic()); */
             if (!packet.CheckMagic())
             {
                 error = true;

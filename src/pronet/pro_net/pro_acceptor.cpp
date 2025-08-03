@@ -483,7 +483,7 @@ CProAcceptor::OnHandshakeOk(IProTcpHandshaker* handshaker,
 
         assert(serviceData != NULL);
         assert(size == SERVICE_HANDSHAKE_BYTES); /* serviceId + serviceOpt + (r) + (r+1) */
-        assert(serviceData[3] == (unsigned char)(serviceData[2] + 1));
+     /* assert(serviceData[3] == (unsigned char)(serviceData[2] + 1)); */
         if (serviceData == NULL || size != SERVICE_HANDSHAKE_BYTES ||
             serviceData[3] != (unsigned char)(serviceData[2] + 1))
         {
