@@ -1,22 +1,23 @@
 LibProNet
-====
+=========
 
 Copyright (C) P.R.O. <libpronet@gmail.com>
 
-Apache 2.0 license.
+Apache License 2.0
 
 
-mbedtls
-====
+Mbed TLS
+========
 
-Copyright (C) Arm Limited (or its affiliates)
+Copyright The Mbed TLS Contributors
 
-Unless specifically indicated otherwise in a file, files are licensed
-under the Apache 2.0 license, as can be found in: apache-2.0.txt
+Unless specifically indicated otherwise in a file, Mbed TLS files
+are provided under the Apache License 2.0, or the GNU General Public
+License v2.0 or later.
 
 
-stl-v3.3
-====
+STL-3.3
+=======
 
 Copyright (C) Silicon Graphics Computer Systems, Inc.
 
@@ -39,7 +40,7 @@ representations about the suitability of this software for any
 purpose.  It is provided "as is" without express or implied warranty.
 
 
-sqlite-amalgamation
-====
+SQLite
+======
 
 The author disclaims copyright to this source code.

@@ -44,6 +44,7 @@ SOURCES += \
     ../../../src/mbedtls/library/cipher.c \
     ../../../src/mbedtls/library/cipher_wrap.c \
     ../../../src/mbedtls/library/cmac.c \
+    ../../../src/mbedtls/library/constant_time.c \
     ../../../src/mbedtls/library/ctr_drbg.c \
     ../../../src/mbedtls/library/debug.c \
     ../../../src/mbedtls/library/des.c \
@@ -64,8 +65,9 @@ SOURCES += \
     ../../../src/mbedtls/library/md4.c \
     ../../../src/mbedtls/library/md5.c \
     ../../../src/mbedtls/library/md.c \
-    ../../../src/mbedtls/library/md_wrap.c \
     ../../../src/mbedtls/library/memory_buffer_alloc.c \
+    ../../../src/mbedtls/library/mps_reader.c \
+    ../../../src/mbedtls/library/mps_trace.c \
     ../../../src/mbedtls/library/net_sockets.c \
     ../../../src/mbedtls/library/nist_kw.c \
     ../../../src/mbedtls/library/oid.c \
@@ -81,6 +83,19 @@ SOURCES += \
     ../../../src/mbedtls/library/platform.c \
     ../../../src/mbedtls/library/platform_util.c \
     ../../../src/mbedtls/library/poly1305.c \
+    ../../../src/mbedtls/library/psa_crypto.c \
+    ../../../src/mbedtls/library/psa_crypto_aead.c \
+    ../../../src/mbedtls/library/psa_crypto_cipher.c \
+    ../../../src/mbedtls/library/psa_crypto_client.c \
+    ../../../src/mbedtls/library/psa_crypto_driver_wrappers.c \
+    ../../../src/mbedtls/library/psa_crypto_ecp.c \
+    ../../../src/mbedtls/library/psa_crypto_hash.c \
+    ../../../src/mbedtls/library/psa_crypto_mac.c \
+    ../../../src/mbedtls/library/psa_crypto_rsa.c \
+    ../../../src/mbedtls/library/psa_crypto_se.c \
+    ../../../src/mbedtls/library/psa_crypto_slot_management.c \
+    ../../../src/mbedtls/library/psa_crypto_storage.c \
+    ../../../src/mbedtls/library/psa_its_file.c \
     ../../../src/mbedtls/library/ripemd160.c \
     ../../../src/mbedtls/library/rsa.c \
     ../../../src/mbedtls/library/rsa_internal.c \
@@ -91,9 +106,11 @@ SOURCES += \
     ../../../src/mbedtls/library/ssl_ciphersuites.c \
     ../../../src/mbedtls/library/ssl_cli.c \
     ../../../src/mbedtls/library/ssl_cookie.c \
+    ../../../src/mbedtls/library/ssl_msg.c \
     ../../../src/mbedtls/library/ssl_srv.c \
     ../../../src/mbedtls/library/ssl_ticket.c \
     ../../../src/mbedtls/library/ssl_tls.c \
+    ../../../src/mbedtls/library/ssl_tls13_keys.c \
     ../../../src/mbedtls/library/threading.c \
     ../../../src/mbedtls/library/timing.c \
     ../../../src/mbedtls/library/version.c \
@@ -129,6 +146,8 @@ HEADERS += \
     ../../../src/mbedtls/include/mbedtls/cmac.h \
     ../../../src/mbedtls/include/mbedtls/compat-1.3.h \
     ../../../src/mbedtls/include/mbedtls/config.h \
+    ../../../src/mbedtls/include/mbedtls/config_psa.h \
+    ../../../src/mbedtls/include/mbedtls/constant_time.h \
     ../../../src/mbedtls/include/mbedtls/ctr_drbg.h \
     ../../../src/mbedtls/include/mbedtls/debug.h \
     ../../../src/mbedtls/include/mbedtls/des.h \
@@ -145,10 +164,10 @@ HEADERS += \
     ../../../src/mbedtls/include/mbedtls/havege.h \
     ../../../src/mbedtls/include/mbedtls/hkdf.h \
     ../../../src/mbedtls/include/mbedtls/hmac_drbg.h \
+    ../../../src/mbedtls/include/mbedtls/md.h \
     ../../../src/mbedtls/include/mbedtls/md2.h \
     ../../../src/mbedtls/include/mbedtls/md4.h \
     ../../../src/mbedtls/include/mbedtls/md5.h \
-    ../../../src/mbedtls/include/mbedtls/md.h \
     ../../../src/mbedtls/include/mbedtls/md_internal.h \
     ../../../src/mbedtls/include/mbedtls/memory_buffer_alloc.h \
     ../../../src/mbedtls/include/mbedtls/net.h \
@@ -159,13 +178,14 @@ HEADERS += \
     ../../../src/mbedtls/include/mbedtls/pem.h \
     ../../../src/mbedtls/include/mbedtls/pk.h \
     ../../../src/mbedtls/include/mbedtls/pk_internal.h \
-    ../../../src/mbedtls/include/mbedtls/pkcs5.h \
     ../../../src/mbedtls/include/mbedtls/pkcs11.h \
     ../../../src/mbedtls/include/mbedtls/pkcs12.h \
+    ../../../src/mbedtls/include/mbedtls/pkcs5.h \
     ../../../src/mbedtls/include/mbedtls/platform.h \
     ../../../src/mbedtls/include/mbedtls/platform_time.h \
     ../../../src/mbedtls/include/mbedtls/platform_util.h \
     ../../../src/mbedtls/include/mbedtls/poly1305.h \
+    ../../../src/mbedtls/include/mbedtls/psa_util.h \
     ../../../src/mbedtls/include/mbedtls/ripemd160.h \
     ../../../src/mbedtls/include/mbedtls/rsa.h \
     ../../../src/mbedtls/include/mbedtls/rsa_internal.h \
@@ -186,7 +206,22 @@ HEADERS += \
     ../../../src/mbedtls/include/mbedtls/x509_crl.h \
     ../../../src/mbedtls/include/mbedtls/x509_crt.h \
     ../../../src/mbedtls/include/mbedtls/x509_csr.h \
-    ../../../src/mbedtls/include/mbedtls/xtea.h
+    ../../../src/mbedtls/include/mbedtls/xtea.h \
+    ../../../src/mbedtls/include/psa/crypto.h \
+    ../../../src/mbedtls/include/psa/crypto_builtin_composites.h \
+    ../../../src/mbedtls/include/psa/crypto_builtin_primitives.h \
+    ../../../src/mbedtls/include/psa/crypto_compat.h \
+    ../../../src/mbedtls/include/psa/crypto_config.h \
+    ../../../src/mbedtls/include/psa/crypto_driver_common.h \
+    ../../../src/mbedtls/include/psa/crypto_driver_contexts_composites.h \
+    ../../../src/mbedtls/include/psa/crypto_driver_contexts_primitives.h \
+    ../../../src/mbedtls/include/psa/crypto_extra.h \
+    ../../../src/mbedtls/include/psa/crypto_platform.h \
+    ../../../src/mbedtls/include/psa/crypto_se_driver.h \
+    ../../../src/mbedtls/include/psa/crypto_sizes.h \
+    ../../../src/mbedtls/include/psa/crypto_struct.h \
+    ../../../src/mbedtls/include/psa/crypto_types.h \
+    ../../../src/mbedtls/include/psa/crypto_values.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

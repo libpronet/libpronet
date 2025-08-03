@@ -29,6 +29,8 @@ proinc_HEADERS = ../../../../src/mbedtls/include/mbedtls/aes.h                 \
                  ../../../../src/mbedtls/include/mbedtls/cmac.h                \
                  ../../../../src/mbedtls/include/mbedtls/compat-1.3.h          \
                  ../../../../src/mbedtls/include/mbedtls/config.h              \
+                 ../../../../src/mbedtls/include/mbedtls/config_psa.h          \
+                 ../../../../src/mbedtls/include/mbedtls/constant_time.h       \
                  ../../../../src/mbedtls/include/mbedtls/ctr_drbg.h            \
                  ../../../../src/mbedtls/include/mbedtls/debug.h               \
                  ../../../../src/mbedtls/include/mbedtls/des.h                 \
@@ -66,6 +68,7 @@ proinc_HEADERS = ../../../../src/mbedtls/include/mbedtls/aes.h                 \
                  ../../../../src/mbedtls/include/mbedtls/platform_time.h       \
                  ../../../../src/mbedtls/include/mbedtls/platform_util.h       \
                  ../../../../src/mbedtls/include/mbedtls/poly1305.h            \
+                 ../../../../src/mbedtls/include/mbedtls/psa_util.h            \
                  ../../../../src/mbedtls/include/mbedtls/ripemd160.h           \
                  ../../../../src/mbedtls/include/mbedtls/rsa.h                 \
                  ../../../../src/mbedtls/include/mbedtls/rsa_internal.h        \
@@ -88,84 +91,101 @@ proinc_HEADERS = ../../../../src/mbedtls/include/mbedtls/aes.h                 \
                  ../../../../src/mbedtls/include/mbedtls/x509_csr.h            \
                  ../../../../src/mbedtls/include/mbedtls/xtea.h
 
-libmbedtls_a_SOURCES = ../../../../src/mbedtls/library/aes.c                 \
-                       ../../../../src/mbedtls/library/aesni.c               \
-                       ../../../../src/mbedtls/library/arc4.c                \
-                       ../../../../src/mbedtls/library/aria.c                \
-                       ../../../../src/mbedtls/library/asn1parse.c           \
-                       ../../../../src/mbedtls/library/asn1write.c           \
-                       ../../../../src/mbedtls/library/base64.c              \
-                       ../../../../src/mbedtls/library/bignum.c              \
-                       ../../../../src/mbedtls/library/blowfish.c            \
-                       ../../../../src/mbedtls/library/camellia.c            \
-                       ../../../../src/mbedtls/library/ccm.c                 \
-                       ../../../../src/mbedtls/library/certs.c               \
-                       ../../../../src/mbedtls/library/chacha20.c            \
-                       ../../../../src/mbedtls/library/chachapoly.c          \
-                       ../../../../src/mbedtls/library/cipher.c              \
-                       ../../../../src/mbedtls/library/cipher_wrap.c         \
-                       ../../../../src/mbedtls/library/cmac.c                \
-                       ../../../../src/mbedtls/library/ctr_drbg.c            \
-                       ../../../../src/mbedtls/library/debug.c               \
-                       ../../../../src/mbedtls/library/des.c                 \
-                       ../../../../src/mbedtls/library/dhm.c                 \
-                       ../../../../src/mbedtls/library/ecdh.c                \
-                       ../../../../src/mbedtls/library/ecdsa.c               \
-                       ../../../../src/mbedtls/library/ecjpake.c             \
-                       ../../../../src/mbedtls/library/ecp.c                 \
-                       ../../../../src/mbedtls/library/ecp_curves.c          \
-                       ../../../../src/mbedtls/library/entropy.c             \
-                       ../../../../src/mbedtls/library/entropy_poll.c        \
-                       ../../../../src/mbedtls/library/error.c               \
-                       ../../../../src/mbedtls/library/gcm.c                 \
-                       ../../../../src/mbedtls/library/havege.c              \
-                       ../../../../src/mbedtls/library/hkdf.c                \
-                       ../../../../src/mbedtls/library/hmac_drbg.c           \
-                       ../../../../src/mbedtls/library/md.c                  \
-                       ../../../../src/mbedtls/library/md2.c                 \
-                       ../../../../src/mbedtls/library/md4.c                 \
-                       ../../../../src/mbedtls/library/md5.c                 \
-                       ../../../../src/mbedtls/library/md_wrap.c             \
-                       ../../../../src/mbedtls/library/memory_buffer_alloc.c \
-                       ../../../../src/mbedtls/library/net_sockets.c         \
-                       ../../../../src/mbedtls/library/nist_kw.c             \
-                       ../../../../src/mbedtls/library/oid.c                 \
-                       ../../../../src/mbedtls/library/padlock.c             \
-                       ../../../../src/mbedtls/library/pem.c                 \
-                       ../../../../src/mbedtls/library/pk.c                  \
-                       ../../../../src/mbedtls/library/pk_wrap.c             \
-                       ../../../../src/mbedtls/library/pkcs11.c              \
-                       ../../../../src/mbedtls/library/pkcs12.c              \
-                       ../../../../src/mbedtls/library/pkcs5.c               \
-                       ../../../../src/mbedtls/library/pkparse.c             \
-                       ../../../../src/mbedtls/library/pkwrite.c             \
-                       ../../../../src/mbedtls/library/platform.c            \
-                       ../../../../src/mbedtls/library/platform_util.c       \
-                       ../../../../src/mbedtls/library/poly1305.c            \
-                       ../../../../src/mbedtls/library/ripemd160.c           \
-                       ../../../../src/mbedtls/library/rsa.c                 \
-                       ../../../../src/mbedtls/library/rsa_internal.c        \
-                       ../../../../src/mbedtls/library/sha1.c                \
-                       ../../../../src/mbedtls/library/sha256.c              \
-                       ../../../../src/mbedtls/library/sha512.c              \
-                       ../../../../src/mbedtls/library/ssl_cache.c           \
-                       ../../../../src/mbedtls/library/ssl_ciphersuites.c    \
-                       ../../../../src/mbedtls/library/ssl_cli.c             \
-                       ../../../../src/mbedtls/library/ssl_cookie.c          \
-                       ../../../../src/mbedtls/library/ssl_srv.c             \
-                       ../../../../src/mbedtls/library/ssl_ticket.c          \
-                       ../../../../src/mbedtls/library/ssl_tls.c             \
-                       ../../../../src/mbedtls/library/threading.c           \
-                       ../../../../src/mbedtls/library/timing.c              \
-                       ../../../../src/mbedtls/library/version.c             \
-                       ../../../../src/mbedtls/library/version_features.c    \
-                       ../../../../src/mbedtls/library/x509.c                \
-                       ../../../../src/mbedtls/library/x509_create.c         \
-                       ../../../../src/mbedtls/library/x509_crl.c            \
-                       ../../../../src/mbedtls/library/x509_crt.c            \
-                       ../../../../src/mbedtls/library/x509_csr.c            \
-                       ../../../../src/mbedtls/library/x509write_crt.c       \
-                       ../../../../src/mbedtls/library/x509write_csr.c       \
+libmbedtls_a_SOURCES = ../../../../src/mbedtls/library/aes.c                        \
+                       ../../../../src/mbedtls/library/aesni.c                      \
+                       ../../../../src/mbedtls/library/arc4.c                       \
+                       ../../../../src/mbedtls/library/aria.c                       \
+                       ../../../../src/mbedtls/library/asn1parse.c                  \
+                       ../../../../src/mbedtls/library/asn1write.c                  \
+                       ../../../../src/mbedtls/library/base64.c                     \
+                       ../../../../src/mbedtls/library/bignum.c                     \
+                       ../../../../src/mbedtls/library/blowfish.c                   \
+                       ../../../../src/mbedtls/library/camellia.c                   \
+                       ../../../../src/mbedtls/library/ccm.c                        \
+                       ../../../../src/mbedtls/library/certs.c                      \
+                       ../../../../src/mbedtls/library/chacha20.c                   \
+                       ../../../../src/mbedtls/library/chachapoly.c                 \
+                       ../../../../src/mbedtls/library/cipher.c                     \
+                       ../../../../src/mbedtls/library/cipher_wrap.c                \
+                       ../../../../src/mbedtls/library/cmac.c                       \
+                       ../../../../src/mbedtls/library/constant_time.c              \
+                       ../../../../src/mbedtls/library/ctr_drbg.c                   \
+                       ../../../../src/mbedtls/library/debug.c                      \
+                       ../../../../src/mbedtls/library/des.c                        \
+                       ../../../../src/mbedtls/library/dhm.c                        \
+                       ../../../../src/mbedtls/library/ecdh.c                       \
+                       ../../../../src/mbedtls/library/ecdsa.c                      \
+                       ../../../../src/mbedtls/library/ecjpake.c                    \
+                       ../../../../src/mbedtls/library/ecp.c                        \
+                       ../../../../src/mbedtls/library/ecp_curves.c                 \
+                       ../../../../src/mbedtls/library/entropy.c                    \
+                       ../../../../src/mbedtls/library/entropy_poll.c               \
+                       ../../../../src/mbedtls/library/error.c                      \
+                       ../../../../src/mbedtls/library/gcm.c                        \
+                       ../../../../src/mbedtls/library/havege.c                     \
+                       ../../../../src/mbedtls/library/hkdf.c                       \
+                       ../../../../src/mbedtls/library/hmac_drbg.c                  \
+                       ../../../../src/mbedtls/library/md.c                         \
+                       ../../../../src/mbedtls/library/md2.c                        \
+                       ../../../../src/mbedtls/library/md4.c                        \
+                       ../../../../src/mbedtls/library/md5.c                        \
+                       ../../../../src/mbedtls/library/memory_buffer_alloc.c        \
+                       ../../../../src/mbedtls/library/mps_reader.c                 \
+                       ../../../../src/mbedtls/library/mps_trace.c                  \
+                       ../../../../src/mbedtls/library/net_sockets.c                \
+                       ../../../../src/mbedtls/library/nist_kw.c                    \
+                       ../../../../src/mbedtls/library/oid.c                        \
+                       ../../../../src/mbedtls/library/padlock.c                    \
+                       ../../../../src/mbedtls/library/pem.c                        \
+                       ../../../../src/mbedtls/library/pk.c                         \
+                       ../../../../src/mbedtls/library/pk_wrap.c                    \
+                       ../../../../src/mbedtls/library/pkcs11.c                     \
+                       ../../../../src/mbedtls/library/pkcs12.c                     \
+                       ../../../../src/mbedtls/library/pkcs5.c                      \
+                       ../../../../src/mbedtls/library/pkparse.c                    \
+                       ../../../../src/mbedtls/library/pkwrite.c                    \
+                       ../../../../src/mbedtls/library/platform.c                   \
+                       ../../../../src/mbedtls/library/platform_util.c              \
+                       ../../../../src/mbedtls/library/poly1305.c                   \
+                       ../../../../src/mbedtls/library/psa_crypto.c                 \
+                       ../../../../src/mbedtls/library/psa_crypto_aead.c            \
+                       ../../../../src/mbedtls/library/psa_crypto_cipher.c          \
+                       ../../../../src/mbedtls/library/psa_crypto_client.c          \
+                       ../../../../src/mbedtls/library/psa_crypto_driver_wrappers.c \
+                       ../../../../src/mbedtls/library/psa_crypto_ecp.c             \
+                       ../../../../src/mbedtls/library/psa_crypto_hash.c            \
+                       ../../../../src/mbedtls/library/psa_crypto_mac.c             \
+                       ../../../../src/mbedtls/library/psa_crypto_rsa.c             \
+                       ../../../../src/mbedtls/library/psa_crypto_se.c              \
+                       ../../../../src/mbedtls/library/psa_crypto_slot_management.c \
+                       ../../../../src/mbedtls/library/psa_crypto_storage.c         \
+                       ../../../../src/mbedtls/library/psa_its_file.c               \
+                       ../../../../src/mbedtls/library/ripemd160.c                  \
+                       ../../../../src/mbedtls/library/rsa.c                        \
+                       ../../../../src/mbedtls/library/rsa_internal.c               \
+                       ../../../../src/mbedtls/library/sha1.c                       \
+                       ../../../../src/mbedtls/library/sha256.c                     \
+                       ../../../../src/mbedtls/library/sha512.c                     \
+                       ../../../../src/mbedtls/library/ssl_cache.c                  \
+                       ../../../../src/mbedtls/library/ssl_ciphersuites.c           \
+                       ../../../../src/mbedtls/library/ssl_cli.c                    \
+                       ../../../../src/mbedtls/library/ssl_cookie.c                 \
+                       ../../../../src/mbedtls/library/ssl_msg.c                    \
+                       ../../../../src/mbedtls/library/ssl_srv.c                    \
+                       ../../../../src/mbedtls/library/ssl_ticket.c                 \
+                       ../../../../src/mbedtls/library/ssl_tls.c                    \
+                       ../../../../src/mbedtls/library/ssl_tls13_keys.c             \
+                       ../../../../src/mbedtls/library/threading.c                  \
+                       ../../../../src/mbedtls/library/timing.c                     \
+                       ../../../../src/mbedtls/library/version.c                    \
+                       ../../../../src/mbedtls/library/version_features.c           \
+                       ../../../../src/mbedtls/library/x509.c                       \
+                       ../../../../src/mbedtls/library/x509_create.c                \
+                       ../../../../src/mbedtls/library/x509_crl.c                   \
+                       ../../../../src/mbedtls/library/x509_crt.c                   \
+                       ../../../../src/mbedtls/library/x509_csr.c                   \
+                       ../../../../src/mbedtls/library/x509write_crt.c              \
+                       ../../../../src/mbedtls/library/x509write_csr.c              \
                        ../../../../src/mbedtls/library/xtea.c
 
 libmbedtls_a_CPPFLAGS = -I../../../../src/mbedtls/include
