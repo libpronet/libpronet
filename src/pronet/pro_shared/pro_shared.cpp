@@ -361,7 +361,7 @@ GetTickCount32_i()
 
     ret = ::timeGetTime();
 
-#elif defined(PRO_HAS_MACH_ABSOLUTE_TIME) /* for MacOS */
+#elif defined(PRO_HAS_MACH_ABSOLUTE_TIME) /* for iOS/macOS */
 
     if (!g_s_timebaseFlag)
     {
@@ -378,7 +378,7 @@ GetTickCount32_i()
     ret =  ret * g_s_timebaseInfo.numer / g_s_timebaseInfo.denom; /* ns_ticks ---> ns */
     ret /= 1000000;                                               /* ns       ---> ms */
 
-#elif !defined(PRO_LACKS_CLOCK_GETTIME)   /* for non-MacOS */
+#elif !defined(PRO_LACKS_CLOCK_GETTIME)
 
     struct timespec now = { 0 };
     clock_gettime(CLOCK_MONOTONIC, &now);
@@ -519,7 +519,7 @@ ProGetTickCount64()
         g_s_lock->Unlock();
     }
 
-#elif defined(PRO_HAS_MACH_ABSOLUTE_TIME) /* for MacOS */
+#elif defined(PRO_HAS_MACH_ABSOLUTE_TIME) /* for iOS/macOS */
 
     if (!g_s_timebaseFlag)
     {
@@ -536,7 +536,7 @@ ProGetTickCount64()
     ret =  ret * g_s_timebaseInfo.numer / g_s_timebaseInfo.denom; /* ns_ticks ---> ns */
     ret /= 1000000;                                               /* ns       ---> ms */
 
-#elif !defined(PRO_LACKS_CLOCK_GETTIME)   /* for non-MacOS */
+#elif !defined(PRO_LACKS_CLOCK_GETTIME)
 
     struct timespec now = { 0 };
     clock_gettime(CLOCK_MONOTONIC, &now);

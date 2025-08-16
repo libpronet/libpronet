@@ -44,8 +44,12 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <iomanip>
+#include <iostream>
 #include <limits>
 #include <memory>
+#include <random>
+#include <sstream>
 
 #if defined(_WIN32)
 #include <conio.h>

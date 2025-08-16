@@ -80,7 +80,7 @@
 #endif
 
 /*
- * Definitions for MacOS/iOS, see the "build/DEFINE.txt"
+ * Definitions for iOS/macOS, see the "build/DEFINE.txt"
  */
 #if defined(__APPLE__)
 #if !defined(PRO_HAS_MACH_ABSOLUTE_TIME)
