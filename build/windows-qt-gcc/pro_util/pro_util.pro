@@ -37,6 +37,7 @@ SOURCES += \
     ../../../src/pronet/pro_util/pro_config_stream.cpp \
     ../../../src/pronet/pro_util/pro_file_monitor.cpp \
     ../../../src/pronet/pro_util/pro_functor_command_task.cpp \
+    ../../../src/pronet/pro_util/pro_guid.cpp \
     ../../../src/pronet/pro_util/pro_log_file.cpp \
     ../../../src/pronet/pro_util/pro_memory_pool.cpp \
     ../../../src/pronet/pro_util/pro_notify_pipe.cpp \
@@ -60,6 +61,7 @@ HEADERS += \
     ../../../src/pronet/pro_util/pro_file_monitor.h \
     ../../../src/pronet/pro_util/pro_functor_command.h \
     ../../../src/pronet/pro_util/pro_functor_command_task.h \
+    ../../../src/pronet/pro_util/pro_guid.h \
     ../../../src/pronet/pro_util/pro_log_file.h \
     ../../../src/pronet/pro_util/pro_memory_pool.h \
     ../../../src/pronet/pro_util/pro_notify_pipe.h \

@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug-MD|Win32">
       <Configuration>Debug-MD</Configuration>
@@ -44,6 +44,7 @@
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_file_monitor.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_functor_command.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_functor_command_task.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_guid.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_log_file.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_memory_pool.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_notify_pipe.h" />
@@ -59,6 +60,7 @@
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_unicode.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_version.h" />
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_z.h" />
+    <ClInclude Include="..\..\..\src\pronet\pro_util\sole.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_bsd_wrapper.cpp" />
@@ -68,6 +70,7 @@
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_config_stream.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_file_monitor.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_functor_command_task.cpp" />
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_guid.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_log_file.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_memory_pool.cpp" />
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_notify_pipe.cpp" />

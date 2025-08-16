@@ -9,6 +9,7 @@ LOCAL_SRC_FILES := pro_bsd_wrapper.cpp          \
                    pro_config_stream.cpp        \
                    pro_file_monitor.cpp         \
                    pro_functor_command_task.cpp \
+                   pro_guid.cpp                 \
                    pro_log_file.cpp             \
                    pro_memory_pool.cpp          \
                    pro_notify_pipe.cpp          \
