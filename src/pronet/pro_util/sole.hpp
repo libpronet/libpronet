@@ -46,6 +46,7 @@
 //////////////////////////////////////////////////////////////////////////////////////
 
 #pragma once
+#include <atomic>
 #include <stdint.h>
 #include <stdio.h>     // for size_t; should be stddef.h instead; however, clang+archlinux fails when compiling it (@Travis-Ci)
 #include <sys/types.h> // for uint32_t; should be stdint.h instead; however, GCC 5 on OSX fails when compiling it (See issue #11)
@@ -266,7 +267,7 @@ uint64_t get_time(uint64_t offset)
     uuid_time = uuid_time + (tp.tv_nsec / 100);
 
     // If the clock looks like it went backwards, or is the same, increment it
-    static uint64_t last_uuid_time = 0;
+    static std::atomic<uint64_t> last_uuid_time;
     if (last_uuid_time >= uuid_time)
         uuid_time = ++last_uuid_time;
     else
