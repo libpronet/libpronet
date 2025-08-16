@@ -61,23 +61,24 @@
 #define SOLE_VERSION "1.0.1" // (2017/05/16): Improve UUID4 and base62 performance; fix warnings
 #define SOLE_VERSION "1.0.0" // (2016/02/03): Initial semver adherence; Switch to header-only; Remove warnings */
 
-namespace sole
+namespace sole {
+
+// 128-bit basic UUID type that allows comparison and sorting.
+// Use .str() for printing and .pretty() for pretty printing.
+// Also, ostream friendly
+struct uuid
 {
-    // 128-bit basic UUID type that allows comparison and sorting.
-    // Use .str() for printing and .pretty() for pretty printing.
-    // Also, ostream friendly
-    struct uuid
-    {
-        uint64_t ab;
-        uint64_t cd;
+    uint64_t ab;
+    uint64_t cd;
 
-        std::string str() const;
-    };
+    std::string str() const;
+};
 
-    // Generators
-    uuid uuid1(); // UUID v1, pro: unique; cons: MAC revealed, predictable
-    uuid uuid4(); // UUID v4, pros: anonymous, fast; con: uuids "can clash"
-}
+// Generators
+uuid uuid1(); // UUID v1, pro: unique; cons: MAC revealed, predictable
+uuid uuid4(); // UUID v4, pros: anonymous, fast; con: uuids "can clash"
+
+} // ::sole
 
 // implementation
 
@@ -295,14 +296,13 @@ bool get_any_mac(std::vector<unsigned char>& _node)
         }
         else if (rc != ERROR_SUCCESS)
         {
+            delete[] reinterpret_cast<char*>(pAdapterInfo);
             return false;
         }
 
-        bool found = false, gotten = false;
+        bool found = false;
         if (GetAdaptersInfo(pAdapterInfo, &len) == NO_ERROR)
         {
-            gotten = true;
-
             pAdapter = pAdapterInfo;
             while (pAdapter && !found)
             {
@@ -317,11 +317,7 @@ bool get_any_mac(std::vector<unsigned char>& _node)
         }
 
         delete[] reinterpret_cast<char*>(pAdapterInfo);
-        if (!gotten)
-            return false;
-        if (!found)
-            return false;
-        return true;
+        return found;
     }
 #endif
 
@@ -351,9 +347,7 @@ bool get_any_mac(std::vector<unsigned char>& _node)
         }
 
         freeifaddrs(ifaphead);
-        if (!foundAdapter)
-            return false;
-        return true;
+        return foundAdapter;
     }
 #endif
 
@@ -383,9 +377,7 @@ bool get_any_mac(std::vector<unsigned char>& _node)
         }
 
         freeifaddrs(ifaphead);
-        if (!foundAdapter)
-            return false;
-        return true;
+        return foundAdapter;
     }
 #endif
 
@@ -422,9 +414,7 @@ bool get_any_mac(std::vector<unsigned char>& _node)
         }
 
         freeifaddrs(ifaphead);
-        if (!foundAdapter)
-            return false;
-        return true;
+        return foundAdapter;
     }
 #endif
 
