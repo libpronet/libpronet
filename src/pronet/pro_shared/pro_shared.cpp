@@ -65,8 +65,8 @@ extern "C" {
 
 #if defined(_WIN32)
 static volatile bool                    g_s_tlsFlag       = false;
-static unsigned long                    g_s_tlsKey0       = (unsigned long)-1;
-static unsigned long                    g_s_tlsKey1       = (unsigned long)-1;
+static thread_local uint32_t            g_s_tlsTick0      = 0;
+static thread_local uint32_t            g_s_tlsTick1      = 0;
 static int64_t                          g_s_globalTick    = 0;
 #elif defined(PRO_HAS_MACH_ABSOLUTE_TIME)
 static volatile bool                    g_s_timebaseFlag  = false;
@@ -460,19 +460,16 @@ ProGetTickCount64()
         g_s_lock->Lock();
         if (!g_s_tlsFlag) /* double check */
         {
-            g_s_tlsKey0    = ::TlsAlloc(); /* dynamic TLS */
-            g_s_tlsKey1    = ::TlsAlloc(); /* dynamic TLS */
             g_s_globalTick = ::timeGetTime();
-
-            g_s_tlsFlag = true;
+            g_s_tlsFlag    = true;
         }
         g_s_lock->Unlock();
     }
 
     bool updateGlobalTick = false;
 
-    uint32_t tick0 = (uint32_t)(uint64_t)::TlsGetValue(g_s_tlsKey0);
-    uint32_t tick1 = (uint32_t)(uint64_t)::TlsGetValue(g_s_tlsKey1);
+    uint32_t tick0 = g_s_tlsTick0;
+    uint32_t tick1 = g_s_tlsTick1;
     if (tick0 == 0 && tick1 == 0)
     {
         g_s_lock->Lock();
@@ -480,8 +477,8 @@ ProGetTickCount64()
         tick1 = (uint32_t)(g_s_globalTick >> 32);
         g_s_lock->Unlock();
 
-        ::TlsSetValue(g_s_tlsKey0, (void*)(uint64_t)tick0);
-        ::TlsSetValue(g_s_tlsKey1, (void*)(uint64_t)tick1);
+        g_s_tlsTick0 = tick0;
+        g_s_tlsTick1 = tick1;
 
         updateGlobalTick = true;
     }
@@ -490,14 +487,16 @@ ProGetTickCount64()
     if (tick > tick0)
     {
         tick0 = tick;
-        ::TlsSetValue(g_s_tlsKey0, (void*)(uint64_t)tick0);
+
+        g_s_tlsTick0 = tick0;
     }
     else if (tick < tick0)
     {
         tick0 = tick;
         ++tick1;
-        ::TlsSetValue(g_s_tlsKey0, (void*)(uint64_t)tick0);
-        ::TlsSetValue(g_s_tlsKey1, (void*)(uint64_t)tick1);
+
+        g_s_tlsTick0 = tick0;
+        g_s_tlsTick1 = tick1;
 
         updateGlobalTick = true;
     }
