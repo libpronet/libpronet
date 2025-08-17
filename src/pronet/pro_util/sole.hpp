@@ -47,10 +47,10 @@
 
 #pragma once
 #include <atomic>
+#include <chrono>
 #include <stdint.h>
 #include <stdio.h>     // for size_t; should be stddef.h instead; however, clang+archlinux fails when compiling it (@Travis-Ci)
 #include <sys/types.h> // for uint32_t; should be stdint.h instead; however, GCC 5 on OSX fails when compiling it (See issue #11)
-#include <functional>
 #include <string>
 
 // public API
@@ -94,7 +94,6 @@ uuid uuid4(); // UUID v4, pros: anonymous, fast; con: uuids "can clash"
 #include <iomanip>
 #include <random>
 #include <sstream>
-#include <string>
 #include <vector>
 
 #if defined(_WIN32)
@@ -474,13 +473,43 @@ uint64_t get_any_mac48()
 
 uuid uuid4()
 {
-    static thread_local std::random_device rd;
-    static thread_local std::uniform_int_distribution<uint64_t> dist(0, (uint64_t)(~0));
-
     uuid my;
 
-    my.ab = dist(rd);
-    my.cd = dist(rd);
+    for (int i = 0; i < 2; ++i)
+    {
+        static std::atomic<bool> bad_dev;
+        if (!bad_dev)
+        {
+            // Use try/catch to prevent std::random_device crashes on Android
+            try
+            {
+                static thread_local std::random_device dev;
+                static thread_local std::seed_seq      seeds({ dev(), dev() % 12345678 });
+                static thread_local std::mt19937_64    gen(seeds);
+                static thread_local std::uniform_int_distribution<uint64_t> dist(0, (uint64_t)(~0));
+
+                my.ab = dist(gen);
+                my.cd = dist(gen);
+                break;
+            }
+            catch (const std::exception&)
+            {
+                bad_dev = true;
+            }
+        }
+        else
+        {
+            auto ticks = std::chrono::system_clock::now().time_since_epoch().count();
+
+            static thread_local std::seed_seq   seeds({ ticks, ticks % 12345678 });
+            static thread_local std::mt19937_64 gen(seeds);
+            static thread_local std::uniform_int_distribution<uint64_t> dist(0, (uint64_t)(~0));
+
+            my.ab = dist(gen);
+            my.cd = dist(gen);
+            break;
+        }
+    }
 
     my.ab = (my.ab & 0xFFFFFFFFFFFF0FFFULL) | 0x0000000000004000ULL;
     my.cd = (my.cd & 0x3FFFFFFFFFFFFFFFULL) | 0x8000000000000000ULL;
@@ -509,29 +538,29 @@ uuid uuid1()
     uint8_t clock_seq_low = clock_seq & 0xff;
     uint8_t clock_seq_hi_variant = (clock_seq >> 8) & 0x3f;
 
-    uuid u;
-    uint64_t& upper_ = u.ab;
-    uint64_t& lower_ = u.cd;
+    uuid my;
+    uint64_t& upper = my.ab;
+    uint64_t& lower = my.cd;
 
     // Build the high 32 bytes
-    upper_  = (uint64_t)time_low << 32;
-    upper_ |= (uint64_t)time_mid << 16;
-    upper_ |= (uint64_t)time_hi_version;
+    upper  = (uint64_t)time_low << 32;
+    upper |= (uint64_t)time_mid << 16;
+    upper |= (uint64_t)time_hi_version;
 
     // Build the low 32 bytes, using the clock sequence number
-    lower_  = (uint64_t)((clock_seq_hi_variant << 8) | clock_seq_low) << 48;
-    lower_ |= mac;
+    lower  = (uint64_t)((clock_seq_hi_variant << 8) | clock_seq_low) << 48;
+    lower |= mac;
 
     // Set the variant to RFC 4122
-    lower_ &= ~((uint64_t)0xc000 << 48);
-    lower_ |=   (uint64_t)0x8000 << 48;
+    lower &= ~((uint64_t)0xc000 << 48);
+    lower |=   (uint64_t)0x8000 << 48;
 
     // Set the version number
     enum { version = 1 };
-    upper_ &= ~0xf000;
-    upper_ |= version << 12;
+    upper &= ~0xf000;
+    upper |= version << 12;
 
-    return u;
+    return my;
 }
 
 } // ::sole
