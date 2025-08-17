@@ -349,51 +349,6 @@ Delay1ms_i()
     }
 }
 
-static
-uint32_t
-GetTickCount32_i()
-{
-    Init_i();
-
-    int64_t ret = 0;
-
-#if defined(_WIN32)
-
-    ret = ::timeGetTime();
-
-#elif defined(PRO_HAS_MACH_ABSOLUTE_TIME) /* for iOS/macOS */
-
-    if (!g_s_timebaseFlag)
-    {
-        g_s_lock->Lock();
-        if (!g_s_timebaseFlag) /* double check */
-        {
-            mach_timebase_info(&g_s_timebaseInfo);
-            g_s_timebaseFlag = true;
-        }
-        g_s_lock->Unlock();
-    }
-
-    ret =  mach_absolute_time();
-    ret =  ret * g_s_timebaseInfo.numer / g_s_timebaseInfo.denom; /* ns_ticks ---> ns */
-    ret /= 1000000;                                               /* ns       ---> ms */
-
-#elif !defined(PRO_LACKS_CLOCK_GETTIME)
-
-    struct timespec now = { 0 };
-    clock_gettime(CLOCK_MONOTONIC, &now);
-
-    ret = (int64_t)now.tv_sec * 1000 + now.tv_nsec / 1000000;
-
-#else
-
-    assert(0);
-
-#endif
-
-    return (uint32_t)ret;
-}
-
 /////////////////////////////////////////////////////////////////////////////
 ////
 
@@ -421,28 +376,119 @@ PRO_SHARED_API
 void
 ProSrand()
 {
-    int64_t tick = GetTickCount32_i(); /* Don't invoke ProGetTickCount64()!!! */
-    tick %=  128;
-    tick <<= 16;
-
-    int64_t seed = time(NULL);
-    seed += tick;
-
-    srand((unsigned int)seed);
+    srand((unsigned int)time(NULL));
 }
 
 PRO_SHARED_API
 double
 ProRand_0_1()
 {
-    return (double)rand() / RAND_MAX;
+    double ret = 0.0;
+
+    for (int i = 0; i < 2; ++i)
+    {
+        static std::atomic<bool> s_badDev;
+        if (!s_badDev)
+        {
+            /*
+             * Use try/catch to prevent std::random_device crashes on Android.
+             */
+            try
+            {
+                static thread_local std::random_device s_dev;
+                static thread_local std::seed_seq      s_seeds({ s_dev(), s_dev() % 12345678 });
+                static thread_local std::mt19937       s_gen(s_seeds);
+
+                static thread_local std::uniform_real_distribution<double> s_dist(0.0, 1.0);
+
+                ret = s_dist(s_gen);
+                break;
+            }
+            catch (const std::exception&)
+            {
+                s_badDev = true;
+            }
+        }
+        else
+        {
+            auto ticks = std::chrono::system_clock::now().time_since_epoch().count();
+
+            static thread_local std::seed_seq s_seeds({ ticks, ticks % 12345678 });
+            static thread_local std::mt19937  s_gen(s_seeds);
+
+            static thread_local std::uniform_real_distribution<double> s_dist(0.0, 1.0);
+
+            ret = s_dist(s_gen);
+            break;
+        }
+    } /* end of for () */
+
+    if (ret < 0)
+    {
+        ret = 0;
+    }
+    if (ret > 1)
+    {
+        ret = 1;
+    }
+
+    return ret;
 }
 
 PRO_SHARED_API
 int
 ProRand_0_32767()
 {
-    return rand();
+    int ret = 0;
+
+    for (int i = 0; i < 2; ++i)
+    {
+        static std::atomic<bool> s_badDev;
+        if (!s_badDev)
+        {
+            /*
+             * Use try/catch to prevent std::random_device crashes on Android.
+             */
+            try
+            {
+                static thread_local std::random_device s_dev;
+                static thread_local std::seed_seq      s_seeds({ s_dev(), s_dev() % 12345678 });
+                static thread_local std::mt19937       s_gen(s_seeds);
+
+                static thread_local std::uniform_int_distribution<int> s_dist(0, 32767);
+
+                ret = s_dist(s_gen);
+                break;
+            }
+            catch (const std::exception&)
+            {
+                s_badDev = true;
+            }
+        }
+        else
+        {
+            auto ticks = std::chrono::system_clock::now().time_since_epoch().count();
+
+            static thread_local std::seed_seq s_seeds({ ticks, ticks % 12345678 });
+            static thread_local std::mt19937  s_gen(s_seeds);
+
+            static thread_local std::uniform_int_distribution<int> s_dist(0, 32767);
+
+            ret = s_dist(s_gen);
+            break;
+        }
+    } /* end of for () */
+
+    if (ret < 0)
+    {
+        ret = 0;
+    }
+    if (ret > 32767)
+    {
+        ret = 32767;
+    }
+
+    return ret;
 }
 
 PRO_SHARED_API
