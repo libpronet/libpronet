@@ -34,7 +34,7 @@
 #define RTP_MSG_PROTOCOL_VERSION 2
 #define RTP_MSG_PACK_MODE        RTP_EPM_TCP4
 
-class CProFunctorCommandTask;
+class CProCommandTask;
 
 struct RTP_MSG_AsyncOnAcceptSession
 {
@@ -299,7 +299,7 @@ private:
 
     IRtpMsgServerObserver*                      m_observer;
     IProReactor*                                m_reactor;
-    CProFunctorCommandTask*                     m_task;
+    CProCommandTask*                            m_task;
     IRtpService*                                m_service;
     unsigned short                              m_serviceHubPort;
     size_t                                      m_redlineBytesC2s;

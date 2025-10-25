@@ -33,10 +33,10 @@ SOURCES += \
     ../../../src/pronet/pro_util/pro_bsd_wrapper.cpp \
     ../../../src/pronet/pro_util/pro_buffer.cpp \
     ../../../src/pronet/pro_util/pro_channel_task_pool.cpp \
+    ../../../src/pronet/pro_util/pro_command_task.cpp \
     ../../../src/pronet/pro_util/pro_config_file.cpp \
     ../../../src/pronet/pro_util/pro_config_stream.cpp \
     ../../../src/pronet/pro_util/pro_file_monitor.cpp \
-    ../../../src/pronet/pro_util/pro_functor_command_task.cpp \
     ../../../src/pronet/pro_util/pro_guid.cpp \
     ../../../src/pronet/pro_util/pro_log_file.cpp \
     ../../../src/pronet/pro_util/pro_memory_pool.cpp \
@@ -56,11 +56,11 @@ HEADERS += \
     ../../../src/pronet/pro_util/pro_bsd_wrapper.h \
     ../../../src/pronet/pro_util/pro_buffer.h \
     ../../../src/pronet/pro_util/pro_channel_task_pool.h \
+    ../../../src/pronet/pro_util/pro_command.h \
+    ../../../src/pronet/pro_util/pro_command_task.h \
     ../../../src/pronet/pro_util/pro_config_file.h \
     ../../../src/pronet/pro_util/pro_config_stream.h \
     ../../../src/pronet/pro_util/pro_file_monitor.h \
-    ../../../src/pronet/pro_util/pro_functor_command.h \
-    ../../../src/pronet/pro_util/pro_functor_command_task.h \
     ../../../src/pronet/pro_util/pro_guid.h \
     ../../../src/pronet/pro_util/pro_log_file.h \
     ../../../src/pronet/pro_util/pro_memory_pool.h \

@@ -32,12 +32,6 @@
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_file_monitor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_functor_command.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_functor_command_task.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_log_file.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -89,6 +83,12 @@
     <ClInclude Include="..\..\..\src\pronet\pro_util\pro_guid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_command.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\pronet\pro_util\pro_command_task.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_bsd_wrapper.cpp">
@@ -107,9 +107,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_file_monitor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_functor_command_task.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_log_file.cpp">
@@ -149,6 +146,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\pronet\pro_util\pro_guid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\pronet\pro_util\pro_command_task.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -18,7 +18,7 @@
 
 #include "pro_a.h"
 #include "pro_timer_factory.h"
-#include "pro_functor_command_task.h"
+#include "pro_command_task.h"
 #include "pro_memory_pool.h"
 #include "pro_shared.h"
 #include "pro_stl.h"
@@ -74,7 +74,7 @@ CProTimerFactory::Start(bool mmTimer)
             return false;
         }
 
-        m_task = new CProFunctorCommandTask;
+        m_task = new CProCommandTask;
         if (!m_task->Start(mmTimer))
         {
             delete m_task;

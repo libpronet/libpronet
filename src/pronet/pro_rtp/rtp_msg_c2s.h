@@ -33,8 +33,8 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
+class CProCommandTask;
 class CProConfigStream;
-class CProFunctorCommandTask;
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -277,7 +277,7 @@ private:
 
     IRtpMsgC2sObserver*                                m_observer;
     IProReactor*                                       m_reactor;
-    CProFunctorCommandTask*                            m_task;
+    CProCommandTask*                                   m_task;
     CRtpMsgClient*                                     m_msgClient;
     IRtpService*                                       m_service;
     unsigned short                                     m_serviceHubPort;

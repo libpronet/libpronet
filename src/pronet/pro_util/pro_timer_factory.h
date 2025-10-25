@@ -28,7 +28,7 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-class CProFunctorCommandTask;
+class CProCommandTask;
 class IProOnTimer;
 
 struct PRO_TIMER_NODE
@@ -141,7 +141,7 @@ private:
 
 private:
 
-    CProFunctorCommandTask*       m_task;
+    CProCommandTask*              m_task;
     bool                          m_wantExit;
     bool                          m_mmTimer;
     unsigned int                  m_mmResolution;

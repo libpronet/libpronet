@@ -20,7 +20,7 @@
 #define ____PRO_CHANNEL_TASK_POOL_H____
 
 #include "pro_a.h"
-#include "pro_functor_command.h"
+#include "pro_command.h"
 #include "pro_memory_pool.h"
 #include "pro_stl.h"
 #include "pro_thread_mutex.h"
@@ -29,7 +29,7 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-class CProFunctorCommandTask;
+class CProCommandTask;
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -58,81 +58,75 @@ public:
     /*
      * The 'action' is a non-const member function
      */
-    template<typename RECEIVER, typename... ARGS>
+    template<typename RECEIVER, typename RET, typename... ARGS>
     bool PostCall(
-        uint64_t          channelId,
-        RECEIVER&         receiver,
-        void (RECEIVER::* action)(ARGS...),
-        ARGS...           args
+        uint64_t         channelId,
+        RECEIVER&        receiver,
+        RET (RECEIVER::* action)(ARGS...),
+        ARGS...          args
         )
     {
-        CProFunctorCommand* command = CProFunctorCommand::Create(receiver, action, args...);
-        if (command == NULL)
+        assert(action != NULL);
+        if (action == NULL)
         {
             return false;
         }
 
-        if (!Put(channelId, command))
+        auto func = [=, &receiver]() -> void
         {
-            command->Destroy();
+            (receiver.*action)(args...);
+        };
 
-            return false;
-        }
-
-        return true;
+        return PostCall(channelId, func);
     }
 
     /*
      * The 'action' is a const member function
      */
-    template<typename RECEIVER, typename... ARGS>
+    template<typename RECEIVER, typename RET, typename... ARGS>
     bool PostCall(
-        uint64_t          channelId,
-        const RECEIVER&   receiver,
-        void (RECEIVER::* action)(ARGS...) const,
-        ARGS...           args
+        uint64_t         channelId,
+        const RECEIVER&  receiver,
+        RET (RECEIVER::* action)(ARGS...) const,
+        ARGS...          args
         )
     {
-        CProFunctorCommand* command = CProFunctorCommand::Create(receiver, action, args...);
-        if (command == NULL)
+        assert(action != NULL);
+        if (action == NULL)
         {
             return false;
         }
 
-        if (!Put(channelId, command))
+        auto func = [=, &receiver]() -> void
         {
-            command->Destroy();
+            (receiver.*action)(args...);
+        };
 
-            return false;
-        }
-
-        return true;
+        return PostCall(channelId, func);
     }
 
     /*
      * The 'action' is a static member function or a non-member function
      */
-    template<typename... ARGS>
+    template<typename RET, typename... ARGS>
     bool PostCall(
         uint64_t channelId,
-        void (*  action)(ARGS...),
+        RET (*   action)(ARGS...),
         ARGS...  args
         )
     {
-        CProFunctorCommand* command = CProFunctorCommand::Create(action, args...);
-        if (command == NULL)
+        assert(action != NULL);
+        if (action == NULL)
         {
             return false;
         }
 
-        if (!Put(channelId, command))
+        auto func = [=]() -> void
         {
-            command->Destroy();
+            (*action)(args...);
+        };
 
-            return false;
-        }
-
-        return true;
+        return PostCall(channelId, func);
     }
 
     /*
@@ -143,7 +137,7 @@ public:
         const std::function<void()>& func
         )
     {
-        CProFunctorCommand* command = CProFunctorCommand::Create(func);
+        CProCommand* command = CProCommand::Create(func);
         if (command == NULL)
         {
             return false;
@@ -166,15 +160,15 @@ public:
 private:
 
     bool Put(
-        uint64_t            channelId,
-        CProFunctorCommand* command
+        uint64_t     channelId,
+        CProCommand* command
         );
 
 private:
 
-    CProStlMap<CProFunctorCommandTask*, size_t>   m_task2Channels;
-    CProStlMap<uint64_t, CProFunctorCommandTask*> m_channelId2Task;
-    mutable CProThreadMutex                       m_lock;
+    CProStlMap<CProCommandTask*, size_t>   m_task2Channels;
+    CProStlMap<uint64_t, CProCommandTask*> m_channelId2Task;
+    mutable CProThreadMutex                m_lock;
 
     DECLARE_SGI_POOL(0)
 };

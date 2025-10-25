@@ -18,8 +18,8 @@
 
 #include "pro_a.h"
 #include "pro_channel_task_pool.h"
-#include "pro_functor_command.h"
-#include "pro_functor_command_task.h"
+#include "pro_command.h"
+#include "pro_command_task.h"
 #include "pro_memory_pool.h"
 #include "pro_stl.h"
 #include "pro_thread_mutex.h"
@@ -42,7 +42,7 @@ CProChannelTaskPool::Start(unsigned int threadCount)
         return false;
     }
 
-    CProStlMap<CProFunctorCommandTask*, size_t> task2Channels;
+    CProStlMap<CProCommandTask*, size_t> task2Channels;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -55,7 +55,7 @@ CProChannelTaskPool::Start(unsigned int threadCount)
 
         for (int i = 0; i < (int)threadCount; ++i)
         {
-            CProFunctorCommandTask* task = new CProFunctorCommandTask;
+            CProCommandTask* task = new CProCommandTask;
             task2Channels[task] = 0;
             if (!task->Start())
             {
@@ -84,7 +84,7 @@ EXIT:
 void
 CProChannelTaskPool::Stop()
 {
-    CProStlMap<CProFunctorCommandTask*, size_t> task2Channels;
+    CProStlMap<CProCommandTask*, size_t> task2Channels;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -123,8 +123,8 @@ CProChannelTaskPool::AddChannel(uint64_t channelId)
         return true;
     }
 
-    CProFunctorCommandTask* task     = NULL;
-    size_t                  channels = 0;
+    CProCommandTask* task     = NULL;
+    size_t           channels = 0;
 
     auto itr = m_task2Channels.begin();
     auto end = m_task2Channels.end();
@@ -165,8 +165,8 @@ CProChannelTaskPool::RemoveChannel(uint64_t channelId)
 }
 
 bool
-CProChannelTaskPool::Put(uint64_t            channelId,
-                         CProFunctorCommand* command)
+CProChannelTaskPool::Put(uint64_t     channelId,
+                         CProCommand* command)
 {
     assert(command != NULL);
     if (command == NULL)

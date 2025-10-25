@@ -29,7 +29,7 @@
 ////
 
 /*
- * Instead of using CProThreadBase, you should use CProFunctorCommandTask.
+ * Instead of using CProThreadBase, you should use CProCommandTask.
  */
 class CProThreadBase
 {

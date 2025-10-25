@@ -17,8 +17,8 @@
  */
 
 #include "pro_a.h"
-#include "pro_functor_command_task.h"
-#include "pro_functor_command.h"
+#include "pro_command_task.h"
+#include "pro_command.h"
 #include "pro_memory_pool.h"
 #include "pro_stl.h"
 #include "pro_thread.h"
@@ -28,7 +28,7 @@
 /////////////////////////////////////////////////////////////////////////////
 ////
 
-CProFunctorCommandTask::CProFunctorCommandTask()
+CProCommandTask::CProCommandTask()
 : m_commandCond(true) /* isSocketMode is true */
 {
     m_userData       = NULL;
@@ -37,14 +37,14 @@ CProFunctorCommandTask::CProFunctorCommandTask()
     m_wantExit       = false;
 }
 
-CProFunctorCommandTask::~CProFunctorCommandTask()
+CProCommandTask::~CProCommandTask()
 {
     Stop();
 }
 
 bool
-CProFunctorCommandTask::Start(bool         realtime,    /* = false */
-                              unsigned int threadCount) /* = 1 */
+CProCommandTask::Start(bool         realtime,    /* = false */
+                       unsigned int threadCount) /* = 1 */
 {{
     CProThreadMutexGuard mon(m_lockAtom);
 
@@ -89,7 +89,7 @@ EXIT:
 }}
 
 void
-CProFunctorCommandTask::Stop()
+CProCommandTask::Stop()
 {{
     CProThreadMutexGuard mon(m_lockAtom);
 
@@ -97,7 +97,7 @@ CProFunctorCommandTask::Stop()
 }}
 
 void
-CProFunctorCommandTask::StopMe()
+CProCommandTask::StopMe()
 {
     CProThreadMutexGuard mon(m_lock);
 
@@ -126,8 +126,8 @@ CProFunctorCommandTask::StopMe()
 }
 
 bool
-CProFunctorCommandTask::Put(CProFunctorCommand* command,
-                            bool                blocking) /* = false */
+CProCommandTask::Put(CProCommand* command,
+                     bool         blocking) /* = false */
 {
     assert(command != NULL);
     if (command == NULL)
@@ -170,7 +170,7 @@ CProFunctorCommandTask::Put(CProFunctorCommand* command,
 }
 
 size_t
-CProFunctorCommandTask::GetSize() const
+CProCommandTask::GetSize() const
 {
     size_t size = 0;
 
@@ -184,7 +184,7 @@ CProFunctorCommandTask::GetSize() const
 }
 
 bool
-CProFunctorCommandTask::IsCurrentThread() const
+CProCommandTask::IsCurrentThread() const
 {
     CProThreadMutexGuard mon(m_lock);
 
@@ -202,7 +202,7 @@ CProFunctorCommandTask::IsCurrentThread() const
 }
 
 void
-CProFunctorCommandTask::SetUserData(const void* userData)
+CProCommandTask::SetUserData(const void* userData)
 {
     CProThreadMutexGuard mon(m_lock);
 
@@ -210,7 +210,7 @@ CProFunctorCommandTask::SetUserData(const void* userData)
 }
 
 const void*
-CProFunctorCommandTask::GetUserData() const
+CProCommandTask::GetUserData() const
 {
     const void* userData = NULL;
 
@@ -224,7 +224,7 @@ CProFunctorCommandTask::GetUserData() const
 }
 
 void
-CProFunctorCommandTask::Svc()
+CProCommandTask::Svc()
 {
     uint64_t threadId = ProGetThreadId();
 
@@ -236,11 +236,11 @@ CProFunctorCommandTask::Svc()
         m_initCond.Signal();
     }
 
-    CProStlDeque<CProFunctorCommand*> commands;
+    CProStlDeque<CProCommand*> commands;
 
     while (1)
     {
-        CProFunctorCommand* command = NULL;
+        CProCommand* command = NULL;
 
         {
             CProThreadMutexGuard mon(m_lock);
@@ -285,7 +285,7 @@ CProFunctorCommandTask::Svc()
 
     for (; i < c; ++i)
     {
-        CProFunctorCommand* command = commands[i];
+        CProCommand* command = commands[i];
         command->Execute();
 
         CProThreadMutexCondition* cond = (CProThreadMutexCondition*)command->GetUserData1();

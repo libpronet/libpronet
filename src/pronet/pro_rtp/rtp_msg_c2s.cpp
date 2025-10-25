@@ -24,8 +24,8 @@
 #include "rtp_msg_server.h"
 #include "../pro_net/pro_net.h"
 #include "../pro_util/pro_bsd_wrapper.h"
+#include "../pro_util/pro_command_task.h"
 #include "../pro_util/pro_config_stream.h"
-#include "../pro_util/pro_functor_command_task.h"
 #include "../pro_util/pro_memory_pool.h"
 #include "../pro_util/pro_ref_count.h"
 #include "../pro_util/pro_ssl_util.h"
@@ -156,9 +156,9 @@ CRtpMsgC2s::Init(IRtpMsgC2sObserver* observer,
         localTimeoutInSeconds  = DEFAULT_TIMEOUT;
     }
 
-    CProFunctorCommandTask* task      = NULL;
-    CRtpMsgClient*          msgClient = NULL;
-    IRtpService*            service   = NULL;
+    CProCommandTask* task      = NULL;
+    CRtpMsgClient*   msgClient = NULL;
+    IRtpService*     service   = NULL;
 
     {
         CProThreadMutexGuard mon(m_lock);
@@ -174,7 +174,7 @@ CRtpMsgC2s::Init(IRtpMsgC2sObserver* observer,
             return false;
         }
 
-        task = new CProFunctorCommandTask;
+        task = new CProCommandTask;
         if (!task->Start())
         {
             goto EXIT;
@@ -251,7 +251,7 @@ void
 CRtpMsgC2s::Fini()
 {
     IRtpMsgC2sObserver*                    observer  = NULL;
-    CProFunctorCommandTask*                task      = NULL;
+    CProCommandTask*                       task      = NULL;
     CRtpMsgClient*                         msgClient = NULL;
     IRtpService*                           service   = NULL;
     CProStlMap<IRtpSession*, RTP_MSG_USER> session2User;
