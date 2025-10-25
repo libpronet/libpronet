@@ -52,7 +52,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         CProStlString& configName  = configs[i].configName;
         CProStlString& configValue = configs[i].configValue;
 
-        if (stricmp(configName.c_str(), "tcps_thread_count") == 0)
+        if (stricmp_pro(configName.c_str(), "tcps_thread_count") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0 && value <= 100)
@@ -60,11 +60,11 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcps_thread_count = value;
             }
         }
-        else if (stricmp(configName.c_str(), "tcps_using_hub") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcps_using_hub") == 0)
         {
             configInfo.tcps_using_hub = atoi(configValue.c_str()) != 0;
         }
-        else if (stricmp(configName.c_str(), "tcps_port") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcps_port") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
@@ -72,7 +72,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcps_port = (unsigned short)value;
             }
         }
-        else if (stricmp(configName.c_str(), "tcps_handshake_timeout") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcps_handshake_timeout") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0)
@@ -80,7 +80,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcps_handshake_timeout = value;
             }
         }
-        else if (stricmp(configName.c_str(), "tcps_heartbeat_interval") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcps_heartbeat_interval") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0)
@@ -88,7 +88,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcps_heartbeat_interval = value;
             }
         }
-        else if (stricmp(configName.c_str(), "tcps_heartbeat_bytes") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcps_heartbeat_bytes") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value >= 0 && value <= 1024)
@@ -96,7 +96,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcps_heartbeat_bytes = value;
             }
         }
-        else if (stricmp(configName.c_str(), "tcps_sockbuf_size_recv") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcps_sockbuf_size_recv") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value >= 1024)
@@ -104,7 +104,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcps_sockbuf_size_recv = value;
             }
         }
-        else if (stricmp(configName.c_str(), "tcps_sockbuf_size_send") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcps_sockbuf_size_send") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value >= 1024)
@@ -112,7 +112,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcps_sockbuf_size_send = value;
             }
         }
-        else if (stricmp(configName.c_str(), "tcps_recvpool_size") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcps_recvpool_size") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value >= 1024)
@@ -120,15 +120,15 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcps_recvpool_size = value;
             }
         }
-        else if (stricmp(configName.c_str(), "tcps_enable_ssl") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcps_enable_ssl") == 0)
         {
             configInfo.tcps_enable_ssl = atoi(configValue.c_str()) != 0;
         }
-        else if (stricmp(configName.c_str(), "tcps_ssl_enable_sha1cert") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcps_ssl_enable_sha1cert") == 0)
         {
             configInfo.tcps_ssl_enable_sha1cert = atoi(configValue.c_str()) != 0;
         }
-        else if (stricmp(configName.c_str(), "tcps_ssl_cafile") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcps_ssl_cafile") == 0)
         {
             if (!configValue.empty())
             {
@@ -146,7 +146,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcps_ssl_cafiles.push_back(configValue);
             }
         }
-        else if (stricmp(configName.c_str(), "tcps_ssl_crlfile") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcps_ssl_crlfile") == 0)
         {
             if (!configValue.empty())
             {
@@ -164,7 +164,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcps_ssl_crlfiles.push_back(configValue);
             }
         }
-        else if (stricmp(configName.c_str(), "tcps_ssl_certfile") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcps_ssl_certfile") == 0)
         {
             if (!configValue.empty())
             {
@@ -182,7 +182,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcps_ssl_certfiles.push_back(configValue);
             }
         }
-        else if (stricmp(configName.c_str(), "tcps_ssl_keyfile") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcps_ssl_keyfile") == 0)
         {
             if (!configValue.empty())
             {
@@ -456,8 +456,8 @@ int main(int argc, char* argv[])
             continue;
         }
 
-        if (stricmp(p, "help") == 0 || stricmp(p, "--help") == 0 ||
-            stricmp(p, "htbttime") == 0 || stricmp(p, "htbtsize") == 0)
+        if (stricmp_pro(p, "help") == 0 || stricmp_pro(p, "--help") == 0 ||
+            stricmp_pro(p, "htbttime") == 0 || stricmp_pro(p, "htbtsize") == 0)
         {
             printf(
                 "\n"
@@ -468,7 +468,7 @@ int main(int argc, char* argv[])
                 "                      for example, \"htbtsize 0\" \n"
                 );
         }
-        else if (strnicmp(p, "htbttime ", 9) == 0)
+        else if (strnicmp_pro(p, "htbttime ", 9) == 0)
         {
             p += 9;
 
@@ -498,7 +498,7 @@ int main(int argc, char* argv[])
                 );
             printf(" [ HTBT Size ] : %u \n", (unsigned int)g_s_tester->GetHeartbeatDataSize());
         }
-        else if (strnicmp(p, "htbtsize ", 9) == 0)
+        else if (strnicmp_pro(p, "htbtsize ", 9) == 0)
         {
             p += 9;
 

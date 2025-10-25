@@ -71,15 +71,13 @@ extern "C" {
 
 #if defined(_MSC_VER)
 
-#define stricmp   _stricmp
-#define strnicmp  _strnicmp
-#define snprintf  _snprintf
-#define vsnprintf _vsnprintf
+#define stricmp_pro  _stricmp
+#define strnicmp_pro _strnicmp
 
 #else  /* _MSC_VER */
 
-#define stricmp   strcasecmp
-#define strnicmp  strncasecmp
+#define stricmp_pro  strcasecmp
+#define strnicmp_pro strncasecmp
 
 #endif /* _MSC_VER */
 

@@ -127,7 +127,11 @@ snprintf_pro(char*       dest,
 
     va_list ap;
     va_start(ap, format);
+#if defined(_MSC_VER)
+    int ret = _vsnprintf(dest, destSize, format, ap);
+#else
     int ret = vsnprintf(dest, destSize, format, ap);
+#endif
     va_end(ap);
 
     dest[destSize - 1] = '\0';

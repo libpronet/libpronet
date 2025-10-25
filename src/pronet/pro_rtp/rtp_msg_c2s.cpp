@@ -1139,15 +1139,15 @@ CRtpMsgC2s::OnRecvMsg(IRtpMsgClient*      msgClient,
     CProStlString msgName;
     msgStream.Get(TAG_msg_name, msgName);
 
-    if (stricmp(msgName.c_str(), MSG_client_login_ok) == 0)
+    if (stricmp_pro(msgName.c_str(), MSG_client_login_ok) == 0)
     {
         ProcessMsg_client_login_ok(msgClient, msgStream);
     }
-    else if (stricmp(msgName.c_str(), MSG_client_login_error) == 0)
+    else if (stricmp_pro(msgName.c_str(), MSG_client_login_error) == 0)
     {
         ProcessMsg_client_login_error(msgClient, msgStream);
     }
-    else if (stricmp(msgName.c_str(), MSG_client_kickout) == 0)
+    else if (stricmp_pro(msgName.c_str(), MSG_client_kickout) == 0)
     {
         ProcessMsg_client_kickout(msgClient, msgStream);
     }

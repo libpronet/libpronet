@@ -58,7 +58,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         CProStlString& configName  = configs[i].configName;
         CProStlString& configValue = configs[i].configValue;
 
-        if (stricmp(configName.c_str(), "msgs_thread_count") == 0)
+        if (stricmp_pro(configName.c_str(), "msgs_thread_count") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0 && value <= 100)
@@ -66,7 +66,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.msgs_thread_count = value;
             }
         }
-        else if (stricmp(configName.c_str(), "msgs_mm_type") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgs_mm_type") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
@@ -74,7 +74,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.msgs_mm_type = (RTP_MM_TYPE)value;
             }
         }
-        else if (stricmp(configName.c_str(), "msgs_hub_port") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgs_hub_port") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
@@ -82,7 +82,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.msgs_hub_port = (unsigned short)value;
             }
         }
-        else if (stricmp(configName.c_str(), "msgs_handshake_timeout") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgs_handshake_timeout") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0)
@@ -90,7 +90,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.msgs_handshake_timeout = value;
             }
         }
-        else if (stricmp(configName.c_str(), "msgs_redline_bytes_c2s") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgs_redline_bytes_c2s") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0)
@@ -98,7 +98,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.msgs_redline_bytes_c2s = value;
             }
         }
-        else if (stricmp(configName.c_str(), "msgs_redline_bytes_usr") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgs_redline_bytes_usr") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0)
@@ -106,23 +106,23 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.msgs_redline_bytes_usr = value;
             }
         }
-        else if (stricmp(configName.c_str(), "msgs_db_readonly") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgs_db_readonly") == 0)
         {
             configInfo.msgs_db_readonly = atoi(configValue.c_str()) != 0;
         }
-        else if (stricmp(configName.c_str(), "msgs_enable_ssl") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgs_enable_ssl") == 0)
         {
             configInfo.msgs_enable_ssl = atoi(configValue.c_str()) != 0;
         }
-        else if (stricmp(configName.c_str(), "msgs_ssl_forced") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgs_ssl_forced") == 0)
         {
             configInfo.msgs_ssl_forced = atoi(configValue.c_str()) != 0;
         }
-        else if (stricmp(configName.c_str(), "msgs_ssl_enable_sha1cert") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgs_ssl_enable_sha1cert") == 0)
         {
             configInfo.msgs_ssl_enable_sha1cert = atoi(configValue.c_str()) != 0;
         }
-        else if (stricmp(configName.c_str(), "msgs_ssl_cafile") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgs_ssl_cafile") == 0)
         {
             if (!configValue.empty())
             {
@@ -140,7 +140,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.msgs_ssl_cafiles.push_back(configValue);
             }
         }
-        else if (stricmp(configName.c_str(), "msgs_ssl_crlfile") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgs_ssl_crlfile") == 0)
         {
             if (!configValue.empty())
             {
@@ -158,7 +158,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.msgs_ssl_crlfiles.push_back(configValue);
             }
         }
-        else if (stricmp(configName.c_str(), "msgs_ssl_certfile") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgs_ssl_certfile") == 0)
         {
             if (!configValue.empty())
             {
@@ -176,7 +176,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.msgs_ssl_certfiles.push_back(configValue);
             }
         }
-        else if (stricmp(configName.c_str(), "msgs_ssl_keyfile") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgs_ssl_keyfile") == 0)
         {
             if (!configValue.empty())
             {
@@ -191,7 +191,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
 
             configInfo.msgs_ssl_keyfile = configValue;
         }
-        else if (stricmp(configName.c_str(), "msgs_log_loop_bytes") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgs_log_loop_bytes") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0)
@@ -199,7 +199,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.msgs_log_loop_bytes = value;
             }
         }
-        else if (stricmp(configName.c_str(), "msgs_log_level_green") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgs_log_level_green") == 0)
         {
             configInfo.msgs_log_level_green    = atoi(configValue.c_str());
         }
@@ -417,7 +417,7 @@ int main(int argc, char* argv[])
 
         ProGetLocalTimeString(timeString);
 
-        if (stricmp(p, "help") == 0 || stricmp(p, "--help") == 0)
+        if (stricmp_pro(p, "help") == 0 || stricmp_pro(p, "--help") == 0)
         {
             printf(
                 "\n"
@@ -429,7 +429,7 @@ int main(int argc, char* argv[])
                 " exit                      : terminate the current process \n"
                 );
         }
-        else if (stricmp(p, "kickout") == 0)
+        else if (stricmp_pro(p, "kickout") == 0)
         {
             CProStlVector<TBL_MSG_KICKOUT_ROW> rows;
             GetMsgKickoutRows(*db, rows);
@@ -467,7 +467,7 @@ int main(int argc, char* argv[])
                 server->KickoutUsers(users);
             }
         }
-        else if (strnicmp(p, "kickout ", 8) == 0)
+        else if (strnicmp_pro(p, "kickout ", 8) == 0)
         {
             CProStlSet<RTP_MSG_USER> users;
 
@@ -529,7 +529,7 @@ int main(int argc, char* argv[])
                 server->KickoutUsers(users);
             }
         }
-        else if (stricmp(p, "reconfig") == 0)
+        else if (stricmp_pro(p, "reconfig") == 0)
         {
             CProConfigFile configFile;
             configFile.Init(configFileName.c_str());
@@ -558,7 +558,7 @@ int main(int argc, char* argv[])
                 const CProStlString& configName  = configs[i].configName;
                 const CProStlString& configValue = configs[i].configValue;
 
-                if (stricmp(configName.c_str(), "msgs_log_loop_bytes") == 0)
+                if (stricmp_pro(configName.c_str(), "msgs_log_loop_bytes") == 0)
                 {
                     int value = atoi(configValue.c_str());
                     if (value > 0)
@@ -566,7 +566,7 @@ int main(int argc, char* argv[])
                         configInfo.msgs_log_loop_bytes = value;
                     }
                 }
-                else if (stricmp(configName.c_str(), "msgs_log_level_green") == 0)
+                else if (stricmp_pro(configName.c_str(), "msgs_log_level_green") == 0)
                 {
                     configInfo.msgs_log_level_green    = atoi(configValue.c_str());
                 }
@@ -588,7 +588,7 @@ int main(int argc, char* argv[])
 
             server->Reconfig(configInfo);
         }
-        else if (stricmp(p, "exit") == 0)
+        else if (stricmp_pro(p, "exit") == 0)
         {
             sprintf(
                 s_traceInfo,

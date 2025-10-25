@@ -325,7 +325,7 @@ pbsd_inet_aton(const char* ipornamestring) /* = NULL */
     {
         ipornamestring = "0.0.0.0";
     }
-    if (stricmp(ipornamestring, "localhost") == 0)
+    if (stricmp_pro(ipornamestring, "localhost") == 0)
     {
         ipornamestring = "127.0.0.1";
     }

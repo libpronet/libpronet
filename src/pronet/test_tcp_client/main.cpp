@@ -49,7 +49,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         CProStlString& configName  = configs[i].configName;
         CProStlString& configValue = configs[i].configValue;
 
-        if (stricmp(configName.c_str(), "tcpc_thread_count") == 0)
+        if (stricmp_pro(configName.c_str(), "tcpc_thread_count") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0 && value <= 100)
@@ -57,14 +57,14 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcpc_thread_count = value;
             }
         }
-        else if (stricmp(configName.c_str(), "tcpc_server_ip") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcpc_server_ip") == 0)
         {
             if (!configValue.empty())
             {
                 configInfo.tcpc_server_ip = configValue;
             }
         }
-        else if (stricmp(configName.c_str(), "tcpc_server_port") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcpc_server_port") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
@@ -72,14 +72,14 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcpc_server_port = (unsigned short)value;
             }
         }
-        else if (stricmp(configName.c_str(), "tcpc_local_ip") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcpc_local_ip") == 0)
         {
             if (!configValue.empty())
             {
                 configInfo.tcpc_local_ip = configValue;
             }
         }
-        else if (stricmp(configName.c_str(), "tcpc_connection_count") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcpc_connection_count") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0 && value <= 60000)
@@ -87,7 +87,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcpc_connection_count = value;
             }
         }
-        else if (stricmp(configName.c_str(), "tcpc_max_pending_count") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcpc_max_pending_count") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0 && value <= 1000)
@@ -95,7 +95,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcpc_max_pending_count = value;
             }
         }
-        else if (stricmp(configName.c_str(), "tcpc_handshake_timeout") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcpc_handshake_timeout") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0)
@@ -103,7 +103,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcpc_handshake_timeout = value;
             }
         }
-        else if (stricmp(configName.c_str(), "tcpc_heartbeat_interval") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcpc_heartbeat_interval") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0)
@@ -111,7 +111,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcpc_heartbeat_interval = value;
             }
         }
-        else if (stricmp(configName.c_str(), "tcpc_heartbeat_bytes") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcpc_heartbeat_bytes") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value >= 0 && value <= 1024)
@@ -119,7 +119,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcpc_heartbeat_bytes = value;
             }
         }
-        else if (stricmp(configName.c_str(), "tcpc_sockbuf_size_recv") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcpc_sockbuf_size_recv") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value >= 1024)
@@ -127,7 +127,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcpc_sockbuf_size_recv = value;
             }
         }
-        else if (stricmp(configName.c_str(), "tcpc_sockbuf_size_send") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcpc_sockbuf_size_send") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value >= 1024)
@@ -135,7 +135,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcpc_sockbuf_size_send = value;
             }
         }
-        else if (stricmp(configName.c_str(), "tcpc_recvpool_size") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcpc_recvpool_size") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value >= 1024)
@@ -143,15 +143,15 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcpc_recvpool_size = value;
             }
         }
-        else if (stricmp(configName.c_str(), "tcpc_enable_ssl") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcpc_enable_ssl") == 0)
         {
             configInfo.tcpc_enable_ssl = atoi(configValue.c_str()) != 0;
         }
-        else if (stricmp(configName.c_str(), "tcpc_ssl_enable_sha1cert") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcpc_ssl_enable_sha1cert") == 0)
         {
             configInfo.tcpc_ssl_enable_sha1cert = atoi(configValue.c_str()) != 0;
         }
-        else if (stricmp(configName.c_str(), "tcpc_ssl_cafile") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcpc_ssl_cafile") == 0)
         {
             if (!configValue.empty())
             {
@@ -169,7 +169,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcpc_ssl_cafiles.push_back(configValue);
             }
         }
-        else if (stricmp(configName.c_str(), "tcpc_ssl_crlfile") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcpc_ssl_crlfile") == 0)
         {
             if (!configValue.empty())
             {
@@ -187,11 +187,11 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.tcpc_ssl_crlfiles.push_back(configValue);
             }
         }
-        else if (stricmp(configName.c_str(), "tcpc_ssl_sni") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcpc_ssl_sni") == 0)
         {
             configInfo.tcpc_ssl_sni = configValue;
         }
-        else if (stricmp(configName.c_str(), "tcpc_ssl_aes256") == 0)
+        else if (stricmp_pro(configName.c_str(), "tcpc_ssl_aes256") == 0)
         {
             configInfo.tcpc_ssl_aes256 = atoi(configValue.c_str()) != 0;
         }
@@ -421,8 +421,8 @@ int main(int argc, char* argv[])
             continue;
         }
 
-        if (stricmp(p, "help") == 0 || stricmp(p, "--help") == 0 ||
-            stricmp(p, "htbttime") == 0 || stricmp(p, "htbtsize") == 0)
+        if (stricmp_pro(p, "help") == 0 || stricmp_pro(p, "--help") == 0 ||
+            stricmp_pro(p, "htbttime") == 0 || stricmp_pro(p, "htbtsize") == 0)
         {
             printf(
                 "\n"
@@ -433,7 +433,7 @@ int main(int argc, char* argv[])
                 "                      for example, \"htbtsize 0\" \n"
                 );
         }
-        else if (strnicmp(p, "htbttime ", 9) == 0)
+        else if (strnicmp_pro(p, "htbttime ", 9) == 0)
         {
             p += 9;
 
@@ -463,7 +463,7 @@ int main(int argc, char* argv[])
                 );
             printf(" [ HTBT Size ] : %u \n", (unsigned int)tester->GetHeartbeatDataSize());
         }
-        else if (strnicmp(p, "htbtsize ", 9) == 0)
+        else if (strnicmp_pro(p, "htbtsize ", 9) == 0)
         {
             p += 9;
 

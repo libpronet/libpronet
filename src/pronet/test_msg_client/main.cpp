@@ -53,7 +53,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         CProStlString& configName  = configs[i].configName;
         CProStlString& configValue = configs[i].configValue;
 
-        if (stricmp(configName.c_str(), "msgc_mm_type") == 0)
+        if (stricmp_pro(configName.c_str(), "msgc_mm_type") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
@@ -61,14 +61,14 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.msgc_mm_type = (RTP_MM_TYPE)value;
             }
         }
-        else if (stricmp(configName.c_str(), "msgc_server_ip") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgc_server_ip") == 0)
         {
             if (!configValue.empty())
             {
                 configInfo.msgc_server_ip = configValue;
             }
         }
-        else if (stricmp(configName.c_str(), "msgc_server_port") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgc_server_port") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
@@ -76,14 +76,14 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.msgc_server_port = (unsigned short)value;
             }
         }
-        else if (stricmp(configName.c_str(), "msgc_id") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgc_id") == 0)
         {
             if (!configValue.empty())
             {
                 RtpMsgString2User(configValue.c_str(), &configInfo.msgc_id);
             }
         }
-        else if (stricmp(configName.c_str(), "msgc_password") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgc_password") == 0)
         {
             configInfo.msgc_password = configValue;
 
@@ -93,14 +93,14 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configValue = "";
             }
         }
-        else if (stricmp(configName.c_str(), "msgc_local_ip") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgc_local_ip") == 0)
         {
             if (!configValue.empty())
             {
                 configInfo.msgc_local_ip = configValue;
             }
         }
-        else if (stricmp(configName.c_str(), "msgc_handshake_timeout") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgc_handshake_timeout") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0)
@@ -108,7 +108,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.msgc_handshake_timeout = value;
             }
         }
-        else if (stricmp(configName.c_str(), "msgc_redline_bytes") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgc_redline_bytes") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0)
@@ -116,15 +116,15 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.msgc_redline_bytes = value;
             }
         }
-        else if (stricmp(configName.c_str(), "msgc_enable_ssl") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgc_enable_ssl") == 0)
         {
             configInfo.msgc_enable_ssl = atoi(configValue.c_str()) != 0;
         }
-        else if (stricmp(configName.c_str(), "msgc_ssl_enable_sha1cert") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgc_ssl_enable_sha1cert") == 0)
         {
             configInfo.msgc_ssl_enable_sha1cert = atoi(configValue.c_str()) != 0;
         }
-        else if (stricmp(configName.c_str(), "msgc_ssl_cafile") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgc_ssl_cafile") == 0)
         {
             if (!configValue.empty())
             {
@@ -142,7 +142,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.msgc_ssl_cafiles.push_back(configValue);
             }
         }
-        else if (stricmp(configName.c_str(), "msgc_ssl_crlfile") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgc_ssl_crlfile") == 0)
         {
             if (!configValue.empty())
             {
@@ -160,11 +160,11 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.msgc_ssl_crlfiles.push_back(configValue);
             }
         }
-        else if (stricmp(configName.c_str(), "msgc_ssl_sni") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgc_ssl_sni") == 0)
         {
             configInfo.msgc_ssl_sni = configValue;
         }
-        else if (stricmp(configName.c_str(), "msgc_ssl_aes256") == 0)
+        else if (stricmp_pro(configName.c_str(), "msgc_ssl_aes256") == 0)
         {
             configInfo.msgc_ssl_aes256 = atoi(configValue.c_str()) != 0;
         }
@@ -377,8 +377,8 @@ int main(int argc, char* argv[])
 
         ProGetLocalTimeString(timeString);
 
-        if (stricmp(p, "help") == 0 || stricmp(p, "--help") == 0 ||
-            stricmp(p, "bind") == 0)
+        if (stricmp_pro(p, "help") == 0 || stricmp_pro(p, "--help") == 0 ||
+            stricmp_pro(p, "bind") == 0)
         {
             printf(
                 "\n"
@@ -389,7 +389,7 @@ int main(int argc, char* argv[])
                 " reconnect : reconnect to the message server \n"
                 );
         }
-        else if (strnicmp(p, "bind ", 5) == 0)
+        else if (strnicmp_pro(p, "bind ", 5) == 0)
         {
             p += 5;
 
@@ -409,7 +409,7 @@ int main(int argc, char* argv[])
                 );
             bindUser = user;
         }
-        else if (stricmp(p, "unbind") == 0)
+        else if (stricmp_pro(p, "unbind") == 0)
         {
             printf(
                 "\n"
@@ -420,7 +420,7 @@ int main(int argc, char* argv[])
                 );
             bindUser.Zero();
         }
-        else if (stricmp(p, "reconnect") == 0)
+        else if (stricmp_pro(p, "reconnect") == 0)
         {
             printf(
                 "\n"

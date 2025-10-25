@@ -60,7 +60,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
         CProStlString& configName  = configs[i].configName;
         CProStlString& configValue = configs[i].configValue;
 
-        if (stricmp(configName.c_str(), "c2ss_thread_count") == 0)
+        if (stricmp_pro(configName.c_str(), "c2ss_thread_count") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0 && value <= 100)
@@ -68,7 +68,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.c2ss_thread_count = value;
             }
         }
-        else if (stricmp(configName.c_str(), "c2ss_mm_type") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_mm_type") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value >= (int)RTP_MMT_MSG_MIN && value <= (int)RTP_MMT_MSG_MAX)
@@ -76,14 +76,14 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.c2ss_mm_type = (RTP_MM_TYPE)value;
             }
         }
-        else if (stricmp(configName.c_str(), "c2ss_uplink_ip") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_uplink_ip") == 0)
         {
             if (!configValue.empty())
             {
                 configInfo.c2ss_uplink_ip = configValue;
             }
         }
-        else if (stricmp(configName.c_str(), "c2ss_uplink_port") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_uplink_port") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
@@ -91,7 +91,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.c2ss_uplink_port = (unsigned short)value;
             }
         }
-        else if (stricmp(configName.c_str(), "c2ss_uplink_id") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_uplink_id") == 0)
         {
             if (!configValue.empty())
             {
@@ -104,7 +104,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 }
             }
         }
-        else if (stricmp(configName.c_str(), "c2ss_uplink_password") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_uplink_password") == 0)
         {
             configInfo.c2ss_uplink_password = configValue;
 
@@ -114,14 +114,14 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configValue = "";
             }
         }
-        else if (stricmp(configName.c_str(), "c2ss_uplink_local_ip") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_uplink_local_ip") == 0)
         {
             if (!configValue.empty())
             {
                 configInfo.c2ss_uplink_local_ip = configValue;
             }
         }
-        else if (stricmp(configName.c_str(), "c2ss_uplink_timeout") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_uplink_timeout") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0)
@@ -129,7 +129,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.c2ss_uplink_timeout = value;
             }
         }
-        else if (stricmp(configName.c_str(), "c2ss_uplink_redline_bytes") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_uplink_redline_bytes") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0)
@@ -137,7 +137,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.c2ss_uplink_redline_bytes = value;
             }
         }
-        else if (stricmp(configName.c_str(), "c2ss_local_hub_port") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_local_hub_port") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
@@ -145,7 +145,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.c2ss_local_hub_port = (unsigned short)value;
             }
         }
-        else if (stricmp(configName.c_str(), "c2ss_local_timeout") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_local_timeout") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0)
@@ -153,7 +153,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.c2ss_local_timeout = value;
             }
         }
-        else if (stricmp(configName.c_str(), "c2ss_local_redline_bytes") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_local_redline_bytes") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0)
@@ -161,23 +161,23 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.c2ss_local_redline_bytes = value;
             }
         }
-        else if (stricmp(configName.c_str(), "c2ss_ssl_uplink") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_ssl_uplink") == 0)
         {
             configInfo.c2ss_ssl_uplink = atoi(configValue.c_str()) != 0;
         }
-        else if (stricmp(configName.c_str(), "c2ss_ssl_local") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_ssl_local") == 0)
         {
             configInfo.c2ss_ssl_local  = atoi(configValue.c_str()) != 0;
         }
-        else if (stricmp(configName.c_str(), "c2ss_ssl_local_forced") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_ssl_local_forced") == 0)
         {
             configInfo.c2ss_ssl_local_forced = atoi(configValue.c_str()) != 0;
         }
-        else if (stricmp(configName.c_str(), "c2ss_ssl_uplink_enable_sha1cert") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_ssl_uplink_enable_sha1cert") == 0)
         {
             configInfo.c2ss_ssl_uplink_enable_sha1cert = atoi(configValue.c_str()) != 0;
         }
-        else if (stricmp(configName.c_str(), "c2ss_ssl_uplink_cafile") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_ssl_uplink_cafile") == 0)
         {
             if (!configValue.empty())
             {
@@ -195,7 +195,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.c2ss_ssl_uplink_cafiles.push_back(configValue);
             }
         }
-        else if (stricmp(configName.c_str(), "c2ss_ssl_uplink_crlfile") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_ssl_uplink_crlfile") == 0)
         {
             if (!configValue.empty())
             {
@@ -213,19 +213,19 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.c2ss_ssl_uplink_crlfiles.push_back(configValue);
             }
         }
-        else if (stricmp(configName.c_str(), "c2ss_ssl_uplink_sni") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_ssl_uplink_sni") == 0)
         {
             configInfo.c2ss_ssl_uplink_sni = configValue;
         }
-        else if (stricmp(configName.c_str(), "c2ss_ssl_uplink_aes256") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_ssl_uplink_aes256") == 0)
         {
             configInfo.c2ss_ssl_uplink_aes256 = atoi(configValue.c_str()) != 0;
         }
-        else if (stricmp(configName.c_str(), "c2ss_ssl_local_enable_sha1cert") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_ssl_local_enable_sha1cert") == 0)
         {
             configInfo.c2ss_ssl_local_enable_sha1cert = atoi(configValue.c_str()) != 0;
         }
-        else if (stricmp(configName.c_str(), "c2ss_ssl_local_cafile") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_ssl_local_cafile") == 0)
         {
             if (!configValue.empty())
             {
@@ -243,7 +243,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.c2ss_ssl_local_cafiles.push_back(configValue);
             }
         }
-        else if (stricmp(configName.c_str(), "c2ss_ssl_local_crlfile") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_ssl_local_crlfile") == 0)
         {
             if (!configValue.empty())
             {
@@ -261,7 +261,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.c2ss_ssl_local_crlfiles.push_back(configValue);
             }
         }
-        else if (stricmp(configName.c_str(), "c2ss_ssl_local_certfile") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_ssl_local_certfile") == 0)
         {
             if (!configValue.empty())
             {
@@ -279,7 +279,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.c2ss_ssl_local_certfiles.push_back(configValue);
             }
         }
-        else if (stricmp(configName.c_str(), "c2ss_ssl_local_keyfile") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_ssl_local_keyfile") == 0)
         {
             if (!configValue.empty())
             {
@@ -294,7 +294,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
 
             configInfo.c2ss_ssl_local_keyfile = configValue;
         }
-        else if (stricmp(configName.c_str(), "c2ss_log_loop_bytes") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_log_loop_bytes") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0)
@@ -302,7 +302,7 @@ ReadConfig_i(const CProStlString&            exeRoot,
                 configInfo.c2ss_log_loop_bytes = value;
             }
         }
-        else if (stricmp(configName.c_str(), "c2ss_log_level_green") == 0)
+        else if (stricmp_pro(configName.c_str(), "c2ss_log_level_green") == 0)
         {
             configInfo.c2ss_log_level_green    = atoi(configValue.c_str());
         }
@@ -501,7 +501,7 @@ int main(int argc, char* argv[])
 
         ProGetLocalTimeString(timeString);
 
-        if (stricmp(p, "help") == 0 || stricmp(p, "--help") == 0)
+        if (stricmp_pro(p, "help") == 0 || stricmp_pro(p, "--help") == 0)
         {
             printf(
                 "\n"
@@ -510,7 +510,7 @@ int main(int argc, char* argv[])
                 " exit     : terminate the current process \n"
                 );
         }
-        else if (stricmp(p, "reconfig") == 0)
+        else if (stricmp_pro(p, "reconfig") == 0)
         {
             CProConfigFile configFile;
             configFile.Init(configFileName.c_str());
@@ -539,7 +539,7 @@ int main(int argc, char* argv[])
                 const CProStlString& configName  = configs[i].configName;
                 const CProStlString& configValue = configs[i].configValue;
 
-                if (stricmp(configName.c_str(), "c2ss_log_loop_bytes") == 0)
+                if (stricmp_pro(configName.c_str(), "c2ss_log_loop_bytes") == 0)
                 {
                     int value = atoi(configValue.c_str());
                     if (value > 0)
@@ -547,7 +547,7 @@ int main(int argc, char* argv[])
                         configInfo.c2ss_log_loop_bytes = value;
                     }
                 }
-                else if (stricmp(configName.c_str(), "c2ss_log_level_green") == 0)
+                else if (stricmp_pro(configName.c_str(), "c2ss_log_level_green") == 0)
                 {
                     configInfo.c2ss_log_level_green    = atoi(configValue.c_str());
                 }
@@ -569,7 +569,7 @@ int main(int argc, char* argv[])
 
             server->Reconfig(configInfo);
         }
-        else if (stricmp(p, "exit") == 0)
+        else if (stricmp_pro(p, "exit") == 0)
         {
             sprintf(
                 s_traceInfo,

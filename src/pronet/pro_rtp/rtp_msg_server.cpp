@@ -1050,7 +1050,7 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
             CProStlString msgName;
             msg->msgStream.Get(TAG_msg_name, msgName);
 
-            if (stricmp(msgName.c_str(), MSG_client_login) == 0)
+            if (stricmp_pro(msgName.c_str(), MSG_client_login) == 0)
             {
                 if (m_task->GetSize() >= MAX_PENDING_COUNT)
                 {
@@ -1058,7 +1058,7 @@ CRtpMsgServer::OnRecvSession(IRtpSession* session,
                     break;
                 }
             }
-            else if (stricmp(msgName.c_str(), MSG_client_logout) == 0)
+            else if (stricmp_pro(msgName.c_str(), MSG_client_logout) == 0)
             {
             }
             else
@@ -1138,11 +1138,11 @@ CRtpMsgServer::AsyncOnRecvSession(RTP_MSG_AsyncOnRecvSession* msg)
     CProStlString msgName;
     msg->msgStream.Get(TAG_msg_name, msgName);
 
-    if (stricmp(msgName.c_str(), MSG_client_login) == 0)
+    if (stricmp_pro(msgName.c_str(), MSG_client_login) == 0)
     {
         ProcessMsg_client_login(msg->session, msg->msgStream, msg->c2sUser);
     }
-    else if (stricmp(msgName.c_str(), MSG_client_logout) == 0)
+    else if (stricmp_pro(msgName.c_str(), MSG_client_logout) == 0)
     {
         ProcessMsg_client_logout(msg->session, msg->msgStream, msg->c2sUser);
     }

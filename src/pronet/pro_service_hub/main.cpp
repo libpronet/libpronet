@@ -126,7 +126,7 @@ ReadConfig_i(const CProStlVector<PRO_CONFIG_ITEM>& configs,
         const CProStlString& configName  = configs[i].configName;
         const CProStlString& configValue = configs[i].configValue;
 
-        if (stricmp(configName.c_str(), "hubs_thread_count") == 0)
+        if (stricmp_pro(configName.c_str(), "hubs_thread_count") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0 && value <= 100)
@@ -134,7 +134,7 @@ ReadConfig_i(const CProStlVector<PRO_CONFIG_ITEM>& configs,
                 configInfo.hubs_thread_count = value;
             }
         }
-        else if (stricmp(configName.c_str(), "hubs_handshake_timeout") == 0)
+        else if (stricmp_pro(configName.c_str(), "hubs_handshake_timeout") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0)
@@ -142,7 +142,7 @@ ReadConfig_i(const CProStlVector<PRO_CONFIG_ITEM>& configs,
                 configInfo.hubs_handshake_timeout = value;
             }
         }
-        else if (stricmp(configName.c_str(), "hubs_tcpex_port_a") == 0)
+        else if (stricmp_pro(configName.c_str(), "hubs_tcpex_port_a") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
@@ -150,7 +150,7 @@ ReadConfig_i(const CProStlVector<PRO_CONFIG_ITEM>& configs,
                 configInfo.hubs_tcpex_port_a.insert((unsigned short)value);
             }
         }
-        else if (stricmp(configName.c_str(), "hubs_tcpex_port_b") == 0)
+        else if (stricmp_pro(configName.c_str(), "hubs_tcpex_port_b") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
@@ -158,7 +158,7 @@ ReadConfig_i(const CProStlVector<PRO_CONFIG_ITEM>& configs,
                 configInfo.hubs_tcpex_port_b.insert((unsigned short)value);
             }
         }
-        else if (stricmp(configName.c_str(), "hubs_tcp_port_a") == 0)
+        else if (stricmp_pro(configName.c_str(), "hubs_tcp_port_a") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
@@ -166,7 +166,7 @@ ReadConfig_i(const CProStlVector<PRO_CONFIG_ITEM>& configs,
                 configInfo.hubs_tcp_port_a.insert((unsigned short)value);
             }
         }
-        else if (stricmp(configName.c_str(), "hubs_tcp_port_b") == 0)
+        else if (stricmp_pro(configName.c_str(), "hubs_tcp_port_b") == 0)
         {
             int value = atoi(configValue.c_str());
             if (value > 0 && value <= 65535)
