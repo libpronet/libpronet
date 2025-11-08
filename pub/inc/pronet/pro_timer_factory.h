@@ -30,6 +30,12 @@
 
 class CProCommandTask;
 class IProOnTimer;
+using IProOnTimer2 = std::function<void(
+    void*    factory,
+    uint64_t timerId,
+    int64_t  tick,
+    int64_t  userData
+    )>;
 
 struct PRO_TIMER_NODE
 {
@@ -63,6 +69,7 @@ struct PRO_TIMER_NODE
     uint64_t     timerId;
 
     IProOnTimer* onTimer;
+    IProOnTimer2 onTimer2;
     int64_t      period;
     bool         heartbeat;
     unsigned int htbtSlotIndex;
@@ -118,6 +125,13 @@ public:
         uint64_t     firstDelay, /* [0, 0xFFFFFFFFFFFF] */
         uint64_t     period,     /* [0, 0xFFFFFFFFFFFF] */
         int64_t      userData = 0
+        );
+
+    uint64_t SetupTimer(
+        const IProOnTimer2& onTimer,
+        uint64_t            firstDelay, /* [0, 0xFFFFFFFFFFFF] */
+        uint64_t            period,     /* [0, 0xFFFFFFFFFFFF] */
+        int64_t             userData = 0
         );
 
     uint64_t SetupHeartbeatTimer(

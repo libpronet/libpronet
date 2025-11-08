@@ -142,7 +142,10 @@ CProTimerFactory::Stop()
     for (; itr != end; ++itr)
     {
         const PRO_TIMER_NODE& node = *itr;
-        node.onTimer->Release();
+        if (node.onTimer != NULL)
+        {
+            node.onTimer->Release();
+        }
     }
 
     {
@@ -203,6 +206,53 @@ CProTimerFactory::SetupTimer(IProOnTimer* onTimer,
         node.userData   = userData;
 
         node.onTimer->AddRef();
+        m_timers.insert(node);
+        m_timerId2ExpireTick[node.timerId] = node.expireTick;
+        assert(m_timers.size() == m_timerId2ExpireTick.size());
+
+        m_cond.Signal();
+    }
+
+    return node.timerId;
+}
+
+uint64_t
+CProTimerFactory::SetupTimer(const IProOnTimer2& onTimer,
+                             uint64_t            firstDelay, /* [0, 0xFFFFFFFFFFFF] */
+                             uint64_t            period,     /* [0, 0xFFFFFFFFFFFF] */
+                             int64_t             userData)   /* = 0 */
+{
+    if (firstDelay > 0xFFFFFFFFFFFFULL)
+    {
+        firstDelay = 0xFFFFFFFFFFFFULL;
+    }
+    if (period > 0xFFFFFFFFFFFFULL)
+    {
+        period     = 0xFFFFFFFFFFFFULL;
+    }
+
+    assert(onTimer);
+    if (!onTimer)
+    {
+        return 0;
+    }
+
+    PRO_TIMER_NODE node;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_task == NULL || m_wantExit)
+        {
+            return 0;
+        }
+
+        node.expireTick = ProGetTickCount64() + firstDelay;
+        node.timerId    = m_mmTimer ? ProMakeMmTimerId() : ProMakeTimerId();
+        node.onTimer2   = onTimer;
+        node.period     = period;
+        node.userData   = userData;
+
         m_timers.insert(node);
         m_timerId2ExpireTick[node.timerId] = node.expireTick;
         assert(m_timers.size() == m_timerId2ExpireTick.size());
@@ -328,7 +378,10 @@ CProTimerFactory::CancelTimer(uint64_t timerId)
         }
     }
 
-    node.onTimer->Release();
+    if (node.onTimer != NULL)
+    {
+        node.onTimer->Release();
+    }
 }
 
 size_t
@@ -531,7 +584,11 @@ CProTimerFactory::Process()
                     node.expireTick = tick + node.period;
                 }
 
-                node.onTimer->AddRef(); /* !!! */
+                if (node.onTimer != NULL)
+                {
+                    node.onTimer->AddRef(); /* !!! */
+                }
+
                 m_timers.insert(node);
                 m_timerId2ExpireTick[node.timerId] = node.expireTick;
             }
@@ -557,8 +614,15 @@ CProTimerFactory::Process()
     for (; i < c; ++i)
     {
         const PRO_TIMER_NODE& node = timers[i];
-        node.onTimer->OnTimer(this, node.timerId, tick, node.userData);
-        node.onTimer->Release();
+        if (node.onTimer != NULL)
+        {
+            node.onTimer->OnTimer(this, node.timerId, tick, node.userData);
+            node.onTimer->Release();
+        }
+        else
+        {
+            node.onTimer2(this, node.timerId, tick, node.userData);
+        }
 
         ++j;
         if (j == PRO_TIMER_UPCALL_COUNT)
