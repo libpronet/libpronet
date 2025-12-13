@@ -55,6 +55,7 @@ private:
 
     int64_t m_timeSpan;
     int64_t m_startTick;
+    int64_t m_calcTick;
     double  m_bits;
     double  m_bitRate;
 
@@ -136,6 +137,7 @@ private:
 
     int64_t m_timeSpan;
     int64_t m_startTick;
+    int64_t m_calcTick;
     double  m_count;
     double  m_sum;
     double  m_avgValue;

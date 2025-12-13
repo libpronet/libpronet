@@ -29,7 +29,7 @@
 #define REORDER_BITMAP_BYTES 40  /* 320 bits */
 #define MAX_LOSS_COUNT       15000
 #define INIT_SPAN_MS         3000
-#define DELTA_SPAN_MS        200 /* 100 ~ 500 */
+#define DELTA_SPAN_MS        300 /* 100 ~ 500 */
 #define CALC_SPAN_MS         100
 #define MAX_POP_INTERVAL_MS  1000
 
@@ -47,6 +47,7 @@ void
 CProStatBitRate::Reset()
 {
     m_startTick = 0;
+    m_calcTick  = 0;
     m_bits      = 0;
     m_bitRate   = 0;
 }
@@ -106,7 +107,11 @@ CProStatBitRate::Update(int64_t tick)
         return;
     }
 
-    m_bitRate = m_bits * 1000 / (tick - m_startTick);
+    if (tick - m_calcTick >= CALC_SPAN_MS)
+    {
+        m_calcTick = tick;
+        m_bitRate  = m_bits * 1000 / (tick - m_startTick);
+    }
 
     if (tick - m_startTick >= m_timeSpan * 1000 + DELTA_SPAN_MS)
     {
@@ -577,6 +582,7 @@ void
 CProStatAvgValue::Reset()
 {
     m_startTick = 0;
+    m_calcTick  = 0;
     m_count     = 0;
     m_sum       = 0;
     m_avgValue  = 0;
@@ -630,8 +636,9 @@ CProStatAvgValue::Update(int64_t tick)
         return;
     }
 
-    if (m_count >= 1) /* double */
+    if (tick - m_calcTick >= CALC_SPAN_MS && m_count >= 1) /* double */
     {
+        m_calcTick = tick;
         m_avgValue = m_sum / m_count;
     }
 
