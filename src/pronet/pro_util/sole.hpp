@@ -76,8 +76,8 @@ struct uuid
 };
 
 // Generators
-uuid uuid1(); // UUID v1, pro: unique; cons: MAC revealed, predictable
-uuid uuid4(); // UUID v4, pros: anonymous, fast; con: uuids "can clash"
+static uuid uuid1(); // UUID v1, pro: unique; cons: MAC revealed, predictable
+static uuid uuid4(); // UUID v4, pros: anonymous, fast; con: uuids "can clash"
 
 } // ::sole
 
@@ -205,7 +205,7 @@ struct timespec
     uint64_t tv_nsec;
 };
 
-int gettimeofday(struct timeval* tv, struct timezone*)
+static int gettimeofday(struct timeval* tv, struct timezone*)
 {
     FILETIME ft;
     uint64_t tmpres = 0;
@@ -239,7 +239,7 @@ int gettimeofday(struct timeval* tv, struct timezone*)
 #endif
 
 #if defined(SOLE_WINDOWS) || defined(SOLE_APPLE_OSX)
-int clock_gettime(int /*clk_id*/, struct timespec* t)
+static int clock_gettime(int /*clk_id*/, struct timespec* t)
 {
     struct timeval now;
     int rv = gettimeofday(&now, NULL);
@@ -255,7 +255,7 @@ int clock_gettime(int /*clk_id*/, struct timespec* t)
 // Timestamp and MAC interfaces
 
 // Returns number of 100ns intervals
-uint64_t get_time(uint64_t offset)
+static uint64_t get_time(uint64_t offset)
 {
     struct timespec tp;
     clock_gettime(0 /*CLOCK_REALTIME*/, &tp);
@@ -278,7 +278,7 @@ uint64_t get_time(uint64_t offset)
 }
 
 // Looks for first MAC address of any network device, any size
-bool get_any_mac(std::vector<unsigned char>& _node)
+static bool get_any_mac(std::vector<unsigned char>& _node)
 {
 #if defined(SOLE_WINDOWS)
     {
@@ -451,7 +451,7 @@ bool get_any_mac(std::vector<unsigned char>& _node)
 }
 
 // Looks for first MAC address of any network device, size truncated to 48bits
-uint64_t get_any_mac48()
+static uint64_t get_any_mac48()
 {
     std::vector<unsigned char> node;
     if (get_any_mac(node))
@@ -471,7 +471,7 @@ uint64_t get_any_mac48()
 //////////////////////////////////////////////////////////////////////////////////////
 // UUID implementations
 
-uuid uuid4()
+static uuid uuid4()
 {
     uuid my;
 
@@ -517,7 +517,7 @@ uuid uuid4()
     return my;
 }
 
-uuid uuid1()
+static uuid uuid1()
 {
     // UUID UTC base time is October 15 1582, Unix UTC base time is January 01 1970
     uint64_t time_offset = 0x01b21dd213814000ULL;
