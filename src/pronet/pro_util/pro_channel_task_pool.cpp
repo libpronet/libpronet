@@ -164,38 +164,6 @@ CProChannelTaskPool::RemoveChannel(uint64_t channelId)
     m_channelId2Task.erase(itr);
 }
 
-bool
-CProChannelTaskPool::Put(uint64_t     channelId,
-                         CProCommand* command)
-{
-    assert(command != NULL);
-    if (command == NULL)
-    {
-        return false;
-    }
-
-    bool ret = false;
-
-    {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_task2Channels.size() == 0)
-        {
-            return false;
-        }
-
-        auto itr = m_channelId2Task.find(channelId);
-        if (itr == m_channelId2Task.end())
-        {
-            return false;
-        }
-
-        ret = itr->second->Put(command);
-    }
-
-    return ret;
-}
-
 size_t
 CProChannelTaskPool::GetChannelSize(uint64_t channelId) const
 {
@@ -232,4 +200,36 @@ CProChannelTaskPool::GetSize() const
     }
 
     return size;
+}
+
+bool
+CProChannelTaskPool::Put(uint64_t     channelId,
+                         CProCommand* command)
+{
+    assert(command != NULL);
+    if (command == NULL)
+    {
+        return false;
+    }
+
+    bool ret = false;
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_task2Channels.size() == 0)
+        {
+            return false;
+        }
+
+        auto itr = m_channelId2Task.find(channelId);
+        if (itr == m_channelId2Task.end())
+        {
+            return false;
+        }
+
+        ret = itr->second->Put(command);
+    }
+
+    return ret;
 }

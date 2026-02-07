@@ -295,28 +295,12 @@ private:
     bool DoCall(
         bool                         blocking,
         const std::function<void()>& func
-        )
-    {
-        CProCommand* command = CProCommand::Create(func);
-        if (command == NULL)
-        {
-            return false;
-        }
-
-        if (!Put(command, blocking))
-        {
-            command->Destroy();
-
-            return false;
-        }
-
-        return true;
-    }
-
-    bool Put(
-        CProCommand* command,
-        bool         blocking = false
         );
+
+    /*
+     * For CProChannelTaskPool
+     */
+    bool Put(CProCommand* command);
 
     virtual void Svc();
 

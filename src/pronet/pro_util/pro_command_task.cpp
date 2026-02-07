@@ -125,50 +125,6 @@ CProCommandTask::StopMe()
     m_wantExit       = false;
 }
 
-bool
-CProCommandTask::Put(CProCommand* command,
-                     bool         blocking) /* = false */
-{
-    assert(command != NULL);
-    if (command == NULL)
-    {
-        return false;
-    }
-
-    CProThreadMutexCondition* cond = NULL;
-    CProThreadMutex*          lock = NULL;
-
-    {
-        CProThreadMutexGuard mon(m_lock);
-
-        if (m_threadCount == 0 || m_curThreadCount == 0 || m_wantExit)
-        {
-            return false;
-        }
-
-        if (blocking)
-        {
-            cond = new CProThreadMutexCondition;
-            lock = new CProThreadMutex;
-        }
-
-        command->SetUserData1(cond);
-        command->SetUserData2(lock);
-
-        m_commands.push_back(command);
-        m_commandCond.Signal();
-    }
-
-    if (blocking)
-    {
-        lock->Lock();
-        cond->Wait(lock);
-        lock->Unlock();
-    }
-
-    return true;
-}
-
 size_t
 CProCommandTask::GetSize() const
 {
@@ -188,7 +144,7 @@ CProCommandTask::IsCurrentThread() const
 {
     CProThreadMutexGuard mon(m_lock);
 
-    if (m_threadCount == 0 || m_curThreadCount == 0 || m_threadIds.size() == 0)
+    if (m_threadCount == 0 || m_curThreadCount == 0)
     {
         return false;
     }
@@ -221,6 +177,101 @@ CProCommandTask::GetUserData() const
     }
 
     return userData;
+}
+
+bool
+CProCommandTask::DoCall(bool                         blocking,
+                        const std::function<void()>& func)
+{
+    assert(func);
+    if (!func)
+    {
+        return false;
+    }
+
+    bool                      direct = false;
+    CProThreadMutexCondition* cond   = NULL;
+    CProThreadMutex*          lock   = NULL;
+
+    do
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_threadCount == 0 || m_curThreadCount == 0 || m_wantExit)
+        {
+            return false;
+        }
+
+        if (blocking)
+        {
+            uint64_t taskThreadId = *m_threadIds.begin();
+            uint64_t currThreadId = ProGetThreadId();
+
+            if (taskThreadId == currThreadId)
+            {
+                direct = true;
+                break;
+            }
+        }
+
+        CProCommand* command = CProCommand::Create(func);
+        if (command == NULL)
+        {
+            return false;
+        }
+
+        if (blocking)
+        {
+            cond = new CProThreadMutexCondition;
+            lock = new CProThreadMutex;
+            command->SetUserData1(cond);
+            command->SetUserData2(lock);
+        }
+
+        m_commands.push_back(command);
+        m_commandCond.Signal();
+    }
+    while (0);
+
+    if (direct)
+    {
+        func();
+    }
+    else if (blocking)
+    {
+        lock->Lock();
+        cond->Wait(lock);
+        lock->Unlock();
+    }
+    else
+    {
+    }
+
+    return true;
+}
+
+bool
+CProCommandTask::Put(CProCommand* command)
+{
+    assert(command != NULL);
+    if (command == NULL)
+    {
+        return false;
+    }
+
+    {
+        CProThreadMutexGuard mon(m_lock);
+
+        if (m_threadCount == 0 || m_curThreadCount == 0 || m_wantExit)
+        {
+            return false;
+        }
+
+        m_commands.push_back(command);
+        m_commandCond.Signal();
+    }
+
+    return true;
 }
 
 void
