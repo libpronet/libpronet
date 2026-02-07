@@ -767,7 +767,7 @@ public:
     }
 };
 
-static volatile CProNetDotCpp g_s_initiator;
+static volatile CProNetDotCpp g_initiator;
 
 /////////////////////////////////////////////////////////////////////////////
 ////

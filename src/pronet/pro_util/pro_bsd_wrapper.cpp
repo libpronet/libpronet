@@ -1456,4 +1456,4 @@ public:
     }
 };
 
-static volatile CProBsdWrapperDotCpp g_s_initiator;
+static volatile CProBsdWrapperDotCpp g_initiator;

@@ -41,17 +41,17 @@ extern "C" {
 
 CProFileMonitor              g_fileMonitor;
 
-static CRtpPortAllocator*    g_s_udpPortAllocator   = NULL;
-static CRtpPortAllocator*    g_s_tcpPortAllocator   = NULL;
-static volatile unsigned int g_s_keepaliveInSeconds = 60;
-static volatile unsigned int g_s_flowctrlInSeconds  = 1;
-static volatile unsigned int g_s_statInSeconds      = 5;
-static size_t                g_s_udpSockBufSizeRecv[256]; /* mmType0 ~ mmType255 */
-static size_t                g_s_udpSockBufSizeSend[256]; /* mmType0 ~ mmType255 */
-static size_t                g_s_udpRecvPoolSize[256];    /* mmType0 ~ mmType255 */
-static size_t                g_s_tcpSockBufSizeRecv[256]; /* mmType0 ~ mmType255 */
-static size_t                g_s_tcpSockBufSizeSend[256]; /* mmType0 ~ mmType255 */
-static size_t                g_s_tcpRecvPoolSize[256];    /* mmType0 ~ mmType255 */
+static CRtpPortAllocator*    g_udpPortAllocator   = NULL;
+static CRtpPortAllocator*    g_tcpPortAllocator   = NULL;
+static volatile unsigned int g_keepaliveInSeconds = 60;
+static volatile unsigned int g_flowctrlInSeconds  = 1;
+static volatile unsigned int g_statInSeconds      = 5;
+static size_t                g_udpSockBufSizeRecv[256]; /* mmType0 ~ mmType255 */
+static size_t                g_udpSockBufSizeSend[256]; /* mmType0 ~ mmType255 */
+static size_t                g_udpRecvPoolSize[256];    /* mmType0 ~ mmType255 */
+static size_t                g_tcpSockBufSizeRecv[256]; /* mmType0 ~ mmType255 */
+static size_t                g_tcpSockBufSizeSend[256]; /* mmType0 ~ mmType255 */
+static size_t                g_tcpRecvPoolSize[256];    /* mmType0 ~ mmType255 */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -69,18 +69,18 @@ ProRtpInit()
 
     ProNetInit();
 
-    g_s_udpPortAllocator = new CRtpPortAllocator;
-    g_s_tcpPortAllocator = new CRtpPortAllocator;
+    g_udpPortAllocator = new CRtpPortAllocator;
+    g_tcpPortAllocator = new CRtpPortAllocator;
 
     for (int i = 0; i < 256; ++i)
     {
-        g_s_udpSockBufSizeRecv[i] = 0; /* zero by default */
-        g_s_udpSockBufSizeSend[i] = 0; /* zero by default */
-        g_s_udpRecvPoolSize[i]    = 1024 * 65;
+        g_udpSockBufSizeRecv[i] = 0; /* zero by default */
+        g_udpSockBufSizeSend[i] = 0; /* zero by default */
+        g_udpRecvPoolSize[i]    = 1024 * 65;
 
-        g_s_tcpSockBufSizeRecv[i] = 0; /* zero by default */
-        g_s_tcpSockBufSizeSend[i] = 0; /* zero by default */
-        g_s_tcpRecvPoolSize[i]    = 1024 * 65;
+        g_tcpSockBufSizeRecv[i] = 0; /* zero by default */
+        g_tcpSockBufSizeSend[i] = 0; /* zero by default */
+        g_tcpRecvPoolSize[i]    = 1024 * 65;
     }
 
     char exeRoot[1024] = "";
@@ -205,11 +205,11 @@ SetRtpPortRange(unsigned short minUdpPort, /* = 0 */
                 unsigned short minTcpPort, /* = 0 */
                 unsigned short maxTcpPort) /* = 0 */
 {
-    assert(g_s_udpPortAllocator != NULL);
-    assert(g_s_tcpPortAllocator != NULL);
+    assert(g_udpPortAllocator != NULL);
+    assert(g_tcpPortAllocator != NULL);
 
-    g_s_udpPortAllocator->SetPortRange(minUdpPort, maxUdpPort);
-    g_s_tcpPortAllocator->SetPortRange(minTcpPort, maxTcpPort);
+    g_udpPortAllocator->SetPortRange(minUdpPort, maxUdpPort);
+    g_tcpPortAllocator->SetPortRange(minTcpPort, maxTcpPort);
 }
 
 PRO_RTP_API
@@ -219,15 +219,15 @@ GetRtpPortRange(unsigned short* minUdpPort, /* = NULL */
                 unsigned short* minTcpPort, /* = NULL */
                 unsigned short* maxTcpPort) /* = NULL */
 {
-    assert(g_s_udpPortAllocator != NULL);
-    assert(g_s_tcpPortAllocator != NULL);
+    assert(g_udpPortAllocator != NULL);
+    assert(g_tcpPortAllocator != NULL);
 
     unsigned short minUdpPort2 = 0;
     unsigned short maxUdpPort2 = 0;
     unsigned short minTcpPort2 = 0;
     unsigned short maxTcpPort2 = 0;
-    g_s_udpPortAllocator->GetPortRange(minUdpPort2, maxUdpPort2);
-    g_s_tcpPortAllocator->GetPortRange(minTcpPort2, maxTcpPort2);
+    g_udpPortAllocator->GetPortRange(minUdpPort2, maxUdpPort2);
+    g_tcpPortAllocator->GetPortRange(minTcpPort2, maxTcpPort2);
 
     if (minUdpPort != NULL)
     {
@@ -251,18 +251,18 @@ PRO_RTP_API
 unsigned short
 AllocRtpUdpPort(bool rfc)
 {
-    assert(g_s_udpPortAllocator != NULL);
+    assert(g_udpPortAllocator != NULL);
 
-    return g_s_udpPortAllocator->AllocPort(rfc);
+    return g_udpPortAllocator->AllocPort(rfc);
 }
 
 PRO_RTP_API
 unsigned short
 AllocRtpTcpPort(bool rfc)
 {
-    assert(g_s_tcpPortAllocator != NULL);
+    assert(g_tcpPortAllocator != NULL);
 
-    return g_s_tcpPortAllocator->AllocPort(rfc);
+    return g_tcpPortAllocator->AllocPort(rfc);
 }
 
 PRO_RTP_API
@@ -275,14 +275,14 @@ SetRtpKeepaliveTimeout(unsigned int keepaliveInSeconds) /* = 60 */
         return;
     }
 
-    g_s_keepaliveInSeconds = keepaliveInSeconds;
+    g_keepaliveInSeconds = keepaliveInSeconds;
 }
 
 PRO_RTP_API
 unsigned int
 GetRtpKeepaliveTimeout()
 {
-    return g_s_keepaliveInSeconds;
+    return g_keepaliveInSeconds;
 }
 
 PRO_RTP_API
@@ -295,14 +295,14 @@ SetRtpFlowctrlTimeSpan(unsigned int flowctrlInSeconds) /* = 1 */
         return;
     }
 
-    g_s_flowctrlInSeconds = flowctrlInSeconds;
+    g_flowctrlInSeconds = flowctrlInSeconds;
 }
 
 PRO_RTP_API
 unsigned int
 GetRtpFlowctrlTimeSpan()
 {
-    return g_s_flowctrlInSeconds;
+    return g_flowctrlInSeconds;
 }
 
 PRO_RTP_API
@@ -315,14 +315,14 @@ SetRtpStatTimeSpan(unsigned int statInSeconds) /* = 5 */
         return;
     }
 
-    g_s_statInSeconds = statInSeconds;
+    g_statInSeconds = statInSeconds;
 }
 
 PRO_RTP_API
 unsigned int
 GetRtpStatTimeSpan()
 {
-    return g_s_statInSeconds;
+    return g_statInSeconds;
 }
 
 PRO_RTP_API
@@ -334,15 +334,15 @@ SetRtpUdpSocketParams(RTP_MM_TYPE mmType,
 {
     if (sockBufSizeRecv > 0)
     {
-        g_s_udpSockBufSizeRecv[mmType] = sockBufSizeRecv;
+        g_udpSockBufSizeRecv[mmType] = sockBufSizeRecv;
     }
     if (sockBufSizeSend > 0)
     {
-        g_s_udpSockBufSizeSend[mmType] = sockBufSizeSend;
+        g_udpSockBufSizeSend[mmType] = sockBufSizeSend;
     }
     if (recvPoolSize > 0)
     {
-        g_s_udpRecvPoolSize[mmType]    = recvPoolSize;
+        g_udpRecvPoolSize[mmType]    = recvPoolSize;
     }
 }
 
@@ -355,15 +355,15 @@ GetRtpUdpSocketParams(RTP_MM_TYPE mmType,
 {
     if (sockBufSizeRecv != NULL)
     {
-        *sockBufSizeRecv = g_s_udpSockBufSizeRecv[mmType];
+        *sockBufSizeRecv = g_udpSockBufSizeRecv[mmType];
     }
     if (sockBufSizeSend != NULL)
     {
-        *sockBufSizeSend = g_s_udpSockBufSizeSend[mmType];
+        *sockBufSizeSend = g_udpSockBufSizeSend[mmType];
     }
     if (recvPoolSize != NULL)
     {
-        *recvPoolSize    = g_s_udpRecvPoolSize[mmType];
+        *recvPoolSize    = g_udpRecvPoolSize[mmType];
     }
 }
 
@@ -376,15 +376,15 @@ SetRtpTcpSocketParams(RTP_MM_TYPE mmType,
 {
     if (sockBufSizeRecv > 0)
     {
-        g_s_tcpSockBufSizeRecv[mmType] = sockBufSizeRecv;
+        g_tcpSockBufSizeRecv[mmType] = sockBufSizeRecv;
     }
     if (sockBufSizeSend > 0)
     {
-        g_s_tcpSockBufSizeSend[mmType] = sockBufSizeSend;
+        g_tcpSockBufSizeSend[mmType] = sockBufSizeSend;
     }
     if (recvPoolSize > 0)
     {
-        g_s_tcpRecvPoolSize[mmType]    = recvPoolSize;
+        g_tcpRecvPoolSize[mmType]    = recvPoolSize;
     }
 }
 
@@ -397,15 +397,15 @@ GetRtpTcpSocketParams(RTP_MM_TYPE mmType,
 {
     if (sockBufSizeRecv != NULL)
     {
-        *sockBufSizeRecv = g_s_tcpSockBufSizeRecv[mmType];
+        *sockBufSizeRecv = g_tcpSockBufSizeRecv[mmType];
     }
     if (sockBufSizeSend != NULL)
     {
-        *sockBufSizeSend = g_s_tcpSockBufSizeSend[mmType];
+        *sockBufSizeSend = g_tcpSockBufSizeSend[mmType];
     }
     if (recvPoolSize != NULL)
     {
-        *recvPoolSize    = g_s_tcpRecvPoolSize[mmType];
+        *recvPoolSize    = g_tcpRecvPoolSize[mmType];
     }
 }
 
@@ -548,7 +548,7 @@ public:
     }
 };
 
-static volatile CRtpBaseDotCpp g_s_initiator;
+static volatile CRtpBaseDotCpp g_initiator;
 
 /////////////////////////////////////////////////////////////////////////////
 ////

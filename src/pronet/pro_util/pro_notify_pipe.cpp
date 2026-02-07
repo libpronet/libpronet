@@ -29,7 +29,7 @@
 #define RECV_BUF_SIZE (1024 * 8)
 #define SEND_BUF_SIZE (1024 * 8)
 
-static char g_s_buffer[1024];
+static char g_buffer[1024];
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -173,9 +173,9 @@ CProNotifyPipe::Roger()
         return false;
     }
 
-    int recvSize = pbsd_recv(sockId, g_s_buffer, sizeof(g_s_buffer), 0); /* connected */
+    int recvSize = pbsd_recv(sockId, g_buffer, sizeof(g_buffer), 0); /* connected */
     if (
-        (recvSize > 0 && recvSize <= (int)sizeof(g_s_buffer))
+        (recvSize > 0 && recvSize <= (int)sizeof(g_buffer))
         ||
         (recvSize < 0 && pbsd_errno((void*)&pbsd_recv) == PBSD_EWOULDBLOCK)
        )

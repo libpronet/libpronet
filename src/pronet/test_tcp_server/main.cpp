@@ -29,7 +29,7 @@
 
 #define CONFIG_FILE_NAME "test_tcp_server.cfg"
 
-static CTest* g_s_tester = NULL;
+static CTest* g_tester = NULL;
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -222,7 +222,7 @@ SignalHandler_i(int sig)
             ,
             timeString.c_str()
             );
-        g_s_tester->Fini();
+        g_tester->Fini();
         _exit(0);
     case SIGINT:
         printf(
@@ -232,7 +232,7 @@ SignalHandler_i(int sig)
             ,
             timeString.c_str()
             );
-        g_s_tester->Fini();
+        g_tester->Fini();
         _exit(0);
     case SIGQUIT:
         printf(
@@ -242,7 +242,7 @@ SignalHandler_i(int sig)
             ,
             timeString.c_str()
             );
-        g_s_tester->Fini();
+        g_tester->Fini();
         _exit(0);
     case SIGTERM:
         printf(
@@ -252,7 +252,7 @@ SignalHandler_i(int sig)
             ,
             timeString.c_str()
             );
-        g_s_tester->Fini();
+        g_tester->Fini();
         _exit(0);
     } /* end of switch () */
 }
@@ -338,8 +338,8 @@ int main(int argc, char* argv[])
         reactor->UpdateHeartbeatTimers(configInfo.tcps_heartbeat_interval);
     }
 
-    g_s_tester = CTest::CreateInstance();
-    if (g_s_tester == NULL)
+    g_tester = CTest::CreateInstance();
+    if (g_tester == NULL)
     {
         printf(
             "\n"
@@ -357,7 +357,7 @@ int main(int argc, char* argv[])
     SetupSignalHandlers_i();
 #endif
 
-    if (!g_s_tester->Init(reactor, configInfo))
+    if (!g_tester->Init(reactor, configInfo))
     {
         printf(
             "\n"
@@ -402,7 +402,7 @@ int main(int argc, char* argv[])
         timeString.c_str(),
         s_traceInfo
         );
-    printf(" [ HTBT Size ] : %u \n", (unsigned int)g_s_tester->GetHeartbeatDataSize());
+    printf(" [ HTBT Size ] : %u \n", (unsigned int)g_tester->GetHeartbeatDataSize());
 
     while (1)
     {
@@ -452,7 +452,7 @@ int main(int argc, char* argv[])
                 timeString.c_str(),
                 s_traceInfo
                 );
-            printf(" [ HTBT Size ] : %u \n", (unsigned int)g_s_tester->GetHeartbeatDataSize());
+            printf(" [ HTBT Size ] : %u \n", (unsigned int)g_tester->GetHeartbeatDataSize());
             continue;
         }
 
@@ -496,7 +496,7 @@ int main(int argc, char* argv[])
                 timeString.c_str(),
                 s_traceInfo
                 );
-            printf(" [ HTBT Size ] : %u \n", (unsigned int)g_s_tester->GetHeartbeatDataSize());
+            printf(" [ HTBT Size ] : %u \n", (unsigned int)g_tester->GetHeartbeatDataSize());
         }
         else if (strnicmp_pro(p, "htbtsize ", 9) == 0)
         {
@@ -515,7 +515,7 @@ int main(int argc, char* argv[])
                 ,
                 timeString.c_str()
                 );
-            g_s_tester->SetHeartbeatDataSize(bytes);
+            g_tester->SetHeartbeatDataSize(bytes);
 
             reactor->GetTraceInfo(s_traceInfo, sizeof(s_traceInfo));
             printf(
@@ -526,7 +526,7 @@ int main(int argc, char* argv[])
                 timeString.c_str(),
                 s_traceInfo
                 );
-            printf(" [ HTBT Size ] : %u \n", (unsigned int)g_s_tester->GetHeartbeatDataSize());
+            printf(" [ HTBT Size ] : %u \n", (unsigned int)g_tester->GetHeartbeatDataSize());
         }
         else
         {
@@ -539,16 +539,16 @@ int main(int argc, char* argv[])
                 timeString.c_str(),
                 s_traceInfo
                 );
-            printf(" [ HTBT Size ] : %u \n", (unsigned int)g_s_tester->GetHeartbeatDataSize());
+            printf(" [ HTBT Size ] : %u \n", (unsigned int)g_tester->GetHeartbeatDataSize());
         }
     } /* end of while () */
 
 EXIT:
 
-    if (g_s_tester != NULL)
+    if (g_tester != NULL)
     {
-        g_s_tester->Fini();
-        g_s_tester->Release();
+        g_tester->Fini();
+        g_tester->Release();
     }
 
     ProDeleteReactor(reactor);

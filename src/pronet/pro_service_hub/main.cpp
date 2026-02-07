@@ -102,8 +102,8 @@ struct SERVICE_HUB_CONFIG_INFO
     DECLARE_SGI_POOL(0)
 };
 
-static CProThreadMutexCondition g_s_cond;
-static CProThreadMutex          g_s_lock;
+static CProThreadMutexCondition g_cond;
+static CProThreadMutex          g_lock;
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -200,9 +200,9 @@ SignalHandler_i(int sig)
             timeString.c_str()
             );
         fflush(stdout);
-        g_s_lock.Lock();
-        g_s_cond.Signal();
-        g_s_lock.Unlock();
+        g_lock.Lock();
+        g_cond.Signal();
+        g_lock.Unlock();
         break;
     case SIGINT:
         printf(
@@ -213,9 +213,9 @@ SignalHandler_i(int sig)
             timeString.c_str()
             );
         fflush(stdout);
-        g_s_lock.Lock();
-        g_s_cond.Signal();
-        g_s_lock.Unlock();
+        g_lock.Lock();
+        g_cond.Signal();
+        g_lock.Unlock();
         break;
     case SIGQUIT:
         printf(
@@ -226,9 +226,9 @@ SignalHandler_i(int sig)
             timeString.c_str()
             );
         fflush(stdout);
-        g_s_lock.Lock();
-        g_s_cond.Signal();
-        g_s_lock.Unlock();
+        g_lock.Lock();
+        g_cond.Signal();
+        g_lock.Unlock();
         break;
     case SIGTERM:
         printf(
@@ -239,9 +239,9 @@ SignalHandler_i(int sig)
             timeString.c_str()
             );
         fflush(stdout);
-        g_s_lock.Lock();
-        g_s_cond.Signal();
-        g_s_lock.Unlock();
+        g_lock.Lock();
+        g_cond.Signal();
+        g_lock.Unlock();
         break;
     } /* end of switch () */
 }
@@ -555,9 +555,9 @@ int main(int argc, char* argv[])
     while (1)
     {
         {
-            CProThreadMutexGuard mon(g_s_lock);
+            CProThreadMutexGuard mon(g_lock);
 
-            if (g_s_cond.Wait(&g_s_lock, LOG_HEARTBEAT_INTERVAL * 1000))
+            if (g_cond.Wait(&g_lock, LOG_HEARTBEAT_INTERVAL * 1000))
             {
                 break;
             }

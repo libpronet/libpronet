@@ -40,9 +40,9 @@
 #define RECONNECT_INTERVAL 5
 #define PIPE_TIMEOUT       10
 
-static CProStlSet<CProServiceHost*>          g_s_hosts;
-static CProStlMap<int64_t, CProServiceHost*> g_s_sockId2Host;
-static CProThreadMutex                       g_s_lock;
+static CProStlSet<CProServiceHost*>          g_hosts;
+static CProStlMap<int64_t, CProServiceHost*> g_sockId2Host;
+static CProThreadMutex                       g_lock;
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -119,9 +119,9 @@ CProServiceHost::Init(IProServiceHostObserver* observer,
         m_servicePort = servicePort;
         m_connectTick = ProGetTickCount64();
 
-        g_s_lock.Lock();
-        g_s_hosts.insert(this);
-        g_s_lock.Unlock();
+        g_lock.Lock();
+        g_hosts.insert(this);
+        g_lock.Unlock();
     }
 
     return true;
@@ -153,9 +153,9 @@ CProServiceHost::Fini()
         observer = m_observer;
         m_observer = NULL;
 
-        g_s_lock.Lock();
-        g_s_hosts.erase(this);
-        g_s_lock.Unlock();
+        g_lock.Lock();
+        g_hosts.erase(this);
+        g_lock.Unlock();
     }
 
     ProDeleteServicePipe(pipe);
@@ -374,9 +374,9 @@ CProServiceHost::OnRecv(CProServicePipe*          pipe,
         return;
     }
 
-    g_s_lock.Lock();
-    g_s_sockId2Host[sockId] = this;
-    g_s_lock.Unlock();
+    g_lock.Lock();
+    g_sockId2Host[sockId] = this;
+    g_lock.Unlock();
 
     m_onlineLock.Lock();
     m_onlineSockIds.insert(sockId);
@@ -492,9 +492,9 @@ CProServiceHost::OnRecvFd(CProServicePipe*          pipe,
         return;
     }
 
-    g_s_lock.Lock();
-    g_s_sockId2Host[fd] = this;
-    g_s_lock.Unlock();
+    g_lock.Lock();
+    g_sockId2Host[fd] = this;
+    g_lock.Unlock();
 
     m_onlineLock.Lock();
     m_onlineSockIds.insert(fd);
@@ -656,18 +656,18 @@ ProDecServiceLoad(int64_t sockId)
     CProServiceHost* host = NULL;
 
     {
-        CProThreadMutexGuard mon(g_s_lock);
+        CProThreadMutexGuard mon(g_lock);
 
-        auto itr = g_s_sockId2Host.find(sockId);
-        if (itr == g_s_sockId2Host.end())
+        auto itr = g_sockId2Host.find(sockId);
+        if (itr == g_sockId2Host.end())
         {
             return;
         }
 
         host = itr->second;
-        g_s_sockId2Host.erase(itr);
+        g_sockId2Host.erase(itr);
 
-        if (g_s_hosts.find(host) == g_s_hosts.end())
+        if (g_hosts.find(host) == g_hosts.end())
         {
             return;
         }

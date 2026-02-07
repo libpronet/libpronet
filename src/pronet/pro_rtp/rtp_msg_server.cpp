@@ -44,7 +44,7 @@ static const RTP_MSG_USER  ROOT_ID        (1, 1, 0);     /* 1-1 */
 static const RTP_MSG_USER  ROOT_ID_C2SPORT(1, 1, 65535); /* 1-1-65535 */
 static const uint64_t      NODE_UID_MAXX = 0xFFFFFFFFFFULL;
 
-static uint64_t g_s_nextUserId[256] = { 0 }; /* cid0 ~ cid255, [0xF000000000, 0xFFFFFFFFFF] */
+static uint64_t g_nextUserId[256] = { 0 }; /* cid0 ~ cid255, [0xF000000000, 0xFFFFFFFFFF] */
 
 /////////////////////////////////////////////////////////////////////////////
 ////
@@ -56,7 +56,7 @@ static
 uint64_t
 MakeUserId_i(unsigned char classId)
 {
-    uint64_t& nextUserId = g_s_nextUserId[classId];
+    uint64_t& nextUserId = g_nextUserId[classId];
     if (nextUserId == 0)
     {
         nextUserId = 0xF000000000ULL;
